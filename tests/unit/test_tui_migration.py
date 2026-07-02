@@ -34,7 +34,7 @@ def test_job_status_properties():
 
 def test_subject_filtering_logic():
     """Verify logic migrated from TUI SubjectTable."""
-    from unittest.mock import Mock
+    from unittest.mock import Mock, MagicMock
 
     from imednet.endpoints.subjects import SubjectsEndpoint
 
@@ -43,7 +43,7 @@ def test_subject_filtering_logic():
     s3 = Subject(studyKey="sk", subjectId=3, siteId=101, subjectKey="s3")  # Matches 101
 
     # Mock client and endpoint
-    mock_client = Mock()
+    mock_client = MagicMock()
     mock_client.get.return_value.json.return_value = {
         "data": [
             s1.model_dump(by_alias=True),

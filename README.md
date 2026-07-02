@@ -170,7 +170,7 @@ Example:
     export IMEDNET_SECURITY_KEY="your_security_key"
     # Optional: Custom base URL for the API endpoint
     # export IMEDNET_BASE_URL="https://edc.prod.imednetapi.com"
-    poetry run python examples/quick_start.py
+    hatch run python examples/quick_start.py
 """
 
 
@@ -229,7 +229,7 @@ Example::
     export IMEDNET_SECURITY_KEY="your_security_key"
     # Optional: Custom base URL for the API endpoint
     # export IMEDNET_BASE_URL="https://edc.prod.imednetapi.com"
-    poetry run python examples/async_quick_start.py
+    hatch run python examples/async_quick_start.py
 """
 
 
@@ -387,7 +387,7 @@ pytest -q \
 After running tests, validate documentation builds cleanly (no warnings):
 
 ```bash
-make docs
+hatch run docs
 ```
 
 See [AGENTS.md](AGENTS.md) for the full contributor workflow and quality gate contract.
@@ -436,8 +436,8 @@ Contributions are welcome! See the
 **Missing or invalid required environment variable(s)**
 If you see an error like `Error: IMEDNET_API_KEY and IMEDNET_SECURITY_KEY environment variables must be set.` (CLI) or `API key and security key are required` (SDK), or an "Unauthorized" or "Forbidden" (403) API error, ensure you have set valid keys in your shell or in a `.env` file in the directory where you run the script (avoid using "dummy" keys). See [Configuration](#configuration).
 
-**Command not found: sphinx-apidoc when running make docs**
-If building documentation with `make docs` fails with `Command not found: sphinx-apidoc`, run `python -m pip install -e ".[dev,docs]" --all-extras` first to install all necessary documentation plugins and dependencies.
+**Command not found: sphinx-apidoc when running hatch run docs**
+If building documentation with `hatch run docs` fails with `Command not found: sphinx-apidoc`, run `python -m pip install -e ".[dev,docs]" --all-extras` first to install all necessary documentation plugins and dependencies.
 
 **ModuleNotFoundError when running the CLI locally**
 If you are running the `imednet` CLI from source (e.g., `imednet`) and see a `ModuleNotFoundError` (such as `No module named 'imednet'`), ensure you have installed the project dependencies by running `python -m pip install -e ".[dev,docs]"` in the project root.

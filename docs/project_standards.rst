@@ -7,7 +7,7 @@ repository. It is a contributor-facing companion to ``AGENTS.md``.
 Dependency policy
 -----------------
 
-Use the dependency stack already declared in ``pyproject.toml`` and ``poetry.lock``.
+Use the dependency stack already declared in ``pyproject.toml`` and ``hatch.lock``.
 The current source of truth includes:
 
 - ``httpx`` for HTTP transport
@@ -29,17 +29,9 @@ policy:
 
 .. code-block:: bash
 
-   poetry run ruff format --check .
-   poetry run ruff check .
-   poetry run mypy packages/core/src/imednet
-   poetry run mypy packages/plugins-workflows/src/imednet_workflows
-   poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-   poetry run pytest -q \
-     --cov=imednet \
-     --cov=imednet_workflows \
-     --cov=apache_airflow_providers_imednet \
-     --cov-fail-under=90
-   make docs
+   hatch run lint
+   hatch run test
+   hatch run docs
 
 Changes are not complete until these checks pass.
 
@@ -100,7 +92,7 @@ Docs standards
 - Keep docstrings in Google style so Sphinx and Napoleon render them correctly.
 - Use generated API docs for module references and reserve hand-written docs for
   guides, architecture notes, and tutorials.
-- Treat documentation build warnings as errors by keeping ``make docs`` clean.
+- Treat documentation build warnings as errors by keeping ``hatch run docs`` clean.
 
 PR and release standards
 ------------------------

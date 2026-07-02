@@ -42,7 +42,7 @@ Describe the tests added or updated. If tests were intentionally skipped, explai
 - [ ] Coverage remains >= 90%
 
 ### Docs
-- [ ] `make docs` runs with zero warnings _(required when public API or CLI surface changed)_
+- [ ] `hatch run docs` runs with zero warnings _(required when public API or CLI surface changed)_
 - [ ] Docstrings added or updated for changed public symbols
 - [ ] `docs/` pages updated if user-visible behavior changed
 

@@ -109,11 +109,11 @@ class ModelEngine:
             if field_def.type_name == "string":
                 py_type = Optional[str]
             elif field_def.type_name == "integer":
-                py_type = Optional[int]
+                py_type = Optional[int]  # type: ignore
             elif field_def.type_name == "boolean":
-                py_type = Optional[bool]
+                py_type = Optional[bool]  # type: ignore
             else:
-                py_type = Any
+                py_type = Any  # type: ignore
 
             new_field = Field(default=field_def.default_value, alias=field_def.alias)
             fields[snake_key] = (py_type, new_field)

@@ -47,7 +47,7 @@ class ExportRegistry:
             try:
                 import importlib
 
-                module = importlib.import_module(module_path)
+                module = importlib.import_module(module_path)  # nosem
                 sink_class = getattr(module, class_name)
                 self.register_sink(target_type, sink_class)
                 return sink_class

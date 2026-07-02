@@ -21,14 +21,20 @@ def test_dag_runs(monkeypatch, tmp_path):
     import pandas as pd
 
     df = pd.DataFrame({"id": [1, 2]})
-    mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
+    mapper_inst = MagicMock()
+    mapper_inst.dataframe.return_value = df
+    mapper_inst._fetch_variable_metadata.return_value = (["id"], {"id": "id"})
+    mapper_inst._iter_records.return_value = [MagicMock()]
+    mapper_inst._parse_records.return_value = ([{}], 0)
+    mapper_inst._build_dataframe.return_value = df
     from imednet.integrations import export as export_mod
 
+    monkeypatch.setattr(export_mod, "apply_quality_gate", lambda s, sk, rr, c: rr)
     monkeypatch.setattr(
         export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst))
     )
 
-    sdk.jobs.get.return_value = SimpleNamespace(state="COMPLETED")
+    sdk.jobs.get.return_value = SimpleNamespace(state="COMPLETED", is_terminal=True)
     monkeypatch.setattr(ImednetExportOperator, "_get_sdk", lambda self: sdk)
     monkeypatch.setattr(ImednetJobSensor, "_get_sdk", lambda self: sdk)
 

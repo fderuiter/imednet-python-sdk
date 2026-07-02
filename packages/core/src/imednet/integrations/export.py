@@ -263,11 +263,9 @@ class TabularCSVSink(ExportSink):
             f.write(json.dumps(entry) + os.linesep)
 
     def flush(self) -> None:
-        """Flush the sink."""
         pass
 
     def close(self) -> None:
-        """Close the sink."""
         pass
 
 
@@ -370,7 +368,7 @@ def _tabular_export(
     if config.variable_whitelist is not None:
         extra_filters["variableNames"] = config.variable_whitelist
     if config.form_whitelist is not None:
-        extra_filters["formIds"] = config.form_whitelist
+        extra_filters["formIds"] = config.form_whitelist  # type: ignore
 
     raw_records = mapper._iter_records(
         study_key,

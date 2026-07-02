@@ -762,7 +762,7 @@ def test_export_operator_resolves_snowflake_sink(monkeypatch):
 
 
 def test_reference_dag_safe_study_path_fragment(monkeypatch):
-    """``_safe_study_path_fragment`` in multi_study_pipeline generates filesystem-safe tokens.
+    """``_safe_study_path_fragment`` in airflow_multi_study_pipeline generates filesystem-safe tokens.
 
     The function is imported from the production reference DAG to provide true
     regression coverage (not an inline copy).  A minimal mock is applied so the
@@ -770,9 +770,9 @@ def test_reference_dag_safe_study_path_fragment(monkeypatch):
     """
     _setup_airflow_for_dag(monkeypatch)
 
-    dag_path = _EXAMPLES_AIRFLOW_DIR / "multi_study_pipeline.py"
+    dag_path = _EXAMPLES_AIRFLOW_DIR / "airflow_multi_study_pipeline.py"
     spec = importlib.util.spec_from_file_location("_test_multi_study_pipeline", dag_path)
-    assert spec is not None and spec.loader is not None, "Could not locate multi_study_pipeline.py"
+    assert spec is not None and spec.loader is not None, "Could not locate airflow_multi_study_pipeline.py"
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)  # type: ignore[union-attr]
 

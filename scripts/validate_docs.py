@@ -48,15 +48,13 @@ def check_packages_registered() -> bool:
         return False
 
     conf_py_path = Path("docs/conf.py")
-    makefile_path = Path("Makefile")
     index_rst_path = Path("docs/index.rst")
 
-    if not conf_py_path.exists() or not makefile_path.exists() or not index_rst_path.exists():
-        print("Warning: docs/conf.py, Makefile, or docs/index.rst not found.")
+    if not conf_py_path.exists() or not index_rst_path.exists():
+        print("Warning: docs/conf.py or docs/index.rst not found.")
         return False
 
     conf_py_content = conf_py_path.read_text()
-    makefile_content = makefile_path.read_text()
     index_rst_content = index_rst_path.read_text()
 
     has_errors = False
@@ -71,14 +69,6 @@ def check_packages_registered() -> bool:
         # Check docs/conf.py
         if src_path not in conf_py_content:
             print(f"Error: Package {pkg_name} ({src_path}) is missing from docs/conf.py sys.path.")
-            has_errors = True
-
-        # Check Makefile
-        makefile_pkg_path = f"packages/{pkg_name}/src"
-        if makefile_pkg_path not in makefile_content:
-            print(
-                f"Error: Package {pkg_name} ({makefile_pkg_path}) is missing from Makefile apidocs target."
-            )
             has_errors = True
 
         # Check docs/index.rst

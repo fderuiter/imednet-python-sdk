@@ -40,7 +40,7 @@ Before proposing any solution, execute and pass all CI quality gates locally.
 3. Fix every reported error before marking a task complete. Re-run until the entire sequence exits 0.
 4. Build documentation and confirm zero warnings:
    ```bash
-   make docs
+   hatch run docs
    ```
 
 ## 3. Architectural Separation of Concerns
@@ -112,7 +112,7 @@ New endpoints must be typed methods on the appropriate resource class. Shared lo
 - **Scope**: Python 3.10–3.12. Work in `packages/core/src/imednet/`, `tests/`, `docs/`, `examples/`, `scripts/`, `.github/`.
 
 ### Docs (`docs/`)
-- **Tools**: Sphinx (`make docs`). Zero warnings.
+- **Tools**: Sphinx (`hatch run docs`). Zero warnings.
 - **Content**: Document every public API and CLI command. Sync README quickstart. Provide one runnable snippet per feature.
 
 ### Scripts & Examples

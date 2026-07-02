@@ -84,7 +84,7 @@ body:
     attributes:
       label: Verification requirements
       value: |
-        - make docs
+        - hatch run docs
         - review rendered output for the affected pages
     validations:
       required: true
