@@ -157,7 +157,7 @@ dependencies = [
 
 [tool.hatch.envs.default.scripts]
 test = "pytest --ignore=tests/live/ --ignore=tests/browser/ {args:tests/}"
-docs = "make docs"
+docs = "python scripts/build_docs.py"
 
 [tool.hatch.envs.lint]
 detached = true
