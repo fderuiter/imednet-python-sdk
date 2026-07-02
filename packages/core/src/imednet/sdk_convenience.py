@@ -93,16 +93,8 @@ if TYPE_CHECKING:
 
 
 def _workflow_poller(name: str) -> Any:
-    """Lazy load a poller class from the imednet_workflows package."""
-    try:
-        module = import_module("imednet_workflows.job_poller")
-    except ModuleNotFoundError as error:
-        if error.name and error.name.startswith("imednet_workflows"):
-            raise ImportError(
-                "Job polling requires the optional 'imednet-workflows' package. "
-                "Install with `pip install imednet-workflows`."
-            ) from error
-        raise
+    """Lazy load a poller class from the core utils package."""
+    module = import_module("imednet.utils.job_poller")
     return getattr(module, name)
 
 
