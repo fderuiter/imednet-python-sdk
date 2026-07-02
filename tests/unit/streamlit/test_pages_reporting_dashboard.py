@@ -140,6 +140,7 @@ class _FakeStreamlit:
 def _make_fake_components_module(fake_st: _FakeStreamlit) -> ModuleType:
     """Helper function to  make fake components module."""
     module = ModuleType("imednet_streamlit.components")
+    module.__path__ = []  # type: ignore[attr-defined]
     module.PALETTE = ["#1f77b4", "#ff7f0e", "#2ca02c"]  # type: ignore[attr-defined]
 
     def _kpi_row(metrics: list[dict[str, Any]]) -> None:
@@ -311,6 +312,7 @@ def _run_page(*, multiselect_values: dict[str, list[Any]] | None = None) -> _Fak
             "streamlit",
             "imednet_streamlit.auth",
             "imednet_streamlit.components",
+            "imednet_streamlit.components.charts",
             "imednet_workflows.extraction_engine",
             "imednet_workflows.query_management",
         )
@@ -319,6 +321,9 @@ def _run_page(*, multiselect_values: dict[str, list[Any]] | None = None) -> _Fak
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
+        fake_charts_module = ModuleType("imednet_streamlit.components.charts")
+        fake_charts_module.render_accessible_chart = lambda *args, **kwargs: MagicMock()  # type: ignore[attr-defined]
+        sys.modules["imednet_streamlit.components.charts"] = fake_charts_module
         sys.modules["imednet_workflows.extraction_engine"] = fake_extraction_module
         sys.modules["imednet_workflows.query_management"] = fake_query_workflow_module
         module_name = "imednet_streamlit.pages.reporting_dashboard"
@@ -589,6 +594,7 @@ def _run_page_extended(
             "streamlit",
             "imednet_streamlit.auth",
             "imednet_streamlit.components",
+            "imednet_streamlit.components.charts",
             "imednet_workflows.extraction_engine",
             "imednet_workflows.query_management",
         )
@@ -597,6 +603,9 @@ def _run_page_extended(
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
+        fake_charts_module = ModuleType("imednet_streamlit.components.charts")
+        fake_charts_module.render_accessible_chart = lambda *args, **kwargs: MagicMock()  # type: ignore[attr-defined]
+        sys.modules["imednet_streamlit.components.charts"] = fake_charts_module
         sys.modules["imednet_workflows.extraction_engine"] = fake_extraction_module
         sys.modules["imednet_workflows.query_management"] = fake_query_workflow_module
         module_name = "imednet_streamlit.pages.reporting_dashboard"

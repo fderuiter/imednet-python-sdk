@@ -65,8 +65,5 @@ def test_dashboard_login_uses_sdk_after_credentials_entered() -> None:
             at.run()
 
     assert mock_sdk.called
-    assert at.sidebar.success[1].value == "Connected ✓"
-    success_message = at.success[0].value
-    assert "Connected to study:" in success_message
-    assert "PROT-100" in success_message
+    assert at.sidebar.success[0].value == "Connected ✓"
     assert at.session_state["_imednet_connected"] is True

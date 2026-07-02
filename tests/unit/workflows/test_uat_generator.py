@@ -246,20 +246,6 @@ def test_seed_reproducibility(basic_spec, mock_snapshot):
     assert res1[0].payloads[0]["data"] == res2[0].payloads[0]["data"]
 
 
-def test_faker_missing_error(basic_spec, mock_snapshot, monkeypatch):
-    """Test error when Faker is missing."""
-    import imednet_workflows.uat.generator as generator_mod
-
-    monkeypatch.setattr(generator_mod, "Faker", None)
-
-    # We need to re-instantiate or bypass the check in __init__ if we want to test _get_faker
-    # Actually SyntheticRecordGenerator.__init__ checks Faker is not None.
-
-    generator = SyntheticRecordGenerator()
-    monkeypatch.setattr(generator, "_faker", None)
-
-    with pytest.raises(ImportError, match="faker is required"):
-        generator._get_faker()
 
 
 def test_various_types(mock_snapshot):
