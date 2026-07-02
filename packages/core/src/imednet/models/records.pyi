@@ -1,7 +1,20 @@
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+"""Record (eCRF instance) models for iMedNet."""
 
+from __future__ import annotations
+
+from datetime import datetime
+from typing import Any, Dict, List
+
+from pydantic import Field, RootModel
+
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
+
+
+
+class Keyword(JsonModel):
+    pass
+
 
 class Record(JsonModel):
     study_key: Optional[str]
@@ -21,29 +34,5 @@ class Record(JsonModel):
     subject_key: Optional[str]
     visit_id: Optional[int]
     parent_record_id: Optional[int]
-    record_data: Optional[Any]
+    record_data: Any
 
-class Keyword(JsonModel):
-    pass
-
-class RecordJobResponse(JsonModel):
-    job_id: str
-    batch_id: str
-    state: str
-
-class RecordData(JsonModel):
-    pass
-
-class BaseRecordRequest(JsonModel):
-    form_key: str
-    data: RecordData
-
-class RegisterSubjectRequest(BaseRecordRequest):
-    site_name: str
-
-class UpdateScheduledRecordRequest(BaseRecordRequest):
-    subject_key: str
-    interval_name: str
-
-class CreateNewRecordRequest(BaseRecordRequest):
-    subject_key: str

@@ -180,9 +180,90 @@ class ModelEngine:
 
     @classmethod
     def generate_stubs(cls, output_dir: str) -> None:
-        """Generate type stubs for dynamic models (placeholder)."""
+        """Generate type stubs for dynamic models."""
         if tracer:
             with tracer.start_as_current_span("ModelEngine.generate_stubs"):
-                pass
+                cls._generate_stubs(output_dir)
         else:
-            pass
+            cls._generate_stubs(output_dir)
+
+    @classmethod
+    def _generate_stubs(cls, output_dir: str) -> None:
+        """Internal implementation for generating type stubs."""
+        import glob
+        import re
+
+        schemas = load_schemas()
+        
+        for py_file in glob.glob(os.path.join(output_dir, "*.py")):
+            if os.path.basename(py_file) == "__init__.py" or os.path.basename(py_file) == "engine.py":
+                continue
+            
+            with open(py_file, "r") as f:
+                content = f.read()
+
+            matches = re.findall(r"([A-Za-z0-9_]+)\s*=\s*ModelEngine\.get_model\(['\"]([^'\"]+)['\"]\s*,\s*([A-Za-z0-9_]+)\)", content)
+            if not matches:
+                continue
+
+            # Need to get the base classes so we can list only fields added by the dynamic schema
+            # But the simplest way is just to write everything from the model's annotations
+            # However, if it's easier, we just reconstruct the `.pyi` file from the Pydantic fields
+            
+            # Read imports from the .py file to reuse them
+            imports_re = re.search(r"^(.*?)(?=\n\nclass|\nclass)", content, re.DOTALL)
+            imports = imports_re.group(1) if imports_re else "from typing import Any, Dict, List, Optional\nfrom imednet.models.json_base import JsonModel\n"
+
+            # Re-generate the file content
+            pyi_content = [imports.strip()]
+            pyi_content.append("\n\n")
+
+            for class_name, model_name, base_class_name in matches:
+                model = cls.get_model(model_name)
+                
+                # Find the base class of the original class definition
+                base_class_match = re.search(rf"class {base_class_name}\(([^)]+)\):", content)
+                actual_base = base_class_match.group(1) if base_class_match else "JsonModel"
+                
+                pyi_content.append(f"class {class_name}({actual_base}):")
+                
+                has_fields = False
+                for field_name, field_info in model.model_fields.items():
+                    # Format annotation
+                    ann = str(field_info.annotation)
+                    ann = ann.replace("typing.", "")
+                    ann = ann.replace("NoneType", "None")
+                    
+                    if "Union" in ann and "None" in ann:
+                        # Convert Union[X, None] to Optional[X]
+                        inner = ann.replace("Union[", "").replace(", None]", "").replace("None, ", "")
+                        ann = f"Optional[{inner}]"
+                        
+                    pyi_content.append(f"    {field_name}: {ann}")
+                    has_fields = True
+                
+                if not has_fields:
+                    pyi_content.append("    pass")
+                
+                pyi_content.append("\n")
+
+            pyi_path = py_file + "i"
+            with open(pyi_path, "w") as f:
+                f.write("\n".join(pyi_content))
+
+
+class ResourceRegistry:
+    """Unified resource governance registry serving as the single source of truth for fields."""
+
+    @classmethod
+    def get_fields(cls, model_name: str) -> List[str]:
+        """Get the field names for a specific dynamic model.
+        
+        Args:
+            model_name: The name of the model (e.g., 'Subject', 'Record').
+            
+        Returns:
+            A list of field names in snake_case.
+        """
+        model = ModelEngine.get_model(model_name)
+        return list(model.model_fields.keys())

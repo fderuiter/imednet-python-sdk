@@ -18,37 +18,22 @@ from imednet_streamlit.components.charts import render_accessible_chart
 def _fetch_queries(_sdk: object, study_key: str) -> pd.DataFrame:
     """Fetches all queries and returns a normalized DataFrame."""
     from imednet_workflows.query_management import QueryManagementWorkflow
+    from imednet.models.engine import ResourceRegistry
 
     workflow = QueryManagementWorkflow(sdk=_sdk)  # type: ignore[arg-type]
     open_q = workflow.get_open_queries(study_key=study_key)
     all_q = _sdk.get_queries(study_key=study_key)  # type: ignore[attr-defined]
     open_ids = {q.annotation_id for q in open_q}
+    fields = ResourceRegistry.get_fields("Query")
+    
     rows = []
     for q in all_q:
-        rows.append(
-            {
-                "annotation_id": q.annotation_id,
-                "subject_key": q.subject_key,
-                "variable": q.variable,
-                "annotation_type": q.annotation_type,
-                "description": q.description,
-                "date_created": q.date_created,
-                "date_modified": q.date_modified,
-                "status": "Open" if q.annotation_id in open_ids else "Closed",
-            }
-        )
-    _columns = [
-        "annotation_id",
-        "subject_key",
-        "variable",
-        "annotation_type",
-        "description",
-        "date_created",
-        "date_modified",
-        "status",
-    ]
+        row = {f: getattr(q, f, None) for f in fields}
+        row["status"] = "Open" if getattr(q, "annotation_id", None) in open_ids else "Closed"
+        rows.append(row)
+
     if not rows:
-        return pd.DataFrame(columns=_columns)
+        return pd.DataFrame(columns=fields + ["status"])
     return pd.DataFrame(rows)
 
 

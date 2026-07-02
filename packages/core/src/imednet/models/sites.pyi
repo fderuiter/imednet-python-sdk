@@ -1,7 +1,15 @@
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+"""Site (study location) models for iMedNet."""
 
+from __future__ import annotations
+
+from datetime import datetime
+
+from pydantic import Field
+
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
+
+
 
 class Site(JsonModel):
     study_key: Optional[str]
@@ -10,3 +18,4 @@ class Site(JsonModel):
     site_enrollment_status: Optional[str]
     date_created: Optional[str]
     date_modified: Optional[str]
+

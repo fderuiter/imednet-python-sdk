@@ -1,15 +1,20 @@
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+"""Query and annotation models for iMedNet."""
 
+from __future__ import annotations
+
+from datetime import datetime
+from typing import List, Optional
+
+from pydantic import Field
+
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
+
+
 class QueryComment(JsonModel):
-    user: Optional[str]
-    date: Optional[str]
-    comment: Optional[str]
-    annotation_status: Optional[str]
-    closed: Optional[bool]
-    sequence: Optional[int]
+    pass
+
 
 class Query(JsonModel):
     study_key: Optional[str]
@@ -21,4 +26,7 @@ class Query(JsonModel):
     subject_key: Optional[str]
     date_created: Optional[str]
     date_modified: Optional[str]
-    query_comments: List[QueryComment]
+    annotation_type: Any
+    subject_oid: Any
+    type: Any
+

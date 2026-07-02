@@ -1,12 +1,16 @@
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+"""Interval (visit definition) models for iMedNet."""
 
+from __future__ import annotations
+
+from datetime import datetime
+from typing import List
+
+from pydantic import Field
+
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
-class FormSummary(JsonModel):
-    form_id: int
-    form_key: str
-    form_name: str
+
 
 class Interval(JsonModel):
     study_key: Optional[str]
@@ -19,4 +23,14 @@ class Interval(JsonModel):
     disabled: Optional[bool]
     date_created: Optional[str]
     date_modified: Optional[str]
-    forms: Optional[List[FormSummary]]
+    actual_date: Any
+    actual_date_form: Any
+    defined_using_interval: Any
+    due_date_will_be_in: Any
+    epro_grace_period: Any
+    negative_slack: Any
+    positive_slack: Any
+    timeline: Any
+    window_calculation_date: Any
+    window_calculation_form: Any
+

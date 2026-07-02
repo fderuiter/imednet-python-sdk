@@ -1,7 +1,16 @@
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+"""Models for form variables (data fields) in iMedNet."""
 
+from __future__ import annotations
+
+from datetime import datetime
+from typing import Optional
+
+from pydantic import Field
+
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
+
+
 
 class Variable(JsonModel):
     study_key: Optional[str]
@@ -15,5 +24,7 @@ class Variable(JsonModel):
     form_id: Optional[int]
     form_key: Optional[str]
     form_name: Optional[str]
-    label: Optional[str]
-    variable_oid: Optional[str]
+    blinded: Any
+    deleted: Any
+    disabled: Any
+

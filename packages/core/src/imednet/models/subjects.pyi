@@ -1,7 +1,20 @@
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+"""Models for subjects and participant keywords."""
 
+from __future__ import annotations
+
+from datetime import datetime
+from typing import List
+
+from pydantic import Field
+
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
+
+
+
+class SubjectKeyword(JsonModel):
+    pass
+
 
 class Subject(JsonModel):
     study_key: Optional[str]
@@ -13,8 +26,6 @@ class Subject(JsonModel):
     deleted: Optional[bool]
     date_created: Optional[str]
     date_modified: Optional[str]
-    keywords: List[SubjectKeyword]
-    enrollment_start_date: Optional[str]
+    enrollment_start_date: Any
+    subject_oid: Any
 
-class SubjectKeyword(JsonModel):
-    keyword_name: str

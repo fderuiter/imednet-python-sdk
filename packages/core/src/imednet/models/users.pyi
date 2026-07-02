@@ -1,7 +1,20 @@
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+"""Models for users and roles within iMedNet."""
 
+from __future__ import annotations
+
+from datetime import datetime
+from typing import List
+
+from pydantic import Field, computed_field
+
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
+
+
+
+class Role(JsonModel):
+    pass
+
 
 class User(JsonModel):
     user_id: Optional[str]
@@ -10,14 +23,5 @@ class User(JsonModel):
     last_name: Optional[str]
     email: Optional[str]
     user_active_in_study: Optional[bool]
+    roles: Any
 
-class Role(JsonModel):
-    role_id: Optional[str]
-    name: Optional[str]
-    description: Optional[str]
-    level: Optional[int]
-    type: Optional[str]
-    inactive: Optional[bool]
-    community_id: Optional[int]
-    date_created: Optional[str]
-    date_modified: Optional[str]

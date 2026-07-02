@@ -1,7 +1,15 @@
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+"""Form (eCRF) metadata models for iMedNet."""
 
+from __future__ import annotations
+
+from datetime import datetime
+
+from pydantic import Field
+
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
+
+
 
 class Form(JsonModel):
     study_key: Optional[str]
@@ -13,7 +21,10 @@ class Form(JsonModel):
     date_created: Optional[str]
     date_modified: Optional[str]
     disabled: Optional[bool]
-    subject_record_report: Optional[bool]
-    unscheduled_visit: Optional[bool]
     epro_form: Optional[bool]
     allow_copy: Optional[bool]
+    embedded_log: Any
+    enforce_ownership: Any
+    other_forms: Any
+    user_agreement: Any
+

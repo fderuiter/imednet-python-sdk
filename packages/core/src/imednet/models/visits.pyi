@@ -1,7 +1,16 @@
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+"""Models for subject visits and study events."""
 
+from __future__ import annotations
+
+from datetime import datetime
+from typing import Any, Optional
+
+from pydantic import Field, model_validator
+
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
+
+
 
 class Visit(JsonModel):
     visit_id: Optional[int]
@@ -17,3 +26,6 @@ class Visit(JsonModel):
     deleted: Optional[bool]
     date_created: Optional[str]
     date_modified: Optional[str]
+    visit_date_form: Any
+    visit_date_question: Any
+

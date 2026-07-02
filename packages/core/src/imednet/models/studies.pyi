@@ -1,7 +1,15 @@
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+"""Study metadata models for iMedNet."""
 
+from __future__ import annotations
+
+from datetime import datetime
+
+from pydantic import Field
+
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
+
+
 
 class Study(JsonModel):
     sponsor_key: Optional[str]
@@ -12,3 +20,4 @@ class Study(JsonModel):
     study_type: Optional[str]
     date_created: Optional[str]
     date_modified: Optional[str]
+

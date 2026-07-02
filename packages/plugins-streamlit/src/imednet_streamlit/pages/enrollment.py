@@ -19,30 +19,18 @@ from imednet_streamlit.components.charts import render_accessible_chart
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_subjects(_sdk: object, study_key: str) -> pd.DataFrame:
     """Fetches all subjects and returns a normalized DataFrame (deleted excluded)."""
+    from imednet.models.engine import ResourceRegistry
+    
     subjects = _sdk.get_subjects(study_key=study_key)  # type: ignore[attr-defined]
-    rows = [
-        {
-            "subject_id": s.subject_id,
-            "subject_key": s.subject_key,
-            "subject_status": s.subject_status,
-            "site_id": s.site_id,
-            "site_name": s.site_name,
-            "enrollment_start_date": s.enrollment_start_date,
-            "deleted": s.deleted,
-        }
-        for s in subjects
-    ]
-    _columns = [
-        "subject_id",
-        "subject_key",
-        "subject_status",
-        "site_id",
-        "site_name",
-        "enrollment_start_date",
-        "deleted",
-    ]
+    fields = ResourceRegistry.get_fields("Subject")
+    
+    rows = []
+    for s in subjects:
+        row = {f: getattr(s, f, None) for f in fields}
+        rows.append(row)
+        
     if not rows:
-        return pd.DataFrame(columns=_columns)
+        return pd.DataFrame(columns=fields)
     df = pd.DataFrame(rows)
     return df[~df["deleted"]]
 

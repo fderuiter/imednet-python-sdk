@@ -1,7 +1,15 @@
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+"""Medical coding models for iMedNet."""
 
+from __future__ import annotations
+
+from datetime import datetime
+
+from pydantic import Field
+
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
+
+
 
 class Coding(JsonModel):
     study_key: Optional[str]
@@ -15,9 +23,12 @@ class Coding(JsonModel):
     record_id: Optional[int]
     variable: Optional[str]
     value: Optional[str]
-    coding_id: Optional[int]
+    coding_id: Optional[str]
     code: Optional[str]
     coded_by: Optional[str]
     dictionary_name: Optional[str]
     dictionary_version: Optional[str]
     date_coded: Optional[str]
+    reason: Any
+    revision: Any
+

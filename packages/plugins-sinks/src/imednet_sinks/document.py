@@ -91,23 +91,24 @@ def _make_document_id(study_key: str, record_id: Any) -> str:
 
 def _record_to_document(record: Any, study_key: str) -> dict[str, Any]:
     """Wrap a typed ``Record`` model in the standard document envelope."""
+    from imednet.models.engine import ResourceRegistry
     record_id = getattr(record, "record_id", None)
-    return {
+    doc = {
         "_id": _make_document_id(study_key, record_id),
         "study_key": study_key,
-        "record_id": record_id,
-        "subject_id": getattr(record, "subject_id", None),
-        "subject_key": getattr(record, "subject_key", None),
-        "visit_id": getattr(record, "visit_id", None),
-        "form_id": getattr(record, "form_id", None),
-        "form_key": getattr(record, "form_key", None),
-        "record_status": getattr(record, "record_status", None),
-        "deleted": getattr(record, "deleted", None),
-        "date_created": getattr(record, "date_created", None),
-        "date_modified": getattr(record, "date_modified", None),
-        "record_data": dict(getattr(record, "record_data", {}) or {}),
         "exported_at": datetime.now(tz=timezone.utc).isoformat(),
     }
+    
+    fields = ResourceRegistry.get_fields("Record")
+    for f in fields:
+        # Don't overwrite envelope specific fields if they happen to overlap
+        # Wait, actually study_key is also a record field, so we just set them.
+        val = getattr(record, f, None)
+        if f == "record_data":
+            val = dict(val or {})
+        doc[f] = val
+        
+    return doc
 
 
 class MongoDbExportSink(ExportSink):
