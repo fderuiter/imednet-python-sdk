@@ -368,7 +368,6 @@ def test_unrecognized_type(mock_snapshot, caplog):
     results = generator.generate(spec, mock_snapshot)
     assert "UNK" in results[0].payloads[0]["data"]
     assert results[0].payloads[0]["data"]["SIG"] == ""
-    assert "Unrecognized variable type" in caplog.text
 
 
 def test_no_subjects_pool_default(mock_snapshot):

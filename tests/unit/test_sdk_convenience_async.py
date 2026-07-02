@@ -143,7 +143,7 @@ async def test_async_poll_job_convenience(monkeypatch) -> None:
 
     import imednet.utils.job_poller
 
-    monkeypatch.setattr(imednet.utils.job_poller, "AsyncJobPoller", FakePoller)
+    monkeypatch.setattr("imednet.utils.job_poller.AsyncJobPoller", FakePoller)
 
     assert await sdk.async_poll_job("S1", "B1", interval=10, timeout=100) == "JOBOBJ"
     assert calls["run"] == ("S1", "B1", 10, 100)

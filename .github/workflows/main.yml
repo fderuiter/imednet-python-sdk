@@ -164,7 +164,7 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install uv
+          python -m pip install uv hatch
           uv sync --locked --all-extras
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
@@ -177,7 +177,7 @@ jobs:
               if echo "$IMPACTED" | grep -qx "$PKG_NAME"; then
                 (
                   cd "$package"
-                  python3 -m pip install build && python3 -m build
+                  hatch build
                 )
               else
                 echo "Skipping $PKG_NAME as it is not impacted by this change plan."
@@ -255,7 +255,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install uv
+          python -m pip install uv hatch
           uv sync --locked --all-extras
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
           
@@ -288,7 +288,7 @@ jobs:
             COV_ARGS="--cov=imednet_sinks"
           fi
           
-          pytest -q $COV_ARGS --cov-report=xml --cov-fail-under=90 -m "not live and not browser" --ignore=tests/live/ --ignore=tests/browser/ $TEST_ARGS || {
+          hatch run test -q $COV_ARGS --cov-report=xml --cov-fail-under=90 -m "not live and not browser" --ignore=tests/live/ --ignore=tests/browser/ $TEST_ARGS || {
             RET=$?
             if [ $RET -eq 5 ]; then
               echo "No tests collected for ${{ matrix.package }}. Passing gracefully."
@@ -317,7 +317,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install uv
+          python -m pip install uv hatch
           uv sync --locked --all-extras
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
@@ -325,7 +325,15 @@ jobs:
         env:
           IMEDNET_API_KEY: dummy
           IMEDNET_SECURITY_KEY: dummy
-        run: make test-containers
+        run: |
+          echo "Starting ephemeral containerized databases..."
+          docker compose up -d
+          echo "Waiting for databases to initialize..."
+          sleep 15
+          echo "Running integration tests..."
+          IMEDNET_TEST_CONTAINERS=1 pytest packages/plugins-sinks/tests/integration/test_containerized_sinks.py -v || { status=$?; docker compose down -v; exit $status; }
+          echo "Cleaning up containers..."
+          docker compose down -v
 
   # ------------------------------------------------------------------
   # JOB 3.6: SECURITY ROBUSTNESS (Fuzzing)
@@ -346,7 +354,7 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install uv
+          python -m pip install uv hatch
           uv sync --locked --all-extras
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
         
@@ -382,10 +390,9 @@ jobs:
       
       - name: Build Packages
         run: |
-          python3 -m pip install build
-          python3 -m build packages/plugins-workflows
-          python3 -m build packages/plugins-sinks
-          python3 -m build packages/core
+          (cd packages/plugins-workflows && hatch build)
+          (cd packages/plugins-sinks && hatch build)
+          (cd packages/core && hatch build)
 
       - name: Install Core with Extra
         run: |
@@ -437,15 +444,12 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install uv
+          python -m pip install uv hatch
           uv sync --locked --all-extras
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
-      - name: Run Doctests
-        run: make doctest
-
-      - name: Build HTML
-        run: make docs
+      - name: Build HTML and Run Doctests
+        run: hatch run docs
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
@@ -617,14 +621,13 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install uv
+          python -m pip install uv hatch
           uv sync --locked --all-extras
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
-          .venv/bin/python -m pip install axe-playwright-python playwright
-          .venv/bin/python -m playwright install --with-deps chromium
+          hatch run playwright install --with-deps chromium
       - name: Run automated accessibility scan
         run: |
-          python scripts/a11y_audit.py
+          hatch run test -m a11y tests/browser/test_a11y.py
           
       - name: Auto-update VPAT
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'

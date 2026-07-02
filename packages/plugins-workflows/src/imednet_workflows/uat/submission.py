@@ -209,7 +209,7 @@ class BulkRecordSubmissionWorkflow:
         poller = JobPoller(get_job=self.sdk.get_job)
         failed_batches = []
 
-        from imednet.spi.utils import JobFailedError
+        from imednet.spi.utils import JobFailedError, JobTimeoutError
         
         for batch in batches:
             if not batch.job.batch_id:
@@ -221,14 +221,16 @@ class BulkRecordSubmissionWorkflow:
                     batch.job.batch_id,
                     timeout=int(self.registration_timeout),
                 )
-                # Update the job state in the batch object
                 batch.job.state = status.state
-                
+            except JobFailedError as e:
+                batch.job.state = getattr(e, "status", type("S", (), {"state": "FAILED"})).state  # type: ignore
+                failed_batches.append(batch)
+            except JobTimeoutError:
+                batch.job.state = "TIMEOUT"
+                failed_batches.append(batch)
+            else:
                 if not status.state or status.state.upper() not in ("COMPLETED", "SUCCESS"):
                     failed_batches.append(batch)
-            except JobFailedError:
-                batch.job.state = "FAILED"
-                failed_batches.append(batch)
 
         if failed_batches:
             raise BulkSubmissionError(

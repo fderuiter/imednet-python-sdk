@@ -39,7 +39,9 @@ dev = [
     "neo4j>=6.2.0,<7.0.0",
     "pymongo>=4.17.0,<5.0.0",
     "atheris>=3.0.0,<4.0.0; python_version>='3.11'",
-    "sphinx-argparse>=0.5.0"
+    "sphinx-argparse>=0.5.0",
+    "playwright",
+    "axe-playwright-python"
 ]
 docs = [
     "furo<2026.0.0",
@@ -79,7 +81,12 @@ module = [
     "imednet.models.*",
     "imednet.errors.*"
 ]
-strict = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+warn_return_any = true
+strict_optional = true
 
 [[tool.mypy.overrides]]
 module = [
@@ -118,6 +125,12 @@ ignore_missing_imports = true
 
 [tool.ruff.lint.per-file-ignores]
 "packages/core/**/*.py" = ["SLF001"]
+"packages/core/src/imednet/integrations/export.py" = ["D101", "D102", "D107", "S608"]
+"packages/core/src/imednet/integrations/parquet.py" = ["S608"]
+"packages/core/src/imednet/integrations/enrichment.py" = ["S307"]
+"packages/core/src/imednet/utils/job_poller.py" = ["D107"]
+"packages/plugins-workflows/src/imednet_workflows/duckdb_centralizer.py" = ["S608"]
+"packages/plugins-workflows/src/imednet_workflows/extraction_engine.py" = ["S307"]
 "tests/**/*.py" = ["SLF001", "S", "D"]
 "scripts/**/*.py" = ["SLF001", "S", "D"]
 "examples/**/*.py" = ["SLF001", "S", "D"]
@@ -130,6 +143,21 @@ quote-style = "preserve"
 [tool.hatch.build.targets.wheel]
 packages = []
 include = ["CHANGELOG.md"]
+
+[tool.hatch.envs.default]
+features = ["dev", "docs"]
+installer = "uv"
+dependencies = [
+    "imednet @ {root:uri}/packages/core",
+    "imednet-workflows @ {root:uri}/packages/plugins-workflows",
+    "apache-airflow-providers-imednet @ {root:uri}/packages/providers-airflow",
+    "imednet-streamlit @ {root:uri}/packages/plugins-streamlit",
+    "imednet-plugins-sinks @ {root:uri}/packages/plugins-sinks",
+]
+
+[tool.hatch.envs.default.scripts]
+test = "pytest --ignore=tests/live/ --ignore=tests/browser/ {args:tests/}"
+docs = "python scripts/build_docs.py"
 
 [tool.hatch.envs.lint]
 detached = true

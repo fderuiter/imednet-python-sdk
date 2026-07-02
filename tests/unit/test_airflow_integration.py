@@ -762,7 +762,7 @@ def test_export_operator_resolves_snowflake_sink(monkeypatch):
 
 
 def test_reference_dag_safe_study_path_fragment(monkeypatch):
-    """``_safe_study_path_fragment`` in multi_study_pipeline generates filesystem-safe tokens.
+    """``_safe_study_path_fragment`` in airflow_multi_study_pipeline generates filesystem-safe tokens.
 
     The function is imported from the production reference DAG to provide true
     regression coverage (not an inline copy).  A minimal mock is applied so the

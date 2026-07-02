@@ -162,10 +162,10 @@ class ContractBuilder:
                         default_value = ""
                     elif prop_type == "integer":
                         type_name = "integer"
-                        default_value = 0
+                        default_value = 0  # type: ignore
                     elif prop_type == "boolean":
                         type_name = "boolean"
-                        default_value = False
+                        default_value = False  # type: ignore
 
                     fields[snake_key] = FieldDefinition(
                         name=snake_key,

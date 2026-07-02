@@ -314,6 +314,6 @@ Adding New Export Sinks
 3. Call :func:`~imednet.integrations.sink_base._require_optional_dep`
    inside the constructor (not at module level).
 4. Add the optional dependency to ``packages/core/pyproject.toml`` and
-   define a new ``[tool.poetry.extras]`` key.
+   define a new ``[tool.hatch.extras]`` key.
 5. Re-export the new class from :mod:`imednet.integrations`.
 6. Add unit tests; run ``pytest --cov=imednet.integrations``.

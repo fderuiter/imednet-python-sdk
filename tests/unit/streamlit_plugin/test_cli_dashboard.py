@@ -56,7 +56,7 @@ def test_dashboard_missing_plugin() -> None:
             if key.startswith("imednet.cli"):
                 sys.modules.pop(key, None)
 
-        with patch("importlib.util.find_spec", side_effect=mock_find_spec):
+        with patch("imednet_streamlit.cli.find_spec", side_effect=mock_find_spec):
             from imednet.cli import app
 
             runner = CliRunner()
@@ -87,7 +87,7 @@ def test_dashboard_launches_subprocess() -> None:
                 sys.modules.pop(key, None)
         sys.modules["streamlit"] = streamlit_mock
 
-        with patch("importlib.util.find_spec", side_effect=mock_find_spec):
+        with patch("imednet_streamlit.cli.find_spec", side_effect=mock_find_spec):
             from imednet.cli import app
 
             runner = CliRunner()

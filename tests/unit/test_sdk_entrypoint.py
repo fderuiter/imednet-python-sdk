@@ -393,7 +393,7 @@ def test_poll_job_convenience_sync(monkeypatch) -> None:
 
     import imednet.utils.job_poller
 
-    monkeypatch.setattr(imednet.utils.job_poller, "JobPoller", FakePoller)
+    monkeypatch.setattr("imednet.utils.job_poller.JobPoller", FakePoller)
 
     assert sdk.poll_job("S1", "B1", interval=10, timeout=100) == "JOBOBJ"
     assert calls["run"] == ("S1", "B1", 10, 100)

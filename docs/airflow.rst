@@ -20,7 +20,7 @@ pattern for dynamic task mapping deployments. It demonstrates lightweight
 TaskFlow discovery feeding mapped provider operators while keeping execution
 logic inside mapped tasks.
 
-.. literalinclude:: ../examples/airflow/multi_study_pipeline.py
+.. literalinclude:: ../examples/airflow/airflow_multi_study_pipeline.py
    :language: python
 
 Operational safeguards highlighted in the reference DAG:

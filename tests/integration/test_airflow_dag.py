@@ -29,6 +29,7 @@ def test_dag_runs(monkeypatch, tmp_path):
     mapper_inst._build_dataframe.return_value = df
     from imednet.integrations import export as export_mod
 
+    monkeypatch.setattr(export_mod, "apply_quality_gate", lambda s, sk, rr, c: rr)
     monkeypatch.setattr(
         export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst))
     )

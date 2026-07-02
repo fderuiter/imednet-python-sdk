@@ -1300,7 +1300,7 @@ name = "exceptiongroup"
 version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
+    { name = "typing-extensions" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/50/79/66800aadf48771f6b62f7eb014e352e5d06856655206165d775e675a02c9/exceptiongroup-1.3.1.tar.gz", hash = "sha256:8b412432c6055b0b7d14c310000ae93352ed6754f70fa8f7c34141f91c4e3219", size = 30371, upload-time = "2025-11-21T23:01:54.787Z" }
 wheels = [
@@ -2003,6 +2003,7 @@ name = "imednet-workspace"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "apache-airflow-providers-imednet" },
     { name = "imednet" },
     { name = "imednet-plugins-sinks" },
     { name = "imednet-streamlit" },
@@ -2012,6 +2013,7 @@ dependencies = [
 [package.optional-dependencies]
 dev = [
     { name = "atheris", marker = "python_full_version >= '3.11'" },
+    { name = "axe-playwright-python" },
     { name = "boto3" },
     { name = "duckdb" },
     { name = "faker" },
@@ -2022,6 +2024,7 @@ dev = [
     { name = "openpyxl" },
     { name = "pandas" },
     { name = "pip" },
+    { name = "playwright" },
     { name = "pre-commit" },
     { name = "pyarrow" },
     { name = "pymongo" },
@@ -2051,7 +2054,9 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "apache-airflow-providers-imednet", editable = "packages/providers-airflow" },
     { name = "atheris", marker = "python_full_version >= '3.11' and extra == 'dev'", specifier = ">=3.0.0,<4.0.0" },
+    { name = "axe-playwright-python", marker = "extra == 'dev'" },
     { name = "boto3", marker = "extra == 'dev'", specifier = ">=1.34,<2.0.0" },
     { name = "duckdb", marker = "extra == 'dev'", specifier = ">=1.1.0" },
     { name = "faker", marker = "extra == 'dev'", specifier = ">=24.9.0,<25.0.0" },
@@ -2067,6 +2072,7 @@ requires-dist = [
     { name = "openpyxl", marker = "extra == 'dev'", specifier = ">=3.1,<4.0.0" },
     { name = "pandas", marker = "extra == 'dev'", specifier = ">=2.2.3,<3.0.0" },
     { name = "pip", marker = "extra == 'dev'", specifier = ">=26.0,<27.0.0" },
+    { name = "playwright", marker = "extra == 'dev'" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.2.0,<5.0.0" },
     { name = "pyarrow", marker = "extra == 'dev'", specifier = ">=14.0.1" },
     { name = "pymongo", marker = "extra == 'dev'", specifier = ">=4.17.0,<5.0.0" },
