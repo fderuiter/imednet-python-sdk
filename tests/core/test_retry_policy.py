@@ -1,12 +1,10 @@
-from imednet.core.retry import RetryConfig
-
 """Unit tests for retry policy."""
 
 import httpx
 import pytest
 
 from imednet.core.client import Client
-from imednet.core.retry import DefaultRetryPolicy, RetryState
+from imednet.core.retry import DefaultRetryPolicy, RetryState, RetryConfig
 from imednet.errors import ServerError
 
 

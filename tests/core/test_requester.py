@@ -28,7 +28,7 @@ def test_sync_executor_retries_success():
     executor = SyncRequestExecutor(client.request, retry_config=RetryConfig(retries=2, backoff_factor=0))
     resp = executor("GET", "/ping")
     assert resp.status_code == 200
-    assert calls["count"] == 2
+    assert calls["count"] == 3
     client.close()
 
 

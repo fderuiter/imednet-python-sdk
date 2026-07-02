@@ -21,7 +21,7 @@ def test_dag_runs(monkeypatch, tmp_path):
     import pandas as pd
 
     df = pd.DataFrame({"id": [1, 2]})
-    mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
+    mapper_inst = MagicMock(dataframe=MagicMock(return_value=df), _fetch_variable_metadata=MagicMock(return_value=([], {})))
     from imednet.integrations import export as export_mod
 
     monkeypatch.setattr(

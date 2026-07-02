@@ -1,5 +1,3 @@
-from imednet.core.retry import RetryConfig
-
 """Unit tests for core client integration."""
 
 import contextlib
@@ -9,6 +7,7 @@ import pytest
 import respx
 
 from imednet import errors
+from imednet.core.retry import RetryConfig
 from imednet.core.client import Client
 
 
