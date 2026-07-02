@@ -9,7 +9,13 @@ import sys
 from importlib import import_module
 from importlib.util import find_spec
 
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    def load_dotenv():
+        pass
+    print("Warning: python-dotenv not installed. Install with `pip install 'imednet[cli]'` to load .env files automatically.", file=sys.stderr)
 
 from ..integrations import SinkConfig  # noqa: F401
 from ..integrations.export import (
@@ -41,8 +47,6 @@ __all__ = [
     "export_to_sql_by_form",
     "SinkConfig",
 ]
-
-load_dotenv()
 
 
 def run_dashboard(port: int = 8501, no_browser: bool = False) -> None:
