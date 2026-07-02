@@ -8,7 +8,7 @@ from .retry import RetryPolicy
 
 
 @runtime_checkable
-class RequestorProtocol(Protocol):
+class RequesterProtocol(Protocol):
     """Protocol for synchronous HTTP clients."""
 
     @property
@@ -45,7 +45,7 @@ class RequestorProtocol(Protocol):
 
 
 @runtime_checkable
-class AsyncRequestorProtocol(Protocol):
+class AsyncRequesterProtocol(Protocol):
     """Protocol for asynchronous HTTP clients."""
 
     @property
@@ -85,11 +85,11 @@ class AsyncRequestorProtocol(Protocol):
 class ClientProvider(Protocol):
     """Protocol for classes that provide access to synchronous and asynchronous clients."""
 
-    def _require_sync_client(self) -> RequestorProtocol:
+    def _require_sync_client(self) -> RequesterProtocol:
         """Return the configured sync client."""
         ...
 
-    def _require_async_client(self) -> AsyncRequestorProtocol:
+    def _require_async_client(self) -> AsyncRequesterProtocol:
         """Return the configured async client."""
         ...
 

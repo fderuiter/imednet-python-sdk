@@ -17,6 +17,7 @@ from imednet.validation.cache import SchemaCache
 try:
     from imednet_sinks.warehouse import _records_to_arrow_table
 except ImportError:
+
     def _records_to_arrow_table(records):
         rows = [
             {
@@ -30,9 +31,11 @@ except ImportError:
         ]
         return pa.Table.from_pylist(rows)
 
+
 logger = logging.getLogger(__name__)
 
 pytestmark = pytest.mark.performance
+
 
 def generate_records(count: int, cache: SchemaCache) -> list:
     records = []
@@ -40,6 +43,7 @@ def generate_records(count: int, cache: SchemaCache) -> list:
         data = fake_record(cache)
         records.append(Record.model_validate(data))
     return records
+
 
 def run_benchmarks(record_count: int = 10000) -> Dict[str, float]:
     results = {}
@@ -80,6 +84,7 @@ def run_benchmarks(record_count: int = 10000) -> Dict[str, float]:
 
     return results
 
+
 def test_performance_suite():
     historical_file = Path("performance_cache.json")
     threshold = 0.05
@@ -92,10 +97,10 @@ def test_performance_suite():
         historical_file.touch()
 
     degradations = []
-    
+
     with open(historical_file, "r+") as f:
         fcntl.flock(f, fcntl.LOCK_EX)
-        
+
         try:
             f.seek(0)
             content = f.read()
@@ -115,7 +120,9 @@ def test_performance_suite():
                         f"{metric}: {current_val:.4f}s exceeds baseline {historical_val:.4f}s by {diff * 100:.1f}% (> 5%)"
                     )
                 else:
-                    print(f"{metric} OK: {current_val:.4f}s (baseline: {historical_val:.4f}s, diff: {diff * 100:.1f}%)")
+                    print(
+                        f"{metric} OK: {current_val:.4f}s (baseline: {historical_val:.4f}s, diff: {diff * 100:.1f}%)"
+                    )
             else:
                 print(f"{metric} recorded as new baseline: {current_val:.4f}s")
                 history[metric] = current_val
@@ -123,7 +130,7 @@ def test_performance_suite():
         f.seek(0)
         f.truncate()
         json.dump(history, f, indent=2)
-        
+
         fcntl.flock(f, fcntl.LOCK_UN)
 
     assert not degradations, "Performance Regressions Detected:\n" + "\n".join(degradations)

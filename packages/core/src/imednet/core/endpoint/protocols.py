@@ -16,7 +16,7 @@ from typing import (
 )
 
 from imednet.core.paginator import AsyncPaginator, Paginator
-from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
+from imednet.core.protocols import AsyncRequesterProtocol, RequesterProtocol
 from imednet.models.base import ImednetBaseModel
 from imednet.utils.typing import FilterValue, ItemId
 
@@ -61,7 +61,7 @@ class ListEndpointProtocol(Protocol[T_co]):
 
     def _list_sync(
         self,
-        client: RequestorProtocol,
+        client: RequesterProtocol,
         paginator_cls: type[Paginator],
         *,
         study_key: Optional[str] = None,
@@ -73,7 +73,7 @@ class ListEndpointProtocol(Protocol[T_co]):
 
     def _list_async(
         self,
-        client: AsyncRequestorProtocol,
+        client: AsyncRequesterProtocol,
         paginator_cls: type[AsyncPaginator],
         *,
         study_key: Optional[str] = None,
@@ -130,7 +130,7 @@ class SyncOperationProtocol(Protocol, Generic[T_co]):
         future endpoint operation bindings.
     """
 
-    def __init__(self, client: RequestorProtocol, path: str, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, client: RequesterProtocol, path: str, *args: Any, **kwargs: Any) -> None:
         """Initialize the synchronous operation."""
         ...
 
@@ -148,7 +148,7 @@ class AsyncOperationProtocol(Protocol, Generic[T_co]):
     """
 
     def __init__(
-        self, client: AsyncRequestorProtocol, path: str, *args: Any, **kwargs: Any
+        self, client: AsyncRequesterProtocol, path: str, *args: Any, **kwargs: Any
     ) -> None:
         """Initialize the asynchronous operation."""
         ...

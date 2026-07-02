@@ -48,6 +48,7 @@ SKIP_EXIT_CODE = 2
 def authenticate() -> ImednetSDK:
     """Build an ``ImednetSDK`` using environment credentials."""
     from imednet.config import load_config
+
     cfg = load_config()
     return ImednetSDK(api_key=cfg.api_key, security_key=cfg.security_key, base_url=cfg.base_url)
 

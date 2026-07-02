@@ -40,19 +40,20 @@ class ExportRegistry:
         """Retrieve a registered sink class, or None if not found."""
         if target_type in self._sink_targets:
             return self._sink_targets[target_type]
-            
+
         # Lazy load known sinks
         if target_type in self._LAZY_SINKS:
             module_path, class_name = self._LAZY_SINKS[target_type].split(":")
             try:
                 import importlib
+
                 module = importlib.import_module(module_path)
                 sink_class = getattr(module, class_name)
                 self.register_sink(target_type, sink_class)
                 return sink_class
             except (ImportError, AttributeError):
                 return None
-                
+
         return None
 
 
@@ -106,18 +107,18 @@ def export(
     sink_class = _registry.get_sink(target)
     if sink_class is not None:
         cfg = config if config is not None else SinkConfig()
-        
+
         records = sdk.records.list(study_key=study_key, record_data_filter=None)
         filtered_records = list(apply_quality_gate(sdk, study_key, records, cfg))
-        
+
         total_written = 0
-        
+
         # Instantiate sink class using kwargs and cfg
         # We assume sink constructors accept config=cfg and **kwargs
         with sink_class(config=cfg, **kwargs) as sink:
             for index, batch in enumerate(iter_batches(filtered_records, cfg.batch_size)):
                 total_written += sink.write_batch(batch, batch_id=f"{study_key}/records/{index}")
-                
+
         return total_written
 
     raise ValueError(f"Unsupported export target: {target!r}")

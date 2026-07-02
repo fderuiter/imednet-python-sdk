@@ -70,23 +70,26 @@ class JobPollSummary:
         return bool(self.failures) or any(cast(Any, s).is_failed for s in self.results.values())
 
 
-
 class JobTimeoutError(TimeoutError):
     """Raised when a job does not finish before the timeout."""
 
+
 class JobFailedError(Exception):
     """Raised when a job completes with a FAILED or CANCELLED state."""
+
     def __init__(self, message: str, status: JobStatus) -> None:
+        """Initialize the JobFailedError."""
         super().__init__(message)
         self.status = status
 
+
 def evaluate_job_state(job: JobStatus) -> bool:
     """Evaluate a job's status.
-    
+
     Returns:
         True if the job completed successfully.
         False if the job is still in progress.
-        
+
     Raises:
         JobFailedError: If the job ended in a failed or cancelled state.
     """

@@ -15,9 +15,10 @@ pytestmark = pytest.mark.fuzzing
 # Suppress logging
 logging.disable(logging.CRITICAL)
 
+
 def run_fuzzer():
     import atheris
-    
+
     with atheris.instrument_imports():
         import imednet_sinks
         import pyarrow as pa
@@ -96,6 +97,7 @@ def run_fuzzer():
 
     atheris.Setup(["", "-runs=1000"], TestOneInput)
     atheris.Fuzz()
+
 
 def test_fuzzing():
     """Fuzz the core models and data pipelines using Atheris."""

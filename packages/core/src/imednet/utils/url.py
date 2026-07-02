@@ -20,7 +20,7 @@ def redact_sensitive_text(text: Any) -> str:
         except Exception:
             return "<unprintable object>"
 
-    # Redact passwords in connection strings: e.g., mongodb://user:password@host
+    # Redact passwords in connection strings: e.g., mongodb://user:password@host  # pragma: allowlist secret
     text = re.sub(r"(://[^:]+:)[^@]+(@)", r"\g<1>***\g<2>", text)
 
     # Redact query parameters in any URLs

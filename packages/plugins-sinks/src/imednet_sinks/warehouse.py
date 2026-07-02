@@ -135,7 +135,7 @@ def _records_to_arrow_table(records: Sequence[Any]) -> Any:
     """Convert *records* to a ``pyarrow.Table``."""
     pa = _require_optional_dep("pyarrow", "snowflake")
     from imednet.integrations.enrichment import CentralizedMapper
-    
+
     mapper = CentralizedMapper(mode="tabular")
     rows = [mapper.map_record(r) for r in records]
 

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any, Callable, Generic, TypeVar
 
-from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
+from imednet.core.protocols import AsyncRequesterProtocol, RequesterProtocol
 
 T = TypeVar("T")
 
@@ -44,7 +44,7 @@ class PathGetOperation(Generic[T]):
             self.not_found_func()
         return self.parse_func(data)
 
-    def execute_sync(self, client: RequestorProtocol) -> T:
+    def execute_sync(self, client: RequesterProtocol) -> T:
         """Execute synchronous get request.
 
         Args:
@@ -56,7 +56,7 @@ class PathGetOperation(Generic[T]):
         response = client.get(self.path)
         return self._process_response(response)
 
-    async def execute_async(self, client: AsyncRequestorProtocol) -> T:
+    async def execute_async(self, client: AsyncRequesterProtocol) -> T:
         """Execute asynchronous get request.
 
         Args:
