@@ -268,6 +268,7 @@ class TabularCSVSink(ExportSink):
     def close(self) -> None:
         pass
 
+
 class TabularSQLSink(ExportSink):
     """Sink for exporting data to SQL databases."""
 
@@ -387,9 +388,7 @@ def _tabular_export(
             yield chunk
 
     with sink:
-        for i, chunk in enumerate(
-            _chunk_iterator(iter(filtered_records), config.batch_size)
-        ):
+        for i, chunk in enumerate(_chunk_iterator(iter(filtered_records), config.batch_size)):
             rows, _ = mapper._parse_records(chunk, record_model)
             df = mapper._build_dataframe(
                 rows, variable_keys, label_map, config.use_labels_as_columns
