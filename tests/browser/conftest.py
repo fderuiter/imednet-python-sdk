@@ -22,7 +22,7 @@ def wait_for_port(port, host='localhost', timeout=10.0):
                 return False
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def dashboard_server():
     """Start the Streamlit dashboard as a background process."""
     port = 8502  # Use a different port than default
@@ -73,13 +73,17 @@ def dashboard_server():
         proc.kill()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def browser():
     """Initialize Playwright and launch a browser."""
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         yield browser
         browser.close()
+    
+    import asyncio.events
+    if hasattr(asyncio.events, "_set_running_loop"):
+        asyncio.events._set_running_loop(None)
 
 
 @pytest.fixture
