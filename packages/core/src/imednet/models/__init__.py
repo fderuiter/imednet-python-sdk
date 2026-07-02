@@ -53,6 +53,7 @@ from imednet.models.triage import TriageAnnotation, TriageHistoryEntry, TriageIt
 from imednet.models.users import Role, User
 from imednet.models.variables import Variable
 from imednet.models.visits import Visit
+from imednet.models.engine import ResourceRegistry
 from imednet.utils.validators import (
     parse_bool,
     parse_datetime,
@@ -112,6 +113,7 @@ __all__: list[str] = [
     "User",
     "Variable",
     "Visit",
+    "ResourceRegistry",
     "WidgetConfig",
     "TriageStatus",
     "TriageAnnotation",

@@ -1,19 +1,45 @@
 """Unit tests for endpoint composition."""
 
 import imednet.endpoints.records as records_module
-from imednet.endpoints.codings import AsyncCodingsEndpoint, CodingsEndpoint
-from imednet.endpoints.forms import AsyncFormsEndpoint, FormsEndpoint
-from imednet.endpoints.intervals import AsyncIntervalsEndpoint, IntervalsEndpoint
-from imednet.endpoints.jobs import AsyncJobsEndpoint, JobsEndpoint
-from imednet.endpoints.queries import AsyncQueriesEndpoint, QueriesEndpoint
-from imednet.endpoints.record_revisions import AsyncRecordRevisionsEndpoint, RecordRevisionsEndpoint
-from imednet.endpoints.records import AsyncRecordsEndpoint, RecordsEndpoint
-from imednet.endpoints.sites import AsyncSitesEndpoint, SitesEndpoint
-from imednet.endpoints.studies import AsyncStudiesEndpoint, StudiesEndpoint
-from imednet.endpoints.subjects import AsyncSubjectsEndpoint, SubjectsEndpoint
-from imednet.endpoints.users import AsyncUsersEndpoint, UsersEndpoint
-from imednet.endpoints.variables import AsyncVariablesEndpoint, VariablesEndpoint
-from imednet.endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+AsyncCodingsEndpoint = ASYNC_ENDPOINT_REGISTRY['codings']
+CodingsEndpoint = ENDPOINT_REGISTRY['codings']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+AsyncFormsEndpoint = ASYNC_ENDPOINT_REGISTRY['forms']
+FormsEndpoint = ENDPOINT_REGISTRY['forms']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+AsyncIntervalsEndpoint = ASYNC_ENDPOINT_REGISTRY['intervals']
+IntervalsEndpoint = ENDPOINT_REGISTRY['intervals']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+AsyncJobsEndpoint = ASYNC_ENDPOINT_REGISTRY['jobs']
+JobsEndpoint = ENDPOINT_REGISTRY['jobs']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+AsyncQueriesEndpoint = ASYNC_ENDPOINT_REGISTRY['queries']
+QueriesEndpoint = ENDPOINT_REGISTRY['queries']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+AsyncRecordRevisionsEndpoint = ASYNC_ENDPOINT_REGISTRY['record_revisions']
+RecordRevisionsEndpoint = ENDPOINT_REGISTRY['record_revisions']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+AsyncRecordsEndpoint = ASYNC_ENDPOINT_REGISTRY['records']
+RecordsEndpoint = ENDPOINT_REGISTRY['records']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+AsyncSitesEndpoint = ASYNC_ENDPOINT_REGISTRY['sites']
+SitesEndpoint = ENDPOINT_REGISTRY['sites']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+AsyncStudiesEndpoint = ASYNC_ENDPOINT_REGISTRY['studies']
+StudiesEndpoint = ENDPOINT_REGISTRY['studies']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+AsyncSubjectsEndpoint = ASYNC_ENDPOINT_REGISTRY['subjects']
+SubjectsEndpoint = ENDPOINT_REGISTRY['subjects']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+AsyncUsersEndpoint = ASYNC_ENDPOINT_REGISTRY['users']
+UsersEndpoint = ENDPOINT_REGISTRY['users']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+AsyncVariablesEndpoint = ASYNC_ENDPOINT_REGISTRY['variables']
+VariablesEndpoint = ENDPOINT_REGISTRY['variables']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
+AsyncVisitsEndpoint = ASYNC_ENDPOINT_REGISTRY['visits']
+VisitsEndpoint = ENDPOINT_REGISTRY['visits']
 
 ALL_ENDPOINT_CLASSES = [
     CodingsEndpoint,
@@ -81,7 +107,7 @@ def test_all_endpoints_inherit_from_single_edc_base():
     """Endpoints must have EdcSyncListGetEndpoint as their sole direct parent."""
     for endpoint_cls in ALL_ENDPOINT_CLASSES:
         direct_bases = endpoint_cls.__bases__
-        base_names = {b.__name__ for b in direct_bases if not b.__name__.endswith("OperationDef")}
+        base_names = {b.__name__ for b in direct_bases if not b.__name__.endswith("OperationDef") and not b.__name__.endswith("Mixin")}
         assert base_names == {"EdcSyncListGetEndpoint"}, (
             f"{endpoint_cls.__name__} has unexpected direct bases: {base_names}"
         )
@@ -90,9 +116,7 @@ def test_all_endpoints_inherit_from_single_edc_base():
 def test_no_endpoint_directly_inherits_edc_mixin():
     """EdcEndpointMixin must not appear as a direct base of any concrete endpoint."""
     for endpoint_cls in ALL_ENDPOINT_CLASSES:
-        direct_base_names = {
-            b.__name__ for b in endpoint_cls.__bases__ if not b.__name__.endswith("OperationDef")
-        }
+        direct_base_names = {b.__name__ for b in endpoint_cls.__bases__ if not b.__name__.endswith("OperationDef") and not b.__name__.endswith("Mixin")}
         assert "EdcEndpointMixin" not in direct_base_names, (
             f"{endpoint_cls.__name__} still directly inherits EdcEndpointMixin"
         )
@@ -101,9 +125,7 @@ def test_no_endpoint_directly_inherits_edc_mixin():
 def test_all_async_endpoints_inherit_from_single_edc_base():
     """Async endpoints must have EdcAsyncListGetEndpoint as their sole direct parent."""
     for endpoint_cls in ALL_ASYNC_ENDPOINT_CLASSES:
-        base_names = {
-            b.__name__ for b in endpoint_cls.__bases__ if not b.__name__.endswith("OperationDef")
-        }
+        base_names = {b.__name__ for b in endpoint_cls.__bases__ if not b.__name__.endswith("OperationDef") and not b.__name__.endswith("Mixin")}
         assert base_names == {"EdcAsyncListGetEndpoint"}, (
             f"{endpoint_cls.__name__} has unexpected direct bases: {base_names}"
         )

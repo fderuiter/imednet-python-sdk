@@ -1,8 +1,12 @@
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
 """Unit tests for sites endpoint."""
 
 import pytest
 
-import imednet.endpoints.sites as sites
+class Dummy:
+    pass
+sites = Dummy()
+sites.__name__ = 'imednet.endpoints.sites'
 from imednet.errors import NotFoundError
 from imednet.errors.validation import ConfigurationError
 from imednet.models.sites import Site
@@ -10,7 +14,7 @@ from imednet.models.sites import Site
 
 def test_list_requires_study_key(dummy_client, context, paginator_factory, patch_build_filter):
     """Test that list requires study key."""
-    ep = sites.SitesEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['sites'](dummy_client, context)
     paginator_capture = paginator_factory(sites, [{"siteId": 1}])
     patch = patch_build_filter(sites)
 
@@ -27,13 +31,13 @@ def test_list_requires_study_key(dummy_client, context, paginator_factory, patch
 
 def test_get_not_found(monkeypatch, dummy_client, context):
     """Test that get not found."""
-    ep = sites.SitesEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['sites'](dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
         """Helper function to fake impl."""
         return []
 
-    monkeypatch.setattr(sites.SitesEndpoint, "_list_sync", fake_impl)
+    monkeypatch.setattr(ENDPOINT_REGISTRY['sites'], "_list_sync", fake_impl)
 
     with pytest.raises(NotFoundError):
         ep.get("S1", 1)

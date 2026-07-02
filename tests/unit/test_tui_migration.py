@@ -36,7 +36,8 @@ def test_subject_filtering_logic():
     """Verify logic migrated from TUI SubjectTable."""
     from unittest.mock import Mock
 
-    from imednet.endpoints.subjects import SubjectsEndpoint
+    from imednet.endpoints.registry import ENDPOINT_REGISTRY
+    SubjectsEndpoint = ENDPOINT_REGISTRY["subjects"]
 
     # Mock data
     s1 = Subject(studyKey="sk", subjectId=1, siteId=101, subjectKey="s1")

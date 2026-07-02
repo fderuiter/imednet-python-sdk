@@ -1,8 +1,12 @@
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
 """Unit tests for forms endpoint."""
 
 import pytest
 
-import imednet.endpoints.forms as forms
+class Dummy:
+    pass
+forms = Dummy()
+forms.__name__ = 'imednet.endpoints.forms'
 from imednet.errors import NotFoundError
 from imednet.errors.validation import ConfigurationError
 from imednet.models.forms import Form
@@ -12,7 +16,7 @@ def test_list_requires_study_key_and_page_size(
     monkeypatch, dummy_client, context, paginator_factory, patch_build_filter
 ):
     """Test that list requires study key and page size."""
-    ep = forms.FormsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['forms'](dummy_client, context)
     captured = paginator_factory(forms, [{"formId": 1}])
     filter_capture = patch_build_filter(forms)
 
@@ -31,7 +35,7 @@ def test_list_requires_study_key_and_page_size(
 
 def test_get_success(monkeypatch, dummy_client, context):
     """Test that get success."""
-    ep = forms.FormsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['forms'](dummy_client, context)
     called = {}
 
     def fake_impl(self, client, paginator, *, study_key=None, **filters):
@@ -40,7 +44,7 @@ def test_get_success(monkeypatch, dummy_client, context):
         called["filters"] = filters
         return [Form(form_id=1)]
 
-    monkeypatch.setattr(forms.FormsEndpoint, "_list_sync", fake_impl)
+    monkeypatch.setattr(ENDPOINT_REGISTRY['forms'], "_list_sync", fake_impl)
 
     res = ep.get("S1", 1)
 
@@ -50,13 +54,13 @@ def test_get_success(monkeypatch, dummy_client, context):
 
 def test_get_not_found(monkeypatch, dummy_client, context):
     """Test that get not found."""
-    ep = forms.FormsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['forms'](dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, **filters):
         """Helper function to fake impl."""
         return []
 
-    monkeypatch.setattr(forms.FormsEndpoint, "_list_sync", fake_impl)
+    monkeypatch.setattr(ENDPOINT_REGISTRY['forms'], "_list_sync", fake_impl)
 
     with pytest.raises(NotFoundError):
         ep.get("S1", 1)
@@ -64,7 +68,7 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
 def test_list_makes_request_per_call(dummy_client, context, paginator_factory):
     """Test that list makes request per call."""
-    ep = forms.FormsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['forms'](dummy_client, context)
     capture = paginator_factory(forms, [{"formId": 1}])
 
     ep.list(study_key="S1")
@@ -75,7 +79,7 @@ def test_list_makes_request_per_call(dummy_client, context, paginator_factory):
 
 def test_list_different_study_keys_make_separate_requests(dummy_client, context, paginator_factory):
     """Test that list different study keys make separate requests."""
-    ep = forms.FormsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['forms'](dummy_client, context)
     capture = paginator_factory(forms, [{"formId": 1}])
 
     ep.list(study_key="S1")
