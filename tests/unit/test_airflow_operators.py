@@ -135,7 +135,7 @@ def test_job_sensor(monkeypatch):
     importlib.reload(sensors)
     _patch_basehook(monkeypatch)
     sdk = MagicMock()
-    job = MagicMock(state="COMPLETED")
+    job = MagicMock(state="COMPLETED", is_failed=False, is_terminal=True, is_successful=True)
     sdk.jobs.get.return_value = job
     hook_inst = MagicMock(get_conn=MagicMock(return_value=sdk))
     monkeypatch.setattr(sensors, "ImednetHook", MagicMock(return_value=hook_inst))
@@ -147,8 +147,13 @@ def test_job_sensor(monkeypatch):
     hook_inst.get_conn.assert_called_once_with()
 
     job.state = "FAILED"
+    job.is_failed = True
+    job.is_terminal = True
     with pytest.raises(ops.AirflowException):
         sensor.poke({})
 
     job.state = "RUNNING"
+    job.is_failed = False
+    job.is_terminal = False
+    job.is_successful = False
     assert sensor.poke({}) is False
