@@ -15,7 +15,7 @@ from imednet.spi.cli import STUDY_KEY_ARG, parse_filter_args, with_sdk
 from imednet.spi.facade import ImednetFacade
 
 from .data_extraction import DataExtractionWorkflow
-from .state_ledger import ExtractionStateLedger
+from .state_ledger import get_state_provider
 from .subject_data import SubjectDataWorkflow
 from .sync_worker import SyncWorker, SyncWorkerConfig
 
@@ -140,7 +140,7 @@ def setup_parser(subparsers):
     show_parser.add_argument("-s", "--study-key", help="Filter the ledger by a specific study key.")
 
     def show_state(ledger_path: str, study_key: str | None = None) -> None:  # pragma: no cover
-        ledger = ExtractionStateLedger(ledger_path)
+        ledger = get_state_provider(ledger_path)
         try:
             state = ledger.read_state()
         except Exception as err:
@@ -200,7 +200,7 @@ def setup_parser(subparsers):
             print(f"Invalid ISO timestamp format: {err}")
             sys.exit(1)
 
-        ledger = ExtractionStateLedger(ledger_path)
+        ledger = get_state_provider(ledger_path)
         try:
             ledger.set_last_timestamp(
                 study_key=study_key,
@@ -245,7 +245,7 @@ def setup_parser(subparsers):
     def reset_state(
         study_key: str, stream: str | None, ledger_path: str
     ) -> None:  # pragma: no cover
-        ledger = ExtractionStateLedger(ledger_path)
+        ledger = get_state_provider(ledger_path)
         try:
             if stream:
                 removed = ledger.delete_entry(study_key, stream)
@@ -304,7 +304,7 @@ def state_app(args=None):
     show_parser.add_argument("-s", "--study-key")
 
     def show_state(ledger_path: str, study_key: str | None = None) -> None:
-        ledger = ExtractionStateLedger(ledger_path)
+        ledger = get_state_provider(ledger_path)
         try:
             state = ledger.read_state()
         except Exception as err:
@@ -350,7 +350,7 @@ def state_app(args=None):
         except ValueError as err:
             print(f"Invalid ISO timestamp format: {err}")
             sys.exit(1)
-        ledger = ExtractionStateLedger(ledger_path)
+        ledger = get_state_provider(ledger_path)
         try:
             ledger.set_last_timestamp(
                 study_key=study_key,
@@ -384,7 +384,7 @@ def state_app(args=None):
     )
 
     def reset_state(study_key: str, stream: str | None, ledger_path: str) -> None:
-        ledger = ExtractionStateLedger(ledger_path)
+        ledger = get_state_provider(ledger_path)
         try:
             if stream:
                 removed = ledger.delete_entry(study_key, stream)
