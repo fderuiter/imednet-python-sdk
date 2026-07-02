@@ -1,10 +1,14 @@
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
 """Unit tests for records async."""
 
 from unittest.mock import AsyncMock
 
 import pytest
 
-import imednet.endpoints.records as records
+class Dummy:
+    pass
+records = Dummy()
+records.__name__ = 'imednet.endpoints.records'
 from imednet.errors import ValidationError
 from imednet.models.variables import Variable
 from imednet.validation.cache import SchemaCache
@@ -23,7 +27,7 @@ def schema():
 @pytest.mark.asyncio
 async def test_async_create_validates_data(dummy_client, context, response_factory, schema):
     """Test that async create validates data asynchronously."""
-    ep = records.AsyncRecordsEndpoint(dummy_client, context)
+    ep = ASYNC_ENDPOINT_REGISTRY['records'](dummy_client, context)
     dummy_client.post = AsyncMock(return_value=response_factory({"jobId": "1"}))
 
     # Validation error: unknown form
@@ -46,7 +50,7 @@ async def test_async_create_validates_data_with_snake_case_keys(
     dummy_client, context, response_factory, schema
 ):
     """Test that async create validates data with snake case keys asynchronously."""
-    ep = records.AsyncRecordsEndpoint(dummy_client, context)
+    ep = ASYNC_ENDPOINT_REGISTRY['records'](dummy_client, context)
     dummy_client.post = AsyncMock(return_value=response_factory({"jobId": "1"}))
 
     # Should raise validation error because "bad" is not in schema
@@ -58,7 +62,7 @@ async def test_async_create_validates_data_with_snake_case_keys(
 @pytest.mark.asyncio
 async def test_async_create_resolves_form_id(dummy_client, context, response_factory, schema):
     """Test that async create resolves form id asynchronously."""
-    ep = records.AsyncRecordsEndpoint(dummy_client, context)
+    ep = ASYNC_ENDPOINT_REGISTRY['records'](dummy_client, context)
     dummy_client.post = AsyncMock(return_value=response_factory({"jobId": "1"}))
 
     # Valid data using formId instead of formKey

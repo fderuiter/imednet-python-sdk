@@ -1,8 +1,13 @@
+from imednet.models import Job
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
 """Unit tests for records endpoint."""
 
 import pytest
 
-import imednet.endpoints.records as records
+class Dummy:
+    pass
+records = Dummy()
+records.__name__ = 'imednet.endpoints.records'
 from imednet.errors import ClientError, NotFoundError, ValidationError
 from imednet.models.records import Record
 from imednet.models.variables import Variable
@@ -13,7 +18,7 @@ def test_list_builds_path_filters_and_data_filter(
     dummy_client, context, paginator_factory, patch_build_filter
 ):
     """Test that list builds path filters and data filter."""
-    ep = records.RecordsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['records'](dummy_client, context)
     captured = paginator_factory(records, [{"recordId": 1}])
     filter_capture = patch_build_filter(records)
 
@@ -31,7 +36,7 @@ def test_list_builds_path_filters_and_data_filter(
 
 def test_get_success(monkeypatch, dummy_client, context):
     """Test that get success."""
-    ep = records.RecordsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['records'](dummy_client, context)
     called = {}
 
     def fake_impl(self, client, paginator, *, study_key=None, **filters):
@@ -40,7 +45,7 @@ def test_get_success(monkeypatch, dummy_client, context):
         called["filters"] = filters
         return [Record(record_id=1)]
 
-    monkeypatch.setattr(records.RecordsEndpoint, "_list_sync", fake_impl)
+    monkeypatch.setattr(ENDPOINT_REGISTRY['records'], "_list_sync", fake_impl)
 
     res = ep.get("S1", 1)
 
@@ -51,9 +56,9 @@ def test_get_success(monkeypatch, dummy_client, context):
 def test_get_rejects_unknown_keyword(monkeypatch, dummy_client, context):
     """Test that get rejects unknown keyword."""
     context.set_default_study_key("S1")
-    ep = records.RecordsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['records'](dummy_client, context)
     monkeypatch.setattr(
-        records.RecordsEndpoint, "_list_sync", lambda *args, **kwargs: [Record(record_id=1)]
+        ENDPOINT_REGISTRY['records'], "_list_sync", lambda *args, **kwargs: [Record(record_id=1)]
     )
 
     with pytest.raises(TypeError, match="unexpected keyword argument 'record_id'"):
@@ -62,13 +67,13 @@ def test_get_rejects_unknown_keyword(monkeypatch, dummy_client, context):
 
 def test_get_not_found(monkeypatch, dummy_client, context):
     """Test that get not found."""
-    ep = records.RecordsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['records'](dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
         """Helper function to fake impl."""
         return []
 
-    monkeypatch.setattr(records.RecordsEndpoint, "_list_sync", fake_impl)
+    monkeypatch.setattr(ENDPOINT_REGISTRY['records'], "_list_sync", fake_impl)
 
     with pytest.raises(NotFoundError):
         ep.get("S1", 1)
@@ -76,7 +81,7 @@ def test_get_not_found(monkeypatch, dummy_client, context):
 
 def test_create_sends_headers_and_parses_job(dummy_client, context, response_factory, monkeypatch):
     """Test that create sends headers and parses job."""
-    ep = records.RecordsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['records'](dummy_client, context)
     dummy_client.post.return_value = response_factory({"jobId": "1"})
     called = {}
 
@@ -85,7 +90,7 @@ def test_create_sends_headers_and_parses_job(dummy_client, context, response_fac
         called["data"] = data
         return "JOB"
 
-    monkeypatch.setattr(records.Job, "from_json", staticmethod(fake_from_json))
+    monkeypatch.setattr(Job, "from_json", staticmethod(fake_from_json))
 
     res = ep.create("S1", [{"foo": "bar"}], email_notify=True)
 
@@ -100,7 +105,7 @@ def test_create_sends_headers_and_parses_job(dummy_client, context, response_fac
 
 def test_create_validates_data(dummy_client, context, response_factory):
     """Test that create validates data."""
-    ep = records.RecordsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['records'](dummy_client, context)
     schema = SchemaCache()
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     schema._form_variables = {"F1": {"age": var}}
@@ -124,7 +129,7 @@ def test_create_validates_data(dummy_client, context, response_factory):
 
 def test_create_validates_data_with_snake_case_keys(dummy_client, context, response_factory):
     """Test that create validates data with snake case keys."""
-    ep = records.RecordsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['records'](dummy_client, context)
     schema = SchemaCache()
     var = Variable(variable_name="age", variable_type="integer", form_id=1, form_key="F1")
     schema._form_variables = {"F1": {"age": var}}
@@ -140,6 +145,6 @@ def test_create_validates_data_with_snake_case_keys(dummy_client, context, respo
 
 def test_create_raises_on_header_injection(dummy_client, context):
     """Test that create raises on header injection."""
-    ep = records.RecordsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['records'](dummy_client, context)
     with pytest.raises(ClientError, match="Header value must not contain newlines"):
         ep.create("S1", [{"data": {}}], email_notify="test\n@example.com")

@@ -209,19 +209,25 @@ class BulkRecordSubmissionWorkflow:
         poller = JobPoller(get_job=self.sdk.get_job)
         failed_batches = []
 
+        from imednet.utils.job_poller import JobFailedError
+        
         for batch in batches:
             if not batch.job.batch_id:
                 continue
 
-            status = poller.run(
-                study_key,
-                batch.job.batch_id,
-                timeout=int(self.registration_timeout),
-            )
-            # Update the job state in the batch object
-            batch.job.state = status.state
-
-            if not status.state or status.state.upper() not in ("COMPLETED", "SUCCESS"):
+            try:
+                status = poller.run(
+                    study_key,
+                    batch.job.batch_id,
+                    timeout=int(self.registration_timeout),
+                )
+                # Update the job state in the batch object
+                batch.job.state = status.state
+                
+                if not status.state or status.state.upper() not in ("COMPLETED", "SUCCESS"):
+                    failed_batches.append(batch)
+            except JobFailedError:
+                batch.job.state = "FAILED"
                 failed_batches.append(batch)
 
         if failed_batches:

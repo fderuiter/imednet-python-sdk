@@ -1,8 +1,12 @@
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
 """Unit tests for codings endpoint."""
 
 import pytest
 
-import imednet.endpoints.codings as codings
+class Dummy:
+    pass
+codings = Dummy()
+codings.__name__ = 'imednet.endpoints.codings'
 from imednet.errors import NotFoundError
 from imednet.errors.validation import ConfigurationError
 from imednet.models.codings import Coding
@@ -10,7 +14,7 @@ from imednet.models.codings import Coding
 
 def test_list_requires_study_key(dummy_client, context, paginator_factory, patch_build_filter):
     """Test that list requires study key."""
-    ep = codings.CodingsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['codings'](dummy_client, context)
     capture = paginator_factory(codings, [{"codingId": 1}])
     patch = patch_build_filter(codings)
 
@@ -27,13 +31,13 @@ def test_list_requires_study_key(dummy_client, context, paginator_factory, patch
 
 def test_get_not_found(monkeypatch, dummy_client, context):
     """Test that get not found."""
-    ep = codings.CodingsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['codings'](dummy_client, context)
 
     def fake_impl(self, client, paginator, *, study_key=None, refresh=False, **filters):
         """Helper function to fake impl."""
         return []
 
-    monkeypatch.setattr(codings.CodingsEndpoint, "_list_sync", fake_impl)
+    monkeypatch.setattr(ENDPOINT_REGISTRY['codings'], "_list_sync", fake_impl)
 
     with pytest.raises(NotFoundError):
         ep.get("S1", "x")

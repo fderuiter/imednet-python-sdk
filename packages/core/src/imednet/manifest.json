@@ -1,0 +1,302 @@
+{
+  "codings": {
+    "path": "codings",
+    "model": "Coding",
+    "id_param": "codingId",
+    "study_key_strategy": "pop",
+    "schema": {
+      "studyKey": "<string>",
+      "siteName": "<string>",
+      "siteId": "<integer>",
+      "subjectId": "<integer>",
+      "subjectKey": "<string>",
+      "formId": "<integer>",
+      "formName": "<string>",
+      "formKey": "<string>",
+      "recordId": "<integer>",
+      "variable": "<string>",
+      "value": "<string>",
+      "codingId": "<string>",
+      "code": "<string>",
+      "codedBy": "<string>",
+      "dictionaryName": "<string>",
+      "dictionaryVersion": "<string>",
+      "dateCoded": "<string>",
+      "reason": "",
+      "revision": 1
+    }
+  },
+  "forms": {
+    "path": "forms",
+    "model": "Form",
+    "id_param": "formId",
+    "study_key_strategy": "pop",
+    "page_size": 500,
+    "schema": {
+      "studyKey": "<string>",
+      "formId": "<integer>",
+      "formKey": "<string>",
+      "formName": "<string>",
+      "formType": "<string>",
+      "revision": "<integer>",
+      "dateCreated": "<string>",
+      "dateModified": "<string>",
+      "disabled": "<boolean>",
+      "eproForm": "<boolean>",
+      "allowCopy": "<boolean>",
+      "embeddedLog": false,
+      "enforceOwnership": false,
+      "otherForms": [],
+      "userAgreement": false
+    }
+  },
+  "intervals": {
+    "path": "intervals",
+    "model": "Interval",
+    "id_param": "intervalId",
+    "study_key_strategy": "pop",
+    "page_size": 500,
+    "schema": {
+      "studyKey": "<string>",
+      "intervalId": "<integer>",
+      "intervalName": "<string>",
+      "intervalDescription": "<string>",
+      "intervalSequence": "<integer>",
+      "intervalGroupId": "<integer>",
+      "intervalGroupName": "<string>",
+      "disabled": "<boolean>",
+      "dateCreated": "<string>",
+      "dateModified": "<string>",
+      "actualDate": "",
+      "actualDateForm": "",
+      "definedUsingInterval": "",
+      "dueDateWillBeIn": 0,
+      "eproGracePeriod": 0,
+      "negativeSlack": 0,
+      "positiveSlack": 0,
+      "timeline": "",
+      "windowCalculationDate": "",
+      "windowCalculationForm": ""
+    }
+  },
+  "jobs": {
+    "path": "jobs",
+    "model": "JobStatus",
+    "paginator": "JsonListPaginator",
+    "async_paginator": "AsyncJsonListPaginator",
+    "custom_mixin": "imednet.endpoints.jobs.JobsMixin",
+    "async_custom_mixin": "imednet.endpoints.jobs.AsyncJobsMixin",
+    "schema": {
+      "jobId": "<string>",
+      "batchId": "<string>",
+      "state": "<string>",
+      "dateCreated": "<string>",
+      "dateStarted": "<string>",
+      "dateFinished": "<string>",
+      "progress": "<integer>",
+      "resultUrl": "<string>"
+    }
+  },
+  "queries": {
+    "path": "queries",
+    "model": "Query",
+    "id_param": "annotationId",
+    "schema": {
+      "studyKey": "<string>",
+      "subjectId": "<integer>",
+      "annotationId": "<integer>",
+      "description": "<string>",
+      "recordId": "<integer>",
+      "variable": "<string>",
+      "subjectKey": "<string>",
+      "dateCreated": "<string>",
+      "dateModified": "<string>",
+      "annotationType": "",
+      "subjectOid": "",
+      "type": ""
+    }
+  },
+  "record_revisions": {
+    "path": "recordRevisions",
+    "model": "RecordRevision",
+    "id_param": "recordRevisionId",
+    "schema": {
+      "studyKey": "<string>",
+      "recordRevisionId": "<integer>",
+      "recordId": "<integer>",
+      "recordRevision": "<integer>",
+      "dataRevision": "<integer>",
+      "recordStatus": "<string>",
+      "subjectId": "<integer>",
+      "subjectKey": "<string>",
+      "siteId": "<integer>",
+      "formKey": "<string>",
+      "intervalId": "<integer>",
+      "deleted": "<boolean>",
+      "dateCreated": "<string>",
+      "reasonForChange": "",
+      "recordOid": "",
+      "role": "",
+      "subjectOid": "",
+      "user": ""
+    }
+  },
+  "records": {
+    "path": "records",
+    "model": "Record",
+    "id_param": "recordId",
+    "param_processor": {
+      "mapping": {
+        "record_data_filter": "recordDataFilter"
+      }
+    },
+    "custom_mixin": "imednet.endpoints.records.RecordsMixin",
+    "async_custom_mixin": "imednet.endpoints.records.AsyncRecordsMixin",
+    "schema": {
+      "studyKey": "<string>",
+      "intervalId": "<integer>",
+      "formId": "<integer>",
+      "formKey": "<string>",
+      "siteId": "<integer>",
+      "recordId": "<integer>",
+      "recordOid": "<string>",
+      "recordType": "<string>",
+      "recordStatus": "<string>",
+      "deleted": "<boolean>",
+      "dateCreated": "<string>",
+      "dateModified": "<string>",
+      "subjectId": "<integer>",
+      "subjectOid": "<string>",
+      "subjectKey": "<string>",
+      "visitId": "<integer>",
+      "parentRecordId": "<integer>",
+      "recordData": {}
+    }
+  },
+  "sites": {
+    "path": "sites",
+    "model": "Site",
+    "id_param": "siteId",
+    "study_key_strategy": "pop",
+    "schema": {
+      "studyKey": "<string>",
+      "siteId": "<integer>",
+      "siteName": "<string>",
+      "siteEnrollmentStatus": "<string>",
+      "dateCreated": "<string>",
+      "dateModified": "<string>"
+    }
+  },
+  "studies": {
+    "path": "",
+    "model": "Study",
+    "id_param": "studyKey",
+    "requires_study_key": false,
+    "schema": {
+      "sponsorKey": "<string>",
+      "studyKey": "<string>",
+      "studyId": "<integer>",
+      "studyName": "<string>",
+      "studyDescription": "<string>",
+      "studyType": "<string>",
+      "dateCreated": "<string>",
+      "dateModified": "<string>"
+    }
+  },
+  "subjects": {
+    "path": "subjects",
+    "model": "Subject",
+    "id_param": "subjectKey",
+    "custom_mixin": "imednet.endpoints.subjects.SubjectsMixin",
+    "async_custom_mixin": "imednet.endpoints.subjects.AsyncSubjectsMixin",
+    "schema": {
+      "studyKey": "<string>",
+      "subjectId": "<integer>",
+      "subjectKey": "<string>",
+      "subjectStatus": "<string>",
+      "siteId": "<integer>",
+      "siteName": "<string>",
+      "deleted": "<boolean>",
+      "dateCreated": "<string>",
+      "dateModified": "<string>",
+      "enrollmentStartDate": "",
+      "subjectOid": ""
+    }
+  },
+  "users": {
+    "path": "users",
+    "model": "User",
+    "id_param": "userId",
+    "study_key_strategy": "pop",
+    "param_processor": {
+      "mapping": {
+        "include_inactive": "includeInactive"
+      },
+      "defaults": {
+        "include_inactive": false
+      }
+    },
+    "schema": {
+      "userId": "<string>",
+      "login": "<string>",
+      "firstName": "<string>",
+      "lastName": "<string>",
+      "email": "<string>",
+      "userActiveInStudy": "<boolean>",
+      "roles": []
+    }
+  },
+  "variables": {
+    "path": "variables",
+    "model": "Variable",
+    "id_param": "variableId",
+    "study_key_strategy": "pop",
+    "page_size": 500,
+    "schema": {
+      "studyKey": "<string>",
+      "variableId": "<integer>",
+      "variableType": "<string>",
+      "variableName": "<string>",
+      "sequence": "<integer>",
+      "revision": "<integer>",
+      "dateCreated": "<string>",
+      "dateModified": "<string>",
+      "formId": "<integer>",
+      "formKey": "<string>",
+      "formName": "<string>",
+      "blinded": false,
+      "deleted": false,
+      "disabled": false
+    }
+  },
+  "visits": {
+    "path": "visits",
+    "model": "Visit",
+    "id_param": "visitId",
+    "schema": {
+      "visitId": "<integer>",
+      "studyKey": "<string>",
+      "intervalId": "<integer>",
+      "intervalName": "<string>",
+      "subjectId": "<integer>",
+      "subjectKey": "<string>",
+      "startDate": "<string>",
+      "endDate": "<string>",
+      "dueDate": "<string>",
+      "visitDate": "<string>",
+      "deleted": "<boolean>",
+      "dateCreated": "<string>",
+      "dateModified": "<string>",
+      "visitDateForm": "",
+      "visitDateQuestion": ""
+    }
+  },
+  "jobs_init": {
+    "model": "Job",
+    "schema": {
+      "batchId": "<string>",
+      "state": "<string>",
+      "jobId": "<string>"
+    }
+  }
+}

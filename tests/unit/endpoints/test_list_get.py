@@ -1,19 +1,56 @@
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
 """Unit tests for list get."""
 
 import pytest
 
-import imednet.endpoints.codings as codings
-import imednet.endpoints.forms as forms
-import imednet.endpoints.intervals as intervals
-import imednet.endpoints.queries as queries
-import imednet.endpoints.record_revisions as record_revisions
-import imednet.endpoints.records as records
-import imednet.endpoints.sites as sites
-import imednet.endpoints.studies as studies
-import imednet.endpoints.subjects as subjects
-import imednet.endpoints.users as users
-import imednet.endpoints.variables as variables
-import imednet.endpoints.visits as visits
+class Dummy:
+    pass
+codings = Dummy()
+codings.__name__ = 'imednet.endpoints.codings'
+class Dummy:
+    pass
+forms = Dummy()
+forms.__name__ = 'imednet.endpoints.forms'
+class Dummy:
+    pass
+intervals = Dummy()
+intervals.__name__ = 'imednet.endpoints.intervals'
+class Dummy:
+    pass
+queries = Dummy()
+queries.__name__ = 'imednet.endpoints.queries'
+class Dummy:
+    pass
+record_revisions = Dummy()
+record_revisions.__name__ = 'imednet.endpoints.record_revisions'
+class Dummy:
+    pass
+records = Dummy()
+records.__name__ = 'imednet.endpoints.records'
+class Dummy:
+    pass
+sites = Dummy()
+sites.__name__ = 'imednet.endpoints.sites'
+class Dummy:
+    pass
+studies = Dummy()
+studies.__name__ = 'imednet.endpoints.studies'
+class Dummy:
+    pass
+subjects = Dummy()
+subjects.__name__ = 'imednet.endpoints.subjects'
+class Dummy:
+    pass
+users = Dummy()
+users.__name__ = 'imednet.endpoints.users'
+class Dummy:
+    pass
+variables = Dummy()
+variables.__name__ = 'imednet.endpoints.variables'
+class Dummy:
+    pass
+visits = Dummy()
+visits.__name__ = 'imednet.endpoints.visits'
 from imednet.models.codings import Coding
 from imednet.models.forms import Form
 from imednet.models.intervals import Interval
@@ -28,33 +65,33 @@ from imednet.models.variables import Variable
 from imednet.models.visits import Visit
 
 CASES = [
-    (codings.CodingsEndpoint, codings, Coding, "C1"),
-    (forms.FormsEndpoint, forms, Form, 1),
-    (intervals.IntervalsEndpoint, intervals, Interval, 1),
-    (queries.QueriesEndpoint, queries, Query, 1),
-    (record_revisions.RecordRevisionsEndpoint, record_revisions, RecordRevision, 1),
-    (records.RecordsEndpoint, records, Record, 1),
-    (sites.SitesEndpoint, sites, Site, 1),
-    (studies.StudiesEndpoint, studies, Study, "S1"),
-    (subjects.SubjectsEndpoint, subjects, Subject, "SUB"),
-    (users.UsersEndpoint, users, User, 1),
-    (variables.VariablesEndpoint, variables, Variable, 1),
-    (visits.VisitsEndpoint, visits, Visit, 1),
+    (ENDPOINT_REGISTRY['codings'], codings, Coding, "C1"),
+    (ENDPOINT_REGISTRY['forms'], forms, Form, 1),
+    (ENDPOINT_REGISTRY['intervals'], intervals, Interval, 1),
+    (ENDPOINT_REGISTRY['queries'], queries, Query, 1),
+    (ENDPOINT_REGISTRY['record_revisions'], record_revisions, RecordRevision, 1),
+    (ENDPOINT_REGISTRY['records'], records, Record, 1),
+    (ENDPOINT_REGISTRY['sites'], sites, Site, 1),
+    (ENDPOINT_REGISTRY['studies'], studies, Study, "S1"),
+    (ENDPOINT_REGISTRY['subjects'], subjects, Subject, "SUB"),
+    (ENDPOINT_REGISTRY['users'], users, User, 1),
+    (ENDPOINT_REGISTRY['variables'], variables, Variable, 1),
+    (ENDPOINT_REGISTRY['visits'], visits, Visit, 1),
 ]
 
 ASYNC_CASES = [
-    (codings.AsyncCodingsEndpoint, codings, Coding, "C1"),
-    (forms.AsyncFormsEndpoint, forms, Form, 1),
-    (intervals.AsyncIntervalsEndpoint, intervals, Interval, 1),
-    (queries.AsyncQueriesEndpoint, queries, Query, 1),
-    (record_revisions.AsyncRecordRevisionsEndpoint, record_revisions, RecordRevision, 1),
-    (records.AsyncRecordsEndpoint, records, Record, 1),
-    (sites.AsyncSitesEndpoint, sites, Site, 1),
-    (studies.AsyncStudiesEndpoint, studies, Study, "S1"),
-    (subjects.AsyncSubjectsEndpoint, subjects, Subject, "SUB"),
-    (users.AsyncUsersEndpoint, users, User, 1),
-    (variables.AsyncVariablesEndpoint, variables, Variable, 1),
-    (visits.AsyncVisitsEndpoint, visits, Visit, 1),
+    (ASYNC_ENDPOINT_REGISTRY['codings'], codings, Coding, "C1"),
+    (ASYNC_ENDPOINT_REGISTRY['forms'], forms, Form, 1),
+    (ASYNC_ENDPOINT_REGISTRY['intervals'], intervals, Interval, 1),
+    (ASYNC_ENDPOINT_REGISTRY['queries'], queries, Query, 1),
+    (ASYNC_ENDPOINT_REGISTRY['record_revisions'], record_revisions, RecordRevision, 1),
+    (ASYNC_ENDPOINT_REGISTRY['records'], records, Record, 1),
+    (ASYNC_ENDPOINT_REGISTRY['sites'], sites, Site, 1),
+    (ASYNC_ENDPOINT_REGISTRY['studies'], studies, Study, "S1"),
+    (ASYNC_ENDPOINT_REGISTRY['subjects'], subjects, Subject, "SUB"),
+    (ASYNC_ENDPOINT_REGISTRY['users'], users, User, 1),
+    (ASYNC_ENDPOINT_REGISTRY['variables'], variables, Variable, 1),
+    (ASYNC_ENDPOINT_REGISTRY['visits'], visits, Visit, 1),
 ]
 
 

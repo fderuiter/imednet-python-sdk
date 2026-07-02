@@ -6,19 +6,32 @@ import pytest
 
 import imednet.sdk as sdk_mod
 from imednet.core.client import Client
-from imednet.endpoints.codings import CodingsEndpoint
-from imednet.endpoints.forms import FormsEndpoint
-from imednet.endpoints.intervals import IntervalsEndpoint
-from imednet.endpoints.jobs import JobsEndpoint
-from imednet.endpoints.queries import QueriesEndpoint
-from imednet.endpoints.record_revisions import RecordRevisionsEndpoint
-from imednet.endpoints.records import RecordsEndpoint
-from imednet.endpoints.sites import SitesEndpoint
-from imednet.endpoints.studies import StudiesEndpoint
-from imednet.endpoints.subjects import SubjectsEndpoint
-from imednet.endpoints.users import UsersEndpoint
-from imednet.endpoints.variables import VariablesEndpoint
-from imednet.endpoints.visits import VisitsEndpoint
+from imednet.endpoints.registry import ENDPOINT_REGISTRY
+CodingsEndpoint = ENDPOINT_REGISTRY['codings']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY
+FormsEndpoint = ENDPOINT_REGISTRY['forms']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY
+IntervalsEndpoint = ENDPOINT_REGISTRY['intervals']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY
+JobsEndpoint = ENDPOINT_REGISTRY['jobs']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY
+QueriesEndpoint = ENDPOINT_REGISTRY['queries']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY
+RecordRevisionsEndpoint = ENDPOINT_REGISTRY['record_revisions']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY
+RecordsEndpoint = ENDPOINT_REGISTRY['records']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY
+SitesEndpoint = ENDPOINT_REGISTRY['sites']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY
+StudiesEndpoint = ENDPOINT_REGISTRY['studies']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY
+SubjectsEndpoint = ENDPOINT_REGISTRY['subjects']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY
+UsersEndpoint = ENDPOINT_REGISTRY['users']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY
+VariablesEndpoint = ENDPOINT_REGISTRY['variables']
+from imednet.endpoints.registry import ENDPOINT_REGISTRY
+VisitsEndpoint = ENDPOINT_REGISTRY['visits']
 from imednet.errors import PluginLoadError
 from imednet.errors.orchestration import FilterConflictError, OrchestratorError
 from imednet.orchestration import MultiStudyOrchestrator, OrchestratorResult, StudyWorkerCallable
@@ -378,9 +391,9 @@ def test_poll_job_convenience_sync(monkeypatch) -> None:
             calls["run"] = (study_key, batch_id, interval, timeout)
             return "JOBOBJ"
 
-    import imednet.sdk_convenience
+    import imednet.utils.job_poller
 
-    monkeypatch.setattr(imednet.sdk_convenience, "JobPoller", FakePoller)
+    monkeypatch.setattr(imednet.utils.job_poller, "JobPoller", FakePoller)
 
     assert sdk.poll_job("S1", "B1", interval=10, timeout=100) == "JOBOBJ"
     assert calls["run"] == ("S1", "B1", 10, 100)

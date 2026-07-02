@@ -43,6 +43,7 @@ def test_openapi_ingestion(tmp_path):
     import imednet.models.engine as engine
 
     engine._CONTRACT_CACHE = None
+    engine.ModelEngine._model_cache = {}
 
     study_model = ModelEngine.get_model("Study")
     subject_model = ModelEngine.get_model("Subject")

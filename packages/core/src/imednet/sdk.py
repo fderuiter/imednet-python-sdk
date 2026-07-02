@@ -16,7 +16,6 @@ from .config import Config, load_config
 from .core.context import study_context
 from .core.factory import ClientFactory
 from .core.retry import RetryConfig, RetryPolicy
-from .endpoints.registry import ASYNC_ENDPOINT_REGISTRY, ENDPOINT_REGISTRY
 from .errors import PluginLoadError
 from .plugins import (
     PluginProtocol,
@@ -25,23 +24,11 @@ from .plugins import (
     WorkflowsNamespaceProtocol,
 )
 from .sdk_convenience import AsyncSDKConvenienceMixin, SyncSDKConvenienceMixin
+from .endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
 
 if TYPE_CHECKING:
     from .core.async_client import AsyncClient
     from .core.client import Client
-    from .endpoints.codings import AsyncCodingsEndpoint, CodingsEndpoint
-    from .endpoints.forms import AsyncFormsEndpoint, FormsEndpoint
-    from .endpoints.intervals import AsyncIntervalsEndpoint, IntervalsEndpoint
-    from .endpoints.jobs import AsyncJobsEndpoint, JobsEndpoint
-    from .endpoints.queries import AsyncQueriesEndpoint, QueriesEndpoint
-    from .endpoints.record_revisions import AsyncRecordRevisionsEndpoint, RecordRevisionsEndpoint
-    from .endpoints.records import AsyncRecordsEndpoint, RecordsEndpoint
-    from .endpoints.sites import AsyncSitesEndpoint, SitesEndpoint
-    from .endpoints.studies import AsyncStudiesEndpoint, StudiesEndpoint
-    from .endpoints.subjects import AsyncSubjectsEndpoint, SubjectsEndpoint
-    from .endpoints.users import AsyncUsersEndpoint, UsersEndpoint
-    from .endpoints.variables import AsyncVariablesEndpoint, VariablesEndpoint
-    from .endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
     from .spi.facade import AsyncImednetFacade, ImednetFacade
 
 
@@ -160,19 +147,6 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
     Provides access to all iMednet API endpoints and maintains configuration.
     """
 
-    codings: CodingsEndpoint
-    forms: FormsEndpoint
-    intervals: IntervalsEndpoint
-    jobs: JobsEndpoint
-    queries: QueriesEndpoint
-    record_revisions: RecordRevisionsEndpoint
-    records: RecordsEndpoint
-    sites: SitesEndpoint
-    studies: StudiesEndpoint
-    subjects: SubjectsEndpoint
-    users: UsersEndpoint
-    variables: VariablesEndpoint
-    visits: VisitsEndpoint
     workflows: Optional[WorkflowsNamespaceProtocol]
     sinks: Optional[SinksNamespaceProtocol]
     config: Config
@@ -229,6 +203,9 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         """Set a new retry policy for the client."""
         self._client.retry_policy = policy
 
+    def __getattr__(self, name: str) -> Any:
+        return super().__getattribute__(name)
+
     def _init_endpoints(self) -> None:
         """Instantiate endpoint clients."""
         for attr, endpoint_cls in ENDPOINT_REGISTRY.items():
@@ -279,19 +256,6 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
     synchronous ``close()`` on this class will raise a :exc:`TypeError`.
     """
 
-    codings: AsyncCodingsEndpoint
-    forms: AsyncFormsEndpoint
-    intervals: AsyncIntervalsEndpoint
-    jobs: AsyncJobsEndpoint
-    queries: AsyncQueriesEndpoint
-    record_revisions: AsyncRecordRevisionsEndpoint
-    records: AsyncRecordsEndpoint
-    sites: AsyncSitesEndpoint
-    studies: AsyncStudiesEndpoint
-    subjects: AsyncSubjectsEndpoint
-    users: AsyncUsersEndpoint
-    variables: AsyncVariablesEndpoint
-    visits: AsyncVisitsEndpoint
     workflows: Optional[WorkflowsNamespaceProtocol]
     sinks: Optional[SinksNamespaceProtocol]
 
@@ -352,6 +316,9 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
     def retry_policy(self, policy: RetryPolicy) -> None:
         """Set a new retry policy for the async client."""
         self._async_client.retry_policy = policy
+
+    def __getattr__(self, name: str) -> Any:
+        return super().__getattribute__(name)
 
     def _init_endpoints(self) -> None:
         """Initialize all asynchronous endpoint instances."""

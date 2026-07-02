@@ -72,6 +72,8 @@ except Exception:
 
 class ModelEngine:
     """Engine for dynamically creating Pydantic models from schemas."""
+    
+    _model_cache: Dict[str, Any] = {}
 
     @classmethod
     def get_model(cls, model_name: str, base_cls: Type[Any] = ImednetBaseModel) -> Type[Any]:
@@ -93,6 +95,12 @@ class ModelEngine:
     @classmethod
     def _get_model(cls, model_name: str, base_cls: Type[Any] = ImednetBaseModel) -> Type[Any]:
         """Internal implementation for dynamic model creation."""
+        print(f"_get_model called for {model_name} with base {base_cls}")
+        if model_name in cls._model_cache:
+            print(f"CACHE HIT for {model_name}")
+            return cls._model_cache[model_name]
+            
+        print(f"CACHE MISS for {model_name}")
         contract = get_contract()
         if model_name not in contract.models:
             return create_model(model_name, __base__=base_cls)
@@ -119,6 +127,7 @@ class ModelEngine:
             fields[snake_key] = (py_type, new_field)
 
         model = create_model(model_name, __base__=base_cls, **fields)
+        cls._model_cache[model_name] = model
         return model
 
     @classmethod

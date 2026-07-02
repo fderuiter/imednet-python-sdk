@@ -1,15 +1,19 @@
+from imednet.endpoints.registry import ENDPOINT_REGISTRY, ASYNC_ENDPOINT_REGISTRY
 """Unit tests for jobs endpoint."""
 
 import pytest
 
-import imednet.endpoints.jobs as jobs
+class Dummy:
+    pass
+jobs = Dummy()
+jobs.__name__ = 'imednet.endpoints.jobs'
 from imednet.errors import NotFoundError
 from imednet.models.jobs import JobStatus
 
 
 def test_get_success(dummy_client, context, response_factory):
     """Test that get success."""
-    ep = jobs.JobsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['jobs'](dummy_client, context)
     dummy_client.get.return_value = response_factory({"jobId": "1"})
 
     result = ep.get("S1", "B1")
@@ -20,7 +24,7 @@ def test_get_success(dummy_client, context, response_factory):
 
 def test_get_not_found(dummy_client, context, response_factory):
     """Test that get not found."""
-    ep = jobs.JobsEndpoint(dummy_client, context)
+    ep = ENDPOINT_REGISTRY['jobs'](dummy_client, context)
     dummy_client.get.return_value = response_factory({})
     with pytest.raises(NotFoundError):
         ep.get("S1", "B1")
