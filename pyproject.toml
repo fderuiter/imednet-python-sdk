@@ -146,7 +146,7 @@ dependencies = [
 ]
 
 [tool.hatch.envs.default.scripts]
-test = "pytest {args:tests/}"
+test = "pytest --ignore=tests/live/ --ignore=tests/browser/ {args:tests/}"
 docs = "make docs"
 
 [[tool.mypy.overrides]]

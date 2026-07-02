@@ -10,6 +10,7 @@ import respx
 
 from imednet import errors
 from imednet.core.client import Client
+from imednet.core.retry import RetryConfig
 
 
 @respx.mock

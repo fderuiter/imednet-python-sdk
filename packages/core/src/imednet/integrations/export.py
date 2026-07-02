@@ -374,7 +374,7 @@ def _tabular_export(
             if not chunk:
                 break
             yield chunk
-            
+
     with sink:
         for i, chunk in enumerate(_chunk_iterator(iter(filtered_records), config.batch_size)):
             rows, _ = mapper._parse_records(chunk, record_model)

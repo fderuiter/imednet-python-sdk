@@ -32,10 +32,11 @@ def mock_record_mapper(monkeypatch):
     return _setup
 
 
-def test_export_to_csv_sanitization(tmp_path, mock_record_mapper):
+def test_export_to_csv_sanitization(tmp_path, mock_record_mapper, monkeypatch):
     """Test that CSV export sanitizes formulas and raises no warnings."""
     df = pd.DataFrame({"safe": ["hello"], "unsafe": ["=cmd"]})
     mock_record_mapper(df)
+    monkeypatch.setattr(export_mod, "apply_quality_gate", lambda s, sk, rr, c: rr)
 
     sdk = MagicMock()
     path = tmp_path / "out.csv"
@@ -66,6 +67,7 @@ def test_export_to_excel_sanitization(tmp_path, mock_record_mapper, monkeypatch)
     """Test that Excel export sanitizes formulas."""
     df = pd.DataFrame({"safe": ["hello"], "unsafe": ["=cmd"], "num": [123]})
     mock_record_mapper(df)
+    monkeypatch.setattr(export_mod, "apply_quality_gate", lambda s, sk, rr, c: rr)
 
     sdk = MagicMock()
     path = tmp_path / "out.xlsx"
@@ -108,7 +110,7 @@ def test_export_to_excel_sanitization(tmp_path, mock_record_mapper, monkeypatch)
     assert captured_df["num"].iloc[0] == 123
 
 
-def test_sanitization_does_not_affect_non_strings(tmp_path, mock_record_mapper):
+def test_sanitization_does_not_affect_non_strings(tmp_path, mock_record_mapper, monkeypatch):
     """Test that sanitization ignores non-string columns."""
     df = pd.DataFrame(
         {
@@ -119,6 +121,7 @@ def test_sanitization_does_not_affect_non_strings(tmp_path, mock_record_mapper):
         }
     )
     mock_record_mapper(df)
+    monkeypatch.setattr(export_mod, "apply_quality_gate", lambda s, sk, rr, c: rr)
     sdk = MagicMock()
     path = tmp_path / "out.csv"
 
