@@ -38,7 +38,7 @@ Function-based Parsing
 
 Use ``get_model_parser`` to get a parsing function for a specific model:
 
-.. code-block:: python
+.. testcode::
 
    from imednet.core.parsing import get_model_parser
    from imednet.models.studies import Study
@@ -55,7 +55,7 @@ Class-based Parsing
 
 Use ``ModelParser`` for repeated parsing operations with the same model:
 
-.. code-block:: python
+.. testcode::
 
    from imednet.core.parsing import ModelParser
    from imednet.models.subjects import Subject
@@ -74,7 +74,7 @@ Custom Parsing Methods
 
 Models can implement custom parsing logic by providing a ``from_json`` classmethod:
 
-.. code-block:: python
+.. testcode::
 
    from pydantic import BaseModel
    from typing import Any

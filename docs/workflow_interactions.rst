@@ -47,7 +47,7 @@ concurrent *writers* without blocking readers at all.
 Usage example
 ~~~~~~~~~~~~~
 
-.. code-block:: python
+.. testcode::
 
    from imednet import ImednetSDK
    from imednet_workflows.cached_loader import CachedRecordsLoader

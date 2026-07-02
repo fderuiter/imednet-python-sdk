@@ -27,13 +27,13 @@ Installation
 Use :func:`imednet.integrations.export_to_duckdb` to export one study into one DuckDB
 table and query it immediately:
 
-.. code-block:: python
+.. testcode::
 
    import duckdb
    from imednet import ImednetSDK
    from imednet.integrations import export_to_duckdb
 
-   sdk = ImednetSDK(...)
+   sdk = ImednetSDK(api_key="mock", security_key="mock")
    export_to_duckdb(sdk, "MY_STUDY", "./clinical.duckdb", "study_records")
 
    conn = duckdb.connect("./clinical.duckdb", read_only=True)
@@ -45,13 +45,13 @@ table and query it immediately:
 Use :func:`imednet.integrations.export_to_duckdb_by_form` when you want one table per
 form key:
 
-.. code-block:: python
+.. testcode::
 
    import duckdb
    from imednet import ImednetSDK
    from imednet.integrations import export_to_duckdb_by_form
 
-   sdk = ImednetSDK(...)
+   sdk = ImednetSDK(api_key="mock", security_key="mock")
    export_to_duckdb_by_form(sdk, "MY_STUDY", "./clinical_by_form.duckdb")
 
    conn = duckdb.connect("./clinical_by_form.duckdb", read_only=True)
@@ -81,7 +81,7 @@ Example layout:
 
 DuckDB query with Hive partition discovery and schema union:
 
-.. code-block:: python
+.. testcode::
 
    import duckdb
 
@@ -99,7 +99,7 @@ DuckDB query with Hive partition discovery and schema union:
 You can also generate the query string via
 :func:`imednet.integrations.hive_parquet_query`:
 
-.. code-block:: python
+.. testcode::
 
    import duckdb
    from imednet.integrations import hive_parquet_query
@@ -113,13 +113,13 @@ You can also generate the query string via
 For incremental bronze/silver ingestion, use
 :class:`imednet_workflows.DuckDBIngestionWorkflow`.
 
-.. code-block:: python
+.. testcode::
 
    import duckdb
    from imednet import ImednetSDK
    from imednet_workflows import DuckDBIngestionWorkflow
 
-   sdk = ImednetSDK(...)
+   sdk = ImednetSDK(api_key="mock", security_key="mock")
    workflow = DuckDBIngestionWorkflow(sdk, "./centralized.duckdb")
 
    # Incremental bronze load

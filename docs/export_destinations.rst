@@ -61,13 +61,13 @@ SDK examples
 
 MongoDB (document export):
 
-.. code-block:: python
+.. testcode::
 
    from imednet import ImednetSDK
    from imednet.integrations import SinkConfig
    from imednet_sinks import export_to_mongodb
 
-   sdk = ImednetSDK(...)
+   sdk = ImednetSDK(api_key="mock", security_key="mock")
    rows = export_to_mongodb(
        sdk,
        "MY_STUDY",
@@ -80,12 +80,12 @@ MongoDB (document export):
 
 Neo4j (graph export):
 
-.. code-block:: python
+.. testcode::
 
    from imednet import ImednetSDK
    from imednet_sinks import Neo4jSinkConfig, export_to_neo4j
 
-   sdk = ImednetSDK(...)
+   sdk = ImednetSDK(api_key="mock", security_key="mock")
    rows = export_to_neo4j(
        sdk,
        "MY_STUDY",
@@ -97,12 +97,12 @@ Neo4j (graph export):
 
 Snowflake (warehouse-native export):
 
-.. code-block:: python
+.. testcode::
 
    from imednet import ImednetSDK
    from imednet_sinks import SnowflakeSinkConfig, export_to_snowflake
 
-   sdk = ImednetSDK(...)
+   sdk = ImednetSDK(api_key="mock", security_key="mock")
    cfg = SnowflakeSinkConfig(
        account="myorg-myaccount",
        user="loader",

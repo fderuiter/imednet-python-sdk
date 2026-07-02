@@ -14,7 +14,7 @@ Using the SDK
 job finishes. ``AsyncImednetSDK`` exposes ``async_poll_job`` for the same
 behavior in asynchronous code.
 
-.. code-block:: python
+.. testcode::
 
    from imednet import ImednetSDK, AsyncImednetSDK
 

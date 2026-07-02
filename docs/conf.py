@@ -163,5 +163,58 @@ templates_path: list[str] = ["_templates"]
 exclude_patterns: list[str] = []  # annotated per mypy requirement
 html_static_path: list[str] = ["_static"]
 
+doctest_global_setup = """
+import os
+import respx
+import httpx
+from unittest.mock import MagicMock, patch
+
+os.environ["IMEDNET_API_KEY"] = "dummy_api_key"  # pragma: allowlist secret
+os.environ["IMEDNET_SECURITY_KEY"] = "dummy_security_key"  # pragma: allowlist secret
+os.environ["SNOWFLAKE_PASSWORD"] = "dummy_password"  # pragma: allowlist secret
+os.environ["IMEDNET_STUDY_KEY"] = "MY_STUDY"
+
+__file__ = "dummy.py"
+
+_respx_mock = respx.mock(assert_all_called=False)
+_respx_mock.start()
+# Mock site endpoint for register_subjects
+_respx_mock.route(path__startswith="/api/v1/studies/STUDY/sites").mock(return_value=httpx.Response(200, json={"items": [{"siteName": "SITE"}]}))
+_respx_mock.route().mock(return_value=httpx.Response(200, json={"message": "ok", "items": [], "results": [], "data": []}))
+
+import duckdb
+_duckdb_connect_patcher = patch('duckdb.connect', return_value=MagicMock())
+_duckdb_connect_patcher.start()
+
+from imednet_workflows.config_version_control import ConfigVersionStore
+_cvs_patcher1 = patch.object(ConfigVersionStore, 'diff_configs', return_value={"added": [], "removed": [], "changed": []})
+_cvs_patcher1.start()
+_cvs_patcher2 = patch.object(ConfigVersionStore, 'commit_config', return_value="mock_commit_id")
+_cvs_patcher2.start()
+
+# Mock optional dependencies
+import imednet.integrations.sink_base
+_snowflake_patcher = patch.object(imednet.integrations.sink_base, '_require_optional_dep', return_value=MagicMock())
+_snowflake_patcher.start()
+
+# Mock airflow BaseOperator.partial
+from apache_airflow_providers_imednet import ImednetExportOperator
+ImednetExportOperator.partial = MagicMock()
+
+commit_a = "mock_commit_a"
+commit_b = "mock_commit_b"
+commit_id = "mock_commit_id"
+subject_data = {}
+api_response = {}
+
+"""
+
+doctest_global_cleanup = """
+_respx_mock.stop()
+_duckdb_connect_patcher.stop()
+_cvs_patcher1.stop()
+_cvs_patcher2.stop()
+_snowflake_patcher.stop()
+"""
 
 html_theme = "furo"
