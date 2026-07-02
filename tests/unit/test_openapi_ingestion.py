@@ -1,0 +1,61 @@
+"""Tests for OpenAPI ingestion."""
+import json
+import os
+
+from imednet.models.contract import APIContract
+from imednet.models.engine import ModelEngine
+
+
+def test_openapi_ingestion(tmp_path):
+    """Test openapi ingestion."""
+    # Setup OpenAPI file
+    openapi_content = {
+        "openapi": "3.0.0",
+        "components": {
+            "schemas": {
+                "Study": {
+                    "type": "object",
+                    "properties": {
+                        "studyKey": {"type": "string"},
+                        "isDisabled": {"type": "boolean"},
+                        "studyId": {"type": "integer"},
+                    },
+                },
+                "Subject": {
+                    "type": "object",
+                    "properties": {
+                        "subjectId": {"type": "integer"},
+                        "subjectKey": {"type": "string"},
+                        "isEnrolled": {"type": "boolean"},
+                    },
+                },
+            }
+        },
+    }
+
+    openapi_file = tmp_path / "openapi.json"
+    with open(openapi_file, 'w') as f:
+        json.dump(openapi_content, f)
+
+    os.environ["IMEDNET_OPENAPI_PATH"] = str(openapi_file)
+
+    # We need to clear the engine cache
+    import imednet.models.engine as engine
+
+    engine._CONTRACT_CACHE = None
+
+    study_model = ModelEngine.get_model("Study")
+    subject_model = ModelEngine.get_model("Subject")
+
+    assert "study_key" in study_model.model_fields
+    assert "is_disabled" in study_model.model_fields
+    assert "study_id" in study_model.model_fields
+
+    assert "subject_id" in subject_model.model_fields
+    assert "subject_key" in subject_model.model_fields
+    assert "is_enrolled" in subject_model.model_fields
+
+    # Verify that properties map correctly
+    assert str(study_model.model_fields["study_key"].annotation).find("str") != -1
+    assert str(study_model.model_fields["is_disabled"].annotation).find("bool") != -1
+    assert str(study_model.model_fields["study_id"].annotation).find("int") != -1
