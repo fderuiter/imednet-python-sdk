@@ -15,6 +15,9 @@ dependencies = [
     "openpyxl>=3.1.0"
 ]
 
+[project.entry-points."imednet.cli_plugins"]
+dashboard = "imednet_streamlit.cli:setup_parser"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
