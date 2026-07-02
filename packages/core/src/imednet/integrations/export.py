@@ -2,8 +2,18 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
+import os
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from importlib import import_module
-from typing import Any, List, Optional
+from pathlib import Path
+from typing import Any, List, Optional, Sequence
+
+from imednet.core.operations.executor import UniversalExecutor
+from imednet.errors import ExportBatchError
+from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate, iter_batches
 
 try:
     import pandas as pd
@@ -26,15 +36,15 @@ _DUCKDB_DF_ALIAS = "df"
 
 
 def _record_mapper() -> Any:
-    try:
-        return import_module("imednet_workflows.record_mapper").RecordMapper
-    except ModuleNotFoundError as error:
-        if error.name and error.name.startswith("imednet_workflows"):
-            raise ImportError(
-                "Record export requires the optional 'imednet-workflows' package. "
-                "Install with \"pip install 'imednet[export]'\"."
-            ) from error
-        raise
+    from importlib.metadata import entry_points
+
+    mappers = list(entry_points(group="imednet.mappers", name="RecordMapper"))
+    if not mappers:
+        raise ImportError(
+            "Record export requires an installed mapper plugin. "
+            "Please install a package that provides this capability."
+        )
+    return mappers[0].load()
 
 
 def _mask_df(df: pd.DataFrame) -> pd.DataFrame:
@@ -173,6 +183,232 @@ def _sanitize_df(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+@dataclass
+class TabularSinkConfig(SinkConfig):
+    """Configuration for tabular sinks."""
+
+    manifest_path: Optional[str] = None
+    use_labels_as_columns: bool = False
+    sanitize: bool = False
+    variable_whitelist: Optional[List[str]] = None
+    form_whitelist: Optional[List[int]] = None
+    pandas_kwargs: dict = field(default_factory=dict)
+
+
+class TabularCSVSink(ExportSink):
+    """Sink for exporting data to CSV format."""
+
+    def __init__(self, path: str, config: Optional[TabularSinkConfig] = None):
+        """Initialize the CSV sink."""
+        cfg = config if isinstance(config, TabularSinkConfig) else TabularSinkConfig()
+        super().__init__(cfg)
+        self.path = path
+        self._is_first_batch = True
+        self._cfg = cfg
+
+    def write_batch(self, records: Sequence[Any], *, batch_id: str) -> int:
+        """Write a batch of records to the sink."""
+        if isinstance(records, pd.DataFrame):
+            df = records
+            if len(df) == 0:
+                return 0
+        else:
+            if not records:
+                return 0
+            df = pd.DataFrame(records)
+
+        def execute_export() -> int:
+            mode = "w" if self._is_first_batch else "a"
+            header = self._is_first_batch
+
+            csv_str = df.to_csv(index=False, header=header, **self._cfg.pandas_kwargs)
+            checksum = hashlib.sha256(csv_str.encode('utf-8')).hexdigest()
+
+            with open(self.path, mode=mode, encoding="utf-8") as f:
+                f.write(csv_str)
+
+            rows_loaded = len(df)
+            self._append_manifest(batch_id, rows_loaded, checksum)
+            return rows_loaded
+
+        executor = UniversalExecutor(
+            retries=self.config.max_retries,
+            backoff_factor=self.config.retry_backoff,
+            tracer=self.config.tracer,
+            operation_name="export_csv",
+            batch_id=batch_id,
+        )
+
+        try:
+            loaded = executor.execute(execute_export)
+            self._is_first_batch = False
+            return loaded
+        except Exception as exc:
+            raise ExportBatchError(
+                f"Batch {batch_id!r} failed after {self.config.max_retries + 1} attempts: {exc}",
+                batch_id=batch_id,
+            ) from exc
+
+    def _append_manifest(self, batch_id: str, row_count: int, checksum: str) -> None:
+        if not self._cfg.manifest_path:
+            return
+        entry = {
+            "batch_id": batch_id,
+            "destination": self.path,
+            "row_count": row_count,
+            "checksum": checksum,
+            "loaded_at": datetime.now(tz=timezone.utc).isoformat(),
+        }
+        with open(self._cfg.manifest_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry) + os.linesep)
+
+    def flush(self) -> None:
+        """Flush the sink."""
+        pass
+
+    def close(self) -> None:
+        """Close the sink."""
+        pass
+
+
+class TabularSQLSink(ExportSink):
+    """Sink for exporting data to SQL databases."""
+
+    def __init__(self, table: str, engine: Any, config: Optional[TabularSinkConfig] = None):
+        """Initialize the SQL sink."""
+        cfg = config if isinstance(config, TabularSinkConfig) else TabularSinkConfig()
+        super().__init__(cfg)
+        self.table = table
+        self.engine = engine
+        self._is_first_batch = True
+        self._cfg = cfg
+        self._initial_if_exists = self._cfg.pandas_kwargs.pop("if_exists", "replace")
+
+    def write_batch(self, records: Sequence[Any], *, batch_id: str) -> int:
+        """Write a batch of records to the sink."""
+        if isinstance(records, pd.DataFrame):
+            df = records
+            if len(df) == 0:
+                return 0
+        else:
+            if not records:
+                return 0
+            df = pd.DataFrame(records)
+
+        def execute_export() -> int:
+            if_exists = self._initial_if_exists if self._is_first_batch else "append"
+
+            df_str = df.to_csv(index=False)
+            checksum = hashlib.sha256(df_str.encode('utf-8')).hexdigest()
+
+            _to_sql_with_chunking(
+                df, self.table, self.engine, if_exists=if_exists, **self._cfg.pandas_kwargs
+            )
+
+            rows_loaded = len(df)
+            self._append_manifest(batch_id, rows_loaded, checksum)
+            return rows_loaded
+
+        executor = UniversalExecutor(
+            retries=self.config.max_retries,
+            backoff_factor=self.config.retry_backoff,
+            tracer=self.config.tracer,
+            operation_name="export_sql",
+            batch_id=batch_id,
+        )
+
+        try:
+            loaded = executor.execute(execute_export)
+            self._is_first_batch = False
+            return loaded
+        except Exception as exc:
+            raise ExportBatchError(
+                f"Batch {batch_id!r} failed after {self.config.max_retries + 1} attempts: {exc}",
+                batch_id=batch_id,
+            ) from exc
+
+    def _append_manifest(self, batch_id: str, row_count: int, checksum: str) -> None:
+        if not self._cfg.manifest_path:
+            return
+        entry = {
+            "batch_id": batch_id,
+            "destination": self.table,
+            "row_count": row_count,
+            "checksum": checksum,
+            "loaded_at": datetime.now(tz=timezone.utc).isoformat(),
+        }
+        with open(self._cfg.manifest_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry) + os.linesep)
+
+    def flush(self) -> None:
+        """Flush the sink."""
+        pass
+
+    def close(self) -> None:
+        """Close the sink."""
+        pass
+
+
+def _tabular_export(
+    sdk: Any,
+    study_key: str,
+    sink: ExportSink,
+    config: TabularSinkConfig,
+    sanitize: bool = False,
+) -> None:
+    mapper = _record_mapper()(sdk)
+    variable_keys, label_map = mapper._fetch_variable_metadata(
+        study_key,
+        variable_whitelist=config.variable_whitelist,
+        form_whitelist=config.form_whitelist,
+    )
+    if not variable_keys:
+        return
+
+    record_model = mapper._build_record_model(variable_keys, label_map)
+    extra_filters = {}
+    if config.variable_whitelist is not None:
+        extra_filters["variableNames"] = config.variable_whitelist
+    if config.form_whitelist is not None:
+        extra_filters["formIds"] = config.form_whitelist
+
+    raw_records = mapper._iter_records(
+        study_key,
+        visit_key=None,
+        extra_filters=extra_filters or None,
+    )
+
+    filtered_records = apply_quality_gate(sdk, study_key, raw_records, config)
+
+    import itertools
+
+    def _chunk_iterator(iterator, size):
+        while True:
+            chunk = list(itertools.islice(iterator, size))
+            if not chunk:
+                break
+            yield chunk
+
+    with sink:
+        for i, chunk in enumerate(_chunk_iterator(iter(filtered_records), config.batch_size)):
+            rows, _ = mapper._parse_records(chunk, record_model)
+            df = mapper._build_dataframe(
+                rows, variable_keys, label_map, config.use_labels_as_columns
+            )
+            if df.empty:
+                continue
+
+            # Deduplicate columns (case-insensitive) as legacy _records_df did
+            dup_mask = df.columns.str.lower().duplicated()
+            df = df.loc[:, ~dup_mask]
+
+            df = _mask_df(df)
+            if sanitize:
+                df = _sanitize_df(df)
+
+            sink.write_batch(df, batch_id=f"{study_key}/tabular/{i}")
+
+
 def export_to_csv(
     sdk: ImednetSDK,
     study_key: str,
@@ -191,13 +427,17 @@ def export_to_csv(
         When ``True``, variable labels are used for column names instead of
         variable names.
     """
-    df = _prepare_export_df(
-        sdk,
-        study_key,
-        use_labels_as_columns=use_labels_as_columns,
-        sanitize=True,
-    )
-    df.to_csv(path, index=False, **kwargs)
+    config = kwargs.pop("config", None)
+    if not isinstance(config, TabularSinkConfig):
+        config = TabularSinkConfig(
+            manifest_path=str(Path(path).with_suffix(".manifest.jsonl")),
+            pandas_kwargs=kwargs,
+            use_labels_as_columns=use_labels_as_columns,
+            quality_gate_enabled=True,
+        )
+
+    sink = TabularCSVSink(path, config)
+    _tabular_export(sdk, study_key, sink, config, sanitize=True)
 
 
 def export_to_excel(
@@ -269,11 +509,15 @@ def export_to_json(
         data = df.where(pd.notnull(df), None).to_dict(orient="records")
 
     try:
-        from importlib import import_module
+        from importlib.metadata import entry_points
 
-        config_version_store_cls = import_module(
-            "imednet_workflows.config_version_control"
-        ).ConfigVersionStore
+        config_version_stores = list(
+            entry_points(group="imednet.stores", name="ConfigVersionStore")
+        )
+        if not config_version_stores:
+            raise ImportError("ConfigVersionStore plugin not found.")
+
+        config_version_store_cls = config_version_stores[0].load()
         enrichment_pipeline_cls = import_module(
             "imednet.integrations.enrichment"
         ).EnrichmentPipeline
@@ -319,21 +563,21 @@ def export_to_sql(
     """
     from sqlalchemy import create_engine
 
-    df = _prepare_export_df(
-        sdk,
-        study_key,
-        use_labels_as_columns=use_labels_as_columns,
-        variable_whitelist=variable_whitelist,
-        form_whitelist=form_whitelist,
-    )
+    config = kwargs.pop("config", None)
+    if not isinstance(config, TabularSinkConfig):
+        kwargs["if_exists"] = if_exists
+        config = TabularSinkConfig(
+            manifest_path=f"export_{table}_manifest.jsonl",
+            pandas_kwargs=kwargs,
+            use_labels_as_columns=use_labels_as_columns,
+            variable_whitelist=variable_whitelist,
+            form_whitelist=form_whitelist,
+            quality_gate_enabled=True,
+        )
+
     engine = create_engine(conn_str)
-    _to_sql_with_chunking(
-        df,
-        table,
-        engine,
-        if_exists=if_exists,
-        **kwargs,
-    )  # type: ignore[arg-type]
+    sink = TabularSQLSink(table, engine, config)
+    _tabular_export(sdk, study_key, sink, config, sanitize=False)
 
 
 def export_to_duckdb(

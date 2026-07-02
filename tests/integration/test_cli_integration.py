@@ -13,13 +13,11 @@ class Result:
         self.stderr = stderr
         self.output = stdout + stderr
 
-
 class CliRunner:
     def invoke(self, app, args):
         import io
         import sys
         from contextlib import redirect_stderr, redirect_stdout
-
         out = io.StringIO()
         err = io.StringIO()
         exit_code = 0
@@ -32,12 +30,12 @@ class CliRunner:
             exit_code = e.code or 0
         except Exception as e:
             import traceback
-
             err.write(traceback.format_exc())
             exit_code = 1
-
+        
         # We also need to catch argparse sys.exit(2)
         return Result(exit_code, out.getvalue(), err.getvalue())
+
 
 
 import imednet.cli as cli
@@ -116,7 +114,7 @@ def test_extract_records_cli_parses_filters(monkeypatch: pytest.MonkeyPatch) -> 
             "extract-records",
             "ST",
             "--record-filter",
-            "form_key=DEMO",
+            "form_key=DEMOG",
             "--subject-filter",
             "subject_status=Screened",
             "--visit-filter",
@@ -127,7 +125,7 @@ def test_extract_records_cli_parses_filters(monkeypatch: pytest.MonkeyPatch) -> 
     assert result.exit_code == 0
     workflow.extract_records_by_criteria.assert_called_once_with(
         study_key="ST",
-        record_filter={"form_key": "DEMO"},
+        record_filter={"form_key": "DEMOG"},
         subject_filter={"subject_status": "Screened"},
         visit_filter={"visit_key": "BASE"},
     )

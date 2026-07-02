@@ -17,7 +17,7 @@ def _to_snake_case(name: str) -> str:
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 
-class CentralizedMapper:  # pragma: no cover
+class CentralizedMapper:
     """Unified Mapper with Enrichment Engine for data sinks."""
 
     def __init__(
@@ -75,7 +75,7 @@ class CentralizedMapper:  # pragma: no cover
             StudyConfiguration(
                 studyKey=mapped.get('study_key') or "UNKNOWN",
                 version="1.0",
-                reportingProfile="default",
+                reportingProfile="general",
             )
         )
         mapped = pipeline.process(mapped)

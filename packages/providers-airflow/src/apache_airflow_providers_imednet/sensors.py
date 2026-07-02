@@ -23,8 +23,6 @@ from imednet import ImednetSDK
 from ._airflow_compat import AirflowException, Context
 from .hooks import ImednetHook
 
-TERMINAL_STATES = {"COMPLETED", "SUCCESS", "FAILED", "CANCELLED"}
-
 
 class ImednetJobSensor(BaseSensorOperator):
     """Poll iMednet for job completion."""
@@ -59,16 +57,15 @@ class ImednetJobSensor(BaseSensorOperator):
 
     def poke(self, context: Context) -> bool:
         """Check the status of the job."""
+        from imednet.spi.utils import JobFailedError, evaluate_job_state
+
         sdk = self._get_sdk()
         job = sdk.jobs.get(self.study_key, self.batch_id)
-        if not job.state:
-            return True
-        state = job.state.upper()
-        if state in TERMINAL_STATES:
-            if state not in ("COMPLETED", "SUCCESS"):
-                raise AirflowException(f"Job {self.batch_id} ended in state {state}")
-            return True
-        return False
+
+        try:
+            return evaluate_job_state(job)
+        except JobFailedError as e:
+            raise AirflowException(str(e)) from e
 
 
 __all__ = ["ImednetJobSensor"]

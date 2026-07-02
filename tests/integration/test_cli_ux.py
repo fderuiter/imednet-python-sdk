@@ -14,13 +14,11 @@ class Result:
         self.stderr = stderr
         self.output = stdout + stderr
 
-
 class CliRunner:
     def invoke(self, app, args):
         import io
         import sys
         from contextlib import redirect_stderr, redirect_stdout
-
         out = io.StringIO()
         err = io.StringIO()
         exit_code = 0
@@ -33,12 +31,12 @@ class CliRunner:
             exit_code = e.code or 0
         except Exception as e:
             import traceback
-
             err.write(traceback.format_exc())
             exit_code = 1
-
+        
         # We also need to catch argparse sys.exit(2)
         return Result(exit_code, out.getvalue(), err.getvalue())
+
 
 
 from imednet.cli import app
@@ -149,7 +147,7 @@ def test_invalid_output_format(runner, mock_sdk):
 
 def test_secret_masking_in_errors(runner, mock_sdk, monkeypatch):
     """Ensure secrets are not leaked in error output."""
-    secret_value = "super-secret-key-123"  # pragma: allowlist secret
+    secret_value = "super-secret-key-123"
     monkeypatch.setenv("IMEDNET_API_KEY", secret_value)
 
     # Simulate an error that might contain the secret if not careful

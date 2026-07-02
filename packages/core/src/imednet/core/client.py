@@ -17,7 +17,7 @@ from typing import Any, Dict, Optional
 import httpx
 
 from imednet.core.http.executor import SyncRequestExecutor
-from imednet.core.retry import RetryPolicy
+from imednet.core.retry import RetryConfig
 
 from .http_client_base import HTTPClientBase
 
@@ -30,8 +30,7 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
     Attributes:
         base_url: Base URL for API requests.
         timeout: Default timeout for requests.
-        retries: Number of retry attempts for transient errors.
-        backoff_factor: Multiplier for exponential backoff.
+        retry_config: Centralized configuration for retry behaviors.
     """
 
     def _get_client_class(self) -> type[httpx.Client]:
@@ -39,15 +38,13 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
         return httpx.Client
 
     def _create_executor(
-        self, client: httpx.Client, retry_policy: Optional[RetryPolicy] = None
+        self, client: httpx.Client, retry_config: Optional[RetryConfig] = None
     ) -> SyncRequestExecutor:
         """Create a synchronous request executor for this client."""
         return SyncRequestExecutor(
             send=client.request,
-            retries=self.retries,
-            backoff_factor=self.backoff_factor,
             tracer=self._tracer,
-            retry_policy=retry_policy,
+            retry_config=retry_config,
         )
 
     def __enter__(self) -> Client:

@@ -10,7 +10,6 @@ import time
 from dataclasses import dataclass
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol, cast, runtime_checkable
 
-from imednet.spi.constants import TERMINAL_JOB_STATES
 from imednet.spi.models import JobStatus
 
 logger = logging.getLogger(__name__)
@@ -75,6 +74,31 @@ class JobTimeoutError(TimeoutError):
     """Raised when a job does not finish before the timeout."""
 
 
+class JobFailedError(Exception):
+    """Raised when a job completes with a FAILED or CANCELLED state."""
+
+    def __init__(self, message: str, status: JobStatus) -> None:
+        """Initialize the JobFailedError."""
+        super().__init__(message)
+        self.status = status
+
+
+def evaluate_job_state(job: JobStatus) -> bool:
+    """Evaluate a job's status.
+
+    Returns:
+        True if the job completed successfully.
+        False if the job is still in progress.
+
+    Raises:
+        JobFailedError: If the job ended in a failed or cancelled state.
+    """
+    if getattr(job, "is_failed", False):
+        batch_id = getattr(job, "batch_id", getattr(job, "batchId", "unknown"))
+        raise JobFailedError(f"Job {batch_id} ended in state {job.state}", job)
+    return getattr(job, "is_terminal", False)
+
+
 class BaseJobPoller:
     """Base class for polling a job until it reaches a terminal state."""
 
@@ -86,7 +110,7 @@ class BaseJobPoller:
         self, start_time: float, timeout: float, batch_id: str, status: JobStatus
     ) -> bool:
         """Evaluate if the job is complete, returning True if terminal."""
-        if not status.state or status.state.upper() in TERMINAL_JOB_STATES:  # type: ignore
+        if getattr(status, "is_terminal", False):
             return True
         if time.monotonic() - start_time >= timeout:
             raise JobTimeoutError(f"Timeout ({timeout}s) waiting for job {batch_id}")
@@ -198,6 +222,7 @@ class JobPoller(BaseJobPoller):
                         self._process_fetch_result(status, res)
                     except Exception:
                         pass
+                evaluate_job_state(status)
                 return status
 
             time.sleep(interval)
@@ -348,6 +373,7 @@ class AsyncJobPoller(BaseJobPoller):
                         self._process_fetch_result(status, res)
                     except Exception:
                         pass
+                evaluate_job_state(status)
                 return status
 
             await asyncio.sleep(interval)

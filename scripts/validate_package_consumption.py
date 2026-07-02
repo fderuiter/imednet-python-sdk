@@ -26,14 +26,11 @@ def build_wheels(dist_dir: Path):
     for pkg_path in PACKAGES_DIR.iterdir():
         if pkg_path.is_dir() and (pkg_path / "pyproject.toml").exists():
             print(f"Building wheel for {pkg_path.name}...")
-            run(
-                [sys.executable, "-m", "build", "--wheel", "--outdir", str(dist_dir), str(pkg_path)]
-            )
+            run([sys.executable, "-m", "build", "--wheel", "--outdir", str(dist_dir), str(pkg_path)])
 
 
 def validate_scenario(name, install_items, smoke_checks, dist_dir: Path):
-    """
-    smoke_checks is a list of dicts:
+    """smoke_checks is a list of dicts:
     {
         "cmd": "command to run",
         "expect_fail": False,
@@ -65,7 +62,7 @@ def validate_scenario(name, install_items, smoke_checks, dist_dir: Path):
 
         for item in install_items:
             base_pkg = item.split("[")[0]
-            extra = item[len(base_pkg) :] if "[" in item else ""
+            extra = item[len(base_pkg):] if "[" in item else ""
             normalized_base = base_pkg.replace("-", "_")
             matching_wheels = [w for w in all_wheels if w.name.startswith(normalized_base + "-")]
 
@@ -125,9 +122,7 @@ def validate_scenario(name, install_items, smoke_checks, dist_dir: Path):
                 else:
                     print(f"Command '{cmd}' failed as expected.")
                     if contains and contains not in output:
-                        print(
-                            f"Error output of '{cmd}' did not contain expected string: {contains}"
-                        )
+                        print(f"Error output of '{cmd}' did not contain expected string: {contains}")
                         print(f"Output: {output}")
                         sys.exit(1)
 
@@ -143,29 +138,17 @@ def main():
                 "install": ["imednet"],
                 "smoke": [
                     {"cmd": "import imednet"},
-                    {
-                        "cmd": "imednet --help",
-                        "expect_fail": True,
-                        "contains": "pip install 'imednet[cli]'",
-                    },
-                ],
+                    {"cmd": "imednet --help", "expect_fail": False, "contains": "pip install 'imednet[cli]'"}
+                ]
             },
             {
                 "name": "core-cli-no-plugins",
                 "install": ["imednet[cli]"],
                 "smoke": [
                     {"cmd": "imednet --help", "contains": "workflows"},
-                    {
-                        "cmd": "imednet workflows extract-records",
-                        "expect_fail": True,
-                        "contains": "pip install imednet-workflows",
-                    },
-                    {
-                        "cmd": "imednet dashboard",
-                        "expect_fail": True,
-                        "contains": "pip install imednet-streamlit",
-                    },
-                ],
+                    {"cmd": "imednet workflows extract-records", "expect_fail": True, "contains": "The workflows plugin is not installed."},
+                    {"cmd": "imednet dashboard", "expect_fail": True, "contains": "pip install imednet-streamlit"}
+                ]
             },
             {
                 "name": "workflows-isolated",
@@ -173,13 +156,15 @@ def main():
                 "smoke": [
                     {"cmd": "import imednet_workflows"},
                     {"cmd": "import imednet"},
-                    {"cmd": "imednet workflows extract-records --help", "contains": "Usage:"},
-                ],
+                    {"cmd": "imednet workflows extract-records --help", "contains": "usage:"}
+                ]
             },
             {
                 "name": "workflows-uat",
                 "install": ["imednet-workflows[uat]"],
-                "smoke": [{"cmd": "import faker"}],
+                "smoke": [
+                    {"cmd": "import faker"}
+                ]
             },
             {
                 "name": "airflow-provider",
@@ -187,24 +172,23 @@ def main():
                 "smoke": [
                     {"cmd": "import apache_airflow_providers_imednet"},
                     {"cmd": "from apache_airflow_providers_imednet.hooks import ImednetHook"},
-                    {"cmd": "import apache_airflow_providers_imednet.operators.export"},
-                ],
+                    {"cmd": "import apache_airflow_providers_imednet.operators.export"}
+                ]
             },
             {
                 "name": "streamlit-plugin",
                 "install": ["imednet-streamlit"],
                 "smoke": [
                     {"cmd": "import imednet_streamlit"},
-                    {
-                        "cmd": "imednet dashboard --help",
-                        "contains": "Launch the interactive iMednet Streamlit reporting dashboard",
-                    },
-                ],
+                    {"cmd": "imednet dashboard --help", "contains": "Suppress automatic browser launch"}
+                ]
             },
             {
                 "name": "sinks-mongodb",
                 "install": ["imednet-plugins-sinks[mongodb]"],
-                "smoke": [{"cmd": "import pymongo"}],
+                "smoke": [
+                    {"cmd": "import pymongo"}
+                ]
             },
             {
                 "name": "core-export-extra",
@@ -212,14 +196,19 @@ def main():
                 "smoke": [
                     {"cmd": "import pandas"},
                     {"cmd": "import imednet_workflows"},
-                    {"cmd": "imednet export csv --help"},
-                ],
-            },
+                    {"cmd": "imednet export csv --help"}
+                ]
+            }
         ]
 
         for s in scenarios:
             try:
-                validate_scenario(s["name"], s["install"], s["smoke"], dist_dir)
+                validate_scenario(
+                    s["name"],
+                    s["install"],
+                    s["smoke"],
+                    dist_dir
+                )
             except Exception as e:
                 print(f"FAILED scenario {s['name']}: {e}")
                 sys.exit(1)

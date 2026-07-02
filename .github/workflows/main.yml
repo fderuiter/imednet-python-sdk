@@ -8,6 +8,7 @@ on:
       - "imednet-workflows-v*.*.*"
       - "apache-airflow-providers-imednet-v*.*.*"
       - "imednet-streamlit-v*.*.*"
+      - "imednet-plugins-sinks-v*.*.*"
   pull_request:
     branches: [main]
 
@@ -53,10 +54,24 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+      run_integration: ${{ steps.filter.outputs.export_logic }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            export_logic:
+              - 'packages/**/integrations/**'
+              - 'packages/**/tests/integration/**'
+              - 'docker-compose.yml'
 
       - name: Get changed files
         id: changed-files
@@ -111,6 +126,7 @@ jobs:
   quality:
     name: Quality & Security - ${{ matrix.package }}
     needs: plan
+    if: needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -125,59 +141,11 @@ jobs:
           python-version: "3.10"
           cache: "pip"
           cache-dependency-path: "**/pyproject.toml"
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+      - name: Install Hatch
+        run: python -m pip install --upgrade pip hatch
 
-      - name: Code Quality (Ruff)
-        run: |
-          ruff format --check packages/${{ matrix.package }}
-          ruff check packages/${{ matrix.package }}
-
-      - name: Spelling and Documentation (Typos)
-        run: |
-          python -m pip install typos
-          typos packages/${{ matrix.package }}
-
-      - name: Type Check (MyPy)
-        run: |
-          if [ "${{ matrix.package }}" = "core" ]; then
-            mypy packages/core/src/imednet
-            mypy --strict packages/core/src/imednet/models packages/core/src/imednet/errors
-          elif [ "${{ matrix.package }}" = "plugins-workflows" ]; then
-            mypy packages/plugins-workflows/src/imednet_workflows
-          elif [ "${{ matrix.package }}" = "providers-airflow" ]; then
-            mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-          elif [ "${{ matrix.package }}" = "plugins-streamlit" ]; then
-            mypy packages/plugins-streamlit/src/imednet_streamlit
-          elif [ "${{ matrix.package }}" = "plugins-sinks" ]; then
-            mypy packages/plugins-sinks/src/imednet_sinks
-          fi
-
-      - name: Security Audit (pip-audit)
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install pip-audit
-          for i in 1 2 3; do
-            pip-audit -s osv --timeout 60 && exit 0
-            echo "Attempt $i failed. Retrying in 10s..."
-            sleep 10
-          done
-          echo "Audit failed after 3 attempts."
-          exit 1
-
-      - name: Semantic Static Analysis (Semgrep)
-        run: |
-          python -m pip install semgrep
-          semgrep scan --config auto --error packages/${{ matrix.package }}
+      - name: Run Quality & Security Checks
+        run: hatch run lint:all packages/${{ matrix.package }}
 
   # ------------------------------------------------------------------
   # JOB 2: BUILD ARTIFACT (Builds the library)
@@ -185,6 +153,7 @@ jobs:
   build:
     name: Build Distribution
     needs: [plan, quality]
+    if: needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -195,15 +164,9 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install uv
+          uv sync --locked --all-extras
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
       - name: Build Workspace Packages
         run: |
@@ -268,6 +231,7 @@ jobs:
   test:
     name: Test ${{ matrix.package }} (Python ${{ matrix.python-version }})
     needs: [plan, build]
+    if: needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -291,18 +255,12 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install uv
+          uv sync --locked --all-extras
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
           
           if ls dist/*.whl 1> /dev/null 2>&1; then
-            python -m pip install --force-reinstall --no-deps dist/*.whl
+            .venv/bin/python -m pip install --force-reinstall --no-deps dist/*.whl
           fi
           
       - name: Run Tests
@@ -345,42 +303,25 @@ jobs:
   # ------------------------------------------------------------------
   integration-sandbox:
     name: Hermetic Integration Sandbox
-    needs: build
+    needs: [plan, build]
+    if: needs.plan.outputs.run_integration == 'true' && needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            export_logic:
-              - 'packages/core/src/imednet/integrations/**'
-              - 'docker-compose.yml'
-              - 'packages/plugins-sinks/tests/integration/test_containerized_sinks.py'
-              
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
           cache: "pip"
           cache-dependency-path: "**/pyproject.toml"
-        if: steps.filter.outputs.export_logic == 'true'
 
       - name: Install Dependencies
-        if: steps.filter.outputs.export_logic == 'true'
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install uv
+          uv sync --locked --all-extras
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
       - name: Run Hermetic Integration Sandbox
-        if: steps.filter.outputs.export_logic == 'true'
         env:
           IMEDNET_API_KEY: dummy
           IMEDNET_SECURITY_KEY: dummy
@@ -392,6 +333,7 @@ jobs:
   fuzzing:
     name: Robustness Fuzzing
     needs: build
+    if: needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -404,18 +346,20 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install uv
+          uv sync --locked --all-extras
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
         
       - name: Run Coverage-Guided Fuzzing (1,000,000 iterations)
-        run: ./scripts/fuzz_test.sh
+        run: pytest tests/core/test_fuzz.py -m fuzzing -v
+        
+      - name: Save Verification Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzzing-report
+          path: fuzzing_report.json
+          if-no-files-found: ignore
 
   # ------------------------------------------------------------------
   # JOB 3.7: VALIDATE EXTRAS
@@ -423,6 +367,7 @@ jobs:
   validate-extras:
     name: Validate Documented Extras
     needs: build
+    if: needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -455,11 +400,32 @@ jobs:
           imednet --help || true
 
   # ------------------------------------------------------------------
+  # JOB 3.8: VALIDATE PACKAGE CONSUMPTION
+  # ------------------------------------------------------------------
+  validate-package-consumption:
+    name: Validate Package Consumption
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+          cache-dependency-path: "**/pyproject.toml"
+
+      - name: Install build tool
+        run: python -m pip install build
+
+      - name: Validate Package Consumption
+        run: python scripts/validate_package_consumption.py
+
+  # ------------------------------------------------------------------
   # JOB 4: DOCS (Build & Prepare for Deploy)
   # ------------------------------------------------------------------
   docs:
     name: Build Documentation
-    needs: quality
+    needs: plan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -471,15 +437,9 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install uv
+          uv sync --locked --all-extras
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
       - name: Run Doctests
         run: make doctest
@@ -497,9 +457,9 @@ jobs:
   # ------------------------------------------------------------------
   deploy-docs:
     name: Deploy to GH Pages
-    needs: [test, docs]
-    # Only deploy docs if tests pass and we are on main
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [plan, test, docs]
+    # Only deploy docs if tests pass (or are skipped) and we are on main
+    if: always() && !cancelled() && !contains(needs.*.result, 'failure') && github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -644,6 +604,8 @@ jobs:
   # ------------------------------------------------------------------
   accessibility-audit:
     name: WCAG 2.1 Accessibility Audit
+    needs: plan
+    if: needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -655,17 +617,11 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install axe-playwright-python playwright
-          python -m playwright install --with-deps chromium
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install uv
+          uv sync --locked --all-extras
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
+          .venv/bin/python -m pip install axe-playwright-python playwright
+          .venv/bin/python -m playwright install --with-deps chromium
       - name: Run automated accessibility scan
         run: |
           python scripts/a11y_audit.py

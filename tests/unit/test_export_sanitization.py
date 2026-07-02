@@ -17,11 +17,16 @@ def mock_record_mapper(monkeypatch):
     def _setup(df: pd.DataFrame):
         """Helper function to  setup."""
         mapper_inst.dataframe.return_value = df
+        mapper_inst._fetch_variable_metadata.return_value = (["safe", "unsafe", "int_col", "float_col", "bool_col", "str_col"], {})
+        mapper_inst._iter_records.return_value = [{"fake": "record"}]
+        mapper_inst._parse_records.return_value = ([{}], {})
+        mapper_inst._build_dataframe.return_value = df
         monkeypatch.setattr(
             export_mod,
             "_record_mapper",
             MagicMock(return_value=MagicMock(return_value=mapper_inst)),
         )
+        monkeypatch.setattr(export_mod, "apply_quality_gate", lambda *args, **kwargs: [{"fake": "record"}])
         return mapper_inst
 
     return _setup

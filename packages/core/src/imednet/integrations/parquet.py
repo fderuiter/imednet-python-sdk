@@ -32,23 +32,23 @@ def _ensure_pyarrow() -> ModuleType:
 
 
 def _cached_records_loader() -> Any:
-    """Lazy import and return the CachedRecordsLoader from imednet-workflows.
+    """Lazy import and return the CachedRecordsLoader from plugins.
 
     Returns:
         Any: The CachedRecordsLoader class.
 
     Raises:
-        ImportError: If imednet-workflows is not installed.
+        ImportError: If no loader plugin is installed.
     """
-    try:
-        return import_module("imednet_workflows.cached_loader").CachedRecordsLoader
-    except ModuleNotFoundError as error:
-        if error.name and error.name.startswith("imednet_workflows"):
-            raise ImportError(
-                "Record export requires the optional 'imednet-workflows' package. "
-                "Install with \"pip install 'imednet[export]'\"."
-            ) from error
-        raise
+    from importlib.metadata import entry_points
+
+    loaders = list(entry_points(group="imednet.loaders", name="CachedRecordsLoader"))
+    if not loaders:
+        raise ImportError(
+            "Record export requires an installed loader plugin. "
+            "Please install a package that provides this capability."
+        )
+    return loaders[0].load()
 
 
 def _build_record_mapper(sdk: ImednetSDK, *, chunk_size: int) -> Any:

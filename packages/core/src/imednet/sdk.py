@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Any, Iterator, Optional, Union, cast
 from .config import Config, load_config
 from .core.context import study_context
 from .core.factory import ClientFactory
-from .core.retry import RetryPolicy
+from .core.retry import RetryConfig, RetryPolicy
 from .endpoints.registry import ASYNC_ENDPOINT_REGISTRY, ENDPOINT_REGISTRY
 from .errors import PluginLoadError
 from .plugins import (
@@ -184,9 +184,7 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         base_url: Optional[str] = None,
         timeout: Optional[float] = None,
         strict_mode: Optional[bool] = None,
-        retries: int = 3,
-        backoff_factor: float = 1.0,
-        retry_policy: RetryPolicy | None = None,
+        retry_config: Optional[RetryConfig] = None,
         client: Optional[Client] = None,
     ) -> None:
         """Initialize the SDK with credentials and configuration."""
@@ -209,9 +207,7 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
             self._client = ClientFactory.create_client(
                 config=config,
                 timeout=config.timeout,
-                retries=retries,
-                backoff_factor=backoff_factor,
-                retry_policy=retry_policy,
+                retry_config=retry_config,
             )
 
         self._init_endpoints()
@@ -306,9 +302,7 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
         base_url: Optional[str] = None,
         timeout: Optional[float] = None,
         strict_mode: Optional[bool] = None,
-        retries: int = 3,
-        backoff_factor: float = 1.0,
-        retry_policy: RetryPolicy | None = None,
+        retry_config: Optional[RetryConfig] = None,
         async_client: Optional[AsyncClient] = None,
     ) -> None:
         """Initialize the asynchronous SDK.
@@ -319,9 +313,7 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
             base_url: Base URL for the iMednet API.
             timeout: Default request timeout in seconds.
             strict_mode: Toggle strict mode for data validation.
-            retries: Number of retry attempts.
-            backoff_factor: Exponential backoff factor.
-            retry_policy: Custom retry policy.
+            retry_config: Centralized configuration for retry behaviors.
             async_client: Pre-configured async client instance.
         """
         config = load_config(
@@ -339,9 +331,7 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
         self._async_client = async_client or ClientFactory.create_async_client(
             config=config,
             timeout=config.timeout,
-            retries=retries,
-            backoff_factor=backoff_factor,
-            retry_policy=retry_policy,
+            retry_config=retry_config,
         )
 
         self._init_endpoints()

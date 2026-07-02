@@ -14,13 +14,11 @@ class Result:
         self.stderr = stderr
         self.output = stdout + stderr
 
-
 class CliRunner:
     def invoke(self, app, args):
         import io
         import sys
         from contextlib import redirect_stderr, redirect_stdout
-
         out = io.StringIO()
         err = io.StringIO()
         exit_code = 0
@@ -33,12 +31,12 @@ class CliRunner:
             exit_code = e.code or 0
         except Exception as e:
             import traceback
-
             err.write(traceback.format_exc())
             exit_code = 1
-
+        
         # We also need to catch argparse sys.exit(2)
         return Result(exit_code, out.getvalue(), err.getvalue())
+
 
 
 from imednet.auth.api_key import ApiKeyAuth

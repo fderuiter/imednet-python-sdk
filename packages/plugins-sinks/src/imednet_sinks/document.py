@@ -125,11 +125,8 @@ class MongoDbExportSink(ExportSink):
         Optional :class:`~imednet.integrations.sink_base.SinkConfig`.
 
     Raises:
-    ------
-    ~imednet.errors.ExportConfigurationError
-        When the client cannot connect to the server.
-    ImportError
-        When the ``pymongo`` package is not installed.
+        ~imednet.errors.ExportConfigurationError: When the client cannot connect to the server.
+        ImportError: When the ``pymongo`` package is not installed.
     """
 
     def __init__(
