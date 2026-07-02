@@ -770,7 +770,7 @@ def test_reference_dag_safe_study_path_fragment(monkeypatch):
     """
     _setup_airflow_for_dag(monkeypatch)
 
-    dag_path = _EXAMPLES_AIRFLOW_DIR / "multi_study_pipeline.py"
+    dag_path = _EXAMPLES_AIRFLOW_DIR / "airflow_multi_study_pipeline.py"
     spec = importlib.util.spec_from_file_location("_test_multi_study_pipeline", dag_path)
     assert spec is not None and spec.loader is not None, "Could not locate multi_study_pipeline.py"
     module = importlib.util.module_from_spec(spec)

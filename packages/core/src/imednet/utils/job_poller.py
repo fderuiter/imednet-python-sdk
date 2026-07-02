@@ -10,7 +10,7 @@ import time
 from dataclasses import dataclass
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol, cast, runtime_checkable
 
-from imednet.spi.models import JobStatus
+from imednet.models import JobStatus
 
 logger = logging.getLogger(__name__)
 
