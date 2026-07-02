@@ -174,3 +174,32 @@ class ContractBuilder:
                     )
 
                 self.contract.models[model_name] = ModelDefinition(name=model_name, fields=fields)
+
+    def ingest_manifest(self, file_path: str) -> None:
+        """Ingest models from the unified resource manifest."""
+        if not os.path.exists(file_path):
+            return
+
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+
+        if not isinstance(data, dict):
+            return
+
+        for resource_name, resource_def in data.items():
+            model_name = resource_def.get("model")
+            schema_dict = resource_def.get("schema")
+            if model_name and schema_dict:
+                fields = {}
+                for key, val in schema_dict.items():
+                    snake_key = to_snake(key)
+                    type_name, default_value = self.parse_postman_type(val)
+                    fields[snake_key] = FieldDefinition(
+                        name=snake_key,
+                        type_name=type_name,
+                        default_value=default_value,
+                        alias=key,
+                    )
+                self.contract.models[model_name] = ModelDefinition(
+                    name=model_name, fields=fields
+                )
