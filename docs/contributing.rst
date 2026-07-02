@@ -13,11 +13,10 @@ see `CONTRIBUTING.md <../CONTRIBUTING.md>`__ for complete details.
    project_standards
    triage_playbook
 
-Setup
------
-.. code-block:: bash
-
-   ./scripts/setup.sh
+.. include:: ../CONTRIBUTING.md
+   :parser: myst_parser.sphinx_
+   :start-after: ## Setup
+   :end-before: ## Issue reporting and triage
 
 Public API stability
 --------------------
@@ -112,23 +111,10 @@ maintainer triage follow the same rules across the repository.
 - Apply the label taxonomy and lifecycle in ``issue_management``.
 - Follow the intake and rewrite workflow in ``triage_playbook``.
 
-Validation
-----------
-Run these commands and ensure **≥90%** test coverage before opening a pull request:
-
-.. code-block:: bash
-
-   poetry run ruff format --check .
-   poetry run ruff check .
-   poetry run mypy packages/core/src/imednet
-   poetry run mypy packages/plugins-workflows/src/imednet_workflows
-   poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-   poetry run pytest -q \
-     --cov=imednet \
-     --cov=imednet_workflows \
-     --cov=apache_airflow_providers_imednet \
-     --cov-fail-under=90
-   make docs
+.. include:: ../CONTRIBUTING.md
+   :parser: myst_parser.sphinx_
+   :start-after: ## Validation
+   :end-before: ### Containerized Integration Tests
 
 HTTP transport mocking
 ----------------------
@@ -165,54 +151,6 @@ routes fail fast:
 This keeps production clients free of test-only wrappers while still validating request
 construction, retry behavior, dynamic URLs, and query parameters.
 
-Release workflow
-----------------
-Releases are fully automated and driven by merged PR titles:
-
-1. Ensure the PR title uses a Conventional Commit prefix. Supported prefixes are ``feat:``,
-   ``fix:``, ``chore:``, ``docs:``, ``ci:``, ``test:``, ``refactor:``, ``perf:``, and
-   ``revert:``. CI enforces this via the ``Semantic PR Title`` check.
-2. Run validation locally:
-
-   .. code-block:: bash
-
-      poetry run ruff format --check .
-      poetry run ruff check .
-      poetry run mypy packages/core/src/imednet
-      poetry run mypy packages/plugins-workflows/src/imednet_workflows
-      poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-      poetry run pytest -q \
-        --cov=imednet \
-        --cov=imednet_workflows \
-        --cov=apache_airflow_providers_imednet \
-        --cov-fail-under=90
-      make docs
-
-3. Merge to ``main`` with **Squash and merge** so the PR title becomes the merged commit message.
-4. The ``Automated Release`` workflow runs ``release-please`` in manifest mode on ``main`` pushes
-   and opens/updates a Release PR with semantic version and changelog updates for the package
-   manifests under ``packages/``.
-5. Maintainers trigger publication by approving and merging the bot-created Release PR.
-
-Configuration requirements:
-
-- Package versions in ``packages/*/pyproject.toml`` must never be edited manually; ``release-please``
-  updates it automatically in the generated Release PR changeset.
-
-- Publishing requires ``PYPI_API_TOKEN`` in repository secrets (or migration to PyPI Trusted
-  Publishers/OIDC).
-
-- Configure branch protection on ``main`` to require pull request reviews and required checks,
-  including ``Semantic PR Title``.
-
-Conventions
------------
-- Apply DRY and SOLID principles.
-- Limit lines to 100 characters.
-- Use Conventional Commit prefixes in PR titles.
-
-Pull request process
---------------------
-- Include paths changed and validation output in the PR description.
-- Add or update tests with any code change.
-- Update docs and examples for public API or CLI changes.
+.. include:: ../CONTRIBUTING.md
+   :parser: myst_parser.sphinx_
+   :start-after: ## Release workflow

@@ -256,7 +256,7 @@ Before opening a pull request that adds or modifies public APIs:
 1. Fork the repository and create a feature branch.
 2. Include validation output in the PR description.
 3. Keep PRs scoped; one change per PR.
-4. Please follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+4. Please follow the [Code of Conduct](https://github.com/fderuiter/imednet-python-sdk/blob/main/CODE_OF_CONDUCT.md).
 
 ## Dependency-Aware CI Pipeline
 Our CI pipeline is optimized to run quality gates and test suites only for packages affected by your changes. 

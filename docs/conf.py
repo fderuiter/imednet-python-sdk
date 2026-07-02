@@ -70,6 +70,7 @@ version = imednet_version
 
 # Sphinx extensions
 extensions = [
+    "myst_parser",
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
@@ -102,6 +103,8 @@ suppress_warnings = [
     "autodoc",
     "sphinx_autodoc_typehints",
     "app.add_directive",
+    "myst.header",
+    "myst.xref_missing",
 ]
 
 # Sphinx 6.x does not assign a filterable type code to "duplicate object
@@ -160,7 +163,11 @@ napoleon_include_init_with_doc = True
 
 # Templates and static paths
 templates_path: list[str] = ["_templates"]
-exclude_patterns: list[str] = []  # annotated per mypy requirement
+exclude_patterns: list[str] = [
+    "REFACTORING_GUIDE.md",
+    "VPAT.md",
+    "plugins/streamlit.md",
+]  # annotated per mypy requirement
 html_static_path: list[str] = ["_static"]
 
 doctest_global_setup = """
