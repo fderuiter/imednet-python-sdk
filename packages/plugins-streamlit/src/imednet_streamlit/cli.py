@@ -1,7 +1,7 @@
 """CLI commands for iMednet Streamlit dashboard."""
 
-import sys
 import subprocess
+import sys
 from importlib.util import find_spec
 
 
