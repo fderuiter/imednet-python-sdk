@@ -26,15 +26,14 @@ _DUCKDB_DF_ALIAS = "df"
 
 
 def _record_mapper() -> Any:
-    try:
-        return import_module("imednet_workflows.record_mapper").RecordMapper
-    except ModuleNotFoundError as error:
-        if error.name and error.name.startswith("imednet_workflows"):
-            raise ImportError(
-                "Record export requires the optional 'imednet-workflows' package. "
-                "Install with \"pip install 'imednet[export]'\"."
-            ) from error
-        raise
+    from importlib.metadata import entry_points
+    mappers = list(entry_points(group="imednet.mappers", name="RecordMapper"))
+    if not mappers:
+        raise ImportError(
+            "Record export requires an installed mapper plugin. "
+            "Please install a package that provides this capability."
+        )
+    return mappers[0].load()
 
 
 def _mask_df(df: pd.DataFrame) -> pd.DataFrame:
@@ -269,11 +268,13 @@ def export_to_json(
         data = df.where(pd.notnull(df), None).to_dict(orient="records")
 
     try:
-        from importlib import import_module
+        from importlib.metadata import entry_points
 
-        config_version_store_cls = import_module(
-            "imednet_workflows.config_version_control"
-        ).ConfigVersionStore
+        config_version_stores = list(entry_points(group="imednet.stores", name="ConfigVersionStore"))
+        if not config_version_stores:
+            raise ImportError("ConfigVersionStore plugin not found.")
+            
+        config_version_store_cls = config_version_stores[0].load()
         enrichment_pipeline_cls = import_module(
             "imednet.integrations.enrichment"
         ).EnrichmentPipeline

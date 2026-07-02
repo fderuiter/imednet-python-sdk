@@ -56,44 +56,6 @@ __all__ = [
 ]
 
 
-def run_dashboard(port: int = 8501, no_browser: bool = False) -> None:
-    """Launch the interactive iMednet Streamlit reporting dashboard."""
-    streamlit_spec = find_spec("imednet_streamlit")
-    if streamlit_spec is None:
-        print("Dashboard plugin not found. Install it with:\n  pip install imednet-streamlit")
-        sys.exit(1)
-
-    dashboard_spec = find_spec("imednet_streamlit.app")
-    if dashboard_spec is None:
-        print("Dashboard plugin not found. Install it with:\n  pip install imednet-streamlit")
-        sys.exit(1)
-
-    app_path = dashboard_spec.origin
-    if app_path is None:
-        print("Cannot resolve dashboard app path.")
-        sys.exit(1)
-
-    cmd = [sys.executable, "-m", "streamlit", "run", app_path, "--server.port", str(port)]
-    if no_browser:
-        cmd += ["--server.headless", "true"]
-
-    print(f"Launching iMednet Dashboard on port {port}...")
-    try:
-        result = subprocess.run(cmd, check=False)
-    except OSError as exc:
-        print(f"Dashboard failed to launch: {exc}")
-        sys.exit(1)
-
-    if result.returncode != 0:
-        print("Dashboard failed to launch.")
-        sys.exit(result.returncode)
-
-
-def _exit_missing_plugin(name: str) -> None:
-    print(f"The {name} plugin is not installed.")
-    sys.exit(1)
-
-
 def _setup_standalone_scripts(subparsers):
     import glob
 
@@ -152,42 +114,15 @@ def get_parser() -> argparse.ArgumentParser:
     records_setup(subparsers)
     _setup_standalone_scripts(subparsers)
 
-    # dashboard
-    dash_parser = subparsers.add_parser(
-        "dashboard", help="Launch the iMednet Streamlit reporting dashboard."
-    )
-    dash_parser.add_argument(
-        "-p", "--port", type=int, default=8501, help="Port to run the dashboard on."
-    )
-    dash_parser.add_argument(
-        "--no-browser", action="store_true", help="Suppress automatic browser launch."
-    )
-    dash_parser.set_defaults(func=lambda a: run_dashboard(port=a.port, no_browser=a.no_browser))
-
-    # workflows
-    try:
-        wf_cli = import_module("imednet_workflows.cli")
-        wf_cli.setup_parser(subparsers)
-        wf_cli.setup_subject_parser(subparsers)
-    except ImportError:
-        # Fallbacks when plugin not installed
-        wf_parser = subparsers.add_parser(
-            "workflows", help="Execute opinionated business logic (requires imednet-workflows)."
-        )
-        wf_sub = wf_parser.add_subparsers(dest="wf_command")
-
-        extract_parser = wf_sub.add_parser("extract-records")
-        extract_parser.set_defaults(func=lambda a: _exit_missing_plugin("workflows"))
-
-        subj_parser = subparsers.add_parser(
-            "subject-data", help="Retrieve all data for a single subject."
-        )
-        subj_parser.set_defaults(func=lambda a: _exit_missing_plugin("workflows"))
-
-        sync_parser = wf_sub.add_parser(
-            "sync-worker", help="Run a background cache synchronization worker."
-        )
-        sync_parser.set_defaults(func=lambda a: _exit_missing_plugin("workflows"))
+    import importlib.metadata
+    
+    # Discover and register CLI plugins using entry points
+    for entry_point in importlib.metadata.entry_points(group="imednet.cli_plugins"):
+        try:
+            plugin_setup = entry_point.load()
+            plugin_setup(subparsers)
+        except Exception as e:
+            print(f"Warning: Failed to load CLI plugin '{entry_point.name}': {e}", file=sys.stderr)
 
     return parser
 
@@ -209,29 +144,6 @@ def app(args=None):
     else:
         parser.print_help()
 
-
-# We need to provide dummy methods on `app` for imednet_workflows so it doesn't crash when it imports `app`
-def _dummy_add_typer(*args, **kwargs):
-    pass
-
-
-def _dummy_command(*args, **kwargs):
-    def wrapper(f):
-        return f
-
-    return wrapper
-
-
-def _dummy_callback(*args, **kwargs):
-    def wrapper(f):
-        return f
-
-    return wrapper
-
-
-app.add_typer = _dummy_add_typer  # type: ignore[attr-defined]
-app.command = _dummy_command  # type: ignore[attr-defined]
-app.callback = _dummy_callback  # type: ignore[attr-defined]
 
 if __name__ == "__main__":
     app()

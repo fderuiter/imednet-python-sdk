@@ -19,6 +19,23 @@ uat = []
 [project.entry-points."imednet.plugins"]
 workflows = "imednet_workflows.namespace:Workflows"
 
+[project.entry-points."imednet.cli_plugins"]
+workflows = "imednet_workflows.cli:setup_parser"
+subject_data = "imednet_workflows.cli:setup_subject_parser"
+
+[project.entry-points."imednet.pollers"]
+JobPoller = "imednet_workflows.job_poller:JobPoller"
+AsyncJobPoller = "imednet_workflows.job_poller:AsyncJobPoller"
+
+[project.entry-points."imednet.mappers"]
+RecordMapper = "imednet_workflows.record_mapper:RecordMapper"
+
+[project.entry-points."imednet.loaders"]
+CachedRecordsLoader = "imednet_workflows.cached_loader:CachedRecordsLoader"
+
+[project.entry-points."imednet.stores"]
+ConfigVersionStore = "imednet_workflows.config_version_control:ConfigVersionStore"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
