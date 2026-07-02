@@ -140,7 +140,7 @@ layer instead.
 When using ``respx``, prefer strict routers so tests cannot leak live requests and stale
 routes fail fast:
 
-.. code-block:: python
+.. testcode::
 
    import httpx
    import respx

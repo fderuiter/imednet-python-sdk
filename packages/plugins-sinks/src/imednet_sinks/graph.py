@@ -112,23 +112,16 @@ MERGE (v)-[:HAS_RECORD]->(r)
 """
 
 
+def _post_process_graph(row: dict[str, Any]) -> dict[str, Any]:
+    import json
+    row["record_data"] = json.dumps(row.get("record_data", {}))
+    return row
+
 def _record_to_row(record: Any, study_key: str) -> dict[str, Any]:
     """Convert a typed ``Record`` model to a flat Cypher parameter dict."""
-    import json
-
-    from imednet.models.engine import ResourceRegistry
-
-    fields = ResourceRegistry.get_fields("Record")
-    row = {"study_key": study_key}
-
-    for f in fields:
-        val = getattr(record, f, None)
-        if f == "record_data":
-            val = json.dumps(dict(val or {}))
-        if val is not None or f not in row:
-            row[f] = val
-
-    return row
+    from imednet.integrations.enrichment import CentralizedMapper
+    mapper = CentralizedMapper(mode="document", post_processor=_post_process_graph)
+    return mapper.map_record(record, study_key=study_key)
 
 
 class Neo4jExportSink(ExportSink):

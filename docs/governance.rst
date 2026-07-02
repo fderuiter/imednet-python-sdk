@@ -39,7 +39,7 @@ versions.
 
 .. rubric:: Quick-start
 
-.. code-block:: python
+.. testcode::
 
     from imednet.models.study_config import StudyConfiguration, MappingRule
     from imednet_workflows import ConfigVersionStore

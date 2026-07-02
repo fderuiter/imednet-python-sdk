@@ -69,27 +69,30 @@ When reading environment variables or other untyped values, use helpers from
 :func:`imednet.utils.validators.parse_list_or_default`, and
 :func:`imednet.utils.validators.parse_dict_or_default`.
 
-.. code-block:: python
+.. testcode::
 
-   >>> from imednet.utils.validators import (
-   ...     parse_bool,
-   ...     parse_datetime,
-   ...     parse_int_or_default,
-   ...     parse_str_or_default,
-   ...     parse_list_or_default,
-   ...     parse_dict_or_default,
-   ... )
-   >>> parse_bool("yes")
+   from imednet.utils.validators import (
+       parse_bool,
+       parse_datetime,
+       parse_int_or_default,
+       parse_str_or_default,
+       parse_list_or_default,
+       parse_dict_or_default,
+   )
+   print(parse_bool("yes"))
+   print(parse_datetime("2020-01-01T00:00:00Z").year)
+   print(parse_int_or_default("bad", default=5))
+   print(repr(parse_str_or_default(1.23)))
+   print(parse_list_or_default("x"))
+   print(parse_dict_or_default(None))
+
+.. testoutput::
+
    True
-   >>> parse_datetime("2020-01-01T00:00:00Z").year
    2020
-   >>> parse_int_or_default("bad", default=5)
    5
-   >>> parse_str_or_default(1.23)
    '1.23'
-   >>> parse_list_or_default("x")
    ['x']
-   >>> parse_dict_or_default(None)
    {}
 
 Troubleshooting

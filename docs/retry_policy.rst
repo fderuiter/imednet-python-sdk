@@ -10,7 +10,7 @@ Handling exceptions
 
 Use typed exceptions to respond to different failure modes:
 
-.. code-block:: python
+.. testcode::
 
    from imednet import ImednetSDK
    from imednet.errors import RateLimitError, ServerError, NotFoundError
@@ -31,7 +31,7 @@ Custom strategies
 Retry policies decide if a request should be retried. To retry on
 ``RateLimitError`` and ``ServerError``:
 
-.. code-block:: python
+.. testcode::
 
    from imednet.core.client import Client
    from imednet.core.retry import RetryPolicy, RetryState

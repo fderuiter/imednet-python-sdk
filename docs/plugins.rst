@@ -142,7 +142,7 @@ Headless Streamlit testing pattern (AppTest)
 Use Streamlit's official ``AppTest`` runner to test full-page flows without
 manual ``sys.modules`` monkeypatching:
 
-.. code-block:: python
+.. testcode::
 
    from pathlib import Path
    from streamlit.testing.v1 import AppTest
@@ -208,7 +208,7 @@ Plugin contract
 A plugin package must expose a single factory callable.  The factory must
 satisfy :class:`~imednet.plugins.PluginProtocol`:
 
-.. code-block:: python
+.. testcode::
 
     from typing import Protocol
     from imednet.plugins import PluginProtocol, WorkflowsNamespaceProtocol
@@ -229,7 +229,7 @@ least the following attributes (any type):
 Minimal working example
 -----------------------
 
-.. code-block:: python
+.. testcode::
 
     # myplugin/namespace.py
     from __future__ import annotations
@@ -282,12 +282,12 @@ Or, when using ``setuptools``, in ``setup.cfg``:
 Once installed (e.g. ``pip install myplugin``), the SDK will discover and
 load the plugin automatically:
 
-.. code-block:: python
+.. testcode::
 
     from imednet import ImednetSDK
 
     sdk = ImednetSDK(api_key="...", security_key="...")
-    records = sdk.workflows.data_extraction.run("MY_STUDY")
+    records = sdk.workflows.data_extraction.extract_records_by_criteria("MY_STUDY")
 
 Error handling
 --------------
@@ -303,7 +303,7 @@ Error handling
 :exc:`~imednet.errors.PluginLoadError` is a subclass of
 :exc:`~imednet.errors.ImednetError` so it can be caught uniformly:
 
-.. code-block:: python
+.. testcode::
 
     from imednet import ImednetSDK
     from imednet.errors import ImednetError

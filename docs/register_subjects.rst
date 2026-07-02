@@ -7,7 +7,7 @@ The API assigns the subject identifier upon creation; do not include a ``subject
 Example
 -------
 
-.. code-block:: python
+.. testcode::
 
     from imednet import ImednetSDK
     from imednet.models.records import RegisterSubjectRequest
