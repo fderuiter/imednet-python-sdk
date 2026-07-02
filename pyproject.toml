@@ -172,3 +172,13 @@ all = [
     "secrets"
 ]
 
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+imednet = { workspace = true }
+imednet-workflows = { workspace = true }
+imednet-streamlit = { workspace = true }
+imednet-plugins-sinks = { workspace = true }
+apache-airflow-providers-imednet = { workspace = true }
+

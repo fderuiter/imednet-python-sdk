@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-uat = []
+uat = ["faker>=24.9.0,<25.0.0"]
 
 [project.entry-points."imednet.plugins"]
 workflows = "imednet_workflows.namespace:Workflows"

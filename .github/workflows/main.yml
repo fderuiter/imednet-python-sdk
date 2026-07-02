@@ -164,15 +164,9 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install uv
+          uv sync --all-extras
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
       - name: Build Workspace Packages
         run: |
@@ -261,18 +255,12 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install uv
+          uv sync --all-extras
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
           
           if ls dist/*.whl 1> /dev/null 2>&1; then
-            python -m pip install --force-reinstall --no-deps dist/*.whl
+            .venv/bin/python -m pip install --force-reinstall --no-deps dist/*.whl
           fi
           
       - name: Run Tests
@@ -329,15 +317,9 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install uv
+          uv sync --all-extras
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
       - name: Run Hermetic Integration Sandbox
         env:
@@ -364,15 +346,9 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install uv
+          uv sync --all-extras
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
         
       - name: Run Coverage-Guided Fuzzing (1,000,000 iterations)
         run: ./scripts/fuzz_test.sh
@@ -416,6 +392,27 @@ jobs:
           imednet --help || true
 
   # ------------------------------------------------------------------
+  # JOB 3.8: VALIDATE PACKAGE CONSUMPTION
+  # ------------------------------------------------------------------
+  validate-package-consumption:
+    name: Validate Package Consumption
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+          cache-dependency-path: "**/pyproject.toml"
+
+      - name: Install build tool
+        run: python -m pip install build
+
+      - name: Validate Package Consumption
+        run: python scripts/validate_package_consumption.py
+
+  # ------------------------------------------------------------------
   # JOB 4: DOCS (Build & Prepare for Deploy)
   # ------------------------------------------------------------------
   docs:
@@ -432,15 +429,9 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install uv
+          uv sync --all-extras
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
       - name: Run Doctests
         run: make doctest
@@ -618,17 +609,11 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install axe-playwright-python playwright
-          python -m playwright install --with-deps chromium
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install uv
+          uv sync --all-extras
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
+          .venv/bin/python -m pip install axe-playwright-python playwright
+          .venv/bin/python -m playwright install --with-deps chromium
       - name: Run automated accessibility scan
         run: |
           python scripts/a11y_audit.py
