@@ -8,12 +8,13 @@ import respx
 
 from imednet import errors
 from imednet.core.async_client import AsyncClient
+from imednet.core.retry import RetryConfig
 
 
 @pytest.mark.asyncio
 async def test_async_request_retries():
     """Test that async request retries asynchronously."""
-    async with AsyncClient("k", "s", base_url="https://api.test", retries=2) as client:
+    async with AsyncClient("k", "s", base_url="https://api.test", retry_config=RetryConfig(retries=1)) as client:
         calls = {"count": 0}
 
         async def request(request: httpx.Request) -> httpx.Response:

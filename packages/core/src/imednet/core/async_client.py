@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional
 import httpx
 
 from imednet.core.http.executor import AsyncRequestExecutor
-from imednet.core.retry import RetryPolicy
+from imednet.core.retry import RetryConfig
 
 from .http_client_base import HTTPClientBase
 
@@ -23,15 +23,13 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
         return httpx.AsyncClient
 
     def _create_executor(
-        self, client: httpx.AsyncClient, retry_policy: Optional[RetryPolicy] = None
+        self, client: httpx.AsyncClient, retry_config: Optional[RetryConfig] = None
     ) -> AsyncRequestExecutor:
         """Create an asynchronous request executor for this client."""
         return AsyncRequestExecutor(
             send=client.request,
-            retries=self.retries,
-            backoff_factor=self.backoff_factor,
             tracer=self._tracer,
-            retry_policy=retry_policy,
+            retry_config=retry_config,
         )
 
     async def __aenter__(self) -> "AsyncClient":
