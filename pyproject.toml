@@ -129,3 +129,39 @@ quote-style = "preserve"
 [tool.hatch.build.targets.wheel]
 packages = []
 include = ["CHANGELOG.md"]
+
+[tool.hatch.envs.default]
+features = ["dev", "docs"]
+dependencies = [
+    "imednet @ {root:uri}/packages/core",
+    "imednet-workflows @ {root:uri}/packages/plugins-workflows",
+    "apache-airflow-providers-imednet @ {root:uri}/packages/providers-airflow",
+    "imednet-streamlit @ {root:uri}/packages/plugins-streamlit",
+    "imednet-plugins-sinks @ {root:uri}/packages/plugins-sinks",
+]
+
+[tool.hatch.envs.default.scripts]
+lint = [
+    "ruff format --check {args:packages/}",
+    "ruff check {args:packages/}",
+    "mypy packages/core/src/imednet",
+    "mypy packages/plugins-workflows/src/imednet_workflows",
+    "mypy packages/providers-airflow/src/apache_airflow_providers_imednet",
+    "mypy packages/plugins-streamlit/src/imednet_streamlit",
+    "mypy packages/plugins-sinks/src/imednet_sinks",
+    "bandit -ll -ii -r {args:packages/}",
+]
+test = "pytest {args:tests/}"
+docs = "make docs"
+
+[[tool.mypy.overrides]]
+module = [
+    "imednet.models.*",
+    "imednet.errors.*",
+]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+warn_return_any = true
+strict_optional = true

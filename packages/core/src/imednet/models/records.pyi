@@ -7,8 +7,8 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import Field, RootModel
 
-from imednet.models.engine import ModelEngine
 from imednet.models.base import ImednetBaseModel
+from imednet.models.engine import ModelEngine
 
 class Keyword(ImednetBaseModel):
     """A keyword or tag associated with a record."""

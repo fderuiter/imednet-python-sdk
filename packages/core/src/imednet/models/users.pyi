@@ -7,8 +7,8 @@ from typing import Any, List, Optional
 
 from pydantic import Field, computed_field
 
-from imednet.models.engine import ModelEngine
 from imednet.models.base import ImednetBaseModel
+from imednet.models.engine import ModelEngine
 
 class Role(ImednetBaseModel):
     """A role assigned to a user within a study or community."""

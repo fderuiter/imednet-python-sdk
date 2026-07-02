@@ -22,10 +22,13 @@ apidocs:
 	rm -rf $(APIDIR)
 	@echo "Generating new API docs..."
 	SPHINX_APIDOC_OPTIONS="members,show-inheritance" $(SPHINXAPIDOC) -o $(APIDIR) packages/core/src/imednet packages/core/src/imednet/core packages/core/src/imednet/compat packages/core/src/imednet/http -f -M --tocfile core
-	SPHINX_APIDOC_OPTIONS="members,show-inheritance" $(SPHINXAPIDOC) -o $(APIDIR) packages/providers-airflow/src/apache_airflow_providers_imednet -f -M --tocfile providers-airflow
-	SPHINX_APIDOC_OPTIONS="members,show-inheritance" $(SPHINXAPIDOC) -o $(APIDIR) packages/plugins-workflows/src/imednet_workflows -f -M --tocfile plugins-workflows
-	SPHINX_APIDOC_OPTIONS="members,show-inheritance" $(SPHINXAPIDOC) -o $(APIDIR) packages/plugins-streamlit/src/imednet_streamlit -f -M --tocfile plugins-streamlit
-	SPHINX_APIDOC_OPTIONS="members,show-inheritance" $(SPHINXAPIDOC) -o $(APIDIR) packages/plugins-sinks/src/imednet_sinks -f -M --tocfile plugins-sinks
+	@for pkg in packages/*; do \
+		if [ "$$pkg" != "packages/core" ] && [ -d "$$pkg/src" ]; then \
+			pkg_name=$$(basename $$pkg); \
+			src_dir=$$(ls -d $$pkg/src/* | head -n 1); \
+			SPHINX_APIDOC_OPTIONS="members,show-inheritance" $(SPHINXAPIDOC) -o $(APIDIR) $$src_dir -f -M --tocfile $$pkg_name; \
+		fi \
+	done
 
 validate-diagrams:
 	@echo "Validating mermaid diagrams..."

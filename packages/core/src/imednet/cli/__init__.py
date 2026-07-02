@@ -6,9 +6,9 @@ import argparse
 import os
 import subprocess
 import sys
-from typing import Any
 from importlib import import_module
 from importlib.util import find_spec
+from typing import Any
 
 try:
     from dotenv import load_dotenv

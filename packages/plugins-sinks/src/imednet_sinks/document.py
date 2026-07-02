@@ -96,9 +96,11 @@ def _post_process_document(doc: dict[str, Any]) -> dict[str, Any]:
     doc["exported_at"] = datetime.now(tz=timezone.utc).isoformat()
     return doc
 
+
 def _record_to_document(record: Any, study_key: str) -> dict[str, Any]:
     """Wrap a typed ``Record`` model in the standard document envelope."""
     from imednet.integrations.enrichment import CentralizedMapper
+
     mapper = CentralizedMapper(mode="document", post_processor=_post_process_document)
     return mapper.map_record(record, study_key=study_key)
 

@@ -127,36 +127,11 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install hatch
 
-      - name: Code Quality (Ruff)
+      - name: Lint and Type Check
         run: |
-          ruff format --check packages/${{ matrix.package }}
-          ruff check packages/${{ matrix.package }}
-
-      - name: Type Check (MyPy)
-        run: |
-          if [ "${{ matrix.package }}" = "core" ]; then
-            mypy packages/core/src/imednet
-            mypy --strict packages/core/src/imednet/models packages/core/src/imednet/errors
-          elif [ "${{ matrix.package }}" = "plugins-workflows" ]; then
-            mypy packages/plugins-workflows/src/imednet_workflows
-          elif [ "${{ matrix.package }}" = "providers-airflow" ]; then
-            mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-          elif [ "${{ matrix.package }}" = "plugins-streamlit" ]; then
-            mypy packages/plugins-streamlit/src/imednet_streamlit
-          elif [ "${{ matrix.package }}" = "plugins-sinks" ]; then
-            mypy packages/plugins-sinks/src/imednet_sinks
-          fi
-
+          hatch run lint
       - name: Security Audit (pip-audit)
         run: |
           python -m pip install --upgrade pip
@@ -194,15 +169,7 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install hatch
 
       - name: Build Workspace Packages
         run: |
@@ -213,7 +180,7 @@ jobs:
               if echo "$IMPACTED" | grep -qx "$PKG_NAME"; then
                 (
                   cd "$package"
-                  python3 -m pip install build && python3 -m build
+                  hatch build
                 )
               else
                 echo "Skipping $PKG_NAME as it is not impacted by this change plan."
@@ -290,18 +257,10 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install hatch
           
           if ls dist/*.whl 1> /dev/null 2>&1; then
-            python -m pip install --force-reinstall --no-deps dist/*.whl
+            hatch run pip install --force-reinstall --no-deps dist/*.whl
           fi
           
       - name: Run Tests
@@ -329,7 +288,7 @@ jobs:
             COV_ARGS="--cov=imednet_sinks"
           fi
           
-          pytest -q $COV_ARGS --cov-report=xml --cov-fail-under=90 -m "not live and not browser" --ignore=tests/live/ --ignore=tests/browser/ $TEST_ARGS || {
+          hatch run test -q $COV_ARGS --cov-report=xml --cov-fail-under=90 -m "not live and not browser" --ignore=tests/live/ --ignore=tests/browser/ $TEST_ARGS || {
             RET=$?
             if [ $RET -eq 5 ]; then
               echo "No tests collected for ${{ matrix.package }}. Passing gracefully."
@@ -368,15 +327,7 @@ jobs:
       - name: Install Dependencies
         if: steps.filter.outputs.export_logic == 'true'
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install hatch
 
       - name: Run Hermetic Integration Sandbox
         if: steps.filter.outputs.export_logic == 'true'
@@ -403,15 +354,7 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install hatch
         
       - name: Run Coverage-Guided Fuzzing (1,000,000 iterations)
         run: ./scripts/fuzz_test.sh
@@ -436,10 +379,9 @@ jobs:
       
       - name: Build Packages
         run: |
-          python3 -m pip install build
-          python3 -m build packages/plugins-workflows
-          python3 -m build packages/plugins-sinks
-          python3 -m build packages/core
+          (cd packages/plugins-workflows && hatch build)
+          (cd packages/plugins-sinks && hatch build)
+          (cd packages/core && hatch build)
 
       - name: Install Core with Extra
         run: |
@@ -470,21 +412,10 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install hatch
 
-      - name: Run Doctests
-        run: make doctest
-
-      - name: Build HTML
-        run: make docs
+      - name: Build HTML and Run Doctests
+        run: hatch run docs
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
@@ -654,20 +585,11 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install axe-playwright-python playwright
+          python -m pip install hatch axe-playwright-python playwright
           python -m playwright install --with-deps chromium
-          packages=()
-          for package in packages/*; do
-            if [ -f "$package/pyproject.toml" ]; then
-              packages+=("-e" "$package")
-            fi
-          done
-          packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
       - name: Run automated accessibility scan
         run: |
-          python scripts/a11y_audit.py
+          hatch run python scripts/a11y_audit.py
           
       - name: Auto-update VPAT
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
