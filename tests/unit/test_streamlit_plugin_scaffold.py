@@ -348,6 +348,7 @@ def _run_queries_page() -> _FakeDashboardStreamlit:
             "streamlit",
             "imednet_streamlit.auth",
             "imednet_streamlit.components",
+            "imednet_streamlit.components.charts",
             "imednet_workflows.query_management",
         )
     }
@@ -356,6 +357,9 @@ def _run_queries_page() -> _FakeDashboardStreamlit:
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
+        fake_charts = ModuleType("imednet_streamlit.components.charts")
+        fake_charts.render_accessible_chart = lambda chart, *args, **kwargs: fake_st.altair_charts.append(chart)  # type: ignore[attr-defined]
+        sys.modules["imednet_streamlit.components.charts"] = fake_charts
         sys.modules["imednet_workflows.query_management"] = fake_qm_module
         if package_module is not None:
             package_module.auth = fake_auth_module
@@ -446,6 +450,7 @@ def _run_sites_page(
             "streamlit",
             "imednet_streamlit.auth",
             "imednet_streamlit.components",
+            "imednet_streamlit.components.charts",
             "imednet_workflows.query_management",
         )
     }
@@ -454,6 +459,9 @@ def _run_sites_page(
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
+        fake_charts = ModuleType("imednet_streamlit.components.charts")
+        fake_charts.render_accessible_chart = lambda chart, *args, **kwargs: fake_st.altair_charts.append(chart)  # type: ignore[attr-defined]
+        sys.modules["imednet_streamlit.components.charts"] = fake_charts
         if package_module is not None:
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
@@ -541,6 +549,7 @@ def _run_records_page(
             "streamlit",
             "imednet_streamlit.auth",
             "imednet_streamlit.components",
+            "imednet_streamlit.components.charts",
         )
     }
 
@@ -548,6 +557,9 @@ def _run_records_page(
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
+        fake_charts = ModuleType("imednet_streamlit.components.charts")
+        fake_charts.render_accessible_chart = lambda chart, *args, **kwargs: fake_st.altair_charts.append(chart)  # type: ignore[attr-defined]
+        sys.modules["imednet_streamlit.components.charts"] = fake_charts
         if package_module is not None:
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module
@@ -765,7 +777,7 @@ def test_streamlit_pages_execute_without_exceptions() -> None:
     assert home_disconnected.infos
 
     home_connected = _run_page("home.py", connected=True)
-    assert home_connected.successes
+    assert any("Connected to study:" in m for m in home_connected.markdowns)
 
 
 def test_queries_page_renders() -> None:
@@ -1064,6 +1076,7 @@ def _run_enrollment_page() -> _FakeDashboardStreamlit:
             "streamlit",
             "imednet_streamlit.auth",
             "imednet_streamlit.components",
+            "imednet_streamlit.components.charts",
         )
     }
 
@@ -1071,6 +1084,9 @@ def _run_enrollment_page() -> _FakeDashboardStreamlit:
         sys.modules["streamlit"] = fake_streamlit_module
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
+        fake_charts = ModuleType("imednet_streamlit.components.charts")
+        fake_charts.render_accessible_chart = lambda chart, *args, **kwargs: fake_st.altair_charts.append(chart)  # type: ignore[attr-defined]
+        sys.modules["imednet_streamlit.components.charts"] = fake_charts
         if package_module is not None:
             package_module.auth = fake_auth_module
             package_module.components = fake_components_module

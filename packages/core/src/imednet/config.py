@@ -89,7 +89,7 @@ def load_config(
             strict_mode = parse_bool(env_strict_mode)
         else:
             strict_mode = False
-            
+
     # Set the environment variable so models can read the resolved value during validation
     os.environ["IMEDNET_STRICT_MODE"] = str(strict_mode).lower()
 

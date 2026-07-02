@@ -3,6 +3,7 @@
 import logging
 import sys
 
+
 def configure_json_logging(level: int = logging.INFO) -> None:
     """Configure root logger to emit JSON formatted logs."""
     try:  # python-json-logger >= 3.0
@@ -11,7 +12,10 @@ def configure_json_logging(level: int = logging.INFO) -> None:
         try:
             from pythonjsonlogger.jsonlogger import JsonFormatter
         except ModuleNotFoundError:
-            print("Warning: python-json-logger not installed. Install with `pip install imednet[cli]` for JSON logging.", file=sys.stderr)
+            print(
+                "Warning: python-json-logger not installed. Install with `pip install imednet[cli]` for JSON logging.",
+                file=sys.stderr,
+            )
             return
 
     handler = logging.StreamHandler()

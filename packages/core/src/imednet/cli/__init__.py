@@ -6,16 +6,23 @@ import argparse
 import os
 import subprocess
 import sys
+from typing import Any
 from importlib import import_module
 from importlib.util import find_spec
 
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
 except ImportError:
-    def load_dotenv():
+
+    def load_dotenv(*args: Any, **kwargs: Any) -> Any:  # type: ignore
         pass
-    print("Warning: python-dotenv not installed. Install with `pip install 'imednet[cli]'` to load .env files automatically.", file=sys.stderr)
+
+    print(
+        "Warning: python-dotenv not installed. Install with `pip install 'imednet[cli]'` to load .env files automatically.",
+        file=sys.stderr,
+    )
 
 from ..integrations import SinkConfig  # noqa: F401
 from ..integrations.export import (
