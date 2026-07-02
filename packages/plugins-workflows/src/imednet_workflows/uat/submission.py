@@ -209,7 +209,7 @@ class BulkRecordSubmissionWorkflow:
         poller = JobPoller(get_job=self.sdk.get_job)
         failed_batches = []
 
-        from imednet.utils.job_poller import JobFailedError
+        from imednet.spi.utils import JobFailedError
         
         for batch in batches:
             if not batch.job.batch_id:
