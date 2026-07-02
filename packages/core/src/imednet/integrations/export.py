@@ -392,7 +392,7 @@ def export_to_duckdb(
     try:
         conn.register(_DUCKDB_DF_ALIAS, df)
         conn.execute(
-            f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(table_name)} "  # nosec B608
+            f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(table_name)} "  # noqa: S608
             f"AS SELECT * FROM {_quote_duckdb_identifier(_DUCKDB_DF_ALIAS)}"
         )
         conn.unregister(_DUCKDB_DF_ALIAS)
@@ -460,7 +460,7 @@ def export_to_duckdb_by_form(
 
             conn.register(_DUCKDB_DF_ALIAS, df)
             conn.execute(
-                f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(form.form_key)} "  # nosec B608
+                f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(form.form_key)} "  # noqa: S608
                 f"AS SELECT * FROM {_quote_duckdb_identifier(_DUCKDB_DF_ALIAS)}"
             )
             conn.unregister(_DUCKDB_DF_ALIAS)

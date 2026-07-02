@@ -73,7 +73,7 @@ def test_fixed_strategy_requires_fixed_value() -> None:
             variable_name="AGE",
             variable_key="AGE",
             variable_type="Number",
-            form_key="DEMOG",
+            form_key="DEMO",
             strategy=VariableTestStrategy.FIXED,
         )
 
@@ -83,7 +83,7 @@ def test_subject_count_bounds(count: int) -> None:
     """Test that subject count bounds."""
     with pytest.raises(ValidationError, match="subject_count must be between 1 and 100"):
         UATFormSpec(
-            form_key="DEMOG",
+            form_key="DEMO",
             form_name="Demographics",
             form_type="CRF",
             test_type=RecordTestType.CREATE_NEW_RECORD,

@@ -10,8 +10,9 @@ repos:
     rev: v1.10.0
     hooks:
       - id: mypy
-        additional_dependencies: ["pandas-stubs", "types-requests", "pydantic"]
+        additional_dependencies: ["types-requests", "pydantic"]
         args: ["--ignore-missing-imports", "--no-strict-optional"]
+        exclude: '\.pyi$'
 
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
@@ -20,8 +21,7 @@ repos:
         args: ['--baseline', '.secrets.baseline']
         exclude: package.lock.json
 
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.8
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.23.1
     hooks:
-      - id: bandit
-        args: ["-ll", "-ii", "-r", "packages"]
+      - id: typos

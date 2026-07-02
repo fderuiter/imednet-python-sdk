@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import io
 import sys
-from contextlib import redirect_stdout, redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 from importlib.machinery import ModuleSpec
 from types import ModuleType
 from typing import Any
 from unittest.mock import MagicMock, patch
+
 
 class Result:
     def __init__(self, exit_code, stdout, stderr=""):
@@ -16,6 +17,7 @@ class Result:
         self.stdout = stdout
         self.stderr = stderr
         self.output = stdout + stderr
+
 
 class CliRunner:
     def invoke(self, app, args):
@@ -30,10 +32,12 @@ class CliRunner:
                     exit_code = e.code or 0
         except Exception as e:
             import traceback
+
             err.write(traceback.format_exc())
             exit_code = 1
-        
+
         return Result(exit_code, out.getvalue(), err.getvalue())
+
 
 def test_dashboard_missing_plugin() -> None:
     """When imednet_streamlit is not installed, exit code 1 with helpful message."""
@@ -54,6 +58,7 @@ def test_dashboard_missing_plugin() -> None:
 
         with patch("importlib.util.find_spec", side_effect=mock_find_spec):
             from imednet.cli import app
+
             runner = CliRunner()
             result = runner.invoke(app, ["dashboard"])
 
@@ -84,6 +89,7 @@ def test_dashboard_launches_subprocess() -> None:
 
         with patch("importlib.util.find_spec", side_effect=mock_find_spec):
             from imednet.cli import app
+
             runner = CliRunner()
             with patch("subprocess.run") as mock_run:
                 mock_run.return_value = MagicMock(returncode=0)

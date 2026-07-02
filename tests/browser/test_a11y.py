@@ -4,8 +4,10 @@ import re
 import shutil
 import time
 from datetime import datetime, timezone
+
 import pytest
 from axe_playwright_python.sync_playwright import Axe
+
 
 @pytest.mark.a11y
 def test_accessibility_audit(dashboard_server, page):
@@ -70,7 +72,7 @@ def test_accessibility_audit(dashboard_server, page):
                     break
             if not is_exempted:
                 unexempted_nodes.append(node)
-                
+
         if unexempted_nodes:
             v_copy = v.copy()
             v_copy['nodes'] = unexempted_nodes
@@ -83,32 +85,49 @@ def test_accessibility_audit(dashboard_server, page):
         "critically_non_compliant_findings": len(unexempted_violations),
         "last_audit": audit_ts,
         "passed": len(unexempted_violations) == 0,
-        "violations": [{"id": v['id'], "impact": v.get('impact'), "description": v.get('description'), "helpUrl": v.get('helpUrl')} for v in unexempted_violations]
+        "violations": [
+            {
+                "id": v['id'],
+                "impact": v.get('impact'),
+                "description": v.get('description'),
+                "helpUrl": v.get('helpUrl'),
+            }
+            for v in unexempted_violations
+        ],
     }
-    
+
     with open("a11y_report.json", "w") as f:
         json.dump(report, f, indent=2)
 
     try:
-        shutil.copy("a11y_report.json", "packages/plugins-streamlit/src/imednet_streamlit/pages/a11y_report.json")
+        shutil.copy(
+            "a11y_report.json",
+            "packages/plugins-streamlit/src/imednet_streamlit/pages/a11y_report.json",
+        )
     except Exception:
         pass
-        
+
     if not unexempted_violations:
         vpat_path = "docs/VPAT.md"
         if os.path.exists(vpat_path):
             with open(vpat_path, "r") as f:
                 vpat_content = f.read()
-            
+
             commit_hash = os.environ.get('GITHUB_SHA', 'local-audit-hash')
-            
+
             if "**Last Audit:**" in vpat_content:
-                vpat_content = re.sub(r"\*\*Last Audit:\*\* .*", f"**Last Audit:** {audit_ts}", vpat_content)
-                vpat_content = re.sub(r"\*\*Commit Hash:\*\* .*", f"**Commit Hash:** {commit_hash}", vpat_content)
+                vpat_content = re.sub(
+                    r"\*\*Last Audit:\*\* .*", f"**Last Audit:** {audit_ts}", vpat_content
+                )
+                vpat_content = re.sub(
+                    r"\*\*Commit Hash:\*\* .*", f"**Commit Hash:** {commit_hash}", vpat_content
+                )
             else:
                 vpat_content += f"\n\n**Last Audit:** {audit_ts}\n**Commit Hash:** {commit_hash}\n"
-                
+
             with open(vpat_path, "w") as f:
                 f.write(vpat_content)
 
-    assert not unexempted_violations, f"Found {len(unexempted_violations)} unexempted accessibility violations."
+    assert (
+        not unexempted_violations
+    ), f"Found {len(unexempted_violations)} unexempted accessibility violations."

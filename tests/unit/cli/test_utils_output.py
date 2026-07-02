@@ -16,7 +16,7 @@ def test_fetching_status_records() -> None:
         with fetching_status("records", "ST"):
             pass
 
-        mock_console.status.assert_called_with("Fetching records for study \'ST\'...")
+        mock_console.status.assert_called_with("Fetching records for study 'ST'...")
         mock_status.__enter__.assert_called()
         mock_status.__exit__.assert_called()
 

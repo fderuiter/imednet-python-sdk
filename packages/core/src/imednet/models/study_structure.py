@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import List
 
 from pydantic import Field
+
 from imednet.models.base import ImednetBaseModel
 
 # Import existing models needed for type hints and potentially reuse
@@ -35,7 +36,6 @@ class FormStructure(ImednetBaseModel):
     # Nested variables
     variables: List[Variable] = Field(default_factory=list)
 
-
     @classmethod
     def from_form(cls, form: Form, variables: List[Variable]) -> FormStructure:
         """Creates FormStructure from a Form model and its associated variables."""
@@ -62,7 +62,6 @@ class IntervalStructure(ImednetBaseModel):
     # Nested forms
     forms: List[FormStructure] = Field(default_factory=list)
 
-
     @classmethod
     def from_interval(cls, interval: Interval, forms: List[FormStructure]) -> IntervalStructure:
         """Creates IntervalStructure from an Interval model and its associated FormStructures."""
@@ -78,4 +77,3 @@ class StudyStructure(ImednetBaseModel):
 
     study_key: str = Field(..., alias="studyKey")
     intervals: List[IntervalStructure] = Field(default_factory=list)
-

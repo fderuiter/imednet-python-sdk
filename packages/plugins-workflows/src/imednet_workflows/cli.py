@@ -33,7 +33,7 @@ def setup_parser(subparsers):
     extract_parser.add_argument(
         "--record-filter",
         action="append",
-        help="Record filter criteria (e.g., 'form_key=DEMOG'). Repeat for multiple filters.",
+        help="Record filter criteria (e.g., 'form_key=DEMO'). Repeat for multiple filters.",
     )
     extract_parser.add_argument(
         "--subject-filter",

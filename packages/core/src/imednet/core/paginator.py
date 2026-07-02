@@ -4,10 +4,10 @@ from typing import Any, AsyncIterator, Dict, Generic, Iterator, Optional, TypeVa
 
 import httpx
 
-from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
+from imednet.core.protocols import AsyncRequesterProtocol, RequesterProtocol
 from imednet.errors.client import PaginationError
 
-ClientT = TypeVar("ClientT", RequestorProtocol, AsyncRequestorProtocol)
+ClientT = TypeVar("ClientT", RequesterProtocol, AsyncRequesterProtocol)
 
 
 class BasePaginator(Generic[ClientT]):
@@ -27,7 +27,7 @@ class BasePaginator(Generic[ClientT]):
         """Initialize the paginator.
 
         Args:
-            client: Requestor instance (sync or async).
+            client: Requester instance (sync or async).
             path: API path for the request.
             params: Query parameters.
             page_size: Number of items per page.
@@ -131,7 +131,7 @@ class BasePaginator(Generic[ClientT]):
         return payload
 
 
-class Paginator(BasePaginator[RequestorProtocol]):
+class Paginator(BasePaginator[RequesterProtocol]):
     """Iterate synchronously over paginated API results."""
 
     def __iter__(self) -> Iterator[Any]:
@@ -145,7 +145,7 @@ class Paginator(BasePaginator[RequestorProtocol]):
             yield from items
 
 
-class AsyncPaginator(BasePaginator[AsyncRequestorProtocol]):
+class AsyncPaginator(BasePaginator[AsyncRequesterProtocol]):
     """Asynchronous variant of :class:`Paginator`."""
 
     async def __aiter__(self) -> AsyncIterator[Any]:

@@ -17,7 +17,7 @@ from imednet.core.endpoint.strategies import (
 from imednet.core.endpoint.structs import ListRequestState, ParamState
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.parsing import get_model_parser
-from imednet.core.protocols import AsyncRequestorProtocol, ParamProcessor, RequestorProtocol
+from imednet.core.protocols import AsyncRequesterProtocol, ParamProcessor, RequesterProtocol
 from imednet.models.base import ImednetBaseModel
 from imednet.utils.filters import build_filter_string
 from imednet.utils.typing import FilterValue, ItemId
@@ -34,21 +34,21 @@ class GenericEndpoint(EndpointABC[T]):
     """
 
     BASE_PATH = ""
-    _client: Optional[RequestorProtocol]
-    _async_client: Optional[AsyncRequestorProtocol]
+    _client: Optional[RequesterProtocol]
+    _async_client: Optional[AsyncRequesterProtocol]
 
     def __init__(
         self,
-        client: Optional[RequestorProtocol] = None,
+        client: Optional[RequesterProtocol] = None,
         ctx: object | None = None,
-        async_client: Optional[AsyncRequestorProtocol] = None,
+        async_client: Optional[AsyncRequesterProtocol] = None,
     ) -> None:
         """Initialize the generic endpoint.
 
         Args:
-            client: Synchronous requestor instance.
+            client: Synchronous requester instance.
             ctx: Deprecated context object.
-            async_client: Asynchronous requestor instance.
+            async_client: Asynchronous requester instance.
         """
         if ctx is not None:
             warnings.warn(
@@ -75,13 +75,13 @@ class GenericEndpoint(EndpointABC[T]):
         """
         return "/" + build_safe_path(self.BASE_PATH, *segments)
 
-    def _require_sync_client(self) -> RequestorProtocol:
+    def _require_sync_client(self) -> RequesterProtocol:
         """Return the configured sync client or raise if missing."""
         if self._client is None:
             raise RuntimeError("Sync client not configured")
         return self._client
 
-    def _require_async_client(self) -> AsyncRequestorProtocol:
+    def _require_async_client(self) -> AsyncRequesterProtocol:
         """Return the configured async client or raise if missing."""
         if self._async_client is None:
             raise RuntimeError("Async client not configured")
@@ -225,20 +225,20 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
 
     def __init__(
         self,
-        client: RequestorProtocol,
+        client: RequesterProtocol,
         ctx: object | None = None,
     ) -> None:
         """Initialize the synchronous endpoint.
 
         Args:
-            client: Synchronous requestor instance.
+            client: Synchronous requester instance.
             ctx: Deprecated context object.
         """
         super().__init__(client=client, ctx=ctx)
 
     def _list_sync(
         self,
-        client: RequestorProtocol,
+        client: RequesterProtocol,
         paginator_cls: type[Paginator],
         *,
         study_key: Optional[str] = None,
@@ -248,7 +248,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         """Internal synchronous list implementation.
 
         Args:
-            client: Requestor to use.
+            client: Requester to use.
             paginator_cls: Paginator class to use.
             study_key: Optional study key.
             extra_params: Additional query parameters.
@@ -287,7 +287,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
 
     def _get_sync(
         self,
-        client: RequestorProtocol,
+        client: RequesterProtocol,
         paginator_cls: type[Paginator],
         *,
         study_key: Optional[str],
@@ -296,7 +296,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         """Internal synchronous get implementation.
 
         Args:
-            client: Requestor to use.
+            client: Requester to use.
             paginator_cls: Paginator class to use.
             study_key: Optional study key.
             item_id: The ID of the item to retrieve.
@@ -338,20 +338,20 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
 
     def __init__(
         self,
-        async_client: AsyncRequestorProtocol,
+        async_client: AsyncRequesterProtocol,
         ctx: object | None = None,
     ) -> None:
         """Initialize the asynchronous endpoint.
 
         Args:
-            async_client: Asynchronous requestor instance.
+            async_client: Asynchronous requester instance.
             ctx: Deprecated context object.
         """
         super().__init__(ctx=ctx, async_client=async_client)
 
     def _list_async(
         self,
-        client: AsyncRequestorProtocol,
+        client: AsyncRequesterProtocol,
         paginator_cls: type[AsyncPaginator],
         *,
         study_key: Optional[str] = None,
@@ -361,7 +361,7 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         """Internal asynchronous list implementation.
 
         Args:
-            client: Asynchronous requestor to use.
+            client: Asynchronous requester to use.
             paginator_cls: Asynchronous paginator class to use.
             study_key: Optional study key.
             extra_params: Additional query parameters.
@@ -401,7 +401,7 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
 
     async def _get_async(
         self,
-        client: AsyncRequestorProtocol,
+        client: AsyncRequesterProtocol,
         paginator_cls: type[AsyncPaginator],
         *,
         study_key: Optional[str],
@@ -410,7 +410,7 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         """Internal asynchronous get implementation.
 
         Args:
-            client: Asynchronous requestor to use.
+            client: Asynchronous requester to use.
             paginator_cls: Asynchronous paginator class to use.
             study_key: Optional study key.
             item_id: The ID of the item to retrieve.

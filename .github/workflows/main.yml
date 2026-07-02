@@ -142,6 +142,11 @@ jobs:
           ruff format --check packages/${{ matrix.package }}
           ruff check packages/${{ matrix.package }}
 
+      - name: Spelling and Documentation (Typos)
+        run: |
+          python -m pip install typos
+          typos packages/${{ matrix.package }}
+
       - name: Type Check (MyPy)
         run: |
           if [ "${{ matrix.package }}" = "core" ]; then
@@ -168,10 +173,6 @@ jobs:
           done
           echo "Audit failed after 3 attempts."
           exit 1
-
-      - name: Static Analysis (Bandit)
-        run: |
-          bandit -ll -ii -r packages/${{ matrix.package }}
 
       - name: Semantic Static Analysis (Semgrep)
         run: |

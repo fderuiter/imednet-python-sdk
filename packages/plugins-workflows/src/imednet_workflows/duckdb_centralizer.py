@@ -95,7 +95,7 @@ class DuckDBIngestionWorkflow:
                 PARTITION BY record_id, variable_name
                 ORDER BY revision_number DESC
             ) = 1
-            """  # nosec B608
+            """  # noqa: S608
         self._connection.execute(query)  # nosem
 
     def _ensure_bronze_table(self) -> None:

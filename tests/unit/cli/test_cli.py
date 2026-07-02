@@ -19,10 +19,13 @@ class Result:
         self.stderr = stderr
         self.output = stdout + stderr
 
+
 class CliRunner:
     def invoke(self, app, args):
-        import io, sys
-        from contextlib import redirect_stdout, redirect_stderr
+        import io
+        import sys
+        from contextlib import redirect_stderr, redirect_stdout
+
         out = io.StringIO()
         err = io.StringIO()
         exit_code = 0
@@ -35,12 +38,12 @@ class CliRunner:
             exit_code = e.code or 0
         except Exception as e:
             import traceback
+
             err.write(traceback.format_exc())
             exit_code = 1
-        
+
         # We also need to catch argparse sys.exit(2)
         return Result(exit_code, out.getvalue(), err.getvalue())
-
 
 
 import imednet.cli as cli
@@ -200,12 +203,12 @@ def test_extract_records_calls_workflow(
     workflow.extract_records_by_criteria.return_value = [1]
     result = runner.invoke(
         cli.app,
-        ["workflows", "extract-records", "STUDY", "--record-filter", "form_key=DEMOG"],
+        ["workflows", "extract-records", "STUDY", "--record-filter", "form_key=DEMO"],
     )
     assert result.exit_code == 0
     workflow.extract_records_by_criteria.assert_called_once_with(
         study_key="STUDY",
-        record_filter={"form_key": "DEMOG"},
+        record_filter={"form_key": "DEMO"},
         subject_filter=None,
         visit_filter=None,
     )
@@ -660,7 +663,9 @@ def test_sync_worker_once_command(
     monkeypatch.setattr("imednet_workflows.cached_loader.CachedRecordsLoader", loader_cls)
     monkeypatch.setattr("imednet_workflows.cli.SyncWorker", MagicMock(return_value=worker))
 
-    result = runner.invoke(cli.app, ["workflows", "sync-worker", "STUDY", "--interval", "5", "--once"])
+    result = runner.invoke(
+        cli.app, ["workflows", "sync-worker", "STUDY", "--interval", "5", "--once"]
+    )
 
     assert result.exit_code == 0
     loader_cls.assert_called_once_with(sdk)

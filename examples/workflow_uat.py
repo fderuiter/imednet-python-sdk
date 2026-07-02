@@ -1,6 +1,8 @@
 import sys
+
 from imednet import ImednetSDK, load_config
 from imednet_workflows.uat import UATWorkflow
+
 
 def main():
     try:
@@ -24,6 +26,7 @@ def main():
             # print(result.summary())
     except Exception as e:
         print(f"Failed: {e}")
+
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,8 @@
 import sys
+
 from imednet import ImednetSDK, load_config
 from imednet_workflows.uat import BulkRecordSubmissionWorkflow, GeneratedRecordSet, RecordTestType
+
 
 def main():
     try:
@@ -17,34 +19,32 @@ def main():
             base_url=cfg.base_url,
         ) as sdk:
             workflow = BulkRecordSubmissionWorkflow(
-                sdk,
-                batch_size=500,
-                skip_existing_subjects=True,
-                await_registration=True
+                sdk, batch_size=500, skip_existing_subjects=True, await_registration=True
             )
-            
+
             # Example record sets (normally produced by a generator or mapped from source data)
             registration_set = GeneratedRecordSet(
                 form_key="REG",
                 form_name="Registration Form",
                 test_type=RecordTestType.REGISTER_SUBJECT,
                 payloads=[{"subject_id": "SUBJ_1", "age": 45}],
-                subject_keys=["SUBJ_1"]
+                subject_keys=["SUBJ_1"],
             )
-            
+
             data_set = GeneratedRecordSet(
                 form_key="VITALS",
                 form_name="Vitals Form",
                 test_type=RecordTestType.CREATE_NEW_RECORD,
                 payloads=[{"subject_id": "SUBJ_1", "hr": 72, "bp": "120/80"}],
-                subject_keys=["SUBJ_1"]
+                subject_keys=["SUBJ_1"],
             )
-            
+
             # Submit in two phases: Registration first, then Data
             # result = workflow.submit("MY_STUDY", [registration_set, data_set])
             # print(f"Submitted {result.total_records_submitted} records across {len(result.all_batches)} batches.")
     except Exception as e:
         print(f"Failed: {e}")
+
 
 if __name__ == "__main__":
     main()

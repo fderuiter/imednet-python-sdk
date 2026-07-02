@@ -37,12 +37,9 @@ dev = [
     "sqlalchemy>=2.0,<3.0.0",
     "openpyxl>=3.1,<4.0.0",
     "sphinxcontrib-mermaid>=0.9.2,<0.10.0",
-    "doc8>=2.0.0,<3.0.0",
-    "codespell>=2.4.1,<3.0.0",
     "pip>=26.0,<27.0.0",
     "neo4j>=6.2.0,<7.0.0",
     "pymongo>=4.17.0,<5.0.0",
-    "bandit>=1.9.4,<2.0.0",
     "atheris>=3.0.0,<4.0.0; python_version>='3.11'",
     "sphinx-argparse>=0.5.0"
 ]
@@ -62,18 +59,14 @@ src = ["packages/core/src", "packages/plugins-workflows/src", "packages/provider
 known-first-party = ["imednet", "imednet_workflows", "apache_airflow_providers_imednet", "imednet_streamlit"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "SLF", "D"]
-ignore = ["ANN", "S101", "E501", "E402", "E701", "E713", "F401", "F403", "F405", "N802", "F841", "F811"]
+select = ["E", "F", "I", "N", "SLF", "D", "S"]
+ignore = ["ANN", "S101", "S105", "S110", "S112", "S311", "S603", "E501", "E402", "E701", "E713", "F401", "F403", "F405", "N802", "F841", "F811"]
 
 [tool.ruff.lint.pep8-naming]
 classmethod-decorators = ["field_validator", "model_validator"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
-
-[tool.doc8]
-max_line_length = 400
-ignore_path = ["docs/_build"]
 
 [tool.mypy]
 python_version = "3.10"
@@ -119,8 +112,10 @@ ignore_missing_imports = true
 
 [tool.ruff.lint.per-file-ignores]
 "packages/core/**/*.py" = ["SLF001"]
-"tests/**/*.py" = ["SLF001"]
-"scripts/**/*.py" = ["SLF001"]
+"tests/**/*.py" = ["SLF001", "S", "D"]
+"scripts/**/*.py" = ["SLF001", "S", "D"]
+"examples/**/*.py" = ["SLF001", "S", "D"]
+"final_automate.py" = ["D"]
 "packages/plugins-sinks/tests/**/*.py" = ["SLF001"]
 
 [tool.ruff.format]
@@ -129,3 +124,4 @@ quote-style = "preserve"
 [tool.hatch.build.targets.wheel]
 packages = []
 include = ["CHANGELOG.md"]
+
