@@ -36,6 +36,8 @@ docs: apidocs validate-diagrams validate-docs
 	$(SPHINXBUILD) -b html $(SPHINXOPTS) docs docs/_build/html
 
 doctest: apidocs
+	@echo "Type-checking documentation snippets..."
+	python scripts/typecheck_docs.py
 	@echo "Running Sphinx doctests..."
 	$(SPHINXBUILD) -b doctest $(SPHINXOPTS) docs docs/_build/doctest
 

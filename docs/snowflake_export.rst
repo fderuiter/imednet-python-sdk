@@ -48,11 +48,11 @@ Quickstart — ``export_to_snowflake``
 The :func:`~imednet.integrations.export_to_snowflake` convenience function handles
 batching, staging, and cleanup automatically:
 
-.. code-block:: python
+.. testcode::
 
    import os
    from imednet import ImednetSDK
-   from imednet.integrations import export_to_snowflake, SnowflakeSinkConfig
+   from imednet_sinks.warehouse import export_to_snowflake, SnowflakeSinkConfig
 
    sdk = ImednetSDK(api_key=os.environ["IMEDNET_API_KEY"])
 
@@ -76,7 +76,7 @@ Advanced usage — ``SnowflakeExportSink`` directly
 Use :class:`~imednet_sinks.warehouse.SnowflakeExportSink` directly when you need
 per-batch control, custom ``batch_id`` keys, or integration with a workflow engine:
 
-.. code-block:: python
+.. testcode::
 
    import os
    from imednet import ImednetSDK
@@ -112,10 +112,16 @@ Manifest output
 Pass ``manifest_path`` to record every loaded batch in a JSON-lines file for audit
 purposes or replay:
 
-.. code-block:: python
+.. testcode::
 
    cfg = SnowflakeSinkConfig(
-       ...
+       account="myorg",
+       user="user",
+       database="db",
+       schema="public",
+       warehouse="wh",
+       stage="stg",
+       table="tbl",
        manifest_path="/tmp/imednet_manifest.jsonl",
    )
 

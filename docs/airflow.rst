@@ -71,10 +71,10 @@ dynamic-mapping pattern: keep static settings (for example ``destination`` and
 ``imednet_conn_id``) in ``.partial(...)`` and map only runtime fields
 (``study_key``, ``output_path``, ``export_kwargs``).
 
-.. code-block:: python
+.. testcode::
 
    from typing import Any
-   from airflow.decorators import task
+   from airflow.decorators import task  # type: ignore[attr-defined]
    from apache_airflow_providers_imednet import ImednetExportOperator, ImednetHook
 
    @task
