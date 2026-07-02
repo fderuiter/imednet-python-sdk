@@ -351,7 +351,15 @@ jobs:
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
         
       - name: Run Coverage-Guided Fuzzing (1,000,000 iterations)
-        run: ./scripts/fuzz_test.sh
+        run: pytest tests/core/test_fuzz.py -m fuzzing -v
+        
+      - name: Save Verification Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzzing-report
+          path: fuzzing_report.json
+          if-no-files-found: ignore
 
   # ------------------------------------------------------------------
   # JOB 3.7: VALIDATE EXTRAS

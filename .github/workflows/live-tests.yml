@@ -70,13 +70,7 @@ jobs:
           
           echo "pytest_exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
           
-          grep -i -E "(ValidationError|Structural shift detected|extra fields not permitted)" pytest_output.txt > drift_report.txt || true
-          
-          if [ -s drift_report.txt ]; then
-            echo "drift_detected=true" >> $GITHUB_OUTPUT
-          else
-            echo "drift_detected=false" >> $GITHUB_OUTPUT
-          fi
+          python scripts/aggregate_verification.py
 
       - name: Post Drift Report
         if: steps.live_tests.outputs.drift_detected == 'true' && github.event_name == 'pull_request'
