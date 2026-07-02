@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import time
 from collections.abc import Mapping, Sequence
 from typing import Any
 
@@ -163,39 +162,28 @@ class ImednetExportOperator(BaseOperator):
 
         sink = self._resolve_sink(config)
 
-        attempts = 0
-        while attempts <= config.max_retries:
-            try:
-                if sink:
-                    # Single execution path for Sink-based destinations
-                    raw_records = sdk.records.list(
-                        study_key=self.study_key, record_data_filter=None
-                    )
-                    records_list = list(
-                        sink_base.apply_quality_gate(sdk, self.study_key, raw_records, config)
-                    )
-                    with sink:
-                        for i, batch in enumerate(
-                            sink_base.iter_batches(records_list, config.batch_size)
-                        ):
-                            sink.write_batch(batch, batch_id=f"{self.study_key}/batch/{i}")
-                else:
-                    # Execution path for legacy tabular functions
-                    # We dispatch to getattr so mocks in tests are preserved
-                    if not export_callable:
-                        raise AirflowException(f"Unsupported destination or export_func '{dest}'")
+        if sink:
+            # Single execution path for Sink-based destinations
+            raw_records = sdk.records.list(
+                study_key=self.study_key, record_data_filter=None
+            )
+            records_list = list(
+                sink_base.apply_quality_gate(sdk, self.study_key, raw_records, config)
+            )
+            with sink:
+                for i, batch in enumerate(
+                    sink_base.iter_batches(records_list, config.batch_size)
+                ):
+                    sink.write_batch(batch, batch_id=f"{self.study_key}/batch/{i}")
+        else:
+            # Execution path for legacy tabular functions
+            # We dispatch to getattr so mocks in tests are preserved
+            if not export_callable:
+                raise AirflowException(f"Unsupported destination or export_func '{dest}'")
 
-                    export_callable(
-                        sdk, self.study_key, self.output_path, **self._get_runtime_export_kwargs()
-                    )
-                return self.output_path
-            except Exception as e:
-                attempts += 1
-                if attempts > config.max_retries:
-                    raise
-                logger.warning("Export attempt %d failed: %s. Retrying...", attempts, e)
-                time.sleep(config.retry_backoff * (2 ** (attempts - 1)))
-
+            export_callable(
+                sdk, self.study_key, self.output_path, **self._get_runtime_export_kwargs()
+            )
         return self.output_path
 
 
