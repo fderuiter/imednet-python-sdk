@@ -9,7 +9,9 @@ def run_dashboard(port: int = 8501, no_browser: bool = False) -> None:
     """Launch the interactive iMednet Streamlit reporting dashboard."""
     dashboard_spec = find_spec("imednet_streamlit.app")
     if dashboard_spec is None:
-        print("Dashboard app not found. Please ensure it is installed via `pip install imednet-streamlit`.")
+        print(
+            "Dashboard app not found. Please ensure it is installed via `pip install imednet-streamlit`."
+        )
         sys.exit(1)
 
     app_path = dashboard_spec.origin

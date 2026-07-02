@@ -326,7 +326,7 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
             setattr(self, attr, endpoint_cls(self._async_client))  # type: ignore[arg-type]
 
     def close(self) -> None:
-        """Raises :exc:`TypeError` — use ``await sdk.aclose()`` instead."""
+        """Raise TypeError as sync close is not supported."""
         raise TypeError(
             "AsyncImednetSDK does not support the synchronous close() method. "
             "Use `await sdk.aclose()` or `async with AsyncImednetSDK(...)` instead."

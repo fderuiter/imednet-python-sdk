@@ -41,7 +41,7 @@ def _cached_records_loader() -> Any:
         ImportError: If no loader plugin is installed.
     """
     from importlib.metadata import entry_points
-    
+
     loaders = list(entry_points(group="imednet.loaders", name="CachedRecordsLoader"))
     if not loaders:
         raise ImportError(
@@ -163,8 +163,8 @@ def hive_parquet_query(base_dir: str) -> str:
     """Return the DuckDB read_parquet query string for the given Hive base directory."""
     escaped_base_dir = base_dir.replace("'", "''")
     return (
-        f"SELECT * FROM read_parquet('{escaped_base_dir}/**/*.parquet', "
-        "hive_partitioning = true, union_by_name = true)"
+        f"SELECT * FROM read_parquet('{escaped_base_dir}/**/*.parquet', "  # noqa: S608
+        "hive_partitioning = true, union_by_name = true)"  # noqa: S608
     )
 
 

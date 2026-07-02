@@ -18,6 +18,7 @@ class Result:
         self.stderr = stderr
         self.output = stdout + stderr
 
+
 class CliRunner:
     def invoke(self, app, args):
         out = io.StringIO()
@@ -31,10 +32,12 @@ class CliRunner:
                     exit_code = e.code or 0
         except Exception as e:
             import traceback
+
             err.write(traceback.format_exc())
             exit_code = 1
-        
+
         return Result(exit_code, out.getvalue(), err.getvalue())
+
 
 def test_dashboard_missing_plugin() -> None:
     """When imednet_streamlit is not installed, exit code 1 with helpful message."""
@@ -55,6 +58,7 @@ def test_dashboard_missing_plugin() -> None:
 
         with patch("importlib.util.find_spec", side_effect=mock_find_spec):
             from imednet.cli import app
+
             runner = CliRunner()
             result = runner.invoke(app, ["dashboard"])
 
@@ -85,6 +89,7 @@ def test_dashboard_launches_subprocess() -> None:
 
         with patch("importlib.util.find_spec", side_effect=mock_find_spec):
             from imednet.cli import app
+
             runner = CliRunner()
             with patch("subprocess.run") as mock_run:
                 mock_run.return_value = MagicMock(returncode=0)

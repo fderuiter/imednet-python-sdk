@@ -358,7 +358,9 @@ def _run_queries_page() -> _FakeDashboardStreamlit:
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
         fake_charts = ModuleType("imednet_streamlit.components.charts")
-        fake_charts.render_accessible_chart = lambda chart, *args, **kwargs: fake_st.altair_charts.append(chart)  # type: ignore[attr-defined]
+        fake_charts.render_accessible_chart = lambda chart, *args, **kwargs: (
+            fake_st.altair_charts.append(chart)
+        )  # type: ignore[attr-defined]
         sys.modules["imednet_streamlit.components.charts"] = fake_charts
         sys.modules["imednet_workflows.query_management"] = fake_qm_module
         if package_module is not None:
@@ -460,7 +462,9 @@ def _run_sites_page(
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
         fake_charts = ModuleType("imednet_streamlit.components.charts")
-        fake_charts.render_accessible_chart = lambda chart, *args, **kwargs: fake_st.altair_charts.append(chart)  # type: ignore[attr-defined]
+        fake_charts.render_accessible_chart = lambda chart, *args, **kwargs: (
+            fake_st.altair_charts.append(chart)
+        )  # type: ignore[attr-defined]
         sys.modules["imednet_streamlit.components.charts"] = fake_charts
         if package_module is not None:
             package_module.auth = fake_auth_module
@@ -558,7 +562,9 @@ def _run_records_page(
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
         fake_charts = ModuleType("imednet_streamlit.components.charts")
-        fake_charts.render_accessible_chart = lambda chart, *args, **kwargs: fake_st.altair_charts.append(chart)  # type: ignore[attr-defined]
+        fake_charts.render_accessible_chart = lambda chart, *args, **kwargs: (
+            fake_st.altair_charts.append(chart)
+        )  # type: ignore[attr-defined]
         sys.modules["imednet_streamlit.components.charts"] = fake_charts
         if package_module is not None:
             package_module.auth = fake_auth_module
@@ -1085,7 +1091,9 @@ def _run_enrollment_page() -> _FakeDashboardStreamlit:
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_streamlit.components"] = fake_components_module
         fake_charts = ModuleType("imednet_streamlit.components.charts")
-        fake_charts.render_accessible_chart = lambda chart, *args, **kwargs: fake_st.altair_charts.append(chart)  # type: ignore[attr-defined]
+        fake_charts.render_accessible_chart = lambda chart, *args, **kwargs: (
+            fake_st.altair_charts.append(chart)
+        )  # type: ignore[attr-defined]
         sys.modules["imednet_streamlit.components.charts"] = fake_charts
         if package_module is not None:
             package_module.auth = fake_auth_module

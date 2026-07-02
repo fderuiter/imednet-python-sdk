@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar, Union
 
 from imednet.constants import HEADER_EMAIL_NOTIFY
-from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
+from imednet.core.protocols import AsyncRequesterProtocol, RequesterProtocol
 from imednet.utils.security import validate_header_value
 from imednet.validation.cache import BaseSchemaCache, validate_record_entry
 
@@ -79,7 +79,7 @@ class RecordCreateOperation(Generic[T]):
 
     def execute_sync(
         self,
-        client: RequestorProtocol,
+        client: RequesterProtocol,
         parse_func: Callable[[Any], T],
     ) -> T:
         """Execute synchronous creation request.
@@ -100,7 +100,7 @@ class RecordCreateOperation(Generic[T]):
 
     async def execute_async(
         self,
-        client: AsyncRequestorProtocol,
+        client: AsyncRequesterProtocol,
         parse_func: Callable[[Any], T],
     ) -> T:
         """Execute asynchronous creation request.

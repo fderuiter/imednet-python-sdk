@@ -156,9 +156,9 @@ def test_verify_update_scheduled_record_outcome(
         )
     )
 
-    assert any(r.data.get(var_name) == unique_tag for r in updated_records), (
-        "Update not reflected in follow-up read"
-    )
+    assert any(
+        r.data.get(var_name) == unique_tag for r in updated_records
+    ), "Update not reflected in follow-up read"
 
 
 def test_verify_batch_update_outcome(

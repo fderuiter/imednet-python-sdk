@@ -1,4 +1,5 @@
 """Unified contract definitions."""
+
 import json
 import os
 import re

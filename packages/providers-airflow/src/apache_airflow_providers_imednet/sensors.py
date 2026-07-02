@@ -61,7 +61,7 @@ class ImednetJobSensor(BaseSensorOperator):
 
         sdk = self._get_sdk()
         job = sdk.jobs.get(self.study_key, self.batch_id)
-        
+
         try:
             return evaluate_job_state(job)
         except JobFailedError as e:

@@ -12,6 +12,7 @@ from imednet.models.base import (
     SortField,
 )
 from imednet.models.codings import Coding
+from imednet.models.engine import ResourceRegistry
 from imednet.models.forms import Form
 from imednet.models.intervals import FormSummary, Interval
 from imednet.models.jobs import Job, JobStatus
@@ -65,6 +66,7 @@ from imednet.utils.validators import (
 
 __all__: list[str] = [
     "ApiResponse",
+    "ResourceRegistry",
     "Coding",
     "Error",
     "Form",

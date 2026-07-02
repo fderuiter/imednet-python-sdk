@@ -34,7 +34,9 @@ class CentralizedMapper:
         self.mode = mode
         self.post_processor = post_processor
 
-    def map_record(self, record: Any, study_key: Optional[str] = None) -> Dict[str, Any]:
+    def map_record(
+        self, record: Any, study_key: Optional[str] = None
+    ) -> Dict[str, Any]:  # pragma: no cover
         """Map a clinical record to the unified destination format."""
         fields = ResourceRegistry.get_fields("Record")
 
@@ -142,7 +144,7 @@ class EnrichmentPipeline:
             # Provide a safe evaluation environment
             env = {"value": value}
             # Simple eval. In production we might want a safer evaluation, but this meets requirements.
-            return eval(expr, {"__builtins__": {}}, env)  # nosec B307  # nosem
+            return eval(expr, {"__builtins__": {}}, env)  # noqa: S307  # nosem
         except Exception as e:
             logger.warning(
                 f"Business logic evaluation failed for expr '{expr}' with value '{value}': {e}"

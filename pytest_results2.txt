@@ -63,7 +63,7 @@ tests/test_mermaid_diagrams.py::test_no_unquoted_parentheses_in_mermaid_blocks P
 tests/unit/architecture/test_architecture.py::test_core_does_not_import_cli PASSED [  4%]
 tests/unit/architecture/test_architecture.py::test_core_does_not_import_workflows PASSED [  4%]
 tests/unit/architecture/test_architecture.py::test_workflows_does_not_import_providers PASSED [  4%]
-tests/unit/architecture/test_architecture.py::test_extensions_use_spi FAILED [  4%]
+tests/unit/architecture/test_architecture.py::test_extensions_use_spi PASSED [  4%]
 tests/unit/architecture/test_architecture.py::test_endpoint_no_shared_mutable_state PASSED [  4%]
 tests/unit/architecture/test_architecture.py::test_sync_sdk_no_async_client PASSED [  4%]
 tests/unit/architecture/test_architecture.py::test_async_sdk_no_sync_client PASSED [  4%]
@@ -1530,44 +1530,10 @@ tests/workflows/test_subject_data.py::test_get_all_subject_data_aggregates_acros
 tests/workflows/test_subject_data.py::test_get_all_subject_data_returns_empty_results PASSED [100%]
 
 =================================== FAILURES ===================================
-___________________________ test_extensions_use_spi ____________________________
-
-    def test_extensions_use_spi():
-        """Ensure extension packages use the SPI or top-level public API and not core internals."""
-        # We will check packages/plugins-workflows, packages/plugins-streamlit, and packages/providers-airflow
-        app_dir = Path(imednet.__file__).parent.parent.parent.parent
-        packages_dir = app_dir
-    
-        extension_dirs = [
-            packages_dir / "plugins-workflows" / "src",
-            packages_dir / "plugins-streamlit" / "src",
-            packages_dir / "providers-airflow" / "src",
-        ]
-    
-        for ext_dir in extension_dirs:
-            if not ext_dir.exists():
-                continue
-    
-            for file in get_all_python_files(ext_dir):
-                imports = get_imports_from_file(file)
-                for imp in imports:
-                    # If they import imednet, it must be the top level (e.g. `imednet` itself)
-                    # or through the SPI `imednet.spi`
-                    if imp.startswith("imednet.") and not imp.startswith("imednet.spi"):
-                        # The only allowed exceptions are imednet.sdk, imednet.config or something imported via top-level.
-                        # Usually, they should just `from imednet import ImednetSDK` which is `imp == "imednet"`
-                        # If imp == "imednet", we don't catch it here.
->                       pytest.fail(
-                            f"Architectural violation: {file} imports '{imp}'. "
-                            "Extensions must use the SPI ('imednet.spi') instead of core internals."
-                        )
-E                       Failed: Architectural violation: /app/packages/plugins-streamlit/src/imednet_streamlit/pages/queries.py imports 'imednet.models.engine'. Extensions must use the SPI ('imednet.spi') instead of core internals.
-
-/app/tests/unit/architecture/test_architecture.py:118: Failed
 ____________________________ test_unrecognized_type ____________________________
 
-mock_snapshot = <MagicMock spec='StudySnapshot' id='140641725928496'>
-caplog = <_pytest.logging.LogCaptureFixture object at 0x7fe9b4159f40>
+mock_snapshot = <MagicMock spec='StudySnapshot' id='139933701250736'>
+caplog = <_pytest.logging.LogCaptureFixture object at 0x7f44da8ab560>
 
     def test_unrecognized_type(mock_snapshot, caplog):
         """Test handling of unrecognized variable types."""
@@ -1604,7 +1570,7 @@ caplog = <_pytest.logging.LogCaptureFixture object at 0x7fe9b4159f40>
         assert results[0].payloads[0]["data"]["SIG"] == ""
 >       assert "Unrecognized variable type" in caplog.text
 E       AssertionError: assert 'Unrecognized variable type' in ''
-E        +  where '' = <_pytest.logging.LogCaptureFixture object at 0x7fe9b4159f40>.text
+E        +  where '' = <_pytest.logging.LogCaptureFixture object at 0x7f44da8ab560>.text
 
 /app/tests/unit/workflows/test_uat_generator.py:369: AssertionError
 =============================== warnings summary ===============================
@@ -1789,7 +1755,7 @@ packages/core/src/imednet/integrations/export.py                                
 packages/core/src/imednet/integrations/parquet.py                                          72     11    85%
 packages/core/src/imednet/integrations/parquet_engine.py                                   74      7    91%
 packages/core/src/imednet/integrations/sink_base.py                                        89     31    65%
-packages/core/src/imednet/models/__init__.py                                               21      0   100%
+packages/core/src/imednet/models/__init__.py                                               22      0   100%
 packages/core/src/imednet/models/base.py                                                  147     19    87%
 packages/core/src/imednet/models/codings.py                                                 7      0   100%
 packages/core/src/imednet/models/engine.py                                                174     81    53%
@@ -1883,9 +1849,8 @@ packages/providers-airflow/src/apache_airflow_providers_imednet/operators/__init
 packages/providers-airflow/src/apache_airflow_providers_imednet/operators/export.py        75      7    91%
 packages/providers-airflow/src/apache_airflow_providers_imednet/sensors.py                 27      1    96%
 -----------------------------------------------------------------------------------------------------------
-TOTAL                                                                                    8213    849    90%
+TOTAL                                                                                    8214    849    90%
 FAIL Required test coverage of 90% not reached. Total coverage: 89.66%
 =========================== short test summary info ============================
-FAILED tests/unit/architecture/test_architecture.py::test_extensions_use_spi
 FAILED tests/unit/workflows/test_uat_generator.py::test_unrecognized_type - A...
-===== 2 failed, 1482 passed, 45 skipped, 103 warnings in 153.46s (0:02:33) =====
+===== 1 failed, 1483 passed, 45 skipped, 103 warnings in 158.44s (0:02:38) =====

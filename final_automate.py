@@ -4,6 +4,7 @@ import re
 
 PLACEHOLDER = '"""TODO: Add docstring."""'
 
+
 def get_meaningful_docstring(node, filepath):
     if isinstance(node, ast.Module):
         if os.path.basename(filepath) == '__init__.py':
@@ -28,6 +29,7 @@ def get_meaningful_docstring(node, filepath):
 
     return PLACEHOLDER
 
+
 def process_file(filepath):
     with open(filepath, 'r') as f:
         content = f.read()
@@ -49,8 +51,14 @@ def process_file(filepath):
             if docstring == "TODO: Add docstring.":
                 # Find the line number of the docstring.
                 for body_node in node.body:
-                    if isinstance(body_node, ast.Expr) and isinstance(body_node.value, (ast.Constant, ast.Str)):
-                        val = body_node.value.value if isinstance(body_node.value, ast.Constant) else body_node.value.s
+                    if isinstance(body_node, ast.Expr) and isinstance(
+                        body_node.value, (ast.Constant, ast.Str)
+                    ):
+                        val = (
+                            body_node.value.value
+                            if isinstance(body_node.value, ast.Constant)
+                            else body_node.value.s
+                        )
                         if val == "TODO: Add docstring.":
                             new_doc = get_meaningful_docstring(node, filepath)
                             modifications.append((body_node.lineno, new_doc))
@@ -69,7 +77,7 @@ def process_file(filepath):
             lines[idx] = lines[idx].replace(PLACEHOLDER, new_doc)
         else:
             found = False
-            for i in range(max(0, idx-5), min(len(lines), idx+6)):
+            for i in range(max(0, idx - 5), min(len(lines), idx + 6)):
                 if PLACEHOLDER in lines[i]:
                     lines[i] = lines[i].replace(PLACEHOLDER, new_doc)
                     found = True
@@ -82,11 +90,13 @@ def process_file(filepath):
     with open(filepath, 'w') as f:
         f.write(new_content)
 
+
 def main():
     for root, dirs, files in os.walk('tests'):
         for file in files:
             if file.endswith('.py'):
                 process_file(os.path.join(root, file))
+
 
 if __name__ == '__main__':
     main()
