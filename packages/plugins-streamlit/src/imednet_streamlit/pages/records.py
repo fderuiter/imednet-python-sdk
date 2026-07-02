@@ -49,26 +49,20 @@ def _resolve_form_name(form: object) -> str:
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_records(_sdk: object, study_key: str) -> pd.DataFrame:
     """Resolve the human-readable name for a form object."""
-    records = _sdk.get_records(study_key=study_key)  # type: ignore[attr-defined]
-    rows = [
-        {
-            "record_id": r.record_id,
-            "form_key": r.form_key,
-            "subject_key": r.subject_key,
-            "site_id": r.site_id,
-            "record_status": r.record_status,
-            "record_type": r.record_type,
-            "deleted": r.deleted,
-            "date_created": r.date_created,
-            "date_modified": r.date_modified,
-        }
-        for r in records
-    ]
-    if not rows:
-        return pd.DataFrame(columns=RECORD_COLUMNS)
+    from imednet.models.engine import ResourceRegistry
 
-    df = pd.DataFrame(rows, columns=RECORD_COLUMNS)
-    deleted_mask = df["deleted"].fillna(False).astype(bool)
+    records = _sdk.get_records(study_key=study_key)  # type: ignore[attr-defined]
+    fields = ResourceRegistry.get_fields("Record")
+
+    rows = []
+    for r in records:
+        rows.append({f: getattr(r, f, None) for f in fields})
+
+    if not rows:
+        return pd.DataFrame(columns=fields)
+
+    df = pd.DataFrame(rows, columns=fields)
+    deleted_mask = df.get("deleted", pd.Series(False, index=df.index)).fillna(False).astype(bool)
     return df.loc[~deleted_mask].reset_index(drop=True)
 
 
@@ -322,7 +316,16 @@ def render_page() -> None:
         render_accessible_chart(_build_heatmap_chart(heatmap_df), use_container_width=True)
 
     st.subheader("Records Overview")
-    table_df = df_filtered.reindex(columns=DISPLAY_COLUMNS)
+    from imednet.models.engine import ResourceRegistry
+
+    all_fields = ResourceRegistry.get_fields("Record")
+    display_cols = [
+        c for c in ["record_id", "form_name", "form_key", "subject_key"] if c in df_filtered.columns
+    ]
+    for c in all_fields:
+        if c not in display_cols and c in df_filtered.columns and c != "deleted":
+            display_cols.append(c)
+    table_df = df_filtered.reindex(columns=display_cols)
     components.filterable_dataframe(table_df, key="records_table")
 
     col_download_csv, col_download_excel = st.columns(2)

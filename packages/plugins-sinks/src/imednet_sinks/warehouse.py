@@ -134,23 +134,20 @@ class SnowflakeSinkConfig(SinkConfig):
 def _records_to_arrow_table(records: Sequence[Any]) -> Any:
     """Convert *records* to a ``pyarrow.Table``."""
     pa = _require_optional_dep("pyarrow", "snowflake")
+    from imednet.models.engine import ResourceRegistry
 
-    rows = [
-        {
-            "record_id": getattr(r, "record_id", None),
-            "subject_id": getattr(r, "subject_id", None),
-            "subject_key": getattr(r, "subject_key", None),
-            "visit_id": getattr(r, "visit_id", None),
-            "form_id": getattr(r, "form_id", None),
-            "form_key": getattr(r, "form_key", None),
-            "record_status": getattr(r, "record_status", None),
-            "deleted": getattr(r, "deleted", None),
-            "date_created": getattr(r, "date_created", None),
-            "date_modified": getattr(r, "date_modified", None),
-            "record_data": dict(getattr(r, "record_data", {}) or {}),
-        }
-        for r in records
-    ]
+    fields = ResourceRegistry.get_fields("Record")
+
+    rows = []
+    for r in records:
+        row = {}
+        for f in fields:
+            val = getattr(r, f, None)
+            if f == "record_data":
+                val = dict(val or {})
+            row[f] = val
+        rows.append(row)
+
     return pa.Table.from_pylist(rows)
 
 

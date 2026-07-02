@@ -116,20 +116,19 @@ def _record_to_row(record: Any, study_key: str) -> dict[str, Any]:
     """Convert a typed ``Record`` model to a flat Cypher parameter dict."""
     import json
 
-    return {
-        "record_id": getattr(record, "record_id", None),
-        "form_id": getattr(record, "form_id", None),
-        "form_key": getattr(record, "form_key", None),
-        "visit_id": getattr(record, "visit_id", None),
-        "subject_id": getattr(record, "subject_id", None),
-        "subject_key": getattr(record, "subject_key", None),
-        "study_key": study_key,
-        "record_status": getattr(record, "record_status", None),
-        "deleted": getattr(record, "deleted", None),
-        "date_created": getattr(record, "date_created", None),
-        "date_modified": getattr(record, "date_modified", None),
-        "record_data": json.dumps(dict(getattr(record, "record_data", {}) or {})),
-    }
+    from imednet.models.engine import ResourceRegistry
+
+    fields = ResourceRegistry.get_fields("Record")
+    row = {"study_key": study_key}
+
+    for f in fields:
+        val = getattr(record, f, None)
+        if f == "record_data":
+            val = json.dumps(dict(val or {}))
+        if val is not None or f not in row:
+            row[f] = val
+
+    return row
 
 
 class Neo4jExportSink(ExportSink):

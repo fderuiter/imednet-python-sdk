@@ -1,17 +1,30 @@
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+"""Query and annotation models for iMedNet."""
 
+from __future__ import annotations
+
+from datetime import datetime
+from typing import Any, List, Optional
+
+from pydantic import Field
+
+from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
 class QueryComment(JsonModel):
-    user: Optional[str]
-    date: Optional[str]
-    comment: Optional[str]
-    annotation_status: Optional[str]
-    closed: Optional[bool]
-    sequence: Optional[int]
+    """A comment or response within a data query thread."""
+
+    closed: bool | None = Field(default=None, alias="closed")
+    sequence: int | None = Field(default=None, alias="sequence")
+    annotation_status: str | None = Field(default=None, alias="annotationStatus")
+    user: str | None = Field(default=None, alias="user")
+    comment: str | None = Field(default=None, alias="comment")
+    date: str | None = Field(default=None, alias="date")
 
 class Query(JsonModel):
+    """Represents a data query (discrepancy) raised on a record."""
+
+    query_comments: List[QueryComment] = Field(default_factory=list, alias="queryComments")
+
     study_key: Optional[str]
     subject_id: Optional[int]
     annotation_id: Optional[int]
@@ -21,4 +34,6 @@ class Query(JsonModel):
     subject_key: Optional[str]
     date_created: Optional[str]
     date_modified: Optional[str]
-    query_comments: List[QueryComment]
+    annotation_type: Any
+    subject_oid: Any
+    type: Any

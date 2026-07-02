@@ -63,7 +63,7 @@ class JobStatus(Job):
         if isinstance(self.results, list):
             return len(self.results)
         if isinstance(self.results, dict):
-            return self.results.get("total", 0)
+            return int(self.results.get("total", 0))
         if self.results:
             return 1
         return 0
@@ -79,7 +79,7 @@ class JobStatus(Job):
                 and (r.get("status") or "").upper() in {"PASS", "SUCCESS", "COMPLETED"}
             )
         if isinstance(self.results, dict):
-            return self.results.get("success", 0)
+            return int(self.results.get("success", 0))
         if self.is_successful and self.results:
             return 1
         return 0
@@ -95,7 +95,7 @@ class JobStatus(Job):
                 and (r.get("status") or "").upper() in {"FAIL", "FAILED", "ERROR"}
             )
         if isinstance(self.results, dict):
-            return self.results.get("failed", 0)
+            return int(self.results.get("failed", 0))
         if self.is_failed and self.results:
             return 1
         # If it's plain text and state is failed, we count it as 1 failure.
