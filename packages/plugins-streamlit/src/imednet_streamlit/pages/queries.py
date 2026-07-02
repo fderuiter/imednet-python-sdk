@@ -17,14 +17,14 @@ from imednet_streamlit.components.charts import render_accessible_chart
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_queries(_sdk: object, study_key: str) -> pd.DataFrame:
     """Fetches all queries and returns a normalized DataFrame."""
-    from imednet.models.engine import ResourceRegistry
+    from imednet.spi.models import Record, Subject, Query
     from imednet_workflows.query_management import QueryManagementWorkflow
 
     workflow = QueryManagementWorkflow(sdk=_sdk)  # type: ignore[arg-type]
     open_q = workflow.get_open_queries(study_key=study_key)
     all_q = _sdk.get_queries(study_key=study_key)  # type: ignore[attr-defined]
     open_ids = {q.annotation_id for q in open_q}
-    fields = ResourceRegistry.get_fields("Query")
+    fields = list(Query.model_fields.keys())
 
     rows = []
     for q in all_q:

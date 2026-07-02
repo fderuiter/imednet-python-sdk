@@ -7,6 +7,7 @@ import pytest
 
 import imednet.sdk as sdk_mod
 from imednet.models.jobs import JobStatus
+from imednet.utils.job_poller import JobFailedError
 
 
 def _create_sdk(async_mode: bool) -> sdk_mod.ImednetSDK:
@@ -86,8 +87,10 @@ def test_poll_job_failed(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> N
     else:
         monkeypatch.setattr(sdk.jobs, "get", lambda s, b: states.pop(0))
         monkeypatch.setattr("time.sleep", lambda *a: None)
-    if async_mode:
-        result = asyncio.run(sdk.async_poll_job("S", "1", interval=0, timeout=5))
-    else:
-        result = sdk.poll_job("S", "1", interval=0, timeout=5)
-    assert result.state == "FAILED"
+    
+    with pytest.raises(JobFailedError) as exc_info:
+        if async_mode:
+            asyncio.run(sdk.async_poll_job("S", "1", interval=0, timeout=5))
+        else:
+            sdk.poll_job("S", "1", interval=0, timeout=5)
+    assert exc_info.value.status.state == "FAILED"

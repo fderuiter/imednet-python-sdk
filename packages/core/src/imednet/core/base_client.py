@@ -18,11 +18,10 @@ from imednet.auth.api_key import ApiKeyAuth
 from imednet.auth.strategy import AuthStrategy
 from imednet.config import load_config
 from imednet.constants import (
-    DEFAULT_BACKOFF_FACTOR,
     DEFAULT_BASE_URL,
-    DEFAULT_RETRIES,
     DEFAULT_TIMEOUT,
 )
+from imednet.core.retry import RetryConfig
 from imednet.utils import sanitize_base_url
 
 trace: Any = None
@@ -44,9 +43,8 @@ class BaseClient:
         security_key: Optional[str] = None,
         base_url: Optional[str] = None,
         timeout: Union[float, httpx.Timeout] = DEFAULT_TIMEOUT,
-        retries: int = DEFAULT_RETRIES,
-        backoff_factor: float = DEFAULT_BACKOFF_FACTOR,
         tracer: Optional[Tracer] = None,
+        retry_config: Optional[RetryConfig] = None,
         auth: Optional[AuthStrategy] = None,
     ) -> None:
         """Initialize common client settings.
@@ -56,9 +54,8 @@ class BaseClient:
             security_key: iMednet security key.
             base_url: Base URL for the iMednet API.
             timeout: Default request timeout in seconds or httpx.Timeout.
-            retries: Number of retry attempts.
-            backoff_factor: Exponential backoff factor.
             tracer: Optional OpenTelemetry tracer instance.
+            retry_config: Centralized configuration for retry behaviors.
             auth: Optional pre-configured AuthStrategy.
         """
         config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
@@ -67,8 +64,7 @@ class BaseClient:
         self._base_url = httpx.URL(self.base_url)
 
         self.timeout = timeout if isinstance(timeout, httpx.Timeout) else httpx.Timeout(timeout)
-        self.retries = retries
-        self.backoff_factor = backoff_factor
+        self.retry_config = retry_config or RetryConfig()
 
         if auth:
             self.auth = auth

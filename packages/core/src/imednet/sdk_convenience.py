@@ -92,30 +92,6 @@ if TYPE_CHECKING:
     from imednet.endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
 
 
-def _workflow_poller(name: str) -> Any:
-    """Lazy load a poller class from plugins."""
-    from importlib.metadata import entry_points
-    
-    pollers = list(entry_points(group="imednet.pollers", name=name))
-    if not pollers:
-        raise ImportError(
-            "Job polling requires an installed poller plugin. "
-            "Please install a package that provides this capability."
-        )
-    
-    return pollers[0].load()
-
-
-def JobPoller(*args: Any, **kwargs: Any) -> Any:  # noqa: N802
-    """Create a synchronous JobPoller instance."""
-    return _workflow_poller("JobPoller")(*args, **kwargs)
-
-
-def AsyncJobPoller(*args: Any, **kwargs: Any) -> Any:  # noqa: N802
-    """Create an asynchronous JobPoller instance."""
-    return _workflow_poller("AsyncJobPoller")(*args, **kwargs)
-
-
 T = TypeVar("T")
 
 
@@ -214,6 +190,8 @@ class SyncSDKConvenienceMixin:
         timeout: int = 300,
     ) -> JobStatus:
         """Poll a job until it reaches a terminal state."""
+        from imednet.utils.job_poller import JobPoller
+
         fetch_result = getattr(self, "_client", None) and getattr(self._client, "get", None)  # type: ignore[attr-defined]
         return JobPoller(self.jobs.get, fetch_result=fetch_result).run(
             study_key, batch_id, interval, timeout
@@ -276,6 +254,8 @@ class AsyncSDKConvenienceMixin:
         timeout: int = 300,
     ) -> JobStatus:
         """Asynchronously poll a job until it reaches a terminal state."""
+        from imednet.utils.job_poller import AsyncJobPoller
+
         fetch_result = getattr(self, "_async_client", None) and getattr(
             self._async_client, "get", None
         )  # type: ignore[attr-defined]
