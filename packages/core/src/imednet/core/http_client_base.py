@@ -17,7 +17,7 @@ from imednet.constants import (
 from imednet.core.http.executor import BaseRequestExecutor
 
 from .base_client import BaseClient, Tracer
-from .retry import RetryPolicy
+from .retry import RetryConfig, RetryPolicy
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
 
     @abstractmethod
     def _create_executor(
-        self, client: ClientT, retry_policy: Optional[RetryPolicy] = None
+        self, client: ClientT, retry_config: Optional[RetryConfig] = None
     ) -> ExecutorT:
         """Create the request executor."""
 
@@ -47,10 +47,8 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
         security_key: Optional[str] = None,
         base_url: Optional[str] = None,
         timeout: Union[float, httpx.Timeout] = 30.0,
-        retries: int = 3,
-        backoff_factor: float = 1.0,
         tracer: Optional[Tracer] = None,
-        retry_policy: RetryPolicy | None = None,
+        retry_config: Optional[RetryConfig] = None,
         auth: Optional[AuthStrategy] = None,
     ) -> None:
         """Initialize the HTTP client.
@@ -60,10 +58,8 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
             security_key: iMednet security key.
             base_url: Base URL for the iMednet API.
             timeout: Default request timeout in seconds or httpx.Timeout.
-            retries: Number of retry attempts.
-            backoff_factor: Exponential backoff factor.
             tracer: Optional OpenTelemetry tracer instance.
-            retry_policy: Custom retry policy for the executor.
+            retry_config: Centralized configuration for retry behaviors.
             auth: Optional pre-configured AuthStrategy.
         """
         super().__init__(
@@ -71,13 +67,12 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
             security_key=security_key,
             base_url=base_url,
             timeout=timeout,
-            retries=retries,
-            backoff_factor=backoff_factor,
             tracer=tracer,
+            retry_config=retry_config,
             auth=auth,
         )
 
-        self._executor = self._create_executor(self._client, retry_policy)
+        self._executor = self._create_executor(self._client, self.retry_config)
 
     def _create_client(self, auth: AuthStrategy) -> ClientT:
         """Create the underlying httpx client with appropriate headers and configuration."""
@@ -100,12 +95,12 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
     @property
     def retry_policy(self) -> RetryPolicy:
         """Return the current retry policy of the executor."""
-        return cast(RetryPolicy, self._executor.retry_policy)
+        return cast(RetryPolicy, self._executor.retry_config.retry_policy)
 
     @retry_policy.setter
     def retry_policy(self, policy: RetryPolicy) -> None:
         """Set a new retry policy for the executor."""
-        self._executor.retry_policy = policy
+        self._executor.retry_config.retry_policy = policy
 
     @abstractmethod
     def _request(self, method: str, path: str, **kwargs: Any) -> Any:

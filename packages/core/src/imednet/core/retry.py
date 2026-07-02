@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Optional, Protocol, runtime_checkable
+from dataclasses import dataclass, field
+from typing import Any, Callable, Optional, Protocol, runtime_checkable
 
 import httpx
+from tenacity import AsyncRetrying, Retrying, stop_after_attempt, wait_random_exponential
+
+from imednet.constants import DEFAULT_BACKOFF_FACTOR, DEFAULT_RETRIES
 
 #: HTTP methods that are safe to retry automatically. Mutating methods such as
 #: POST and PATCH are intentionally excluded because a server may have already
@@ -67,7 +70,7 @@ class DefaultRetryPolicy:
                     )
                 return False
 
-        sdk = ImednetSDK(..., retry_policy=IdempotentPostPolicy())
+        sdk = ImednetSDK(..., retry_config=RetryConfig(retry_policy=IdempotentPostPolicy()))
     """
 
     def should_retry(self, state: RetryState) -> bool:
@@ -85,3 +88,44 @@ class DefaultRetryPolicy:
             return is_idempotent and 500 <= response.status_code < 600
 
         return False
+
+
+@dataclass
+class RetryConfig:
+    """Centralized configuration for retry behaviors."""
+
+    retries: int = DEFAULT_RETRIES
+    backoff_factor: float = DEFAULT_BACKOFF_FACTOR
+    retry_policy: Any = field(default_factory=DefaultRetryPolicy)
+
+    def create_retryer(
+        self,
+        wait_strategy: Optional[Callable[[Any], float]] = None,
+        retry_predicate: Optional[Callable[[Any], bool]] = None,
+        **kwargs: Any,
+    ) -> Retrying:
+        """Create a synchronous retryer based on the configuration."""
+        wait = wait_strategy or wait_random_exponential(multiplier=self.backoff_factor)
+        return Retrying(
+            stop=stop_after_attempt(self.retries + 1),
+            wait=wait,
+            retry=retry_predicate,
+            reraise=False,
+            **kwargs,
+        )
+
+    def create_async_retryer(
+        self,
+        wait_strategy: Optional[Callable[[Any], float]] = None,
+        retry_predicate: Optional[Callable[[Any], bool]] = None,
+        **kwargs: Any,
+    ) -> AsyncRetrying:
+        """Create an asynchronous retryer based on the configuration."""
+        wait = wait_strategy or wait_random_exponential(multiplier=self.backoff_factor)
+        return AsyncRetrying(
+            stop=stop_after_attempt(self.retries + 1),
+            wait=wait,
+            retry=retry_predicate,
+            reraise=False,
+            **kwargs,
+        )
