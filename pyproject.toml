@@ -182,3 +182,9 @@ imednet-streamlit = { workspace = true }
 imednet-plugins-sinks = { workspace = true }
 apache-airflow-providers-imednet = { workspace = true }
 
+[dependency-groups]
+dev = [
+    "axe-playwright-python>=0.1.7",
+    "playwright>=1.61.0",
+]
+

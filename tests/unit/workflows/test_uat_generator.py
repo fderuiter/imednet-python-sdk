@@ -337,6 +337,8 @@ def test_subject_pool_logic(mock_snapshot):
 
 def test_unrecognized_type(mock_snapshot, caplog):
     """Test handling of unrecognized variable types."""
+    import logging
+    caplog.set_level(logging.WARNING)
     spec = UATSpecification(
         study_key="S1",
         study_name="S1",
