@@ -3,16 +3,25 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List
+from typing import Any, Dict, List, Optional
 
 from pydantic import Field
 
 from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
+class FormSummary(JsonModel):
+    """Minimal form details embedded within an interval definition."""
 
+    form_id: int = Field(0, alias="formId")
+    form_key: str = Field("", alias="formKey")
+    form_name: str = Field("", alias="formName")
+
+    pass
 
 class Interval(JsonModel):
+    """Represents a visit interval or event within the study timeline."""
+
     study_key: Optional[str]
     interval_id: Optional[int]
     interval_name: Optional[str]
@@ -34,3 +43,4 @@ class Interval(JsonModel):
     window_calculation_date: Any
     window_calculation_form: Any
 
+    forms: list[FormSummary] | None = Field(default=None, alias="forms")

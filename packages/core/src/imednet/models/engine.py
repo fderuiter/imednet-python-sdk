@@ -194,62 +194,80 @@ class ModelEngine:
         import re
 
         schemas = load_schemas()
-        
+
         for py_file in glob.glob(os.path.join(output_dir, "*.py")):
-            if os.path.basename(py_file) == "__init__.py" or os.path.basename(py_file) == "engine.py":
+            if (
+                os.path.basename(py_file) == "__init__.py"
+                or os.path.basename(py_file) == "engine.py"
+            ):
                 continue
-            
+
             with open(py_file, "r") as f:
                 content = f.read()
 
-            matches = re.findall(r"([A-Za-z0-9_]+)\s*=\s*ModelEngine\.get_model\(['\"]([^'\"]+)['\"]\s*,\s*([A-Za-z0-9_]+)\)", content)
+            matches = re.findall(
+                r"([A-Za-z0-9_]+)\s*=\s*ModelEngine\.get_model\(['\"]([^'\"]+)['\"]\s*,\s*([A-Za-z0-9_]+)\)",
+                content,
+            )
             if not matches:
                 continue
 
-            # Need to get the base classes so we can list only fields added by the dynamic schema
-            # But the simplest way is just to write everything from the model's annotations
-            # However, if it's easier, we just reconstruct the `.pyi` file from the Pydantic fields
-            
-            # Read imports from the .py file to reuse them
-            imports_re = re.search(r"^(.*?)(?=\n\nclass|\nclass)", content, re.DOTALL)
-            imports = imports_re.group(1) if imports_re else "from typing import Any, Dict, List, Optional\nfrom imednet.models.json_base import JsonModel\n"
+            # Start by copying the whole .py file
+            pyi_content = content
 
-            # Re-generate the file content
-            pyi_content = [imports.strip()]
-            pyi_content.append("\n\n")
+            # Ensure typing imports are present
+            if "from typing import Any, Dict, List, Optional" not in pyi_content:
+                pyi_content = pyi_content.replace(
+                    "from __future__ import annotations",
+                    "from __future__ import annotations\nfrom typing import Any, Dict, List, Optional",
+                )
+
+            # Remove ModelEngine.get_model lines
+            pyi_content = re.sub(
+                r"[A-Za-z0-9_]+\s*=\s*ModelEngine\.get_model\(.*?\)\n?", "", pyi_content
+            )
 
             for class_name, model_name, base_class_name in matches:
                 model = cls.get_model(model_name)
-                
-                # Find the base class of the original class definition
-                base_class_match = re.search(rf"class {base_class_name}\(([^)]+)\):", content)
-                actual_base = base_class_match.group(1) if base_class_match else "JsonModel"
-                
-                pyi_content.append(f"class {class_name}({actual_base}):")
-                
-                has_fields = False
+
+                original_class_code_match = re.search(
+                    rf"(class {class_name}\([^)]*\):[\s\S]*?)(?=\nclass |\Z)", pyi_content
+                )
+                original_class_code = (
+                    original_class_code_match.group(1) if original_class_code_match else ""
+                )
+
+                fields_lines = []
                 for field_name, field_info in model.model_fields.items():
-                    # Format annotation
+                    if re.search(rf"^\s*{field_name}\s*:", original_class_code, re.MULTILINE):
+                        continue
+
                     ann = str(field_info.annotation)
-                    ann = ann.replace("typing.", "")
-                    ann = ann.replace("NoneType", "None")
-                    
+                    ann = ann.replace("typing.", "").replace("NoneType", "None")
                     if "Union" in ann and "None" in ann:
-                        # Convert Union[X, None] to Optional[X]
-                        inner = ann.replace("Union[", "").replace(", None]", "").replace("None, ", "")
+                        inner = (
+                            ann.replace("Union[", "").replace(", None]", "").replace("None, ", "")
+                        )
                         ann = f"Optional[{inner}]"
-                        
-                    pyi_content.append(f"    {field_name}: {ann}")
-                    has_fields = True
-                
-                if not has_fields:
-                    pyi_content.append("    pass")
-                
-                pyi_content.append("\n")
+                    fields_lines.append(f"    {field_name}: {ann}")
+
+                if fields_lines:
+                    fields_str = "\n" + "\n".join(fields_lines)
+                else:
+                    fields_str = ""
+
+                # Insert fields into the class definition right after the class line or its docstring
+                # Regex to match class definition + optional docstring
+                pattern = rf"(class {class_name}\([^)]*\):(?:\s*\"\"\"[\s\S]*?\"\"\")?)"
+
+                def replacer(m):
+                    return m.group(1) + fields_str
+
+                pyi_content = re.sub(pattern, replacer, pyi_content)
 
             pyi_path = py_file + "i"
             with open(pyi_path, "w") as f:
-                f.write("\n".join(pyi_content))
+                f.write(pyi_content)
 
 
 class ResourceRegistry:
@@ -258,10 +276,10 @@ class ResourceRegistry:
     @classmethod
     def get_fields(cls, model_name: str) -> List[str]:
         """Get the field names for a specific dynamic model.
-        
+
         Args:
             model_name: The name of the model (e.g., 'Subject', 'Record').
-            
+
         Returns:
             A list of field names in snake_case.
         """

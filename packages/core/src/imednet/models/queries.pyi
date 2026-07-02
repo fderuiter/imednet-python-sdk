@@ -3,20 +3,26 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import Field
 
 from imednet.models.engine import ModelEngine
 from imednet.models.json_base import JsonModel
 
-
-
 class QueryComment(JsonModel):
-    pass
+    """A comment or response within a data query thread."""
 
+    closed: bool | None = Field(default=None, alias="closed")
+    sequence: int | None = Field(default=None, alias="sequence")
+    annotation_status: str | None = Field(default=None, alias="annotationStatus")
+    user: str | None = Field(default=None, alias="user")
+    comment: str | None = Field(default=None, alias="comment")
+    date: str | None = Field(default=None, alias="date")
 
 class Query(JsonModel):
+    """Represents a data query (discrepancy) raised on a record."""
+
     study_key: Optional[str]
     subject_id: Optional[int]
     annotation_id: Optional[int]
@@ -30,3 +36,4 @@ class Query(JsonModel):
     subject_oid: Any
     type: Any
 
+    query_comments: List[QueryComment] = Field(default_factory=list, alias="queryComments")
