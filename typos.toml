@@ -1,0 +1,8 @@
+[default.extend-words]
+Ue = "Ue"
+TrUe = "TrUe"
+ded = "ded"
+DEMOG = "DEMOG"
+decod = "decod"
+Decod = "Decod"
+unparseable = "unparseable"

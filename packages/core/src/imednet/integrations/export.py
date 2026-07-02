@@ -7,15 +7,13 @@ import json
 import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from importlib import import_module
 from pathlib import Path
-from typing import Sequence
+from typing import Any, List, Optional, Sequence
 
-from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate, iter_batches
 from imednet.core.operations.executor import UniversalExecutor
 from imednet.errors import ExportBatchError
-
-from importlib import import_module
-from typing import Any, List, Optional
+from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate, iter_batches
 
 try:
     import pandas as pd
@@ -358,7 +356,7 @@ def _tabular_export(
     if config.variable_whitelist is not None:
         extra_filters["variableNames"] = config.variable_whitelist
     if config.form_whitelist is not None:
-        extra_filters["formIds"] = config.form_whitelist
+        extra_filters["formIds"] = config.form_whitelist  # type: ignore
 
     raw_records = mapper._iter_records(
         study_key,
