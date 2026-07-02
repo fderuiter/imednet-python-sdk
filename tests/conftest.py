@@ -304,7 +304,7 @@ def http_client():
     return Client("key", "secret", base_url="https://api.test")
 
 
-@pytest_asyncio.fixture
+@pytest.fixture
 async def async_http_client():
     """Provide an asynchronous AsyncClient instance configured for testing.
 
@@ -324,7 +324,7 @@ def respx_mock_client(http_client, respx_mock):
     return respx_mock
 
 
-@pytest_asyncio.fixture
+@pytest.fixture
 async def respx_mock_async_client(async_http_client, respx_mock):
     """Configure respx_mock with the base URL of the asynchronous test client."""
     respx_mock.base_url = async_http_client.base_url
