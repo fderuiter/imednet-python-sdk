@@ -133,6 +133,6 @@ body:
         - ruff check
         - mypy (affected packages)
         - pytest with coverage >= 90%
-        - make docs when docs or public API surface is affected
+        - hatch run docs when docs or public API surface is affected
     validations:
       required: true

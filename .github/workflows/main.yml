@@ -325,7 +325,15 @@ jobs:
         env:
           IMEDNET_API_KEY: dummy
           IMEDNET_SECURITY_KEY: dummy
-        run: make test-containers
+        run: |
+          echo "Starting ephemeral containerized databases..."
+          docker compose up -d
+          echo "Waiting for databases to initialize..."
+          sleep 15
+          echo "Running integration tests..."
+          IMEDNET_TEST_CONTAINERS=1 pytest packages/plugins-sinks/tests/integration/test_containerized_sinks.py -v || { status=$?; docker compose down -v; exit $status; }
+          echo "Cleaning up containers..."
+          docker compose down -v
 
   # ------------------------------------------------------------------
   # JOB 3.6: SECURITY ROBUSTNESS (Fuzzing)

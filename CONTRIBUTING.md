@@ -52,7 +52,7 @@ pytest -q \
   --cov=imednet_workflows \
   --cov=apache_airflow_providers_imednet \
   --cov-fail-under=90
-make docs
+hatch run docs
 ```
 Coverage must stay ≥ 90%.
 
@@ -61,7 +61,7 @@ Coverage must stay ≥ 90%.
 To run the containerized integration tests for the MongoDB and Neo4j sinks locally using ephemeral Docker containers, run the following single command:
 
 ```bash
-make test-containers
+docker compose up -d && pytest packages/plugins-sinks/tests/integration
 ```
 
 This will automatically spin up the required database containers, run the verification tests, and tear the containers down afterwards.
@@ -131,7 +131,7 @@ Releases are fully automated and driven by merged PR titles:
      --cov=imednet_workflows \
      --cov=apache_airflow_providers_imednet \
      --cov-fail-under=90
-   make docs
+   hatch run docs
    ```
 3. Merge to `main` using **Squash and merge** so the PR title becomes the merged commit message.
 4. The `Automated Release` workflow runs `release-please` in manifest mode on `main` pushes and
@@ -246,7 +246,7 @@ Before opening a pull request that adds or modifies public APIs:
 1. Run `mypy packages/core/src/imednet` and confirm zero errors.
 2. Run `mypy packages/plugins-workflows/src/imednet_workflows`.
 3. Run `mypy packages/providers-airflow/src/apache_airflow_providers_imednet`.
-4. Run `make docs` locally. This command regenerates `docs/api/` via `sphinx-apidoc` and then
+4. Run `hatch run docs` locally. This command regenerates `docs/api/` via `sphinx-apidoc` and then
    compiles the HTML with `-W --keep-going`, treating every Sphinx warning as an error.
 5. Open `docs/_build/html/index.html` and verify that type hints appear in the parameter
    descriptions with no raw reStructuredText syntax leaking into the rendered page.

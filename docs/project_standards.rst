@@ -31,7 +31,7 @@ policy:
 
    hatch run lint
    hatch run test
-   make docs
+   hatch run docs
 
 Changes are not complete until these checks pass.
 
@@ -92,7 +92,7 @@ Docs standards
 - Keep docstrings in Google style so Sphinx and Napoleon render them correctly.
 - Use generated API docs for module references and reserve hand-written docs for
   guides, architecture notes, and tutorials.
-- Treat documentation build warnings as errors by keeping ``make docs`` clean.
+- Treat documentation build warnings as errors by keeping ``hatch run docs`` clean.
 
 PR and release standards
 ------------------------
