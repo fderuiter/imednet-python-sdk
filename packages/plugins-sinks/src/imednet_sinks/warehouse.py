@@ -134,19 +134,10 @@ class SnowflakeSinkConfig(SinkConfig):
 def _records_to_arrow_table(records: Sequence[Any]) -> Any:
     """Convert *records* to a ``pyarrow.Table``."""
     pa = _require_optional_dep("pyarrow", "snowflake")
-    from imednet.models.engine import ResourceRegistry
-
-    fields = ResourceRegistry.get_fields("Record")
-
-    rows = []
-    for r in records:
-        row = {}
-        for f in fields:
-            val = getattr(r, f, None)
-            if f == "record_data":
-                val = dict(val or {})
-            row[f] = val
-        rows.append(row)
+    from imednet.integrations.enrichment import CentralizedMapper
+    
+    mapper = CentralizedMapper(mode="tabular")
+    rows = [mapper.map_record(r) for r in records]
 
     return pa.Table.from_pylist(rows)
 
