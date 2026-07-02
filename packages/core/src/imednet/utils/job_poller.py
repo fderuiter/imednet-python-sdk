@@ -78,6 +78,7 @@ class JobFailedError(Exception):
     """Raised when a job completes with a FAILED or CANCELLED state."""
 
     def __init__(self, message: str, status: JobStatus) -> None:
+        """Initialize the JobFailedError."""
         super().__init__(message)
         self.status = status
 

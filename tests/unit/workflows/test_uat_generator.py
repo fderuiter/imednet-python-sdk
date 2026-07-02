@@ -246,8 +246,6 @@ def test_seed_reproducibility(basic_spec, mock_snapshot):
     assert res1[0].payloads[0]["data"] == res2[0].payloads[0]["data"]
 
 
-
-
 def test_various_types(mock_snapshot):
     """Test generation across various variable types."""
     spec = UATSpecification(

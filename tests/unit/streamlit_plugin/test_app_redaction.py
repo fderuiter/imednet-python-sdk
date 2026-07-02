@@ -90,17 +90,17 @@ def test_secure_st_methods(monkeypatch):
     monkeypatch.setattr(app, "original_st_warning", mock_warning)
     monkeypatch.setattr(app, "original_st_info", mock_info)
 
-    secure_st_error("mongodb://user:password123@host:27017")
+    secure_st_error("mongodb://user:password123@host:27017")  # pragma: allowlist secret
     assert calls["error"] == "mongodb://user:***@host:27017"
 
     ex = ValueError("mongodb://user:password123@host:27017")
     secure_st_exception(ex)
     assert str(calls["exception"]) == "mongodb://user:***@host:27017"
 
-    secure_st_warning("mongodb://user:password123@host:27017")
+    secure_st_warning("mongodb://user:password123@host:27017")  # pragma: allowlist secret
     assert calls["warning"] == "mongodb://user:***@host:27017"
 
-    secure_st_info("mongodb://user:password123@host:27017")
+    secure_st_info("mongodb://user:password123@host:27017")  # pragma: allowlist secret
     assert calls["info"] == "mongodb://user:***@host:27017"
 
 

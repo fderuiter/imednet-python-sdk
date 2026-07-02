@@ -9,7 +9,7 @@ from __future__ import annotations
 from typing import Any, Awaitable, Callable, Dict, Generic, List, Optional, TypeVar
 
 from imednet.core.paginator import AsyncPaginator, Paginator
-from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
+from imednet.core.protocols import AsyncRequesterProtocol, RequesterProtocol
 
 T = TypeVar("T")
 
@@ -53,7 +53,7 @@ class FilterGetOperation(Generic[T]):
 
     def execute_sync(
         self,
-        client: RequestorProtocol,
+        client: RequesterProtocol,
         paginator_cls: type[Paginator],
     ) -> T:
         """Execute synchronous get request.
@@ -78,7 +78,7 @@ class FilterGetOperation(Generic[T]):
 
     async def execute_async(
         self,
-        client: AsyncRequestorProtocol,
+        client: AsyncRequesterProtocol,
         paginator_cls: type[AsyncPaginator],
     ) -> T:
         """Execute asynchronous get request.

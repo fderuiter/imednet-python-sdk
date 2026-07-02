@@ -52,11 +52,10 @@ def _check_live_env() -> None:
     """Helper function to  check live env."""
     _print_startup_context()
     if not RUN_E2E:
-        pytest.skip(
-            "Set IMEDNET_RUN_E2E=1 to run live tests"
-        )
-    
+        pytest.skip("Set IMEDNET_RUN_E2E=1 to run live tests")
+
     from imednet.config import load_config
+
     load_config()
     logger.info("Live test environment configured (mutation=%s)", ALLOW_MUTATION)
 
@@ -71,8 +70,11 @@ def allow_mutation() -> bool:
 def sdk() -> Iterator[ImednetSDK]:
     """Helper function to sdk."""
     from imednet.config import load_config
+
     config = load_config()
-    with ImednetSDK(api_key=config.api_key, security_key=config.security_key, base_url=config.base_url) as client:
+    with ImednetSDK(
+        api_key=config.api_key, security_key=config.security_key, base_url=config.base_url
+    ) as client:
         yield client
 
 
@@ -84,8 +86,11 @@ async def async_sdk(event_loop: asyncio.AbstractEventLoop) -> AsyncIterator[Asyn
     as pytest needs an explicit event loop for session-scoped async fixtures.
     """
     from imednet.config import load_config
+
     config = load_config()
-    client = AsyncImednetSDK(api_key=config.api_key, security_key=config.security_key, base_url=config.base_url)
+    client = AsyncImednetSDK(
+        api_key=config.api_key, security_key=config.security_key, base_url=config.base_url
+    )
     try:
         yield client
     finally:

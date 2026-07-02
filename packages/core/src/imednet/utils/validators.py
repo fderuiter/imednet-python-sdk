@@ -60,7 +60,7 @@ def parse_bool(v: Any) -> bool:
 
     Accepts bool, str, int, float and returns a bool.
 
-    Defaults to False for unknown or unparseable types (e.g. None, [], object()).
+    Defaults to False for unknown or unparsable types (e.g. None, [], object()).
     String representations like '1.0', 'inf', and 'nan' are treated as truthy
     via float fallback.
 

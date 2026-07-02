@@ -185,6 +185,8 @@ def _sanitize_df(df: pd.DataFrame) -> pd.DataFrame:
 
 @dataclass
 class TabularSinkConfig(SinkConfig):
+    """Configuration for tabular sinks."""
+
     manifest_path: Optional[str] = None
     use_labels_as_columns: bool = False
     sanitize: bool = False
@@ -194,7 +196,10 @@ class TabularSinkConfig(SinkConfig):
 
 
 class TabularCSVSink(ExportSink):
+    """Sink for exporting data to CSV format."""
+
     def __init__(self, path: str, config: Optional[TabularSinkConfig] = None):
+        """Initialize the CSV sink."""
         cfg = config if isinstance(config, TabularSinkConfig) else TabularSinkConfig()
         super().__init__(cfg)
         self.path = path
@@ -202,6 +207,7 @@ class TabularCSVSink(ExportSink):
         self._cfg = cfg
 
     def write_batch(self, records: Sequence[Any], *, batch_id: str) -> int:
+        """Write a batch of records to the sink."""
         if isinstance(records, pd.DataFrame):
             df = records
             if len(df) == 0:
@@ -262,9 +268,11 @@ class TabularCSVSink(ExportSink):
     def close(self) -> None:
         pass
 
-
 class TabularSQLSink(ExportSink):
+    """Sink for exporting data to SQL databases."""
+
     def __init__(self, table: str, engine: Any, config: Optional[TabularSinkConfig] = None):
+        """Initialize the SQL sink."""
         cfg = config if isinstance(config, TabularSinkConfig) else TabularSinkConfig()
         super().__init__(cfg)
         self.table = table
@@ -274,6 +282,7 @@ class TabularSQLSink(ExportSink):
         self._initial_if_exists = self._cfg.pandas_kwargs.pop("if_exists", "replace")
 
     def write_batch(self, records: Sequence[Any], *, batch_id: str) -> int:
+        """Write a batch of records to the sink."""
         if isinstance(records, pd.DataFrame):
             df = records
             if len(df) == 0:
@@ -329,9 +338,11 @@ class TabularSQLSink(ExportSink):
             f.write(json.dumps(entry) + os.linesep)
 
     def flush(self) -> None:
+        """Flush the sink."""
         pass
 
     def close(self) -> None:
+        """Close the sink."""
         pass
 
 
@@ -366,18 +377,19 @@ def _tabular_export(
 
     filtered_records = apply_quality_gate(sdk, study_key, raw_records, config)
 
-    def _iter_chunks(items, size):
-        chunk = []
-        for item in items:
-            chunk.append(item)
-            if len(chunk) >= size:
-                yield chunk
-                chunk = []
-        if chunk:
+    import itertools
+
+    def _chunk_iterator(iterator, size):
+        while True:
+            chunk = list(itertools.islice(iterator, size))
+            if not chunk:
+                break
             yield chunk
 
     with sink:
-        for i, chunk in enumerate(_iter_chunks(filtered_records, config.batch_size)):
+        for i, chunk in enumerate(
+            _chunk_iterator(iter(filtered_records), config.batch_size)
+        ):
             rows, _ = mapper._parse_records(chunk, record_model)
             df = mapper._build_dataframe(
                 rows, variable_keys, label_map, config.use_labels_as_columns
@@ -623,7 +635,7 @@ def export_to_duckdb(
     try:
         conn.register(_DUCKDB_DF_ALIAS, df)
         conn.execute(
-            f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(table_name)} "  # nosec B608
+            f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(table_name)} "  # noqa: S608
             f"AS SELECT * FROM {_quote_duckdb_identifier(_DUCKDB_DF_ALIAS)}"
         )
         conn.unregister(_DUCKDB_DF_ALIAS)
@@ -691,7 +703,7 @@ def export_to_duckdb_by_form(
 
             conn.register(_DUCKDB_DF_ALIAS, df)
             conn.execute(
-                f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(form.form_key)} "  # nosec B608
+                f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(form.form_key)} "  # noqa: S608
                 f"AS SELECT * FROM {_quote_duckdb_identifier(_DUCKDB_DF_ALIAS)}"
             )
             conn.unregister(_DUCKDB_DF_ALIAS)
