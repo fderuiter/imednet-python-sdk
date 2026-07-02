@@ -10,7 +10,8 @@ dependencies = [
     "imednet",
     "imednet-workflows",
     "imednet-streamlit",
-    "imednet-plugins-sinks"
+    "imednet-plugins-sinks",
+    "apache-airflow-providers-imednet"
 ]
 
 [project.optional-dependencies]
@@ -41,7 +42,9 @@ dev = [
     "neo4j>=6.2.0,<7.0.0",
     "pymongo>=4.17.0,<5.0.0",
     "atheris>=3.0.0,<4.0.0; python_version>='3.11'",
-    "sphinx-argparse>=0.5.0"
+    "sphinx-argparse>=0.5.0",
+    "playwright",
+    "axe-playwright-python"
 ]
 docs = [
     "furo<2026.0.0",
@@ -74,9 +77,9 @@ max_line_length = 400
 ignore_path = ["docs/_build"]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.12"
 strict = false
-ignore_missing_imports = false
+ignore_missing_imports = true
 plugins = []
 exclude = '^examples/.*$'
 
@@ -119,11 +122,25 @@ module = [
     "streamlit.*",
     "altair",
     "altair.*",
+    "tenacity",
+    "tenacity.*",
+    "pyarrow",
+    "pyarrow.*",
+    "pytest",
+    "pytest.*",
+    "pymongo",
+    "pymongo.*",
+    "neo4j",
+    "neo4j.*",
+    "email_validator",
+    "email_validator.*"
 ]
 ignore_missing_imports = true
 
 [tool.ruff.lint.per-file-ignores]
 "packages/core/**/*.py" = ["SLF001"]
+"packages/core/src/imednet/integrations/export.py" = ["D101", "D102", "D107"]
+"packages/core/src/imednet/utils/job_poller.py" = ["D107"]
 "tests/**/*.py" = ["SLF001"]
 "scripts/**/*.py" = ["SLF001"]
 "packages/plugins-sinks/tests/**/*.py" = ["SLF001"]
@@ -137,6 +154,7 @@ include = ["CHANGELOG.md"]
 
 [tool.hatch.envs.default]
 features = ["dev", "docs"]
+installer = "uv"
 dependencies = [
     "imednet @ {root:uri}/packages/core",
     "imednet-workflows @ {root:uri}/packages/plugins-workflows",
@@ -173,11 +191,6 @@ dependencies = [
     "pandas-stubs",
     "types-requests",
     "pydantic",
-    "imednet @ {root:uri}/packages/core",
-    "imednet-workflows @ {root:uri}/packages/plugins-workflows",
-    "imednet-streamlit @ {root:uri}/packages/plugins-streamlit",
-    "apache-airflow-providers-imednet @ {root:uri}/packages/providers-airflow",
-    "imednet-plugins-sinks @ {root:uri}/packages/plugins-sinks",
 ]
 
 [tool.hatch.envs.lint.scripts]

@@ -41,7 +41,7 @@ def _cached_records_loader() -> Any:
         ImportError: If no loader plugin is installed.
     """
     from importlib.metadata import entry_points
-    
+
     loaders = list(entry_points(group="imednet.loaders", name="CachedRecordsLoader"))
     if not loaders:
         raise ImportError(

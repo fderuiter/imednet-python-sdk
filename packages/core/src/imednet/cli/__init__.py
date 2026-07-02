@@ -115,7 +115,7 @@ def get_parser() -> argparse.ArgumentParser:
     _setup_standalone_scripts(subparsers)
 
     import importlib.metadata
-    
+
     # Discover and register CLI plugins using entry points
     for entry_point in importlib.metadata.entry_points(group="imednet.cli_plugins"):
         try:

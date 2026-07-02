@@ -164,7 +164,7 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install uv
+          python -m pip install uv hatch
           uv sync --locked --all-extras
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
@@ -255,7 +255,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install uv
+          python -m pip install uv hatch
           uv sync --locked --all-extras
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
           
@@ -317,7 +317,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install uv
+          python -m pip install uv hatch
           uv sync --locked --all-extras
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
@@ -346,7 +346,7 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install uv
+          python -m pip install uv hatch
           uv sync --locked --all-extras
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
         
@@ -436,7 +436,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install uv
+          python -m pip install uv hatch
           uv sync --locked --all-extras
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
@@ -613,14 +613,13 @@ jobs:
           cache-dependency-path: "**/pyproject.toml"
       - name: Install Dependencies
         run: |
-          python -m pip install uv
+          python -m pip install uv hatch
           uv sync --locked --all-extras
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
-          .venv/bin/python -m pip install axe-playwright-python playwright
-          .venv/bin/python -m playwright install --with-deps chromium
+          hatch run playwright install --with-deps chromium
       - name: Run automated accessibility scan
         run: |
-          hatch run python scripts/a11y_audit.py
+          hatch run test -m a11y tests/browser/test_a11y.py
           
       - name: Auto-update VPAT
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
