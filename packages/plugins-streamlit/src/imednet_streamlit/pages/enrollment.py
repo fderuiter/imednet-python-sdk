@@ -20,15 +20,15 @@ from imednet_streamlit.components.charts import render_accessible_chart
 def _fetch_subjects(_sdk: object, study_key: str) -> pd.DataFrame:
     """Fetches all subjects and returns a normalized DataFrame (deleted excluded)."""
     from imednet.models.engine import ResourceRegistry
-    
+
     subjects = _sdk.get_subjects(study_key=study_key)  # type: ignore[attr-defined]
     fields = ResourceRegistry.get_fields("Subject")
-    
+
     rows = []
     for s in subjects:
         row = {f: getattr(s, f, None) for f in fields}
         rows.append(row)
-        
+
     if not rows:
         return pd.DataFrame(columns=fields)
     df = pd.DataFrame(rows)

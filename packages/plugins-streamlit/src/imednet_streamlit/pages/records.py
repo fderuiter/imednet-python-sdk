@@ -50,13 +50,14 @@ def _resolve_form_name(form: object) -> str:
 def _fetch_records(_sdk: object, study_key: str) -> pd.DataFrame:
     """Resolve the human-readable name for a form object."""
     from imednet.models.engine import ResourceRegistry
+
     records = _sdk.get_records(study_key=study_key)  # type: ignore[attr-defined]
     fields = ResourceRegistry.get_fields("Record")
-    
+
     rows = []
     for r in records:
         rows.append({f: getattr(r, f, None) for f in fields})
-        
+
     if not rows:
         return pd.DataFrame(columns=fields)
 
@@ -316,8 +317,11 @@ def render_page() -> None:
 
     st.subheader("Records Overview")
     from imednet.models.engine import ResourceRegistry
+
     all_fields = ResourceRegistry.get_fields("Record")
-    display_cols = [c for c in ["record_id", "form_name", "form_key", "subject_key"] if c in df_filtered.columns]
+    display_cols = [
+        c for c in ["record_id", "form_name", "form_key", "subject_key"] if c in df_filtered.columns
+    ]
     for c in all_fields:
         if c not in display_cols and c in df_filtered.columns and c != "deleted":
             display_cols.append(c)

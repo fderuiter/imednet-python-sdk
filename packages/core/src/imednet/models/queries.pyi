@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 from pydantic import Field
 
@@ -23,6 +23,8 @@ class QueryComment(JsonModel):
 class Query(JsonModel):
     """Represents a data query (discrepancy) raised on a record."""
 
+    query_comments: List[QueryComment] = Field(default_factory=list, alias="queryComments")
+
     study_key: Optional[str]
     subject_id: Optional[int]
     annotation_id: Optional[int]
@@ -35,5 +37,3 @@ class Query(JsonModel):
     annotation_type: Any
     subject_oid: Any
     type: Any
-
-    query_comments: List[QueryComment] = Field(default_factory=list, alias="queryComments")

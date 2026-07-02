@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from pydantic import Field
 
@@ -12,6 +12,10 @@ from imednet.models.json_base import JsonModel
 
 class Form(JsonModel):
     """Configuration and metadata for a CRF (Case Report Form)."""
+
+    subject_record_report: bool | None = Field(default=None, alias="subjectRecordReport")
+    unscheduled_visit: bool | None = Field(default=None, alias="unscheduledVisit")
+    disabled: bool | None = Field(default=None, alias="disabled")
 
     study_key: Optional[str]
     form_id: Optional[int]
@@ -27,7 +31,3 @@ class Form(JsonModel):
     enforce_ownership: Any
     other_forms: Any
     user_agreement: Any
-
-    subject_record_report: bool | None = Field(default=None, alias="subjectRecordReport")
-    unscheduled_visit: bool | None = Field(default=None, alias="unscheduledVisit")
-    disabled: bool | None = Field(default=None, alias="disabled")

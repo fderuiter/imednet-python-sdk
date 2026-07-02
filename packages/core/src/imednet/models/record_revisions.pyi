@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from pydantic import Field
 
@@ -12,6 +12,8 @@ from imednet.models.json_base import JsonModel
 
 class RecordRevision(JsonModel):
     """Historical version of a record including change reason and user."""
+
+    pass
 
     study_key: Optional[str]
     record_revision_id: Optional[int]
@@ -31,5 +33,3 @@ class RecordRevision(JsonModel):
     role: Any
     subject_oid: Any
     user: Any
-
-    pass

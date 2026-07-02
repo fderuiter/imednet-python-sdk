@@ -92,13 +92,14 @@ def _make_document_id(study_key: str, record_id: Any) -> str:
 def _record_to_document(record: Any, study_key: str) -> dict[str, Any]:
     """Wrap a typed ``Record`` model in the standard document envelope."""
     from imednet.models.engine import ResourceRegistry
+
     record_id = getattr(record, "record_id", None)
     doc = {
         "_id": _make_document_id(study_key, record_id),
         "study_key": study_key,
         "exported_at": datetime.now(tz=timezone.utc).isoformat(),
     }
-    
+
     fields = ResourceRegistry.get_fields("Record")
     for f in fields:
         # Don't overwrite envelope specific fields if they happen to overlap
@@ -107,7 +108,7 @@ def _record_to_document(record: Any, study_key: str) -> dict[str, Any]:
         if f == "record_data":
             val = dict(val or {})
         doc[f] = val
-        
+
     return doc
 
 

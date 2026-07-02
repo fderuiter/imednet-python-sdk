@@ -115,11 +115,12 @@ MERGE (v)-[:HAS_RECORD]->(r)
 def _record_to_row(record: Any, study_key: str) -> dict[str, Any]:
     """Convert a typed ``Record`` model to a flat Cypher parameter dict."""
     import json
+
     from imednet.models.engine import ResourceRegistry
 
     fields = ResourceRegistry.get_fields("Record")
     row = {"study_key": study_key}
-    
+
     for f in fields:
         val = getattr(record, f, None)
         if f == "record_data":

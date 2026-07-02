@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 from pydantic import Field
 
@@ -21,6 +21,8 @@ class FormSummary(JsonModel):
 
 class Interval(JsonModel):
     """Represents a visit interval or event within the study timeline."""
+
+    forms: list[FormSummary] | None = Field(default=None, alias="forms")
 
     study_key: Optional[str]
     interval_id: Optional[int]
@@ -42,5 +44,3 @@ class Interval(JsonModel):
     timeline: Any
     window_calculation_date: Any
     window_calculation_form: Any
-
-    forms: list[FormSummary] | None = Field(default=None, alias="forms")

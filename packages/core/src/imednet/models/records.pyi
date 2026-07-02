@@ -15,8 +15,12 @@ class Keyword(JsonModel):
 
     pass
 
+    pass
+
 class Record(JsonModel):
     """A data record for a subject, form, and visit."""
+
+    pass
 
     study_key: Optional[str]
     interval_id: Optional[int]
@@ -36,8 +40,6 @@ class Record(JsonModel):
     visit_id: Optional[int]
     parent_record_id: Optional[int]
     record_data: Any
-
-    pass
 
 class RecordJobResponse(JsonModel):
     """Response for a record-related job (batch operations, etc)."""

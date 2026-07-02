@@ -28,19 +28,19 @@ def _fetch_site_metrics(
     _sdk: ImednetFacade, study_key: str, *, now_utc: pd.Timestamp | None = None
 ) -> pd.DataFrame:
     """Build site metrics with site/query counts, rates, and average days open."""
-    from imednet_workflows.query_management import QueryManagementWorkflow
     from imednet.models.engine import ResourceRegistry
+    from imednet_workflows.query_management import QueryManagementWorkflow
 
     # --- Subjects ---
     subject_fields = ResourceRegistry.get_fields("Subject")
     subjects = _sdk.get_subjects(study_key=study_key)
-    
+
     subject_rows = []
     for s in subjects:
         subject_rows.append({f: getattr(s, f, None) for f in subject_fields})
-        
+
     df_subjects = pd.DataFrame(subject_rows, columns=subject_fields)
-    
+
     if df_subjects.empty:
         df_subjects = pd.DataFrame(columns=subject_fields)
     else:
@@ -52,13 +52,13 @@ def _fetch_site_metrics(
     workflow = QueryManagementWorkflow(sdk=_sdk)
     open_queries = workflow.get_open_queries(study_key=study_key)
     query_fields = ResourceRegistry.get_fields("Query")
-    
+
     query_rows = []
     for q in open_queries:
         query_rows.append({f: getattr(q, f, None) for f in query_fields})
-        
+
     df_queries = pd.DataFrame(query_rows, columns=query_fields)
-    
+
     if df_queries.empty:
         df_queries = pd.DataFrame(columns=query_fields)
 

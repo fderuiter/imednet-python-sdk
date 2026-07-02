@@ -212,62 +212,96 @@ class ModelEngine:
             if not matches:
                 continue
 
-            # Start by copying the whole .py file
-            pyi_content = content
+            # Need to get the base classes so we can list only fields added by the dynamic schema
+            # But the simplest way is just to write everything from the model's annotations
+            # However, if it's easier, we just reconstruct the `.pyi` file from the Pydantic fields
 
-            # Ensure typing imports are present
-            if "from typing import Any, Dict, List, Optional" not in pyi_content:
-                pyi_content = pyi_content.replace(
-                    "from __future__ import annotations",
-                    "from __future__ import annotations\nfrom typing import Any, Dict, List, Optional",
-                )
+            # Generate pyi by replacing dynamic class definitions in the original source
+            pyi_content_str = content
 
-            # Remove ModelEngine.get_model lines
-            pyi_content = re.sub(
-                r"[A-Za-z0-9_]+\s*=\s*ModelEngine\.get_model\(.*?\)\n?", "", pyi_content
-            )
+            # Ensure typing imports are present in the pyi
+            imports_re = re.search(r"^(.*?)(?=\n\nclass|\nclass)", pyi_content_str, re.DOTALL)
+            if imports_re:
+                original_imports = imports_re.group(1)
+                new_imports = original_imports
+                if "from typing import" not in new_imports:
+                    new_imports += "\nfrom typing import Any, Optional\n"
+                else:
+                    if "Any" not in new_imports:
+                        new_imports = new_imports.replace(
+                            "from typing import ", "from typing import Any, "
+                        )
+                    if "Optional" not in new_imports:
+                        new_imports = new_imports.replace(
+                            "from typing import ", "from typing import Optional, "
+                        )
+                pyi_content_str = pyi_content_str.replace(original_imports, new_imports, 1)
 
             for class_name, model_name, base_class_name in matches:
                 model = cls.get_model(model_name)
 
-                original_class_code_match = re.search(
-                    rf"(class {class_name}\([^)]*\):[\s\S]*?)(?=\nclass |\Z)", pyi_content
-                )
-                original_class_code = (
-                    original_class_code_match.group(1) if original_class_code_match else ""
-                )
+                stub_lines = []
 
-                fields_lines = []
+                has_fields = False
                 for field_name, field_info in model.model_fields.items():
-                    if re.search(rf"^\s*{field_name}\s*:", original_class_code, re.MULTILINE):
-                        continue
-
+                    # Format annotation
                     ann = str(field_info.annotation)
-                    ann = ann.replace("typing.", "").replace("NoneType", "None")
+                    ann = ann.replace("typing.", "")
+                    ann = ann.replace("NoneType", "None")
+
                     if "Union" in ann and "None" in ann:
+                        # Convert Union[X, None] to Optional[X]
                         inner = (
                             ann.replace("Union[", "").replace(", None]", "").replace("None, ", "")
                         )
                         ann = f"Optional[{inner}]"
-                    fields_lines.append(f"    {field_name}: {ann}")
 
-                if fields_lines:
-                    fields_str = "\n" + "\n".join(fields_lines)
-                else:
-                    fields_str = ""
+                    stub_lines.append(f"    {field_name}: {ann}")
+                    has_fields = True
 
-                # Insert fields into the class definition right after the class line or its docstring
-                # Regex to match class definition + optional docstring
-                pattern = rf"(class {class_name}\([^)]*\):(?:\s*\"\"\"[\s\S]*?\"\"\")?)"
+                if not has_fields:
+                    stub_lines.append("    pass")
 
-                def replacer(m):
-                    return m.group(1) + fields_str
+                stub_str = "\n".join(stub_lines)
 
-                pyi_content = re.sub(pattern, replacer, pyi_content)
+                # Regex replace the ModelEngine assignment, appending the stub fields to the class body
+                pattern = rf"(class {class_name}\([^)]*\):.*?)\n+{class_name}\s*=\s*ModelEngine\.get_model\(['\"]{model_name}['\"]\s*,\s*{class_name}\)"
+
+                def replace_func(m: "re.Match[str]") -> str:
+                    class_body = str(m.group(1))
+                    existing_fields = set(
+                        re.findall(r"^\s+([a-zA-Z0-9_]+)\s*:", class_body, re.MULTILINE)
+                    )
+
+                    filtered_stub_lines = []
+                    has_filtered_fields = False
+                    for field_name, field_info in model.model_fields.items():
+                        if field_name in existing_fields:
+                            continue
+                        ann = str(field_info.annotation)
+                        ann = ann.replace("typing.", "")
+                        ann = ann.replace("NoneType", "None")
+                        if "Union" in ann and "None" in ann:
+                            inner = (
+                                ann.replace("Union[", "")
+                                .replace(", None]", "")
+                                .replace("None, ", "")
+                            )
+                            ann = f"Optional[{inner}]"
+                        filtered_stub_lines.append(f"    {field_name}: {ann}")
+                        has_filtered_fields = True
+
+                    if not has_filtered_fields and not existing_fields:
+                        filtered_stub_lines.append("    pass")
+
+                    s = "\n".join(filtered_stub_lines)
+                    return class_body + "\n\n" + s
+
+                pyi_content_str = re.sub(pattern, replace_func, pyi_content_str, flags=re.DOTALL)
 
             pyi_path = py_file + "i"
             with open(pyi_path, "w") as f:
-                f.write(pyi_content)
+                f.write(pyi_content_str)
 
 
 class ResourceRegistry:

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 from pydantic import Field, computed_field
 
@@ -26,14 +26,6 @@ class Role(JsonModel):
 class User(JsonModel):
     """A user account in the system."""
 
-    user_id: Optional[str]
-    login: Optional[str]
-    first_name: Optional[str]
-    last_name: Optional[str]
-    email: Optional[str]
-    user_active_in_study: Optional[bool]
-    roles: Any
-
     @computed_field
     def name(self) -> str:
         """A convenience full-name property so you can do `user.name`.
@@ -42,3 +34,11 @@ class User(JsonModel):
         """
         # will strip extra spaces if either is empty
         return " ".join(filter(None, (self.first_name, self.last_name)))
+
+    user_id: Optional[str]
+    login: Optional[str]
+    first_name: Optional[str]
+    last_name: Optional[str]
+    email: Optional[str]
+    user_active_in_study: Optional[bool]
+    roles: Any

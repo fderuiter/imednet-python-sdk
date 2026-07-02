@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from pydantic import Field
 
@@ -13,11 +13,11 @@ from imednet.models.json_base import JsonModel
 class Site(JsonModel):
     """A site participating in a study."""
 
+    pass
+
     study_key: Optional[str]
     site_id: Optional[int]
     site_name: Optional[str]
     site_enrollment_status: Optional[str]
     date_created: Optional[str]
     date_modified: Optional[str]
-
-    pass

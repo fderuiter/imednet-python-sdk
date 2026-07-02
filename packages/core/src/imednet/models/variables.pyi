@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from pydantic import Field
 
@@ -12,6 +12,9 @@ from imednet.models.json_base import JsonModel
 
 class Variable(JsonModel):
     """Definition of a data field (question) on a form."""
+
+    label: str | None = Field(default=None, alias="label")
+    variable_oid: str | None = Field(default=None, alias="variableOid")
 
     study_key: Optional[str]
     variable_id: Optional[int]
@@ -27,6 +30,3 @@ class Variable(JsonModel):
     blinded: Any
     deleted: Any
     disabled: Any
-
-    label: str | None = Field(default=None, alias="label")
-    variable_oid: str | None = Field(default=None, alias="variableOid")
