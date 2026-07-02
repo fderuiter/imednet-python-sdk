@@ -125,7 +125,8 @@ def _record_to_row(record: Any, study_key: str) -> dict[str, Any]:
         val = getattr(record, f, None)
         if f == "record_data":
             val = json.dumps(dict(val or {}))
-        row[f] = val
+        if val is not None or f not in row:
+            row[f] = val
 
     return row
 

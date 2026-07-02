@@ -102,12 +102,11 @@ def _record_to_document(record: Any, study_key: str) -> dict[str, Any]:
 
     fields = ResourceRegistry.get_fields("Record")
     for f in fields:
-        # Don't overwrite envelope specific fields if they happen to overlap
-        # Wait, actually study_key is also a record field, so we just set them.
         val = getattr(record, f, None)
         if f == "record_data":
             val = dict(val or {})
-        doc[f] = val
+        if val is not None or f not in doc:
+            doc[f] = val
 
     return doc
 

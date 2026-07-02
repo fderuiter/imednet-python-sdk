@@ -143,17 +143,23 @@ class TestNeo4jExportSink:
         assert run_args.args[0] == graph_mod._MERGE_RECORD_CYPHER
         assert run_args.kwargs["rows"] == [
             {
-                "record_id": 1234,
+                "study_key": "STUDY1",
+                "interval_id": None,
                 "form_id": 7,
                 "form_key": None,
-                "visit_id": 42,
-                "subject_id": None,
-                "subject_key": "SUBJ-001",
-                "study_key": "STUDY1",
+                "site_id": None,
+                "record_id": 1234,
+                "record_oid": None,
+                "record_type": None,
                 "record_status": None,
                 "deleted": None,
                 "date_created": None,
                 "date_modified": None,
+                "subject_id": None,
+                "subject_oid": None,
+                "subject_key": "SUBJ-001",
+                "visit_id": 42,
+                "parent_record_id": None,
                 "record_data": '{"labs": {"hemoglobin": 13.2}, "status": "Complete"}',
             }
         ]
