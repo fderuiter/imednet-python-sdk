@@ -8,9 +8,9 @@ from typing import Any, List, Optional
 from pydantic import Field, computed_field
 
 from imednet.models.engine import ModelEngine
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
-class Role(JsonModel):
+class Role(ImednetBaseModel):
     """A role assigned to a user within a study or community."""
 
     role_id: str | None = Field(default=None, alias="roleId")
@@ -23,7 +23,7 @@ class Role(JsonModel):
     date_created: str | None = Field(default=None, alias="dateCreated")
     date_modified: str | None = Field(default=None, alias="dateModified")
 
-class User(JsonModel):
+class User(ImednetBaseModel):
     """A user account in the system."""
 
     @computed_field

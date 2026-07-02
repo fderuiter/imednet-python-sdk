@@ -5,9 +5,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, Generic, Optional, TypeVar
 
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
-T = TypeVar("T", bound=JsonModel)
+T = TypeVar("T", bound=ImednetBaseModel)
 
 
 @dataclass

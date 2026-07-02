@@ -10,11 +10,11 @@ from typing import Optional
 
 from pydantic import Field, field_validator
 
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 from imednet.models.standards import PROFILE_REGISTRY
 
 
-class MappingRule(JsonModel):
+class MappingRule(ImednetBaseModel):
     """Mapping from raw source variable to canonical reporting field."""
 
     domain: str = Field(..., alias="domain")
@@ -26,7 +26,7 @@ class MappingRule(JsonModel):
     is_baseline: bool = Field(False, alias="isBaseline")
 
 
-class WidgetConfig(JsonModel):
+class WidgetConfig(ImednetBaseModel):
     """Declarative dashboard widget configuration."""
 
     widget_id: str = Field(..., alias="widgetId")
@@ -38,7 +38,7 @@ class WidgetConfig(JsonModel):
     layout_cols: int = Field(12, alias="layoutCols")
 
 
-class StudyConfiguration(JsonModel):
+class StudyConfiguration(ImednetBaseModel):
     """Serialized study reporting dashboard configuration."""
 
     version: str = Field("1.0.0", alias="version")

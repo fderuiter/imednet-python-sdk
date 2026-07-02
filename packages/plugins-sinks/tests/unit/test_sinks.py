@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 from typing import Any, Dict
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, ANY
 
 import pytest
 from imednet_sinks import (
@@ -152,9 +152,9 @@ class TestNeo4jExportSink:
                 "record_oid": None,
                 "record_type": None,
                 "record_status": None,
-                "deleted": None,
+                "deleted": False,
                 "date_created": None,
-                "date_modified": None,
+                "date_modified": ANY,
                 "subject_id": None,
                 "subject_oid": None,
                 "subject_key": "SUBJ-001",

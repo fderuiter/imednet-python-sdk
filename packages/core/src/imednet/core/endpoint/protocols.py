@@ -17,10 +17,10 @@ from typing import (
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequestorProtocol, RequestorProtocol
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 from imednet.utils.typing import FilterValue, ItemId
 
-T = TypeVar("T", bound=JsonModel)
+T = TypeVar("T", bound=ImednetBaseModel)
 T_co = TypeVar("T_co", covariant=True)
 
 
@@ -29,7 +29,7 @@ class EndpointProtocol(Protocol):
     """Protocol defining the interface for endpoint classes."""
 
     PATH: str
-    MODEL: Type[JsonModel]
+    MODEL: Type[ImednetBaseModel]
     _id_param: str
     requires_study_key: bool
     PAGE_SIZE: int

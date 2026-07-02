@@ -8,9 +8,9 @@ from typing import Any, Optional
 from pydantic import Field
 
 from imednet.models.engine import ModelEngine
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
-class Study(JsonModel):
+class Study(ImednetBaseModel):
     """Represents a clinical study and its metadata."""
 
     sponsor_key: Optional[str]

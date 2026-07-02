@@ -7,10 +7,10 @@ from datetime import datetime
 from pydantic import Field
 
 from imednet.models.engine import ModelEngine
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
 
-class Form(JsonModel):
+class Form(ImednetBaseModel):
     """Configuration and metadata for a CRF (Case Report Form)."""
 
     subject_record_report: bool | None = Field(default=None, alias="subjectRecordReport")

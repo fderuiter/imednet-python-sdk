@@ -4,10 +4,10 @@ from unittest.mock import MagicMock
 
 from imednet.core.context import Context
 from imednet.core.endpoint.base import GenericListGetEndpoint
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
 
-class MockModel(JsonModel):
+class MockModel(ImednetBaseModel):
     """Test suite for MockModel."""
 
     id: int

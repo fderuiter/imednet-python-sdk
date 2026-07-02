@@ -8,9 +8,9 @@ from typing import Any, List, Optional
 from pydantic import Field
 
 from imednet.models.engine import ModelEngine
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
-class SubjectKeyword(JsonModel):
+class SubjectKeyword(ImednetBaseModel):
     """A keyword or tag associated with a subject."""
 
     keyword_name: str = Field("", alias="keywordName")
@@ -20,7 +20,7 @@ class SubjectKeyword(JsonModel):
 
     pass
 
-class Subject(JsonModel):
+class Subject(ImednetBaseModel):
     """A subject (participant) in a study, with status and site info."""
 
     keywords: List[SubjectKeyword] = Field(default_factory=list, alias="keywords")

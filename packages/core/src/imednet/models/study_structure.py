@@ -5,7 +5,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import Field
+from imednet.models.base import ImednetBaseModel
 
 # Import existing models needed for type hints and potentially reuse
 from .forms import Form
@@ -14,7 +15,7 @@ from .variables import Variable
 
 
 # Define a structure for Forms within the context of an Interval, including variables
-class FormStructure(BaseModel):
+class FormStructure(ImednetBaseModel):
     """Hierarchical representation of a form including its variables."""
 
     # Key identifying fields
@@ -34,8 +35,6 @@ class FormStructure(BaseModel):
     # Nested variables
     variables: List[Variable] = Field(default_factory=list)
 
-    # Use ConfigDict for model configuration
-    model_config = ConfigDict(populate_by_name=True, extra="ignore")
 
     @classmethod
     def from_form(cls, form: Form, variables: List[Variable]) -> FormStructure:
@@ -45,7 +44,7 @@ class FormStructure(BaseModel):
 
 
 # Define a structure for Intervals, containing FormStructures
-class IntervalStructure(BaseModel):
+class IntervalStructure(ImednetBaseModel):
     """Hierarchical representation of an interval including its forms."""
 
     # Key identifying fields
@@ -63,8 +62,6 @@ class IntervalStructure(BaseModel):
     # Nested forms
     forms: List[FormStructure] = Field(default_factory=list)
 
-    # Use ConfigDict for model configuration
-    model_config = ConfigDict(populate_by_name=True, extra="ignore")
 
     @classmethod
     def from_interval(cls, interval: Interval, forms: List[FormStructure]) -> IntervalStructure:
@@ -76,11 +73,9 @@ class IntervalStructure(BaseModel):
 
 
 # Define the root StudyStructure model
-class StudyStructure(BaseModel):
+class StudyStructure(ImednetBaseModel):
     """Hierarchical representation of a full study including intervals and forms."""
 
     study_key: str = Field(..., alias="studyKey")
     intervals: List[IntervalStructure] = Field(default_factory=list)
 
-    # Use ConfigDict for model configuration
-    model_config = ConfigDict(populate_by_name=True, extra="ignore")

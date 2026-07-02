@@ -8,7 +8,7 @@ from typing import Optional
 
 from pydantic import Field, field_validator
 
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
 
 class TriageStatus(str, Enum):
@@ -19,7 +19,7 @@ class TriageStatus(str, Enum):
     RESOLVED = "RESOLVED"
 
 
-class TriageAnnotation(JsonModel):
+class TriageAnnotation(ImednetBaseModel):
     """Reviewer note attached to a triage item."""
 
     annotation_id: str = Field(..., min_length=1)
@@ -28,7 +28,7 @@ class TriageAnnotation(JsonModel):
     timestamp: datetime
 
 
-class TriageHistoryEntry(JsonModel):
+class TriageHistoryEntry(ImednetBaseModel):
     """Status transition audit entry for a triage item."""
 
     transition_id: str = Field(..., min_length=1)
@@ -48,7 +48,7 @@ class TriageHistoryEntry(JsonModel):
         return text or None
 
 
-class TriageItem(JsonModel):
+class TriageItem(ImednetBaseModel):
     """Core triage item used by queue and reviewer workflows."""
 
     item_id: str = Field(..., min_length=1)
