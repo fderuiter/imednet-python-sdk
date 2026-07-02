@@ -504,7 +504,7 @@ def export_to_json(
         import pandas as pd
 
         # Explicitly handle missing values when converting to dict
-        data = df.where(pd.notnull(df), None).to_dict(orient="records")
+        data = df.where(pd.notnull(df), None).to_dict(orient="records")  # type: ignore[call-overload]
 
     try:
         from importlib.metadata import entry_points
