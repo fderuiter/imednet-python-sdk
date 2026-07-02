@@ -7,8 +7,8 @@ from typing import List
 
 from pydantic import Field, computed_field
 
-from imednet.models.engine import ModelEngine
 from imednet.models.base import ImednetBaseModel
+from imednet.models.engine import ModelEngine
 
 
 class Role(ImednetBaseModel):

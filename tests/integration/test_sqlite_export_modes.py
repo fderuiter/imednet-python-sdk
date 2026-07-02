@@ -19,8 +19,9 @@ class Result:
 
 class CliRunner:
     def invoke(self, app, args):
-        import io, sys
-        from contextlib import redirect_stdout, redirect_stderr
+        import io
+        import sys
+        from contextlib import redirect_stderr, redirect_stdout
         out = io.StringIO()
         err = io.StringIO()
         exit_code = 0
@@ -87,10 +88,15 @@ def _setup_single_table_mapper(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     """Helper function to  setup single table mapper."""
     columns = [f"c{i}" for i in range(2100)]
     df = pd.DataFrame([range(2100)], columns=columns)
-    mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
+    mapper_inst = MagicMock()
+    mapper_inst._fetch_variable_metadata.return_value = (columns, {})
+    mapper_inst._iter_records.return_value = [{"fake": "record"}]
+    mapper_inst._parse_records.return_value = ([{}], {})
+    mapper_inst._build_dataframe.return_value = df
     monkeypatch.setattr(
         export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst))
     )
+    monkeypatch.setattr(export_mod, "apply_quality_gate", lambda *args, **kwargs: [{"fake": "record"}])
     monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=MagicMock()))
     mock_to_sql = MagicMock()
     monkeypatch.setattr(pd.DataFrame, "to_sql", mock_to_sql)

@@ -30,8 +30,7 @@ def build_wheels(dist_dir: Path):
 
 
 def validate_scenario(name, install_items, smoke_checks, dist_dir: Path):
-    """
-    smoke_checks is a list of dicts:
+    """smoke_checks is a list of dicts:
     {
         "cmd": "command to run",
         "expect_fail": False,

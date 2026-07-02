@@ -5,7 +5,7 @@ import pytest
 import respx
 
 from imednet import errors
-from imednet.core.retry import RetryPolicy, RetryState, RetryConfig
+from imednet.core.retry import RetryConfig, RetryPolicy, RetryState
 from imednet.sdk import AsyncImednetSDK, ImednetSDK
 
 
