@@ -36,7 +36,7 @@ Set your credentials by copying the environment template or exporting them direc
 
 List studies asynchronously and poll a job:
 
-.. code-block:: python
+.. testcode::
 
    import asyncio
    from dotenv import load_dotenv
@@ -53,7 +53,7 @@ List studies asynchronously and poll a job:
            security_key=cfg.security_key,
            base_url=cfg.base_url,
        ) as sdk:
-           studies = await sdk.studies.async_list()
+           studies = [s async for s in sdk.studies.async_list()]
            for study in studies:
                print(f"{study.study_name} ({study.study_key})")
            status = await sdk.async_poll_job("STUDY", "BATCH", interval=2, timeout=60)

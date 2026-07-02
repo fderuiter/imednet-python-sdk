@@ -32,7 +32,7 @@ Set your credentials by copying the environment template or exporting them direc
 
 Enable structured logging and list studies:
 
-.. code-block:: python
+.. testcode::
 
    from dotenv import load_dotenv
    from imednet import ImednetSDK, load_config
@@ -61,7 +61,7 @@ Cached endpoints can be refreshed with ``refresh=True``. The caches are not thre
 
 Custom retry logic can be provided via a ``RetryPolicy``:
 
-.. code-block:: python
+.. testcode::
 
    from imednet.core.retry import RetryPolicy, RetryState
    from imednet.errors import ServerError
