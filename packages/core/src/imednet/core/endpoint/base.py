@@ -18,12 +18,12 @@ from imednet.core.endpoint.structs import ListRequestState, ParamState
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.parsing import get_model_parser
 from imednet.core.protocols import AsyncRequestorProtocol, ParamProcessor, RequestorProtocol
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 from imednet.utils.filters import build_filter_string
 from imednet.utils.typing import FilterValue, ItemId
 from imednet.utils.url import build_safe_path
 
-T = TypeVar("T", bound=JsonModel)
+T = TypeVar("T", bound=ImednetBaseModel)
 
 
 class GenericEndpoint(EndpointABC[T]):

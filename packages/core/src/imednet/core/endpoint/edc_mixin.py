@@ -6,9 +6,9 @@ from typing import Any, Dict, TypeVar
 
 from imednet.core.context import get_study_context
 from imednet.core.endpoint.base import AsyncListGetEndpoint, SyncListGetEndpoint
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
-T = TypeVar("T", bound=JsonModel)
+T = TypeVar("T", bound=ImednetBaseModel)
 
 _EDC_BASE_PATH = "/api/v1/edc/studies"
 

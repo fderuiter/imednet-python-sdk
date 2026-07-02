@@ -8,10 +8,10 @@ from typing import Any, Dict, List
 from pydantic import Field, RootModel
 
 from imednet.models.engine import ModelEngine
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
 
-class Keyword(JsonModel):
+class Keyword(ImednetBaseModel):
     """A keyword or tag associated with a record."""
 
     pass
@@ -20,7 +20,7 @@ class Keyword(JsonModel):
 Keyword = ModelEngine.get_model('Keyword', Keyword)
 
 
-class Record(JsonModel):
+class Record(ImednetBaseModel):
     """A data record for a subject, form, and visit."""
 
     pass
@@ -29,7 +29,7 @@ class Record(JsonModel):
 Record = ModelEngine.get_model('Record', Record)
 
 
-class RecordJobResponse(JsonModel):
+class RecordJobResponse(ImednetBaseModel):
     """Response for a record-related job (batch operations, etc)."""
 
     job_id: str = Field("", alias="jobId")
@@ -45,7 +45,7 @@ class RecordData(RootModel[Dict[str, Any]]):
     pass
 
 
-class BaseRecordRequest(JsonModel):
+class BaseRecordRequest(ImednetBaseModel):
     """Base class for record creation/update requests."""
 
     form_key: str = Field("", alias="formKey")

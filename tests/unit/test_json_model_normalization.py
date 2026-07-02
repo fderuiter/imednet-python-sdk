@@ -3,10 +3,10 @@
 from datetime import datetime, timezone
 from typing import Any, Optional, Union
 
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
 
-class SampleModel(JsonModel):
+class SampleModel(ImednetBaseModel):
     """Test suite for SampleModel."""
 
     flag: bool
@@ -33,7 +33,7 @@ def test_json_model_normalization() -> None:
     assert model.mapping == {"one": 1}
 
 
-class SampleOptionalModel(JsonModel):
+class SampleOptionalModel(ImednetBaseModel):
     """Test suite for SampleOptionalModel."""
 
     opt_str: Optional[str] = None
@@ -64,7 +64,7 @@ def test_json_model_normalization_optional_fields() -> None:
 def test_json_model_normalization_union_field() -> None:
     """Test that json model normalization union field."""
 
-    class SampleUnionModel(JsonModel):
+    class SampleUnionModel(ImednetBaseModel):
         """Test suite for SampleUnionModel."""
 
         union_field: Union[int, str]
@@ -76,7 +76,7 @@ def test_json_model_normalization_union_field() -> None:
 def test_json_model_identity_normalizer() -> None:
     """Test that json model identity normalizer."""
 
-    class SampleIdentityModel(JsonModel):
+    class SampleIdentityModel(ImednetBaseModel):
         """Test suite for SampleIdentityModel."""
 
         identity_field: Any
@@ -88,7 +88,7 @@ def test_json_model_identity_normalizer() -> None:
 def test_json_model_normalization_missing_field() -> None:
     """Test that json model normalization missing field."""
 
-    class SampleModelMissing(JsonModel):
+    class SampleModelMissing(ImednetBaseModel):
         """Test suite for SampleModelMissing."""
 
         opt_str: Optional[str] = None
@@ -115,12 +115,12 @@ def test_json_model_structural_shift(caplog):
     """Test that json model structural shift."""
     import logging
 
-    class NestedModel(JsonModel):
+    class NestedModel(ImednetBaseModel):
         """Test suite for NestedModel."""
 
         id: int
 
-    class TestModel(JsonModel):
+    class TestModel(ImednetBaseModel):
         """Test suite for Model."""
 
         nested: NestedModel

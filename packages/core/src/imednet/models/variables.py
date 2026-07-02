@@ -8,10 +8,10 @@ from typing import Optional
 from pydantic import Field
 
 from imednet.models.engine import ModelEngine
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
 
-class Variable(JsonModel):
+class Variable(ImednetBaseModel):
     """Definition of a data field (question) on a form."""
 
     label: str | None = Field(default=None, alias="label")

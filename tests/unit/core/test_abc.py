@@ -5,10 +5,10 @@ from typing import Any, Dict, Type
 import pytest
 
 from imednet.core.endpoint.abc import EndpointABC
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
 
-class MockModel(JsonModel):
+class MockModel(ImednetBaseModel):
     """Test suite for MockModel."""
 
     id: int

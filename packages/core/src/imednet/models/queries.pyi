@@ -8,9 +8,9 @@ from typing import Any, List, Optional
 from pydantic import Field
 
 from imednet.models.engine import ModelEngine
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
-class QueryComment(JsonModel):
+class QueryComment(ImednetBaseModel):
     """A comment or response within a data query thread."""
 
     closed: bool | None = Field(default=None, alias="closed")
@@ -20,7 +20,7 @@ class QueryComment(JsonModel):
     comment: str | None = Field(default=None, alias="comment")
     date: str | None = Field(default=None, alias="date")
 
-class Query(JsonModel):
+class Query(ImednetBaseModel):
     """Represents a data query (discrepancy) raised on a record."""
 
     query_comments: List[QueryComment] = Field(default_factory=list, alias="queryComments")

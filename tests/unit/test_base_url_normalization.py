@@ -9,10 +9,10 @@ from imednet.core.async_client import AsyncClient
 from imednet.core.client import Client
 from imednet.core.endpoint.base import GenericEndpoint
 from imednet.core.endpoint.edc_mixin import EdcEndpointMixin
-from imednet.models.json_base import JsonModel
+from imednet.models.base import ImednetBaseModel
 
 
-class MockModel(JsonModel):
+class MockModel(ImednetBaseModel):
     """Test suite for MockModel."""
 
     pass
