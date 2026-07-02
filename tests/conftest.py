@@ -27,6 +27,26 @@ from imednet.core.client import Client
 from imednet.core.context import Context, clear_study_context
 
 
+def pytest_addoption(parser):
+    """Add custom command-line options for running specific test tracks."""
+    parser.addoption("--run-fuzzing", action="store_true", default=False, help="run fuzzing tests")
+    parser.addoption("--run-performance", action="store_true", default=False, help="run performance tests")
+
+def pytest_collection_modifyitems(config, items):
+    """Skip fuzzing and performance tests unless explicitly requested via CLI options or marker filter."""
+    skip_fuzzing = pytest.mark.skip(reason="need --run-fuzzing option or -m fuzzing to run")
+    skip_performance = pytest.mark.skip(reason="need --run-performance option or -m performance to run")
+
+    marker_expr = config.getoption("-m")
+
+    for item in items:
+        if "fuzzing" in item.keywords:
+            if not config.getoption("--run-fuzzing") and "fuzzing" not in marker_expr:
+                item.add_marker(skip_fuzzing)
+        if "performance" in item.keywords:
+            if not config.getoption("--run-performance") and "performance" not in marker_expr:
+                item.add_marker(skip_performance)
+
 @pytest.fixture(autouse=True)
 def block_external_requests(request: pytest.FixtureRequest):
     """Block real network calls in all non-live tests.
