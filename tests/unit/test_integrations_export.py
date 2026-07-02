@@ -13,12 +13,27 @@ import imednet.integrations.export as export_mod
 
 
 def _setup_mapper(monkeypatch):
-    """Helper function to  setup mapper."""
-    df = MagicMock()
+    """Helper function to setup mapper."""
+    import pandas as pd
+    df = pd.DataFrame([{"A": 1}])
+    # We mock the class methods so that slices don't lose the mock
+    monkeypatch.setattr(pd.DataFrame, "to_excel", MagicMock())
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", MagicMock())
+    # For JSON we need to mock df.where().to_dict
+    df.where = MagicMock(return_value=MagicMock(to_dict=MagicMock(return_value=[{"A": 1}])))
     mapper_inst = MagicMock()
     mapper_inst.dataframe.return_value = df
+    
+    mapper_inst._fetch_variable_metadata.return_value = (["A"], {"A": "A"})
+    mapper_inst._build_record_model.return_value = MagicMock()
+    mapper_inst._iter_records.return_value = [MagicMock()]
+    mapper_inst._parse_records.return_value = ([], 0)
+    mapper_inst._build_dataframe.return_value = df
+    
     mapper_cls = MagicMock(return_value=mapper_inst)
     monkeypatch.setattr(export_mod, "_record_mapper", lambda: mapper_cls)
+    import imednet.integrations.export as export_mod_module
+    monkeypatch.setattr(export_mod_module, "apply_quality_gate", lambda sdk, study, recs, conf: recs)
     return df, mapper_cls, mapper_inst
 
 
@@ -36,17 +51,19 @@ def test_export_to_csv(monkeypatch):
     """Test that export to csv."""
     df, mapper_cls, mapper_inst = _setup_mapper(monkeypatch)
     sdk = MagicMock()
+    
+    m_open = MagicMock()
+    monkeypatch.setattr("builtins.open", m_open)
 
     export_mod.export_to_csv(sdk, "STUDY", "out.csv", sep=";")
 
     mapper_cls.assert_called_once_with(sdk)
-    mapper_inst.dataframe.assert_called_once_with(
+    mapper_inst._fetch_variable_metadata.assert_called_once_with(
         "STUDY",
-        use_labels_as_columns=False,
         variable_whitelist=None,
         form_whitelist=None,
     )
-    df.to_csv.assert_called_once_with("out.csv", index=False, sep=";")
+    m_open.assert_any_call("out.csv", mode="w", encoding="utf-8")
 
 
 def test_export_to_excel(monkeypatch):
@@ -63,7 +80,7 @@ def test_export_to_excel(monkeypatch):
         variable_whitelist=None,
         form_whitelist=None,
     )
-    df.to_excel.assert_called_once_with("out.xlsx", index=False)
+    pd.DataFrame.to_excel.assert_called_once_with("out.xlsx", index=False)
 
 
 def test_export_to_json(monkeypatch):
@@ -97,7 +114,7 @@ def test_export_to_parquet(monkeypatch):
         variable_whitelist=None,
         form_whitelist=None,
     )
-    df.to_parquet.assert_called_once_with("out.parquet", index=False, compression="snappy")
+    pd.DataFrame.to_parquet.assert_called_once_with("out.parquet", index=False, compression="snappy")
 
 
 def test_export_to_sql(monkeypatch):
@@ -111,18 +128,25 @@ def test_export_to_sql(monkeypatch):
     create_engine = MagicMock(return_value=engine)
     sa_module.create_engine = create_engine
     monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
+    
+    m_chunking = MagicMock()
+    monkeypatch.setattr(export_mod, "_to_sql_with_chunking", m_chunking)
 
     export_mod.export_to_sql(sdk, "STUDY", "table", "sqlite://", if_exists="append")
 
     mapper_cls.assert_called_once_with(sdk)
-    mapper_inst.dataframe.assert_called_once_with(
+    mapper_inst._fetch_variable_metadata.assert_called_once_with(
         "STUDY",
-        use_labels_as_columns=False,
         variable_whitelist=None,
         form_whitelist=None,
     )
     create_engine.assert_called_once_with("sqlite://")
-    df.to_sql.assert_called_once_with("table", engine, if_exists="append", index=False)
+    assert m_chunking.call_count == 1
+    args, kwargs = m_chunking.call_args
+    assert args[0].equals(df)
+    assert args[1] == "table"
+    assert args[2] == engine
+    assert kwargs["if_exists"] == "append"
 
 
 def test_export_to_duckdb(monkeypatch):
@@ -194,8 +218,16 @@ def test_export_functions_handle_duplicate_columns(tmp_path, monkeypatch):
         "to_parquet",
         lambda self, path, index=False, **kwargs: open(path, "wb").close(),
     )
-    mapper_cls = MagicMock(return_value=MagicMock(dataframe=MagicMock(return_value=df)))
+    mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
+    mapper_inst._fetch_variable_metadata.return_value = (list(df.columns), {c: c for c in df.columns})
+    mapper_inst._build_record_model.return_value = MagicMock()
+    mapper_inst._iter_records.return_value = [MagicMock()]
+    mapper_inst._parse_records.return_value = ([], 0)
+    mapper_inst._build_dataframe.return_value = df
+    mapper_cls = MagicMock(return_value=mapper_inst)
     monkeypatch.setattr(export_mod, "_record_mapper", lambda: mapper_cls)
+    import imednet.integrations.export as export_mod_module
+    monkeypatch.setattr(export_mod_module, "apply_quality_gate", lambda sdk, study, recs, conf: recs)
     sdk = MagicMock()
 
     out_json = tmp_path / "d.json"
@@ -219,8 +251,16 @@ def test_export_functions_handle_case_insensitive_duplicates(tmp_path, monkeypat
         "to_parquet",
         lambda self, path, index=False, **kwargs: open(path, "wb").close(),
     )
-    mapper_cls = MagicMock(return_value=MagicMock(dataframe=MagicMock(return_value=df)))
+    mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
+    mapper_inst._fetch_variable_metadata.return_value = (list(df.columns), {c: c for c in df.columns})
+    mapper_inst._build_record_model.return_value = MagicMock()
+    mapper_inst._iter_records.return_value = [MagicMock()]
+    mapper_inst._parse_records.return_value = ([], 0)
+    mapper_inst._build_dataframe.return_value = df
+    mapper_cls = MagicMock(return_value=mapper_inst)
     monkeypatch.setattr(export_mod, "_record_mapper", lambda: mapper_cls)
+    import imednet.integrations.export as export_mod_module
+    monkeypatch.setattr(export_mod_module, "apply_quality_gate", lambda sdk, study, recs, conf: recs)
     sdk = MagicMock()
 
     out_json = tmp_path / "case.json"
@@ -245,8 +285,16 @@ def test_export_sql_too_many_columns(monkeypatch):
     )
     mock_to_sql = MagicMock()
     monkeypatch.setattr(pd.DataFrame, "to_sql", mock_to_sql)
-    mapper_cls = MagicMock(return_value=MagicMock(dataframe=MagicMock(return_value=df)))
+    mapper_inst = MagicMock(dataframe=MagicMock(return_value=df))
+    mapper_inst._fetch_variable_metadata.return_value = (list(df.columns), {c: c for c in df.columns})
+    mapper_inst._build_record_model.return_value = MagicMock()
+    mapper_inst._iter_records.return_value = [MagicMock()]
+    mapper_inst._parse_records.return_value = ([], 0)
+    mapper_inst._build_dataframe.return_value = df
+    mapper_cls = MagicMock(return_value=mapper_inst)
     monkeypatch.setattr(export_mod, "_record_mapper", lambda: mapper_cls)
+    import imednet.integrations.export as export_mod_module
+    monkeypatch.setattr(export_mod_module, "apply_quality_gate", lambda sdk, study, recs, conf: recs)
 
     engine = MagicMock()
     engine.dialect.name = "sqlite"

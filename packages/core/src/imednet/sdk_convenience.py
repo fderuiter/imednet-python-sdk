@@ -92,20 +92,7 @@ if TYPE_CHECKING:
     from imednet.endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
 
 
-def _workflow_poller(name: str) -> Any:
-    """Lazy load a poller class from the core utils package."""
-    module = import_module("imednet.utils.job_poller")
-    return getattr(module, name)
-
-
-def JobPoller(*args: Any, **kwargs: Any) -> Any:  # noqa: N802
-    """Create a synchronous JobPoller instance."""
-    return _workflow_poller("JobPoller")(*args, **kwargs)
-
-
-def AsyncJobPoller(*args: Any, **kwargs: Any) -> Any:  # noqa: N802
-    """Create an asynchronous JobPoller instance."""
-    return _workflow_poller("AsyncJobPoller")(*args, **kwargs)
+from imednet.utils.job_poller import AsyncJobPoller, JobPoller
 
 
 T = TypeVar("T")
