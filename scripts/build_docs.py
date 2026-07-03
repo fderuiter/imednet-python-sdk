@@ -9,7 +9,7 @@ def run_command(cmd, env=None, check=True):
     subprocess.run(cmd, env=env, check=check)
 
 def main():
-    api_dir = Path("docs/api")
+    api_dir = Path("docs/reference/api")
     
     print("Cleaning old API docs...")
     if api_dir.exists():
