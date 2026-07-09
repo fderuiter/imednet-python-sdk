@@ -207,14 +207,17 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         if client:
             self._client = client
         else:
-            if retry_config is None and any(x is not None for x in [retries, backoff_factor, retry_policy]):
+            if retry_config is None and any(
+                x is not None for x in [retries, backoff_factor, retry_policy]
+            ):
                 from .core.retry import RetryConfig
+
                 retry_config = RetryConfig(
                     retries=retries if retries is not None else 3,
                     backoff_factor=backoff_factor if backoff_factor is not None else 1.0,
                     retry_policy=retry_policy,
                 )
-            
+
             self._client = ClientFactory.create_client(
                 config=config,
                 timeout=config.timeout,
@@ -329,6 +332,9 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
             strict_mode: Toggle strict mode for data validation.
             retry_config: Centralized configuration for retry behaviors.
             async_client: Pre-configured async client instance.
+            retries: Number of retries for failed requests.
+            backoff_factor: Backoff factor for retry delays.
+            retry_policy: Custom retry policy.
         """
         config = load_config(
             api_key=api_key,
@@ -345,8 +351,11 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
         if async_client:
             self._async_client = async_client
         else:
-            if retry_config is None and any(x is not None for x in [retries, backoff_factor, retry_policy]):
+            if retry_config is None and any(
+                x is not None for x in [retries, backoff_factor, retry_policy]
+            ):
                 from .core.retry import RetryConfig
+
                 retry_config = RetryConfig(
                     retries=retries if retries is not None else 3,
                     backoff_factor=backoff_factor if backoff_factor is not None else 1.0,
