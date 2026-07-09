@@ -11,20 +11,15 @@ Installation
    # PyPI release
    pip install imednet
 
-   # Install all tabular export dependencies
-   pip install "imednet[export]"
+.. include:: /_includes/install_extensions.rst
 
-   # Or install destination-specific extras
-   pip install "imednet[duckdb]"
-   pip install "imednet[mongodb]"
-   pip install "imednet[neo4j]"
-   pip install "imednet[snowflake]"
+.. code-block:: bash
 
    # Workflow plugin package
    pip install imednet-workflows
 
    # Airflow provider package (core hook/operator/sensor support)
-   pip install "apache-airflow>=2.3.0,<4.0.0" apache-airflow-providers-imednet
+   pip install "apache-airflow>=3.2.0,<4.0.0" apache-airflow-providers-imednet
 
 
 Basic Usage
@@ -61,6 +56,7 @@ Custom retry logic can be provided via a ``RetryPolicy``:
 
 .. testcode::
 
+   from imednet import ImednetSDK
    from imednet.core.retry import RetryPolicy, RetryState
    from imednet.errors import ServerError
 
@@ -68,7 +64,7 @@ Custom retry logic can be provided via a ``RetryPolicy``:
        def should_retry(self, state: RetryState) -> bool:
            return isinstance(state.exception, ServerError)
 
-   sdk = ImednetSDK(retry_policy=ServerRetry())
+   sdk = ImednetSDK(api_key="mock", security_key="mock", retry_policy=ServerRetry())
 
 See :doc:`/how-to/retry_policy` for more guidance on error handling and exponential
 backoff.

@@ -10,18 +10,7 @@ For full CLI syntax, see :doc:`/how-to/cli`.
 Installation
 ------------
 
-.. code-block:: bash
-
-   # Core tabular stack (CSV/Excel/JSON/SQL/DuckDB/Parquet)
-   pip install "imednet[export]"
-
-   # Destination-specific extras for structure-preserving / warehouse exports
-   pip install "imednet[mongodb]"
-   pip install "imednet[neo4j]"
-   pip install "imednet[snowflake]"
-
-   # Multiple destinations in one install
-   pip install "imednet[mongodb,neo4j,snowflake]"
+.. include:: /_includes/install_extensions.rst
 
 Destination decision matrix
 ---------------------------

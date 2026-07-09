@@ -33,7 +33,7 @@ Retry policies decide if a request should be retried. To retry on
 
 .. testcode::
 
-   from imednet.core.client import Client
+   from imednet import ImednetSDK
    from imednet.core.retry import RetryPolicy, RetryState
    from imednet.errors import RateLimitError, ServerError
 
@@ -41,7 +41,7 @@ Retry policies decide if a request should be retried. To retry on
        def should_retry(self, state: RetryState) -> bool:
            return isinstance(state.exception, (RateLimitError, ServerError))
 
-   client = Client(
+   sdk = ImednetSDK(
        api_key="A",
        security_key="B",
        retries=5,
