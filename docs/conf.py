@@ -96,6 +96,8 @@ autodoc_mock_imports = [
     "opentelemetry",
     "streamlit",
     "altair",
+    "pyarrow",
+    "duckdb",
 ]
 
 suppress_warnings = [

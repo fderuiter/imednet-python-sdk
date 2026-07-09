@@ -210,7 +210,7 @@ satisfy :class:`~imednet.plugins.PluginProtocol`:
 
 .. testcode::
 
-    from typing import Protocol
+    from typing import Any, Protocol
     from imednet.plugins import PluginProtocol, WorkflowsNamespaceProtocol
 
     class PluginProtocol(Protocol):
