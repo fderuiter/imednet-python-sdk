@@ -282,12 +282,7 @@ Each sink module calls
 
 Extras naming:
 
-.. code-block:: console
-
-   pip install 'imednet[neo4j]'       # Neo4j driver
-   pip install 'imednet[mongodb]'     # PyMongo client
-   pip install 'imednet[snowflake]'   # Snowflake connector + pyarrow
-   pip install 'imednet[export]'      # Tabular path (pandas, SQL, Parquet, DuckDB)
+.. include:: /_includes/install_extensions.rst
 
 Public API exposure
 ~~~~~~~~~~~~~~~~~~~

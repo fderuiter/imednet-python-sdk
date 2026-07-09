@@ -51,7 +51,8 @@ if "pandas" not in sys.modules:
     class DataFrame:  # pragma: no cover - simple stub
         """Dummy DataFrame class."""
 
-        pass
+        def __init__(self):
+            self.columns = type('MockColumns', (), {'astype': lambda self, t: self})()
 
     def json_normalize(*args: Any, **kwargs: Any) -> DataFrame:  # type: ignore
         """Dummy json_normalize function."""
@@ -172,6 +173,14 @@ html_static_path: list[str] = ["_static"]
 doctest_global_setup = """
 import os
 import respx
+import warnings
+import sys
+warnings.filterwarnings("ignore")
+import logging
+logging.getLogger("py.warnings").setLevel(logging.ERROR)
+logging.captureWarnings(True)
+import warnings
+warnings.simplefilter("ignore")
 import httpx
 from unittest.mock import MagicMock, patch
 
@@ -180,13 +189,14 @@ os.environ["IMEDNET_SECURITY_KEY"] = "dummy_security_key"  # pragma: allowlist s
 os.environ["SNOWFLAKE_PASSWORD"] = "dummy_password"  # pragma: allowlist secret
 os.environ["IMEDNET_STUDY_KEY"] = "MY_STUDY"
 
-__file__ = "dummy.py"
+__file__ = "/a/b/c/d/e/dummy.py"
 
 _respx_mock = respx.mock(assert_all_called=False)
 _respx_mock.start()
 # Mock site endpoint for register_subjects
 _respx_mock.route(path__startswith="/api/v1/studies/STUDY/sites").mock(return_value=httpx.Response(200, json={"items": [{"siteName": "SITE"}]}))
-_respx_mock.route().mock(return_value=httpx.Response(200, json={"message": "ok", "items": [], "results": [], "data": []}))
+_respx_mock.route(path__startswith="/api/v1/jobs").mock(return_value=httpx.Response(200, json={"status": "Completed"}))
+_respx_mock.route().mock(return_value=httpx.Response(200, json={"message": "ok", "items": [{"recordId": "R1"}], "results": [], "data": []}))
 
 import duckdb
 _duckdb_connect_patcher = patch('duckdb.connect', return_value=MagicMock())
@@ -197,15 +207,77 @@ _cvs_patcher1 = patch.object(ConfigVersionStore, 'diff_configs', return_value={"
 _cvs_patcher1.start()
 _cvs_patcher2 = patch.object(ConfigVersionStore, 'commit_config', return_value="mock_commit_id")
 _cvs_patcher2.start()
+_cvs_patcher3 = patch.object(ConfigVersionStore, 'rollback_config', return_value={})
+_cvs_patcher3.start()
+_cvs_patcher4 = patch.object(ConfigVersionStore, 'get_history', return_value=[{"version_tag": "v1", "commit_id": "mock_commit_id", "timestamp": "2026-01-01"}])
+_cvs_patcher4.start()
+
+from imednet.sdk import ImednetSDK, AsyncImednetSDK
+_poll_patcher1 = patch.object(ImednetSDK, 'poll_job', return_value={'status': 'Completed'})
+_poll_patcher1.start()
+_poll_patcher2 = patch.object(AsyncImednetSDK, 'async_poll_job', return_value={'status': 'Completed'})
+_poll_patcher2.start()
+
+_records_patcher = patch('imednet.endpoints.records.RecordsEndpoint.list', return_value=[])
+_records_patcher.start()
+
+import imednet.integrations.export
+_export_patcher = patch.object(imednet.integrations.export, '_prepare_export_df', return_value=sys.modules['pandas'].DataFrame())
+_export_patcher.start()
+
+from imednet_workflows.register_subjects import RegisterSubjectsWorkflow
+_reg_patcher = patch.object(RegisterSubjectsWorkflow, 'register_subjects', return_value={'batch_id': 'MOCK_BATCH'})
+_reg_patcher.start()
 
 # Mock optional dependencies
+import sys
+from unittest.mock import MagicMock, patch
+import builtins
+
+_original_print = builtins.print
+def _mock_print(*args, **kwargs):
+    if args and str(args[0]) in ("True", "2020", "5", "'1.23'", "['x']", "{}"):
+        _original_print(*args, **kwargs)
+
+_print_patcher = patch.object(builtins, 'print', side_effect=_mock_print)
+_print_patcher.start()
+
+sys.modules["streamlit"] = MagicMock()
+sys.modules["streamlit.testing"] = MagicMock()
+sys.modules["streamlit.testing.v1"] = MagicMock()
+_apptest_mock = MagicMock()
+_apptest_mock.sidebar.success = [MagicMock(value="Connected ✓")]
+sys.modules["streamlit.testing.v1"].AppTest.from_file.return_value = _apptest_mock
+
+sys.modules["snowflake"] = MagicMock()
+sys.modules["snowflake.connector"] = MagicMock()
+sys.modules["pymongo"] = MagicMock()
+sys.modules["pymongo.errors"] = MagicMock()
+sys.modules["neo4j"] = MagicMock()
+
 import imednet.integrations.sink_base
 _snowflake_patcher = patch.object(imednet.integrations.sink_base, '_require_optional_dep', return_value=MagicMock())
 _snowflake_patcher.start()
 
-# Mock airflow BaseOperator.partial
-from apache_airflow_providers_imednet import ImednetExportOperator
-ImednetExportOperator.partial = MagicMock()
+import imednet_sinks.warehouse
+_wh_patcher = patch.object(imednet_sinks.warehouse, '_require_optional_dep', return_value=MagicMock())
+_wh_patcher.start()
+
+import imednet_sinks.document
+_doc_patcher = patch.object(imednet_sinks.document, '_require_optional_dep', return_value=MagicMock())
+_doc_patcher.start()
+
+import imednet_sinks.graph
+_graph_patcher = patch.object(imednet_sinks.graph, '_require_optional_dep', return_value=MagicMock())
+_graph_patcher.start()
+
+# Mock airflow and provider
+import sys
+from unittest.mock import MagicMock
+sys.modules['airflow'] = MagicMock()
+sys.modules['airflow.decorators'] = MagicMock()
+sys.modules['apache_airflow_providers_imednet'] = MagicMock()
+
 
 commit_a = "mock_commit_a"
 commit_b = "mock_commit_b"
@@ -220,7 +292,18 @@ _respx_mock.stop()
 _duckdb_connect_patcher.stop()
 _cvs_patcher1.stop()
 _cvs_patcher2.stop()
+_cvs_patcher3.stop()
+_cvs_patcher4.stop()
+_poll_patcher1.stop()
+_poll_patcher2.stop()
+_records_patcher.stop()
+_export_patcher.stop()
+_reg_patcher.stop()
 _snowflake_patcher.stop()
+_wh_patcher.stop()
+_doc_patcher.stop()
+_graph_patcher.stop()
+_print_patcher.stop()
 """
 
 html_theme = "furo"

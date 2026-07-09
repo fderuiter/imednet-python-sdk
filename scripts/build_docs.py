@@ -47,9 +47,18 @@ def main():
     print("Validating mermaid diagrams...")
     run_command([sys.executable, "scripts/validate_diagrams.py"])
     
+    print("Type-checking documentation snippets...")
+    run_command([sys.executable, "scripts/typecheck_docs.py"])
+    
     print("Validating documentation...")
     run_command([sys.executable, "scripts/validate_docs.py"])
     
+    print("Running doctests...")
+    run_command([
+        "sphinx-build", "-b", "doctest", "-W", "--keep-going",
+        "docs", "docs/_build/doctest"
+    ])
+
     print("Building HTML...")
     run_command([
         "sphinx-build", "-b", "html", "-W", "--keep-going",

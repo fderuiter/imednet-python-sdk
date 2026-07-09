@@ -186,6 +186,9 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         strict_mode: Optional[bool] = None,
         retry_config: Optional[RetryConfig] = None,
         client: Optional[Client] = None,
+        retries: Optional[int] = None,
+        backoff_factor: Optional[float] = None,
+        retry_policy: Optional[RetryPolicy] = None,
     ) -> None:
         """Initialize the SDK with credentials and configuration."""
         config = load_config(
@@ -204,6 +207,14 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         if client:
             self._client = client
         else:
+            if retry_config is None and any(x is not None for x in [retries, backoff_factor, retry_policy]):
+                from .core.retry import RetryConfig
+                retry_config = RetryConfig(
+                    retries=retries if retries is not None else 3,
+                    backoff_factor=backoff_factor if backoff_factor is not None else 1.0,
+                    retry_policy=retry_policy,
+                )
+            
             self._client = ClientFactory.create_client(
                 config=config,
                 timeout=config.timeout,
@@ -304,6 +315,9 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
         strict_mode: Optional[bool] = None,
         retry_config: Optional[RetryConfig] = None,
         async_client: Optional[AsyncClient] = None,
+        retries: Optional[int] = None,
+        backoff_factor: Optional[float] = None,
+        retry_policy: Optional[RetryPolicy] = None,
     ) -> None:
         """Initialize the asynchronous SDK.
 
@@ -328,11 +342,22 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
         self._security_key = config.security_key
         self._base_url = config.base_url
 
-        self._async_client = async_client or ClientFactory.create_async_client(
-            config=config,
-            timeout=config.timeout,
-            retry_config=retry_config,
-        )
+        if async_client:
+            self._async_client = async_client
+        else:
+            if retry_config is None and any(x is not None for x in [retries, backoff_factor, retry_policy]):
+                from .core.retry import RetryConfig
+                retry_config = RetryConfig(
+                    retries=retries if retries is not None else 3,
+                    backoff_factor=backoff_factor if backoff_factor is not None else 1.0,
+                    retry_policy=retry_policy,
+                )
+
+            self._async_client = ClientFactory.create_async_client(
+                config=config,
+                timeout=config.timeout,
+                retry_config=retry_config,
+            )
 
         self._init_endpoints()
         self.workflows = self._init_workflows()

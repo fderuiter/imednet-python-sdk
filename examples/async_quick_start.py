@@ -47,7 +47,7 @@ async def main() -> None:
         security_key=cfg.security_key,
         base_url=cfg.base_url,
     ) as sdk:
-        studies = await sdk.studies.async_list()
+        studies = [s async for s in sdk.studies.async_list()]
         print(studies)
 
         job_study = os.getenv("IMEDNET_JOB_STUDY_KEY")
