@@ -66,6 +66,8 @@ def load_config(
         oidc_token: Optional OIDC token. Defaults to IMEDNET_OIDC_TOKEN environment variable.
         timeout: HTTP request timeout in seconds. Defaults to IMEDNET_TIMEOUT environment variable or 30.0.
         strict_mode: Toggle strict mode for data validation. Defaults to IMEDNET_STRICT_MODE environment variable or False.
+        vpat_path: Path to the VPAT file. Defaults to IMEDNET_VPAT_PATH environment variable.
+        a11y_report_path: Path to the a11y report. Defaults to IMEDNET_A11Y_REPORT_PATH environment variable.
 
     Returns:
         The loaded SDK configuration.
@@ -78,8 +80,12 @@ def load_config(
     base_url = base_url if base_url is not None else os.getenv("IMEDNET_BASE_URL")
     oidc_token = oidc_token if oidc_token is not None else os.getenv("IMEDNET_OIDC_TOKEN")
 
-    vpat_path = vpat_path if vpat_path is not None else os.getenv("IMEDNET_VPAT_PATH", "/app/docs/VPAT.md")
-    a11y_report_path = a11y_report_path if a11y_report_path is not None else os.getenv("IMEDNET_A11Y_REPORT_PATH")
+    vpat_path = (
+        vpat_path if vpat_path is not None else os.getenv("IMEDNET_VPAT_PATH", "/app/docs/VPAT.md")
+    )
+    a11y_report_path = (
+        a11y_report_path if a11y_report_path is not None else os.getenv("IMEDNET_A11Y_REPORT_PATH")
+    )
 
     env_timeout_str = os.getenv("IMEDNET_TIMEOUT")
     if timeout is None and env_timeout_str is not None:

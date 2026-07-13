@@ -9,6 +9,7 @@ import os
 import traceback
 
 import streamlit as st
+
 from imednet.config import load_config
 
 st.title("♿ Accessibility Conformance Portal")
@@ -23,10 +24,12 @@ except ValueError:
     # If SDK is not configured, fall back to environment variables directly
     # to avoid crashing the standalone page.
     class StandaloneConfig:
+        """Fallback configuration class when the main SDK is not configured."""
+
         a11y_report_path = os.environ.get("IMEDNET_A11Y_REPORT_PATH")
         vpat_path = os.environ.get("IMEDNET_VPAT_PATH", "VPAT.md")
-    
-    config = StandaloneConfig()
+
+    config = StandaloneConfig()  # type: ignore[assignment]
 
 # Try to load custom report from config first
 report = None
@@ -64,7 +67,7 @@ else:
 st.subheader("Voluntary Product Accessibility Template (VPAT)")
 vpat_path = config.vpat_path
 if vpat_path and os.path.exists(vpat_path):
-    with open(vpat_path, "rb") as f:
+    with open(vpat_path, "rb") as f_vpat:
         st.download_button(
-            "Download VPAT / ACR", data=f.read(), file_name="VPAT.md", mime="text/markdown"
+            "Download VPAT / ACR", data=f_vpat.read(), file_name="VPAT.md", mime="text/markdown"
         )

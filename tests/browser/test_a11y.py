@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 
 import pytest
 from axe_playwright_python.sync_playwright import Axe
+
 from imednet.config import load_config
 
 
@@ -102,7 +103,9 @@ def test_accessibility_audit(dashboard_server, page):
     except ValueError:
         config = None
 
-    a11y_report_path = config.a11y_report_path if config and config.a11y_report_path else "a11y_report.json"
+    a11y_report_path = (
+        config.a11y_report_path if config and config.a11y_report_path else "a11y_report.json"
+    )
 
     with open(a11y_report_path, "w") as f:
         json.dump(report, f, indent=2)
