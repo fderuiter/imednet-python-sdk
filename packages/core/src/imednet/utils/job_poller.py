@@ -276,8 +276,8 @@ class JobPoller(BaseJobPoller):
             except Exception as exc:
                 with lock:
                     failures[batch_id] = exc
-                if fail_fast:
-                    raise
+                # If fail_fast is true, we still let the thread exit gracefully.
+                # The exception is raised in the main thread after joining.
 
         threads = [threading.Thread(target=_poll_one, args=(bid,)) for bid in batch_ids]
         for t in threads:

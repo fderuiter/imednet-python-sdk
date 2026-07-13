@@ -296,3 +296,70 @@ def test_job_status_event_immutable() -> None:
     )
     with pytest.raises(AttributeError):
         event.poll_number = 2  # type: ignore
+
+def test_job_poller_fetch_result(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test fetch_result functionality."""
+    def get_job(study_key, batch_id):
+        return JobStatus(batchId=batch_id, state="COMPLETED", progress=100, jobId="j1", resultUrl="http://test")
+
+    class MockResponse:
+        def json(self): return {"data": "ok"}
+    
+    def fetch_res(url):
+        if url == "fail": raise Exception("fetch fail")
+        return MockResponse()
+
+    monkeypatch.setattr("time.sleep", lambda *_: None)
+    
+    # Success path
+    poller = JobPoller(get_job, fetch_result=fetch_res)
+    st = poller.run("ST", "1", interval=0)
+    assert getattr(st, "results") == {"data": "ok"}
+
+    # Failure path
+    def get_job_fail(study_key, batch_id):
+        return JobStatus(batchId=batch_id, state="COMPLETED", progress=100, jobId="j1", resultUrl="fail")
+    poller_fail = JobPoller(get_job_fail, fetch_result=fetch_res)
+    st2 = poller_fail.run("ST", "1", interval=0)
+    assert not hasattr(st2, "results")
+
+    # Text fallback
+    class MockTextResponse:
+        def json(self): raise ValueError()
+        @property
+        def text(self): return "text data"
+
+    poller_text = JobPoller(get_job, fetch_result=lambda url: MockTextResponse())
+    st3 = poller_text.run("ST", "1", interval=0)
+    assert getattr(st3, "results") == "text data"
+
+    # Raw string
+    poller_str = JobPoller(get_job, fetch_result=lambda url: "raw string")
+    st4 = poller_str.run("ST", "1", interval=0)
+    assert getattr(st4, "results") == "raw string"
+
+@pytest.mark.asyncio
+async def test_async_job_poller_fetch_result() -> None:
+    """Test async fetch_result functionality."""
+    async def get_job(study_key, batch_id):
+        return JobStatus(batchId=batch_id, state="COMPLETED", progress=100, jobId="j1", resultUrl="http://test")
+
+    class MockResponse:
+        def json(self): return {"data": "ok"}
+    
+    async def fetch_res(url):
+        if url == "fail": raise Exception("fetch fail")
+        return MockResponse()
+
+    # Success path
+    poller = AsyncJobPoller(get_job, fetch_result=fetch_res)
+    st = await poller.run("ST", "1", interval=0)
+    assert getattr(st, "results") == {"data": "ok"}
+
+    # Failure path
+    async def get_job_fail(study_key, batch_id):
+        return JobStatus(batchId=batch_id, state="COMPLETED", progress=100, jobId="j1", resultUrl="fail")
+    poller_fail = AsyncJobPoller(get_job_fail, fetch_result=fetch_res)
+    st2 = await poller_fail.run("ST", "1", interval=0)
+    assert not hasattr(st2, "results")
+
