@@ -11,6 +11,7 @@ from imednet.sdk import ImednetSDK
 
 logger = logging.getLogger(__name__)
 
+
 def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
     """Reads the Postman collection, identifies API endpoints,.
 

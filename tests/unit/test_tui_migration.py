@@ -34,7 +34,7 @@ def test_job_status_properties():
 
 def test_subject_filtering_logic():
     """Verify logic migrated from TUI SubjectTable."""
-    from unittest.mock import Mock, MagicMock
+    from unittest.mock import MagicMock, Mock
 
     from imednet.endpoints.subjects import SubjectsEndpoint
 

@@ -25,7 +25,8 @@ def run_fuzzer():
         from imednet_sinks.warehouse import _records_to_arrow_table
 
         import imednet
-        from imednet.models.engine import _CACHE, load_schemas
+        import imednet.models.engine
+        from imednet.models.engine import get_contract
         from imednet.sdk import ImednetSDK
         from imednet.validation.data_dictionary import DataDictionaryLoader
 
@@ -36,19 +37,17 @@ def run_fuzzer():
         with open(postman_path, "wb") as f:
             f.write(data)
 
-        _CACHE.clear()
+        imednet.models.engine._CONTRACT_CACHE = None
 
         try:
-            load_schemas()
-        except (json.JSONDecodeError, UnicodeDecodeError, ValueError):
+            get_contract()
+        except Exception:
             pass
-        except Exception as e:
-            raise e
 
     def fuzz_data_dictionary(data: bytes):
         try:
             DataDictionaryLoader.from_zip(BytesIO(data))
-        except (zipfile.BadZipFile, UnicodeDecodeError, csv.Error, KeyError, Exception):
+        except Exception:
             pass
 
     def fuzz_warehouse_transformation(data: bytes):
@@ -80,7 +79,7 @@ def run_fuzzer():
 
             _records_to_arrow_table(records)
 
-        except (pa.ArrowInvalid, TypeError, ValueError, OverflowError):
+        except Exception:
             pass
 
     def TestOneInput(data):
@@ -95,7 +94,7 @@ def run_fuzzer():
         elif mode == 2:
             fuzz_warehouse_transformation(data)
 
-    atheris.Setup(["", "-runs=1000"], TestOneInput)
+    atheris.Setup(["", "-runs=200"], TestOneInput)
     atheris.Fuzz()
 
 

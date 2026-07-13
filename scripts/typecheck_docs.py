@@ -47,7 +47,14 @@ def main():
 
     print(f"Extracted {count} testcode snippets.")
 
-    cmd = [sys.executable, "-m", "mypy", "--ignore-missing-imports", "--no-strict-optional", str(snippets_dir)]
+    cmd = [
+        sys.executable,
+        "-m",
+        "mypy",
+        "--ignore-missing-imports",
+        "--no-strict-optional",
+        str(snippets_dir),
+    ]
     print("Running typecheck:", " ".join(cmd))
     res = subprocess.run(cmd, capture_output=True, text=True)
     print(res.stdout)

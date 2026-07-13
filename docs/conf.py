@@ -52,6 +52,7 @@ if "pandas" not in sys.modules:
         """Dummy DataFrame class."""
 
         def __init__(self):
+            """Initialize dummy DataFrame."""
             self.columns = type('MockColumns', (), {'astype': lambda self, t: self})()
 
     def json_normalize(*args: Any, **kwargs: Any) -> DataFrame:  # type: ignore

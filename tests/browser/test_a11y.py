@@ -8,6 +8,8 @@ from datetime import datetime, timezone
 import pytest
 from axe_playwright_python.sync_playwright import Axe
 
+from imednet.config import load_config
+
 
 @pytest.mark.a11y
 def test_accessibility_audit(dashboard_server, page):
@@ -96,19 +98,20 @@ def test_accessibility_audit(dashboard_server, page):
         ],
     }
 
-    with open("a11y_report.json", "w") as f:
+    try:
+        config = load_config()
+    except ValueError:
+        config = None
+
+    a11y_report_path = (
+        config.a11y_report_path if config and config.a11y_report_path else "a11y_report.json"
+    )
+
+    with open(a11y_report_path, "w") as f:
         json.dump(report, f, indent=2)
 
-    try:
-        shutil.copy(
-            "a11y_report.json",
-            "packages/plugins-streamlit/src/imednet_streamlit/pages/a11y_report.json",
-        )
-    except Exception:
-        pass
-
     if not unexempted_violations:
-        vpat_path = "docs/VPAT.md"
+        vpat_path = config.vpat_path if config else "docs/VPAT.md"
         if os.path.exists(vpat_path):
             with open(vpat_path, "r") as f:
                 vpat_content = f.read()
@@ -128,6 +131,6 @@ def test_accessibility_audit(dashboard_server, page):
             with open(vpat_path, "w") as f:
                 f.write(vpat_content)
 
-    assert (
-        not unexempted_violations
-    ), f"Found {len(unexempted_violations)} unexempted accessibility violations."
+    assert not unexempted_violations, (
+        f"Found {len(unexempted_violations)} unexempted accessibility violations."
+    )

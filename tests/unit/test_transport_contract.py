@@ -18,7 +18,12 @@ from imednet.sdk import AsyncImednetSDK, ImednetSDK
 @respx.mock(base_url="https://example.com")
 def test_retry_contract_by_method_class() -> None:
     """Test that retry contract by method class."""
-    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retry_config=RetryConfig(retries=2))
+    sdk = ImednetSDK(
+        api_key="k",
+        security_key="s",
+        base_url="https://example.com",
+        retry_config=RetryConfig(retries=2),
+    )
 
     get_route = respx.get("/retry-get").mock(return_value=httpx.Response(503))
     with pytest.raises(errors.ServerError):
@@ -100,7 +105,12 @@ def test_retry_after_header_is_respected(monkeypatch: pytest.MonkeyPatch) -> Non
 
     monkeypatch.setattr(retry_module, "Retrying", retrying_with_captured_sleep)
 
-    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retry_config=RetryConfig(retries=1))
+    sdk = ImednetSDK(
+        api_key="k",
+        security_key="s",
+        base_url="https://example.com",
+        retry_config=RetryConfig(retries=1),
+    )
     route = respx.get("/rate-limited").mock(
         side_effect=[
             httpx.Response(429, headers={"Retry-After": "2"}),

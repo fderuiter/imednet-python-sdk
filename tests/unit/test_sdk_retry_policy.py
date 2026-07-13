@@ -64,7 +64,12 @@ def test_retry_policy_propagates_to_async_client(async_sdk: AsyncImednetSDK) -> 
 
 def test_default_retry_policy_retries_connection_error(respx_mock_external) -> None:
     """Verify that connection errors trigger retries."""
-    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retry_config=RetryConfig(retries=2))
+    sdk = ImednetSDK(
+        api_key="k",
+        security_key="s",
+        base_url="https://example.com",
+        retry_config=RetryConfig(retries=2),
+    )
     # Simulate a persistent connection error
     route = respx_mock_external.get("/test").mock(
         side_effect=httpx.ConnectError("Network Error", request=None)
@@ -83,7 +88,12 @@ def test_default_retry_policy_retries_connection_error(respx_mock_external) -> N
 
 def test_default_retry_policy_retries_on_500(respx_mock_external) -> None:
     """Verify that server errors (500) trigger retries."""
-    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retry_config=RetryConfig(retries=2))
+    sdk = ImednetSDK(
+        api_key="k",
+        security_key="s",
+        base_url="https://example.com",
+        retry_config=RetryConfig(retries=2),
+    )
     route = respx_mock_external.get("/test").mock(return_value=httpx.Response(500))
 
     with pytest.raises(errors.ServerError):
@@ -95,7 +105,12 @@ def test_default_retry_policy_retries_on_500(respx_mock_external) -> None:
 
 def test_default_retry_policy_retries_on_429(respx_mock_external) -> None:
     """Verify that rate limit errors (429) trigger retries."""
-    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retry_config=RetryConfig(retries=2))
+    sdk = ImednetSDK(
+        api_key="k",
+        security_key="s",
+        base_url="https://example.com",
+        retry_config=RetryConfig(retries=2),
+    )
     route = respx_mock_external.get("/test").mock(return_value=httpx.Response(429))
 
     with pytest.raises(errors.RateLimitError):
@@ -126,7 +141,12 @@ async def test_default_retry_policy_async_retries_on_500(respx_mock_external) ->
 
 def test_default_retry_policy_post_does_not_retry_on_server_error(respx_mock_external) -> None:
     """Verify that POST requests receiving 5xx do NOT retry (non-idempotent)."""
-    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retry_config=RetryConfig(retries=2))
+    sdk = ImednetSDK(
+        api_key="k",
+        security_key="s",
+        base_url="https://example.com",
+        retry_config=RetryConfig(retries=2),
+    )
     route = respx_mock_external.post("/test").mock(return_value=httpx.Response(503))
 
     with pytest.raises(errors.ServerError):
@@ -138,7 +158,12 @@ def test_default_retry_policy_post_does_not_retry_on_server_error(respx_mock_ext
 
 def test_default_retry_policy_post_retries_on_rate_limit(respx_mock_external) -> None:
     """Verify that POST requests receiving 429 DO retry (server rejected before processing)."""
-    sdk = ImednetSDK(api_key="k", security_key="s", base_url="https://example.com", retry_config=RetryConfig(retries=2))
+    sdk = ImednetSDK(
+        api_key="k",
+        security_key="s",
+        base_url="https://example.com",
+        retry_config=RetryConfig(retries=2),
+    )
     route = respx_mock_external.post("/test").mock(return_value=httpx.Response(429))
 
     with pytest.raises(errors.RateLimitError):

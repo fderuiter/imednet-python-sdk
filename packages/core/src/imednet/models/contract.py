@@ -138,7 +138,11 @@ class ContractBuilder:
                                             # Typically paths are like ['studies'] or ['api', 'v1', 'studies']
                                             # We want to map the base resource name to the model.
                                             for p in reversed(path_segments):
-                                                if isinstance(p, str) and not p.startswith(':') and not p.startswith('{{'):
+                                                if (
+                                                    isinstance(p, str)
+                                                    and not p.startswith(':')
+                                                    and not p.startswith('{{')
+                                                ):
                                                     # Keep only alphabetic base resource names to avoid mapping UUIDs or weird paths
                                                     if p.isalpha() or p.replace('_', '').isalpha():
                                                         self.contract.paths[p] = model_name
@@ -204,30 +208,47 @@ class ContractBuilder:
                         for content_type, content_obj in content.items():
                             schema = content_obj.get("schema", {})
                             ref = None
-                            
+
                             if "$ref" in schema:
                                 ref = schema["$ref"]
-                            elif schema.get("type") == "array" and "items" in schema and "$ref" in schema["items"]:
+                            elif (
+                                schema.get("type") == "array"
+                                and "items" in schema
+                                and "$ref" in schema["items"]
+                            ):
                                 ref = schema["items"]["$ref"]
                             elif "properties" in schema:
                                 data_prop = schema["properties"].get("data")
                                 if data_prop and "$ref" in data_prop:
                                     ref = data_prop["$ref"]
-                                elif data_prop and data_prop.get("type") == "array" and "items" in data_prop and "$ref" in data_prop["items"]:
+                                elif (
+                                    data_prop
+                                    and data_prop.get("type") == "array"
+                                    and "items" in data_prop
+                                    and "$ref" in data_prop["items"]
+                                ):
                                     ref = data_prop["items"]["$ref"]
                                 elif "recordData" in schema["properties"]:
                                     data_prop = schema["properties"]["recordData"]
                                     if data_prop and "$ref" in data_prop:
                                         ref = data_prop["$ref"]
-                                    elif data_prop and data_prop.get("type") == "array" and "items" in data_prop and "$ref" in data_prop["items"]:
+                                    elif (
+                                        data_prop
+                                        and data_prop.get("type") == "array"
+                                        and "items" in data_prop
+                                        and "$ref" in data_prop["items"]
+                                    ):
                                         ref = data_prop["items"]["$ref"]
-                                    
+
                             if ref:
                                 model_name = ref.split("/")[-1]
                                 path_segments = [p for p in path.split("/") if p]
                                 for p in reversed(path_segments):
-                                    if isinstance(p, str) and not p.startswith('{') and not p.startswith(':'):
+                                    if (
+                                        isinstance(p, str)
+                                        and not p.startswith('{')
+                                        and not p.startswith(':')
+                                    ):
                                         if p.isalpha() or p.replace('_', '').isalpha():
                                             self.contract.paths[p] = model_name
                                             break
-

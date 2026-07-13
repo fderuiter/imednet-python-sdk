@@ -22,7 +22,12 @@ def test_initialization_sets_defaults() -> None:
 
 def test_retry_logic_retries_request_errors() -> None:
     """Test that retry logic retries request errors."""
-    client = Client(api_key="A", security_key="B", base_url="https://api.test", retry_config=RetryConfig(retries=1))
+    client = Client(
+        api_key="A",
+        security_key="B",
+        base_url="https://api.test",
+        retry_config=RetryConfig(retries=1),
+    )
     call_count = {"count": 0}
 
     def side_effect(request: httpx.Request) -> httpx.Response:

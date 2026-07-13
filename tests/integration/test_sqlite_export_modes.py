@@ -17,10 +17,13 @@ class Result:
         self.stderr = stderr
         self.output = stdout + stderr
 
+
 class CliRunner:
     def invoke(self, app, args):
-        import io, sys
-        from contextlib import redirect_stdout, redirect_stderr
+        import io
+        import sys
+        from contextlib import redirect_stderr, redirect_stdout
+
         out = io.StringIO()
         err = io.StringIO()
         exit_code = 0
@@ -33,12 +36,12 @@ class CliRunner:
             exit_code = e.code or 0
         except Exception as e:
             import traceback
+
             err.write(traceback.format_exc())
             exit_code = 1
-        
+
         # We also need to catch argparse sys.exit(2)
         return Result(exit_code, out.getvalue(), err.getvalue())
-
 
 
 import imednet.cli as cli
@@ -91,10 +94,12 @@ def _setup_single_table_mapper(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
         _fetch_variable_metadata=MagicMock(return_value=(columns, {c: c for c in columns})),
         _iter_records=MagicMock(return_value=[MagicMock(form_key="f1")]),
         _parse_records=MagicMock(return_value=([{}], 0)),
-        _build_dataframe=MagicMock(return_value=df)
+        _build_dataframe=MagicMock(return_value=df),
     )
     monkeypatch.setattr(export_mod, "apply_quality_gate", MagicMock(return_value=[MagicMock()]))
-    monkeypatch.setattr(export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst)))
+    monkeypatch.setattr(
+        export_mod, "_record_mapper", MagicMock(return_value=MagicMock(return_value=mapper_inst))
+    )
     monkeypatch.setattr("imednet.cli.utils.context.get_sdk", MagicMock(return_value=MagicMock()))
     mock_to_sql = MagicMock()
     monkeypatch.setattr(pd.DataFrame, "to_sql", mock_to_sql)

@@ -6,8 +6,11 @@ compliance status, and documentation for assistive technologies.
 
 import json
 import os
+import traceback
 
 import streamlit as st
+
+from imednet import load_config
 
 st.title("♿ Accessibility Conformance Portal")
 st.markdown(
@@ -15,11 +18,40 @@ st.markdown(
     "This portal displays the current status of automated WCAG audits."
 )
 
-# CI pipeline drops the report here
-report_path = os.path.join(os.path.dirname(__file__), "a11y_report.json")
-if os.path.exists(report_path):
-    with open(report_path, "r") as f:
-        report = json.load(f)
+try:
+    config = load_config()
+except ValueError:
+    # If SDK is not configured, fall back to environment variables directly
+    # to avoid crashing the standalone page.
+    class StandaloneConfig:
+        """Fallback configuration class when the main SDK is not configured."""
+
+        a11y_report_path = os.environ.get("IMEDNET_A11Y_REPORT_PATH")
+        vpat_path = os.environ.get("IMEDNET_VPAT_PATH", "VPAT.md")
+
+    config = StandaloneConfig()  # type: ignore[assignment]
+
+# Try to load custom report from config first
+report = None
+a11y_path = getattr(config, "a11y_report_path", None)  # type: ignore[attr-defined]
+if a11y_path and isinstance(a11y_path, str) and os.path.exists(a11y_path):
+    try:
+        with open(a11y_path, "r") as f:
+            report = json.load(f)
+    except Exception:
+        pass
+
+# Fallback to local report
+if not report:
+    local_report_path = os.path.join(os.path.dirname(__file__), "a11y_report.json")
+    if os.path.exists(local_report_path):
+        try:
+            with open(local_report_path, "r") as f:
+                report = json.load(f)
+        except Exception:
+            pass
+
+if report:
     st.markdown(f"✅ **Latest Audit Passed:** {report.get('passed', True)}")
     st.json(report)
 else:
@@ -34,9 +66,9 @@ else:
     )
 
 st.subheader("Voluntary Product Accessibility Template (VPAT)")
-vpat_path = "/app/docs/VPAT.md"
-if os.path.exists(vpat_path):
-    with open(vpat_path, "rb") as f:
+vpat_path = getattr(config, "vpat_path", None)  # type: ignore[attr-defined]
+if vpat_path and os.path.exists(vpat_path):
+    with open(vpat_path, "rb") as f_vpat:
         st.download_button(
-            "Download VPAT / ACR", data=f.read(), file_name="VPAT.md", mime="text/markdown"
+            "Download VPAT / ACR", data=f_vpat.read(), file_name="VPAT.md", mime="text/markdown"
         )

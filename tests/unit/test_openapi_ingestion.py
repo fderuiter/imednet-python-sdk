@@ -1,4 +1,5 @@
 """Tests for OpenAPI ingestion."""
+
 import json
 import os
 
@@ -18,9 +19,7 @@ def test_openapi_ingestion(tmp_path):
                         "200": {
                             "content": {
                                 "application/json": {
-                                    "schema": {
-                                        "$ref": "#/components/schemas/Study"
-                                    }
+                                    "schema": {"$ref": "#/components/schemas/Study"}
                                 }
                             }
                         }
@@ -35,16 +34,14 @@ def test_openapi_ingestion(tmp_path):
                                 "application/json": {
                                     "schema": {
                                         "type": "array",
-                                        "items": {
-                                            "$ref": "#/components/schemas/Subject"
-                                        }
+                                        "items": {"$ref": "#/components/schemas/Subject"},
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
+            },
         },
         "components": {
             "schemas": {

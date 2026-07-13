@@ -13,7 +13,7 @@ from imednet.models.engine import ModelEngine
 class Visit(ImednetBaseModel):
     """A specific instance of a subject visiting a site (or equivalent event)."""
 
-    @model_validator(mode="before")
+    @model_validator(mode="before")  # type: ignore[untyped-decorator]
     @classmethod
     def _clean_empty_dates(cls, data: Any) -> Any:
         """Coerce empty strings in date fields to None before validation."""
