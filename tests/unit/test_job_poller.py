@@ -383,3 +383,41 @@ async def test_async_job_poller_fetch_result() -> None:
     poller_fail = AsyncJobPoller(get_job_fail, fetch_result=fetch_res)
     st2 = await poller_fail.run("ST", "1", interval=0)
     assert getattr(st2, "results") is None
+
+@pytest.mark.asyncio
+async def test_async_poll_many_with_failures(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test async_poll_many where some jobs fail."""
+    jobs_states = {
+        "1": [JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl="")],
+        "2": [JobStatus(batchId="2", state="FAILED", progress=0, jobId="2", resultUrl="")],
+    }
+
+    async def get_job(study_key, batch_id):
+        return jobs_states[batch_id].pop(0)
+
+    monkeypatch.setattr(asyncio, "sleep", AsyncMock())
+    poller = AsyncJobPoller(get_job)
+    summary = await poller.async_poll_many("ST", ["1", "2"], interval=0)
+
+    assert summary.all_successful is False
+    assert summary.any_failed is True
+    assert summary.results["1"].state == "COMPLETED"
+    assert "2" not in summary.results
+    assert len(summary.failures) == 1
+    assert isinstance(summary.failures["2"], JobFailedError)
+
+
+@pytest.mark.asyncio
+async def test_async_poll_many_fail_fast(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test async_poll_many with fail_fast=True."""
+
+    async def get_job(study_key, batch_id):
+        if batch_id == "FAIL":
+            raise ValueError("Immediate failure")
+        return JobStatus(batchId="OK", state="COMPLETED", progress=100, jobId="2", resultUrl="")
+
+    monkeypatch.setattr(asyncio, "sleep", AsyncMock())
+    poller = AsyncJobPoller(get_job)
+
+    with pytest.raises(ValueError, match="Immediate failure"):
+        await poller.async_poll_many("ST", ["OK", "FAIL"], interval=0, fail_fast=True)
