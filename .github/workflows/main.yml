@@ -168,6 +168,9 @@ jobs:
           uv sync --locked --all-extras
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
+      - name: Tighten Internal Dependencies
+        run: python scripts/tighten_dependencies.py --rewrite
+
       - name: Build Workspace Packages
         run: |
           IMPACTED=$(echo '${{ needs.plan.outputs.matrix }}' | jq -r '.[]')
@@ -224,6 +227,10 @@ jobs:
           name: dist-streamlit
           path: packages/plugins-streamlit/dist/
           retention-days: 1
+
+      - name: Restore Internal Dependencies
+        if: always()
+        run: python scripts/tighten_dependencies.py --restore
 
   # ------------------------------------------------------------------
   # JOB 3: TEST MATRIX (Tests impacted packages)
@@ -390,12 +397,19 @@ jobs:
           
       - name: Install hatch
         run: python -m pip install uv hatch
+
+      - name: Tighten Internal Dependencies
+        run: python scripts/tighten_dependencies.py --rewrite
       
       - name: Build Packages
         run: |
           (cd packages/plugins-workflows && hatch build)
           (cd packages/plugins-sinks && hatch build)
           (cd packages/core && hatch build)
+
+      - name: Restore Internal Dependencies
+        if: always()
+        run: python scripts/tighten_dependencies.py --restore
 
       - name: Install Core with Extra
         run: |
@@ -427,8 +441,15 @@ jobs:
       - name: Install build tool
         run: python -m pip install build
 
+      - name: Tighten Internal Dependencies
+        run: python scripts/tighten_dependencies.py --rewrite
+
       - name: Validate Package Consumption
         run: python scripts/validate_package_consumption.py
+
+      - name: Restore Internal Dependencies
+        if: always()
+        run: python scripts/tighten_dependencies.py --restore
 
   # ------------------------------------------------------------------
   # JOB 4: DOCS (Build & Prepare for Deploy)
