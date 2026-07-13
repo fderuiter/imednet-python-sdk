@@ -507,123 +507,46 @@ jobs:
   # (`chore: release main`) so publication does not depend on tag push events.
   # `skip-existing` keeps reruns idempotent.
   # ------------------------------------------------------------------
-  publish-core:
-    name: Publish imednet to PyPI
-    needs: test
+  publish:
+    name: Publish ${{ matrix.package }} to PyPI
+    needs: [plan, test]
     if: |
       github.event_name == 'push' && (
-        startsWith(github.ref, 'refs/tags/imednet-v') ||
+        startsWith(github.ref, 'refs/tags/') ||
         (github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'chore: release main'))
-      )
+      ) && needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
       id-token: write # Mandatory for trusted publishing
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.plan.outputs.matrix) }}
     steps:
-      - name: Download Core Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-core
-          path: dist
+      - name: Set Artifact Name
+        id: set-artifact
+        run: |
+          if [ "${{ matrix.package }}" = "core" ]; then
+            echo "artifact=dist-core" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.package }}" = "plugins-workflows" ]; then
+            echo "artifact=dist-workflows" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.package }}" = "providers-airflow" ]; then
+            echo "artifact=dist-providers" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.package }}" = "plugins-sinks" ]; then
+            echo "artifact=dist-sinks" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.package }}" = "plugins-streamlit" ]; then
+            echo "artifact=dist-streamlit" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          skip-existing: true
-
-  publish-workflows:
-    name: Publish imednet-workflows to PyPI
-    needs: test
-    if: |
-      github.event_name == 'push' && (
-        startsWith(github.ref, 'refs/tags/imednet-workflows-v') ||
-        (github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'chore: release main'))
-      )
-    runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      id-token: write # Mandatory for trusted publishing
-    steps:
-      - name: Download Workflows Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-workflows
-          path: dist
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          skip-existing: true
-
-  publish-providers:
-    name: Publish apache-airflow-providers-imednet to PyPI
-    needs: test
-    if: |
-      github.event_name == 'push' && (
-        startsWith(github.ref, 'refs/tags/apache-airflow-providers-imednet-v') ||
-        (github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'chore: release main'))
-      )
-    runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      id-token: write # Mandatory for trusted publishing
-    steps:
-      - name: Download Providers Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-providers
-          path: dist
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          skip-existing: true
-
-  publish-sinks:
-    name: Publish imednet-plugins-sinks to PyPI
-    needs: test
-    if: |
-      github.event_name == 'push' && (
-        startsWith(github.ref, 'refs/tags/imednet-plugins-sinks-v') ||
-        (github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'chore: release main'))
-      )
-    runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      id-token: write # Mandatory for trusted publishing
-    steps:
-      - name: Download Sinks Artifact
+      - name: Download Artifact
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          name: dist-sinks
+          name: ${{ steps.set-artifact.outputs.artifact }}
           path: dist
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # release/v1
-        with:
-          skip-existing: true
-
-  publish-streamlit:
-    name: Publish imednet-streamlit to PyPI
-    needs: test
-    if: |
-      github.event_name == 'push' && (
-        startsWith(github.ref, 'refs/tags/imednet-streamlit-v') ||
-        (github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'chore: release main'))
-      )
-    runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      id-token: write # Mandatory for trusted publishing
-    steps:
-      - name: Download Streamlit Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-streamlit
-          path: dist
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           skip-existing: true
 
