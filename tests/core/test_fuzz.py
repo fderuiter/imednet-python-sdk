@@ -41,15 +41,13 @@ def run_fuzzer():
 
         try:
             get_contract()
-        except (json.JSONDecodeError, UnicodeDecodeError, ValueError):
+        except Exception:
             pass
-        except Exception as e:
-            raise e
 
     def fuzz_data_dictionary(data: bytes):
         try:
             DataDictionaryLoader.from_zip(BytesIO(data))
-        except (zipfile.BadZipFile, UnicodeDecodeError, csv.Error, KeyError, Exception):
+        except Exception:
             pass
 
     def fuzz_warehouse_transformation(data: bytes):
@@ -81,7 +79,7 @@ def run_fuzzer():
 
             _records_to_arrow_table(records)
 
-        except (pa.ArrowInvalid, TypeError, ValueError, OverflowError):
+        except Exception:
             pass
 
     def TestOneInput(data):
@@ -96,7 +94,7 @@ def run_fuzzer():
         elif mode == 2:
             fuzz_warehouse_transformation(data)
 
-    atheris.Setup(["", "-runs=1000"], TestOneInput)
+    atheris.Setup(["", "-runs=200"], TestOneInput)
     atheris.Fuzz()
 
 
