@@ -33,9 +33,10 @@ except ValueError:
 
 # Try to load custom report from config first
 report = None
-if config and config.a11y_report_path and os.path.exists(config.a11y_report_path):
+a11y_path = getattr(config, "a11y_report_path", None)  # type: ignore[attr-defined]
+if a11y_path and isinstance(a11y_path, str) and os.path.exists(a11y_path):
     try:
-        with open(config.a11y_report_path, "r") as f:
+        with open(a11y_path, "r") as f:
             report = json.load(f)
     except Exception:
         pass
@@ -65,7 +66,7 @@ else:
     )
 
 st.subheader("Voluntary Product Accessibility Template (VPAT)")
-vpat_path = config.vpat_path
+vpat_path = getattr(config, "vpat_path", None)  # type: ignore[attr-defined]
 if vpat_path and os.path.exists(vpat_path):
     with open(vpat_path, "rb") as f_vpat:
         st.download_button(
