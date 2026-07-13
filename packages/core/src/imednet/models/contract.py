@@ -28,6 +28,7 @@ class APIContract(BaseModel):
     """Unified API Contract."""
 
     models: Dict[str, ModelDefinition] = Field(default_factory=dict)
+    paths: Dict[str, str] = Field(default_factory=dict)
 
 
 def to_snake(name: str) -> str:
@@ -128,6 +129,21 @@ class ContractBuilder:
                                         self.contract.models[model_name] = ModelDefinition(
                                             name=model_name, fields=fields
                                         )
+
+                                        # Map path to model dynamically
+                                        req = resp.get('originalRequest', {})
+                                        url = req.get('url', {})
+                                        path_segments = url.get('path', [])
+                                        if path_segments:
+                                            # Typically paths are like ['studies'] or ['api', 'v1', 'studies']
+                                            # We want to map the base resource name to the model.
+                                            for p in reversed(path_segments):
+                                                if isinstance(p, str) and not p.startswith(':') and not p.startswith('{{'):
+                                                    # Keep only alphabetic base resource names to avoid mapping UUIDs or weird paths
+                                                    if p.isalpha() or p.replace('_', '').isalpha():
+                                                        self.contract.paths[p] = model_name
+                                                        break
+
                                 except Exception:
                                     pass
 
@@ -175,3 +191,43 @@ class ContractBuilder:
                     )
 
                 self.contract.models[model_name] = ModelDefinition(name=model_name, fields=fields)
+
+        openapi_paths = data.get("paths", {})
+        for path, path_obj in openapi_paths.items():
+            for method, method_obj in path_obj.items():
+                if method.lower() not in ["get", "post", "put", "patch", "delete"]:
+                    continue
+                responses = method_obj.get("responses", {})
+                for status, response_obj in responses.items():
+                    if status.startswith("2"):
+                        content = response_obj.get("content", {})
+                        for content_type, content_obj in content.items():
+                            schema = content_obj.get("schema", {})
+                            ref = None
+                            
+                            if "$ref" in schema:
+                                ref = schema["$ref"]
+                            elif schema.get("type") == "array" and "items" in schema and "$ref" in schema["items"]:
+                                ref = schema["items"]["$ref"]
+                            elif "properties" in schema:
+                                data_prop = schema["properties"].get("data")
+                                if data_prop and "$ref" in data_prop:
+                                    ref = data_prop["$ref"]
+                                elif data_prop and data_prop.get("type") == "array" and "items" in data_prop and "$ref" in data_prop["items"]:
+                                    ref = data_prop["items"]["$ref"]
+                                elif "recordData" in schema["properties"]:
+                                    data_prop = schema["properties"]["recordData"]
+                                    if data_prop and "$ref" in data_prop:
+                                        ref = data_prop["$ref"]
+                                    elif data_prop and data_prop.get("type") == "array" and "items" in data_prop and "$ref" in data_prop["items"]:
+                                        ref = data_prop["items"]["$ref"]
+                                    
+                            if ref:
+                                model_name = ref.split("/")[-1]
+                                path_segments = [p for p in path.split("/") if p]
+                                for p in reversed(path_segments):
+                                    if isinstance(p, str) and not p.startswith('{') and not p.startswith(':'):
+                                        if p.isalpha() or p.replace('_', '').isalpha():
+                                            self.contract.paths[p] = model_name
+                                            break
+

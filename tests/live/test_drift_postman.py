@@ -6,37 +6,10 @@ import os
 
 import pytest
 
-from imednet.models.codings import Coding
-from imednet.models.forms import Form
-from imednet.models.intervals import Interval
-from imednet.models.queries import Query
-from imednet.models.record_revisions import RecordRevision
-from imednet.models.records import Record
-from imednet.models.sites import Site
-from imednet.models.studies import Study
-from imednet.models.subjects import Subject
-from imednet.models.users import User
-from imednet.models.variables import Variable
-from imednet.models.visits import Visit
+from imednet.models.engine import ModelEngine, get_contract
 from imednet.sdk import ImednetSDK
 
 logger = logging.getLogger(__name__)
-
-MODEL_MAP = {
-    "studies": Study,
-    "forms": Form,
-    "intervals": Interval,
-    "queries": Query,
-    "records": Record,
-    "record_revisions": RecordRevision,
-    "sites": Site,
-    "subjects": Subject,
-    "users": User,
-    "variables": Variable,
-    "visits": Visit,
-    "codings": Coding,
-}
-
 
 def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
     """Reads the Postman collection, identifies API endpoints,.
@@ -52,6 +25,9 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
     with open(collection_path, 'r') as f:
         data = json.load(f)
 
+    # Ensure dynamic contract is built
+    contract = get_contract()
+
     # Walk the collection to find endpoints
     endpoints_to_test = set()
 
@@ -66,7 +42,7 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
                     path = req["url"]["path"]
                     # Usually paths are like ['api', 'v1', 'studies'] or ['studies']
                     for p in path:
-                        if p in MODEL_MAP:
+                        if p in contract.paths:
                             endpoints_to_test.add(p)
 
     walk(data.get("item", []))
@@ -74,7 +50,8 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
     assert len(endpoints_to_test) > 0, "No endpoints found in Postman collection"
 
     for endpoint in endpoints_to_test:
-        model_cls = MODEL_MAP[endpoint]
+        model_name = contract.paths[endpoint]
+        model_cls = ModelEngine.get_model(model_name)
 
         # Build URL using the SDK's internal path builder
         endpoint_obj = getattr(sdk, endpoint)

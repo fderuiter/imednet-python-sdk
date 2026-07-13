@@ -11,6 +11,41 @@ def test_openapi_ingestion(tmp_path):
     # Setup OpenAPI file
     openapi_content = {
         "openapi": "3.0.0",
+        "paths": {
+            "/api/v1/studies": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/Study"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/api/v1/subjects/{id}": {
+                "get": {
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/Subject"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "components": {
             "schemas": {
                 "Study": {
@@ -59,3 +94,7 @@ def test_openapi_ingestion(tmp_path):
     assert str(study_model.model_fields["study_key"].annotation).find("str") != -1
     assert str(study_model.model_fields["is_disabled"].annotation).find("bool") != -1
     assert str(study_model.model_fields["study_id"].annotation).find("int") != -1
+
+    contract = engine.get_contract()
+    assert contract.paths.get("studies") == "Study"
+    assert contract.paths.get("subjects") == "Subject"
