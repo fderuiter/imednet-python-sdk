@@ -18,10 +18,8 @@ def main():
         pkg_name = data.get('project', {}).get('name')
 
         deps = data.get('project', {}).get('dependencies', [])
-        opt_deps = data.get('project', {}).get('optional-dependencies', {})
+        # Dropping optional cycle linkages
         all_deps = list(deps)
-        for v in opt_deps.values():
-            all_deps.extend(v)
 
         # extract package name from dependency strings (e.g. "imednet-workflows>=0.6.0" -> "imednet-workflows")
         parsed_deps = []
@@ -39,9 +37,12 @@ def main():
     lines = sys.stdin.read().splitlines()
     changed_files = [line.strip() for line in lines if line.strip()]
 
+    def fallback():
+        print(json.dumps({"test": list(packages.keys()), "build": list(packages.keys())}))
+        sys.exit(0)
+
     if not changed_files:
-        print(json.dumps(list(packages.keys())))
-        return
+        fallback()
 
     # Check if all changed files are docs/examples/md
     all_ignored = True
@@ -51,50 +52,51 @@ def main():
             break
 
     if all_ignored:
-        print(json.dumps([]))
+        print(json.dumps({"test": [], "build": []}))
         return
 
-    impacted = set()
+    build_impacted = set()
+    test_only_impacted = set()
+
     for file in changed_files:
         if file.startswith('packages/'):
             parts = file.split('/')
             if len(parts) > 1 and parts[1] in packages:
                 changed_pkg_dir = parts[1]
-                impacted.add(changed_pkg_dir)
-                changed_pkg_name = packages[changed_pkg_dir]['name']
-
-                # find all packages that depend on changed_pkg_name
-                # and transitive dependencies!
-                # Wait, if A depends on B, and B changes, A is impacted.
-                # If C depends on A, and B changes, C is impacted too.
-                # So we need to compute reverse dependencies.
+                if len(parts) > 2 and parts[2] == 'tests':
+                    test_only_impacted.add(changed_pkg_dir)
+                else:
+                    build_impacted.add(changed_pkg_dir)
             else:
                 # unknown package or something else in packages/
-                print(json.dumps(list(packages.keys())))
-                return
+                fallback()
         else:
             if file.startswith('docs/') or file.startswith('examples/') or file.endswith('.md'):
                 continue
             # some core file changed (like root Makefile, etc)
-            print(json.dumps(list(packages.keys())))
-            return
+            fallback()
 
     # Compute transitive impacts
+    behavior_changed = set(build_impacted)
     added = True
     while added:
         added = False
         for pkg_dir, info in packages.items():
-            if pkg_dir in impacted:
+            if pkg_dir in behavior_changed:
                 continue
-            # if this pkg depends on any of the impacted packages, it is also impacted
+            # if this pkg depends on any of the packages whose behavior changed, its behavior might change too
             for dep in info['deps']:
                 dep_dir = name_to_dir.get(dep)
-                if dep_dir and dep_dir in impacted:
-                    impacted.add(pkg_dir)
+                if dep_dir and dep_dir in behavior_changed:
+                    behavior_changed.add(pkg_dir)
                     added = True
                     break
 
-    print(json.dumps(list(impacted)))
+    test_impacted = behavior_changed.union(test_only_impacted)
+    print(json.dumps({
+        "build": list(build_impacted),
+        "test": list(test_impacted)
+    }))
 
 
 if __name__ == "__main__":
