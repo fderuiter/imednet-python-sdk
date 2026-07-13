@@ -45,7 +45,8 @@ dev = [
 ]
 docs = [
     "furo<2026.0.0",
-    "myst-parser>=1.0.0"
+    "myst-parser>=1.0.0",
+    "mypy>=1.15.0,<1.16.0"
 ]
 
 [build-system]
