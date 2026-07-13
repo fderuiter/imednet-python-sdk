@@ -93,10 +93,7 @@ def main():
                     break
 
     test_impacted = behavior_changed.union(test_only_impacted)
-    print(json.dumps({
-        "build": list(build_impacted),
-        "test": list(test_impacted)
-    }))
+    print(json.dumps({"build": list(build_impacted), "test": list(test_impacted)}))
 
 
 if __name__ == "__main__":
