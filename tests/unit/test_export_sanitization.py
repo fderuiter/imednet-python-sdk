@@ -16,11 +16,16 @@ def mock_record_mapper(monkeypatch):
 
     def _setup(df: pd.DataFrame):
         mapper_inst.dataframe.return_value = df
-        mapper_inst._fetch_variable_metadata.return_value = (list(df.columns), {c: c for c in df.columns})
+        mapper_inst._fetch_variable_metadata.return_value = (
+            list(df.columns),
+            {c: c for c in df.columns},
+        )
         mapper_inst._iter_records.return_value = ["mock_record"]
         mapper_inst._parse_records.return_value = ([{}], 0)
         mapper_inst._build_dataframe.return_value = df
-        monkeypatch.setattr(export_mod, "apply_quality_gate", MagicMock(return_value=["mock_record"]))
+        monkeypatch.setattr(
+            export_mod, "apply_quality_gate", MagicMock(return_value=["mock_record"])
+        )
         monkeypatch.setattr(
             export_mod,
             "_record_mapper",
@@ -51,9 +56,9 @@ def test_export_to_csv_sanitization(tmp_path, mock_record_mapper, monkeypatch):
             if "Pandas4Warning" in str(warning.category.__name__)
             or "select_dtypes" in str(warning.message)
         ]
-        assert (
-            not relevant_warnings
-        ), f"Caught unexpected warnings: {[str(warn.message) for warn in relevant_warnings]}"
+        assert not relevant_warnings, (
+            f"Caught unexpected warnings: {[str(warn.message) for warn in relevant_warnings]}"
+        )
 
     content = path.read_text()
     # Check that unsafe content is prefixed with a single quote
@@ -99,9 +104,9 @@ def test_export_to_excel_sanitization(tmp_path, mock_record_mapper, monkeypatch)
             if "Pandas4Warning" in str(warning.category.__name__)
             or "select_dtypes" in str(warning.message)
         ]
-        assert (
-            not relevant_warnings
-        ), f"Caught unexpected warnings: {[str(warn.message) for warn in relevant_warnings]}"
+        assert not relevant_warnings, (
+            f"Caught unexpected warnings: {[str(warn.message) for warn in relevant_warnings]}"
+        )
 
     assert captured_df is not None
     assert captured_df["unsafe"].iloc[0] == "'=cmd"

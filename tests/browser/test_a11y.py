@@ -128,6 +128,6 @@ def test_accessibility_audit(dashboard_server, page):
             with open(vpat_path, "w") as f:
                 f.write(vpat_content)
 
-    assert (
-        not unexempted_violations
-    ), f"Found {len(unexempted_violations)} unexempted accessibility violations."
+    assert not unexempted_violations, (
+        f"Found {len(unexempted_violations)} unexempted accessibility violations."
+    )

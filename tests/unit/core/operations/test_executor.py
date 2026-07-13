@@ -43,7 +43,11 @@ class NonRESTTask(OperationProtocol[str]):
 def test_universal_executor_supports_rest_and_non_rest():
     """Test that universal executor supports rest and non rest."""
     get_global_circuit_breaker().reset()
-    executor = UniversalExecutor(retry_config=RetryConfig(retries=2, backoff_factor=0.01, retry_policy=DefaultOperationRetryPolicy()))
+    executor = UniversalExecutor(
+        retry_config=RetryConfig(
+            retries=2, backoff_factor=0.01, retry_policy=DefaultOperationRetryPolicy()
+        )
+    )
 
     rest_task = RESTTask(fail_times=1)
     result = executor.execute(rest_task.execute)
@@ -59,7 +63,11 @@ def test_universal_executor_supports_rest_and_non_rest():
 def test_universal_executor_fails_after_retries():
     """Test that universal executor fails after retries."""
     get_global_circuit_breaker().reset()
-    executor = UniversalExecutor(retry_config=RetryConfig(retries=1, backoff_factor=0.01, retry_policy=DefaultOperationRetryPolicy()))
+    executor = UniversalExecutor(
+        retry_config=RetryConfig(
+            retries=1, backoff_factor=0.01, retry_policy=DefaultOperationRetryPolicy()
+        )
+    )
 
     task = RESTTask(fail_times=5)
     with pytest.raises(ValueError, match="HTTP Error"):
@@ -71,7 +79,11 @@ def test_universal_executor_fails_after_retries():
 async def test_universal_executor_async():
     """Test that universal executor async asynchronously."""
     get_global_circuit_breaker().reset()
-    executor = UniversalExecutor(retry_config=RetryConfig(retries=1, backoff_factor=0.01, retry_policy=DefaultOperationRetryPolicy()))
+    executor = UniversalExecutor(
+        retry_config=RetryConfig(
+            retries=1, backoff_factor=0.01, retry_policy=DefaultOperationRetryPolicy()
+        )
+    )
 
     attempts = 0
 

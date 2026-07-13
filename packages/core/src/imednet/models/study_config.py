@@ -51,7 +51,7 @@ class StudyConfiguration(ImednetBaseModel):
     widgets: list[WidgetConfig] = Field(default_factory=list, alias="widgets")
     phi_fields: list[str] = Field(default_factory=list, alias="phiFields")
 
-    @field_validator("reporting_profile", check_fields=False, mode="before")
+    @field_validator("reporting_profile", check_fields=False, mode="before")  # type: ignore[untyped-decorator]
     @classmethod
     def _validate_reporting_profile(cls, value: object) -> object:
         """Ensure the reporting profile exists in the registry."""

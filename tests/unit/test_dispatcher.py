@@ -18,53 +18,57 @@ class DummySink(ExportSink):
         self.written_batches = 0
         self.flushed = False
         self.closed = False
-        
+
     def write_batch(self, records, *, batch_id):
         """Mock write_batch."""
         self.written_batches += len(records)
         return len(records)
-        
+
     def flush(self):
         """Mock flush."""
         self.flushed = True
-        
+
     def close(self):
         """Mock close."""
         self.closed = True
+
 
 def dummy_tabular(sdk, study_key, **kwargs):
     """A dummy tabular function for testing."""
     return {"tabular": True, "sdk": sdk, "study_key": study_key, "kwargs": kwargs}
 
+
 def test_export_tabular_routing():
     """Test that export correctly routes to a registered tabular function."""
     register_tabular_target("dummy_tab", dummy_tabular)
-    
+
     sdk_mock = MagicMock()
     result = export("dummy_tab", sdk_mock, "STUDY1", my_arg="value")
-    
+
     assert result["tabular"] is True
     assert result["sdk"] is sdk_mock
     assert result["study_key"] == "STUDY1"
     assert result["kwargs"] == {"my_arg": "value"}
+
 
 @patch("imednet.integrations.dispatcher.iter_batches")
 @patch("imednet.integrations.dispatcher.apply_quality_gate")
 def test_export_sink_routing(mock_quality_gate, mock_iter_batches):
     """Test that export correctly routes to a registered sink class and handles lifecycle."""
     register_sink_target("dummy_sink", DummySink)
-    
+
     sdk_mock = MagicMock()
     # Mock records return
     sdk_mock.records.list.return_value = [{"id": 1}, {"id": 2}]
     mock_quality_gate.return_value = [{"id": 1}, {"id": 2}]
     mock_iter_batches.return_value = [[{"id": 1}], [{"id": 2}]]
-    
+
     total = export("dummy_sink", sdk_mock, "STUDY2", extra_arg="test")
-    
+
     assert total == 2
     mock_quality_gate.assert_called_once()
     mock_iter_batches.assert_called_once()
+
 
 def test_export_unsupported_target():
     """Test that an unknown target raises a ValueError."""

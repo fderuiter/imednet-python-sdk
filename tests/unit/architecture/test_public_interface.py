@@ -42,9 +42,9 @@ OPTIONAL_MODULES_WITH_ALL = [
 def test_module_has_all(module_name: str) -> None:
     """Every public module must declare __all__."""
     mod = importlib.import_module(module_name)
-    assert hasattr(
-        mod, "__all__"
-    ), f"{module_name} must define __all__ to declare its public surface"
+    assert hasattr(mod, "__all__"), (
+        f"{module_name} must define __all__ to declare its public surface"
+    )
     assert isinstance(mod.__all__, (list, tuple)), f"{module_name}.__all__ must be a list or tuple"
 
 
@@ -52,9 +52,9 @@ def test_module_has_all(module_name: str) -> None:
 def test_optional_module_has_all(module_name: str) -> None:
     """Optional modules (extra dependencies) must also declare __all__ when available."""
     mod = pytest.importorskip(module_name)
-    assert hasattr(
-        mod, "__all__"
-    ), f"{module_name} must define __all__ to declare its public surface"
+    assert hasattr(mod, "__all__"), (
+        f"{module_name} must define __all__ to declare its public surface"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -103,9 +103,9 @@ def test_async_jobs_endpoint_get_no_any() -> None:
     from imednet.endpoints.jobs import AsyncJobsEndpoint
 
     hints = get_type_hints(AsyncJobsEndpoint.async_get)
-    assert not _is_any(
-        hints.get("item_id")
-    ), "AsyncJobsEndpoint.async_get: item_id must not be typed as Any"
+    assert not _is_any(hints.get("item_id")), (
+        "AsyncJobsEndpoint.async_get: item_id must not be typed as Any"
+    )
 
 
 def _get_kwargs_type(method: object, param_name: str = "filters") -> object:
@@ -140,9 +140,9 @@ def test_records_endpoint_create_no_bare_dict_any() -> None:
     hints = get_type_hints(RecordsEndpoint.create)
     records_data_type = hints.get("records_data")
     assert records_data_type is not None, "RecordsEndpoint.create must annotate records_data"
-    assert not _is_any(
-        records_data_type
-    ), "RecordsEndpoint.create: records_data must not be typed as Any"
+    assert not _is_any(records_data_type), (
+        "RecordsEndpoint.create: records_data must not be typed as Any"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -193,6 +193,6 @@ def test_sdk_convenience_mixin_uses_filter_value() -> None:
         method = getattr(dummy, method_name)
         tp = _get_kwargs_type(method, "filters")
         if tp is not None:
-            assert not _is_any(
-                tp
-            ), f"SDKConvenienceMixin.{method_name}: **filters must not be typed as Any"
+            assert not _is_any(tp), (
+                f"SDKConvenienceMixin.{method_name}: **filters must not be typed as Any"
+            )

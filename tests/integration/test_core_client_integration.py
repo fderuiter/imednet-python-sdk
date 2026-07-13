@@ -7,7 +7,6 @@ import pytest
 import respx
 
 from imednet import errors
-from imednet.core.retry import RetryConfig
 from imednet.core.client import Client
 from imednet.core.retry import RetryConfig
 
@@ -35,7 +34,12 @@ def test_retry_on_transient_500(monkeypatch: pytest.MonkeyPatch) -> None:
             """Helper function to should retry."""
             return isinstance(state.exception, errors.ServerError)
 
-    client = Client("k", "s", base_url="https://api.test", retry_config=RetryConfig(retries=3, retry_policy=Policy()))
+    client = Client(
+        "k",
+        "s",
+        base_url="https://api.test",
+        retry_config=RetryConfig(retries=3, retry_policy=Policy()),
+    )
     calls = {"count": 0}
 
     def request(method: str, url: str, **kwargs: object) -> httpx.Response:
@@ -66,7 +70,9 @@ def test_authentication_error():
 @respx.mock
 def test_timeout_handling():
     """Test that timeout handling."""
-    client = Client("k", "s", base_url="https://api.test", timeout=1, retry_config=RetryConfig(retries=1))
+    client = Client(
+        "k", "s", base_url="https://api.test", timeout=1, retry_config=RetryConfig(retries=1)
+    )
 
     def slow(request):
         """Helper function to slow."""
