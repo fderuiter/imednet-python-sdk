@@ -10,7 +10,7 @@ import traceback
 
 import streamlit as st
 
-from imednet.config import load_config
+from imednet import load_config
 
 st.title("♿ Accessibility Conformance Portal")
 st.markdown(

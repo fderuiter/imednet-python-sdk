@@ -25,7 +25,8 @@ def run_fuzzer():
         from imednet_sinks.warehouse import _records_to_arrow_table
 
         import imednet
-        from imednet.models.engine import _CACHE, load_schemas
+        import imednet.models.engine
+        from imednet.models.engine import get_contract
         from imednet.sdk import ImednetSDK
         from imednet.validation.data_dictionary import DataDictionaryLoader
 
@@ -36,10 +37,10 @@ def run_fuzzer():
         with open(postman_path, "wb") as f:
             f.write(data)
 
-        _CACHE.clear()
+        imednet.models.engine._CONTRACT_CACHE = None
 
         try:
-            load_schemas()
+            get_contract()
         except (json.JSONDecodeError, UnicodeDecodeError, ValueError):
             pass
         except Exception as e:
