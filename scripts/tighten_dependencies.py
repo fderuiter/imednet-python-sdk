@@ -3,7 +3,7 @@ import json
 import re
 import sys
 import shutil
-import tomllib
+import tomli as tomllib
 from pathlib import Path
 import argparse
 
