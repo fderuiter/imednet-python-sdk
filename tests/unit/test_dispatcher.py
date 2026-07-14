@@ -76,33 +76,63 @@ def test_export_unsupported_target():
     with pytest.raises(ValueError, match="Unsupported export target: 'unknown_target'"):
         export("unknown_target", sdk_mock, "STUDY3")
 
-
-def test_export_registry_lazy_load_import_error():
-    """Test that lazy loading catches ImportError and returns None."""
+def test_get_sink_lazy_load_success(monkeypatch):
     from imednet.integrations.dispatcher import ExportRegistry
     
     registry = ExportRegistry()
-    # Assuming imednet_sinks is not installed in the core test environment,
-    # or we can force it by patching importlib.import_module
-    with patch("importlib.import_module", side_effect=ImportError("Mocked missing module")):
-        sink = registry.get_sink("mongodb")
-        assert sink is None
-
-
-def test_export_registry_lazy_load_success():
-    """Test that lazy loading correctly registers and returns the class."""
-    from imednet.integrations.dispatcher import ExportRegistry
-
-    registry = ExportRegistry()
+    registry._LAZY_SINKS = {"dummy_target": "dummy_module:DummyClass"}
     
-    mock_module = MagicMock()
-    mock_sink_class = MagicMock()
-    setattr(mock_module, "MongoDbExportSink", mock_sink_class)
-    
-    with patch("importlib.import_module", return_value=mock_module):
-        sink = registry.get_sink("mongodb")
+    class DummyClass:
+        pass
+
+    class DummyModule:
+        pass
+    DummyModule.DummyClass = DummyClass
+
+    # Mock importlib.import_module
+    def mock_import(name):
+        if name == "dummy_module":
+            return DummyModule
+        raise ImportError
         
-        # Verify it returns the mock class
-        assert sink is mock_sink_class
-        # Verify it cached the result (should be in _sink_targets)
-        assert registry._sink_targets["mongodb"] is mock_sink_class
+    monkeypatch.setattr("importlib.import_module", mock_import)
+    
+    # Should lazily load and register
+    sink = registry.get_sink("dummy_target")
+    assert sink is DummyClass
+    assert registry._sink_targets["dummy_target"] is DummyClass
+
+def test_get_sink_lazy_load_import_error(monkeypatch):
+    from imednet.integrations.dispatcher import ExportRegistry
+    
+    registry = ExportRegistry()
+    registry._LAZY_SINKS = {"dummy_target": "dummy_module:DummyClass"}
+
+    # Mock importlib.import_module to raise ImportError
+    def mock_import(name):
+        raise ImportError
+        
+    monkeypatch.setattr("importlib.import_module", mock_import)
+    
+    # Should handle ImportError and return None
+    sink = registry.get_sink("dummy_target")
+    assert sink is None
+
+def test_get_sink_lazy_load_attribute_error(monkeypatch):
+    from imednet.integrations.dispatcher import ExportRegistry
+    
+    registry = ExportRegistry()
+    registry._LAZY_SINKS = {"dummy_target": "dummy_module:DummyClass"}
+
+    class DummyModule:
+        pass
+
+    # Mock importlib.import_module
+    def mock_import(name):
+        return DummyModule
+        
+    monkeypatch.setattr("importlib.import_module", mock_import)
+    
+    # Should handle AttributeError (DummyClass not in DummyModule) and return None
+    sink = registry.get_sink("dummy_target")
+    assert sink is None
