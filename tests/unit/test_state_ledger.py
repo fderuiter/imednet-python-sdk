@@ -251,3 +251,47 @@ def test_corrupted_ledger_recovery(tmp_path) -> None:
     state = ledger.read_state()
     # Should recover gracefully with empty state
     assert len(state.studies) == 0
+
+import sys
+from unittest.mock import MagicMock, patch
+
+def test_get_state_provider_airflow(monkeypatch):
+    """Test get_state_provider returns AirflowStateProvider when USE_AIRFLOW_STATE_PROVIDER=1."""
+    monkeypatch.setenv("USE_AIRFLOW_STATE_PROVIDER", "1")
+    from imednet_workflows.state_ledger import get_state_provider, AirflowStateProvider
+    provider = get_state_provider()
+    assert isinstance(provider, AirflowStateProvider)
+
+def test_airflow_state_provider_methods():
+    import sys
+    from unittest.mock import patch
+    with patch.dict(sys.modules, {'airflow': None, 'airflow.models.xcom': None, 'airflow.utils.session': None, 'airflow.operators.python': None}):
+        from imednet_workflows.state_ledger import AirflowStateProvider
+        provider = AirflowStateProvider()
+        assert provider.get_last_timestamp("STUDY-01", "records") is None
+        ts = datetime(2026, 5, 22, 12, 0, 0, tzinfo=timezone.utc)
+        provider.set_last_timestamp("STUDY-01", "records", ts)
+        assert provider.delete_entry("STUDY-01") is False
+        state = provider.read_state()
+        assert len(state.studies) == 0
+
+def test_airflow_state_provider_transaction_success():
+    import sys
+    from unittest.mock import patch
+    with patch.dict(sys.modules, {'airflow': None, 'airflow.models.xcom': None, 'airflow.utils.session': None, 'airflow.operators.python': None}):
+        from imednet_workflows.state_ledger import AirflowStateProvider
+        provider = AirflowStateProvider()
+        fallback_ts = datetime(2026, 5, 22, 10, 0, 0, tzinfo=timezone.utc)
+        with provider.transaction("STUDY-01", "records", fallback_timestamp=fallback_ts) as tx:
+            tx["new_timestamp"] = datetime(2026, 5, 22, 11, 0, 0, tzinfo=timezone.utc)
+
+def test_airflow_state_provider_transaction_error():
+    import sys
+    from unittest.mock import patch
+    with patch.dict(sys.modules, {'airflow': None, 'airflow.models.xcom': None, 'airflow.utils.session': None, 'airflow.operators.python': None}):
+        from imednet_workflows.state_ledger import AirflowStateProvider
+        provider = AirflowStateProvider()
+        fallback_ts = datetime(2026, 5, 22, 10, 0, 0, tzinfo=timezone.utc)
+        with pytest.raises(ValueError):
+            with provider.transaction("STUDY-01", "records", fallback_timestamp=fallback_ts) as tx:
+                raise ValueError("Test error")
