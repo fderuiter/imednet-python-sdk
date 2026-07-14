@@ -5,6 +5,7 @@ supporting both tabular procedural functions and object-oriented sink classes.
 """
 
 import threading
+import dataclasses
 from typing import Any, Callable, Dict, Optional, Type
 
 from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate, iter_batches
@@ -19,11 +20,18 @@ class ExportRegistry:
         "neo4j": "imednet_sinks.graph:Neo4jExportSink",
         "snowflake": "imednet_sinks.warehouse:SnowflakeExportSink",
     }
+    
+    _LAZY_CONFIGS = {
+        "mongodb": "imednet_sinks.document:MongoDbSinkConfig",
+        "neo4j": "imednet_sinks.graph:Neo4jSinkConfig",
+        "snowflake": "imednet_sinks.warehouse:SnowflakeSinkConfig",
+    }
 
     def __init__(self):
         """Initialize an empty ExportRegistry."""
         self._tabular_targets: Dict[str, Callable] = {}
         self._sink_targets: Dict[str, Type[ExportSink]] = {}
+        self._config_targets: Dict[str, Type[SinkConfig]] = {}
         self._lock = threading.RLock()
 
     def register_tabular(self, target_type: str, func: Callable) -> None:
@@ -63,6 +71,25 @@ class ExportRegistry:
                     return None
 
             return None
+            
+    def get_config_class(self, target_type: str) -> Type[SinkConfig]:
+        """Retrieve a registered config class, or SinkConfig as default."""
+        with self._lock:
+            if target_type in self._config_targets:
+                return self._config_targets[target_type]
+            
+            if target_type in self._LAZY_CONFIGS:
+                module_path, class_name = self._LAZY_CONFIGS[target_type].split(":")
+                try:
+                    import importlib
+                    module = importlib.import_module(module_path)
+                    config_class = getattr(module, class_name)
+                    self._config_targets[target_type] = config_class
+                    return config_class
+                except (ImportError, AttributeError):
+                    pass
+            
+            return SinkConfig
 
 
 # Global registry instance
@@ -114,16 +141,21 @@ def export(
     # 2. Try sink path
     sink_class = _registry.get_sink(target)
     if sink_class is not None:
-        cfg = config if config is not None else SinkConfig()
+        if config is not None:
+            cfg = config
+        else:
+            config_class = _registry.get_config_class(target)
+            valid_fields = {f.name for f in dataclasses.fields(config_class)}
+            config_kwargs = {k: v for k, v in kwargs.items() if k in valid_fields}
+            cfg = config_class(study_key=study_key, **config_kwargs)
 
         records = sdk.records.list(study_key=study_key, record_data_filter=None)
         filtered_records = list(apply_quality_gate(sdk, study_key, records, cfg))
 
         total_written = 0
 
-        # Instantiate sink class using kwargs and cfg
-        # We assume sink constructors accept config=cfg and **kwargs
-        with sink_class(config=cfg, **kwargs) as sink:
+        # Instantiate sink class using ONLY the configured config object
+        with sink_class(config=cfg) as sink:
             for index, batch in enumerate(iter_batches(filtered_records, cfg.batch_size)):
                 total_written += sink.write_batch(batch, batch_id=f"{study_key}/records/{index}")
 

@@ -84,6 +84,26 @@ from imednet.sdk import ImednetSDK
 logger = logging.getLogger(__name__)
 
 
+from dataclasses import dataclass, field
+
+@dataclass
+class MongoDbSinkConfig(SinkConfig):
+    """Configuration for MongoDB export sink."""
+    
+    uri: str = ""
+    database: str = ""
+    collection: str = ""
+    
+    def __post_init__(self):
+        super().__post_init__()
+        if not self.uri or not isinstance(self.uri, str) or not self.uri.strip():
+            raise ValueError("uri must be a non-empty string")
+        if not self.database or not isinstance(self.database, str) or not self.database.strip():
+            raise ValueError("database must be a non-empty string")
+        if not self.collection or not isinstance(self.collection, str) or not self.collection.strip():
+            raise ValueError("collection must be a non-empty string")
+
+
 def _make_document_id(study_key: str, record_id: Any) -> str:
     """Return the composite ``_id`` for a MongoDB record document."""
     return f"{study_key}/{record_id}"
@@ -110,48 +130,26 @@ class MongoDbExportSink(ExportSink):
 
     Parameters
     ----------
-    uri:
-        MongoDB connection URI
-        (e.g. ``"******localhost:27017"``).
-        Credentials are never logged.
-    database:
-        Target database name.
-    collection:
-        Target collection name.
-    study_key:
-        Study identifier embedded in every document and used to build the
-        composite ``_id``.
     config:
-        Optional :class:`~imednet.integrations.sink_base.SinkConfig`.
+        Mandatory :class:`~imednet.integrations.document.MongoDbSinkConfig`.
 
     Raises:
         ~imednet.errors.ExportConfigurationError: When the client cannot connect to the server.
         ImportError: When the ``pymongo`` package is not installed.
     """
 
-    def __init__(
-        self,
-        uri: str,
-        database: str,
-        collection: str,
-        study_key: str,
-        *,
-        config: Optional[SinkConfig] = None,
-    ) -> None:
+    def __init__(self, config: MongoDbSinkConfig) -> None:
         """Initialize the MongoDB export sink.
 
         Args:
-            uri: MongoDB connection URI.
-            database: Target database name.
-            collection: Target collection name.
-            study_key: Study identifier for composite keys and metadata.
-            config: Optional sink configuration.
+            config: Mandatory sink configuration.
         """
         super().__init__(config)
-        self._uri = uri
-        self._database = database
-        self._collection_name = collection
-        self._study_key = study_key
+        self.config: MongoDbSinkConfig = config
+        self._uri = self.config.uri
+        self._database = self.config.database
+        self._collection_name = self.config.collection
+        self._study_key = self.config.study_key
         self._client: Any = None
         self._collection: Any = None
         self._connect()
@@ -241,24 +239,31 @@ class MongoDbExportSink(ExportSink):
 def export_to_mongodb(
     sdk: ImednetSDK,
     study_key: str,
-    uri: str,
-    database: str,
-    collection: str,
+    uri: str = "",
+    database: str = "",
+    collection: str = "",
     *,
-    config: Optional[SinkConfig] = None,
+    config: Optional[MongoDbSinkConfig] = None,
 ) -> int:
     """Export study records to MongoDB using :class:`MongoDbExportSink`."""
     from imednet.integrations.sink_base import apply_quality_gate
 
-    cfg = config if config is not None else SinkConfig()
+    if config is None:
+        config = MongoDbSinkConfig(
+            study_key=study_key,
+            uri=uri,
+            database=database,
+            collection=collection,
+        )
+
     records = sdk.records.list(study_key=study_key, record_data_filter=None)
-    filtered_records = list(apply_quality_gate(sdk, study_key, records, cfg))
+    filtered_records = list(apply_quality_gate(sdk, study_key, records, config))
 
     total_written = 0
-    with MongoDbExportSink(uri, database, collection, study_key, config=cfg) as sink:
-        for index, batch in enumerate(iter_batches(filtered_records, cfg.batch_size)):
+    with MongoDbExportSink(config=config) as sink:
+        for index, batch in enumerate(iter_batches(filtered_records, config.batch_size)):
             total_written += sink.write_batch(batch, batch_id=f"{study_key}/records/{index}")
     return total_written
 
 
-__all__ = ["MongoDbExportSink", "export_to_mongodb"]
+__all__ = ["MongoDbExportSink", "MongoDbSinkConfig", "export_to_mongodb"]

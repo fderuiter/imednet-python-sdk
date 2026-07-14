@@ -57,7 +57,7 @@ from __future__ import annotations
 
 import logging
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Optional, Sequence, Tuple
 
 from imednet.errors import ExportBatchError, ExportConfigurationError
@@ -83,7 +83,16 @@ class Neo4jSinkConfig(SinkConfig):
         Target Neo4j database name (default ``"neo4j"``).
     """
 
+    uri: str = ""
+    auth: Tuple[str, str] = field(default_factory=tuple)
     database: str = "neo4j"
+    
+    def __post_init__(self):
+        super().__post_init__()
+        if not self.uri or not isinstance(self.uri, str) or not self.uri.strip():
+            raise ValueError("uri must be a non-empty string")
+        if not self.auth or not isinstance(self.auth, tuple) or len(self.auth) != 2:
+            raise ValueError("auth must be a tuple of (username, password)")
 
 
 # ---------------------------------------------------------------------------
@@ -132,42 +141,25 @@ class Neo4jExportSink(ExportSink):
 
     Parameters
     ----------
-    uri:
-        Neo4j Bolt or HTTP URI (e.g. ``"bolt://localhost:7687"`` or
-        ``"neo4j+s://xxxx.databases.neo4j.io"``).
-    auth:
-        ``(username, password)`` tuple.  Credentials are never logged.
-    study_key:
-        Study identifier attached to every node for multi-study graphs.
     config:
-        Optional :class:`Neo4jSinkConfig` (or plain :class:`SinkConfig`).
-        Defaults to :class:`Neo4jSinkConfig` with all values at defaults.
+        Mandatory :class:`Neo4jSinkConfig`.
 
     Raises:
         ~imednet.errors.ExportConfigurationError: When the driver cannot connect to the database.
         ImportError: When the ``neo4j`` package is not installed.
     """
 
-    def __init__(
-        self,
-        uri: str,
-        auth: Tuple[str, str],
-        study_key: str,
-        *,
-        config: Optional[SinkConfig] = None,
-    ) -> None:
+    def __init__(self, config: Neo4jSinkConfig) -> None:
         """Initialize the Neo4j export sink.
 
         Args:
-            uri: Neo4j Bolt or HTTP URI.
-            auth: (username, password) tuple for authentication.
-            study_key: Study identifier for graph nodes.
-            config: Optional Neo4j-specific or base sink configuration.
+            config: Mandatory Neo4j-specific sink configuration.
         """
-        super().__init__(config if config is not None else Neo4jSinkConfig())
-        self._uri = uri
-        self._auth = auth
-        self._study_key = study_key
+        super().__init__(config)
+        self.config: Neo4jSinkConfig = config
+        self._uri = self.config.uri
+        self._auth = self.config.auth
+        self._study_key = self.config.study_key
         self._driver: Any = None
         self._connect()
 
@@ -239,17 +231,22 @@ class Neo4jExportSink(ExportSink):
 def export_to_neo4j(
     sdk: ImednetSDK,
     study_key: str,
-    uri: str,
-    auth: Tuple[str, str],
+    uri: str = "",
+    auth: Tuple[str, str] = (),
     *,
     config: Optional[Neo4jSinkConfig] = None,
 ) -> int:
     """Export study records to Neo4j using :class:`Neo4jExportSink`."""
-    cfg = config if config is not None else Neo4jSinkConfig()
+    if config is None:
+        config = Neo4jSinkConfig(
+            study_key=study_key,
+            uri=uri,
+            auth=auth,
+        )
     records = sdk.records.list(study_key=study_key, record_data_filter=None)
     total_written = 0
-    with Neo4jExportSink(uri, auth, study_key, config=cfg) as sink:
-        for index, batch in enumerate(iter_batches(list(records), cfg.batch_size)):
+    with Neo4jExportSink(config=config) as sink:
+        for index, batch in enumerate(iter_batches(list(records), config.batch_size)):
             total_written += sink.write_batch(batch, batch_id=f"{study_key}/records/{index}")
     return total_written
 
