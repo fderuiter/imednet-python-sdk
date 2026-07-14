@@ -21,11 +21,12 @@ _KEY_CONNECTED = "_imednet_connected"
 __all__ = ["render_auth_sidebar", "get_sdk", "get_study_key", "clear_credentials"]
 
 
-def _build_sdk(api_key: str, security_key: str) -> None:
+def _build_sdk(api_key: str, security_key: str, env_url: str | None = None) -> None:
     """Construct and cache an authenticated SDK instance."""
     st.session_state[_KEY_SDK] = ImednetSDK(
         api_key=api_key,
         security_key=security_key,
+        base_url=env_url,
     )
 
 
@@ -45,30 +46,36 @@ import os
 import sqlite3
 
 
-def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None]:
-    """Fetch API and Security keys for a specific study from the tenant database.
+def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None, str | None]:
+    """Fetch API and Security keys and environment URL for a specific study from the tenant database.
 
     Args:
         study_key: The study identifier.
 
     Returns:
-        A tuple of (api_key, security_key), or (None, None) if not found.
+        A tuple of (api_key, security_key, env_url), or (None, None, None) if not found.
     """
     db_path = os.environ.get(
         "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
     )
     if not os.path.exists(db_path):
-        return None, None
+        return None, None, None
     try:
         with sqlite3.connect(db_path) as conn:
+            # Check for env_url column and migrate if necessary
+            cursor = conn.execute("PRAGMA table_info(tenants)")
+            columns = [row[1] for row in cursor.fetchall()]
+            if "env_url" not in columns:
+                conn.execute("ALTER TABLE tenants ADD COLUMN env_url TEXT")
+
             row = conn.execute(
-                "SELECT api_key, security_key FROM tenants WHERE study_key=?", (study_key,)
+                "SELECT api_key, security_key, env_url FROM tenants WHERE study_key=?", (study_key,)
             ).fetchone()
             if row:
-                return row[0], row[1]
+                return row[0], row[1], row[2]
     except Exception:
         pass
-    return None, None
+    return None, None, None
 
 
 def get_provisioned_studies() -> list[str]:
@@ -141,7 +148,7 @@ def render_auth_sidebar() -> bool:
                 clear_credentials()
                 st.rerun()
         elif st.button("Connect"):
-            api_key, security_key = get_tenant_credentials(study_key)
+            api_key, security_key, env_url = get_tenant_credentials(study_key)
             if not api_key or not security_key:
                 st.error("Managed credentials for this tenant are missing.")
             else:
@@ -152,7 +159,7 @@ def render_auth_sidebar() -> bool:
 
                         st.session_state[_KEY_SDK] = MagicMock()
                     else:
-                        _build_sdk(api_key=api_key, security_key=security_key)
+                        _build_sdk(api_key=api_key, security_key=security_key, env_url=env_url)
                     st.session_state[_KEY_CONNECTED] = True
                     st.success("Connected ✓")
                 except Exception as exc:

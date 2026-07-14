@@ -384,6 +384,7 @@ async def test_async_job_poller_fetch_result() -> None:
     st2 = await poller_fail.run("ST", "1", interval=0)
     assert getattr(st2, "results") is None
 
+
 @pytest.mark.asyncio
 async def test_async_poll_many_with_failures(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test async_poll_many where some jobs fail."""
