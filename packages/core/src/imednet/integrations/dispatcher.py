@@ -4,6 +4,7 @@ This module provides a single entry point `export()` for all data persistence ta
 supporting both tabular procedural functions and object-oriented sink classes.
 """
 
+import threading
 from typing import Any, Callable, Dict, Optional, Type
 
 from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate, iter_batches
@@ -23,38 +24,45 @@ class ExportRegistry:
         """Initialize an empty ExportRegistry."""
         self._tabular_targets: Dict[str, Callable] = {}
         self._sink_targets: Dict[str, Type[ExportSink]] = {}
+        self._lock = threading.RLock()
 
     def register_tabular(self, target_type: str, func: Callable) -> None:
         """Register a tabular procedural function for a target type."""
-        self._tabular_targets[target_type] = func
+        with self._lock:
+            self._tabular_targets[target_type] = func
 
     def register_sink(self, target_type: str, sink_class: Type[ExportSink]) -> None:
         """Register an object-oriented sink class for a target type."""
-        self._sink_targets[target_type] = sink_class
+        with self._lock:
+            self._sink_targets[target_type] = sink_class
 
     def get_tabular(self, target_type: str) -> Optional[Callable]:
         """Retrieve a registered tabular function, or None if not found."""
-        return self._tabular_targets.get(target_type)
+        with self._lock:
+            return self._tabular_targets.get(target_type)
 
     def get_sink(self, target_type: str) -> Optional[Type[ExportSink]]:
         """Retrieve a registered sink class, or None if not found."""
-        if target_type in self._sink_targets:
-            return self._sink_targets[target_type]
+        with self._lock:
+            if target_type in self._sink_targets:
+                return self._sink_targets[target_type]
 
-        # Lazy load known sinks
-        if target_type in self._LAZY_SINKS:
-            module_path, class_name = self._LAZY_SINKS[target_type].split(":")
-            try:
-                import importlib
+            # Lazy load known sinks
+            if target_type in self._LAZY_SINKS:
+                module_path, class_name = self._LAZY_SINKS[target_type].split(":")
+                try:
+                    import importlib
 
-                module = importlib.import_module(module_path)  # nosem
-                sink_class = getattr(module, class_name)
-                self.register_sink(target_type, sink_class)
-                return sink_class
-            except (ImportError, AttributeError):
-                return None
+                    module = importlib.import_module(module_path)  # nosem
+                    sink_class = getattr(module, class_name)
+                    # Use self._sink_targets directly to avoid acquiring lock again unnecessarily,
+                    # or it's fine since we use RLock
+                    self.register_sink(target_type, sink_class)
+                    return sink_class
+                except (ImportError, AttributeError):
+                    return None
 
-        return None
+            return None
 
 
 # Global registry instance
