@@ -105,7 +105,7 @@ class ImednetExportOperator(BaseOperator):
         if dest == "snowflake":
             from imednet_sinks import SnowflakeExportSink  # type: ignore
 
-            return SnowflakeExportSink(config=config)
+            return SnowflakeExportSink(config=config)  # type: ignore
         elif dest == "neo4j":
             from imednet_sinks import Neo4jExportSink  # type: ignore
 

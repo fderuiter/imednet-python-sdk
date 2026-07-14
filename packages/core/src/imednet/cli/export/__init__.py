@@ -256,8 +256,8 @@ def setup_parser(subparsers):
             uri=uri,
             database=database,
             collection=collection,
-            batch_size=batch_size, 
-            idempotent=upsert
+            batch_size=batch_size,
+            idempotent=upsert,
         )
         with fetching_status("records for MongoDB export", study_key):
             sdk.sinks.export_to_mongodb(sdk, study_key, config=cfg)
@@ -311,9 +311,9 @@ def setup_parser(subparsers):
             study_key=study_key,
             uri=uri,
             auth=(username, password),
-            batch_size=batch_size, 
-            idempotent=merge, 
-            database=database
+            batch_size=batch_size,
+            idempotent=merge,
+            database=database,
         )
         with fetching_status("records for Neo4j export", study_key):
             sdk.sinks.export_to_neo4j(sdk, study_key, config=cfg)

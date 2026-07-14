@@ -92,7 +92,7 @@ class TestSinkConfig:
 
     def test_defaults(self):
         """Test that defaults."""
-        cfg = SinkConfig()
+        cfg = SinkConfig(study_key="MY_STUDY")
         assert cfg.batch_size == 500
         assert cfg.max_retries == 3
         assert cfg.retry_backoff == 1.0
@@ -101,7 +101,7 @@ class TestSinkConfig:
 
     def test_custom_values(self):
         """Test that custom values."""
-        cfg = SinkConfig(batch_size=100, max_retries=0, idempotent=False)
+        cfg = SinkConfig(study_key="MY_STUDY", batch_size=100, max_retries=0, idempotent=False)
         assert cfg.batch_size == 100
         assert cfg.max_retries == 0
         assert cfg.idempotent is False

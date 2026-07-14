@@ -65,6 +65,7 @@ class SinksNamespaceProtocol(Protocol):
     """Minimal interface that a sinks namespace object must expose."""
 
     export_to_mongodb: Any
+    MongoDbSinkConfig: Any
     MongoDbExportSink: Any
     export_to_neo4j: Any
     Neo4jSinkConfig: Any

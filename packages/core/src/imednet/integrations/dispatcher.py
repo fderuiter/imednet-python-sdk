@@ -4,8 +4,8 @@ This module provides a single entry point `export()` for all data persistence ta
 supporting both tabular procedural functions and object-oriented sink classes.
 """
 
-import threading
 import dataclasses
+import threading
 from typing import Any, Callable, Dict, Optional, Type
 
 from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate, iter_batches
@@ -20,7 +20,7 @@ class ExportRegistry:
         "neo4j": "imednet_sinks.graph:Neo4jExportSink",
         "snowflake": "imednet_sinks.warehouse:SnowflakeExportSink",
     }
-    
+
     _LAZY_CONFIGS = {
         "mongodb": "imednet_sinks.document:MongoDbSinkConfig",
         "neo4j": "imednet_sinks.graph:Neo4jSinkConfig",
@@ -71,24 +71,25 @@ class ExportRegistry:
                     return None
 
             return None
-            
+
     def get_config_class(self, target_type: str) -> Type[SinkConfig]:
         """Retrieve a registered config class, or SinkConfig as default."""
         with self._lock:
             if target_type in self._config_targets:
                 return self._config_targets[target_type]
-            
+
             if target_type in self._LAZY_CONFIGS:
                 module_path, class_name = self._LAZY_CONFIGS[target_type].split(":")
                 try:
                     import importlib
+
                     module = importlib.import_module(module_path)
                     config_class = getattr(module, class_name)
                     self._config_targets[target_type] = config_class
                     return config_class
                 except (ImportError, AttributeError):
                     pass
-            
+
             return SinkConfig
 
 
