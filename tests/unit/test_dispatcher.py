@@ -76,17 +76,19 @@ def test_export_unsupported_target():
     with pytest.raises(ValueError, match="Unsupported export target: 'unknown_target'"):
         export("unknown_target", sdk_mock, "STUDY3")
 
+
 def test_get_sink_lazy_load_success(monkeypatch):
     from imednet.integrations.dispatcher import ExportRegistry
-    
+
     registry = ExportRegistry()
     registry._LAZY_SINKS = {"dummy_target": "dummy_module:DummyClass"}
-    
+
     class DummyClass:
         pass
 
     class DummyModule:
         pass
+
     DummyModule.DummyClass = DummyClass
 
     # Mock importlib.import_module
@@ -94,33 +96,35 @@ def test_get_sink_lazy_load_success(monkeypatch):
         if name == "dummy_module":
             return DummyModule
         raise ImportError
-        
+
     monkeypatch.setattr("importlib.import_module", mock_import)
-    
+
     # Should lazily load and register
     sink = registry.get_sink("dummy_target")
     assert sink is DummyClass
     assert registry._sink_targets["dummy_target"] is DummyClass
 
+
 def test_get_sink_lazy_load_import_error(monkeypatch):
     from imednet.integrations.dispatcher import ExportRegistry
-    
+
     registry = ExportRegistry()
     registry._LAZY_SINKS = {"dummy_target": "dummy_module:DummyClass"}
 
     # Mock importlib.import_module to raise ImportError
     def mock_import(name):
         raise ImportError
-        
+
     monkeypatch.setattr("importlib.import_module", mock_import)
-    
+
     # Should handle ImportError and return None
     sink = registry.get_sink("dummy_target")
     assert sink is None
 
+
 def test_get_sink_lazy_load_attribute_error(monkeypatch):
     from imednet.integrations.dispatcher import ExportRegistry
-    
+
     registry = ExportRegistry()
     registry._LAZY_SINKS = {"dummy_target": "dummy_module:DummyClass"}
 
@@ -130,9 +134,9 @@ def test_get_sink_lazy_load_attribute_error(monkeypatch):
     # Mock importlib.import_module
     def mock_import(name):
         return DummyModule
-        
+
     monkeypatch.setattr("importlib.import_module", mock_import)
-    
+
     # Should handle AttributeError (DummyClass not in DummyModule) and return None
     sink = registry.get_sink("dummy_target")
     assert sink is None
