@@ -116,13 +116,42 @@ def get_parser() -> argparse.ArgumentParser:
 
     import importlib.metadata
 
+    registered_plugins = set()
     # Discover and register CLI plugins using entry points
     for entry_point in importlib.metadata.entry_points(group="imednet.cli_plugins"):
         try:
             plugin_setup = entry_point.load()
             plugin_setup(subparsers)
+            registered_plugins.add(entry_point.name)
         except Exception as e:
             print(f"Warning: Failed to load CLI plugin '{entry_point.name}': {e}", file=sys.stderr)
+
+    if "workflows" not in registered_plugins:
+        workflows_parser = subparsers.add_parser(
+            "workflows", help="Workflows plugin (not installed)"
+        )
+        workflows_parser.add_argument("args", nargs=argparse.REMAINDER)
+
+        def workflows_stub(args):
+            print("The workflows plugin is not installed.", file=sys.stderr)
+            sys.exit(1)
+
+        workflows_parser.set_defaults(func=workflows_stub)
+
+    if "dashboard" not in registered_plugins:
+        dashboard_parser = subparsers.add_parser(
+            "dashboard", help="Dashboard plugin (not installed)"
+        )
+        dashboard_parser.add_argument("args", nargs=argparse.REMAINDER)
+
+        def dashboard_stub(args):
+            print(
+                "The dashboard plugin is not installed. Please pip install imednet-streamlit.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+
+        dashboard_parser.set_defaults(func=dashboard_stub)
 
     return parser
 
