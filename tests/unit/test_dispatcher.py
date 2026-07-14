@@ -75,3 +75,34 @@ def test_export_unsupported_target():
     sdk_mock = MagicMock()
     with pytest.raises(ValueError, match="Unsupported export target: 'unknown_target'"):
         export("unknown_target", sdk_mock, "STUDY3")
+
+
+def test_export_registry_lazy_load_import_error():
+    """Test that lazy loading catches ImportError and returns None."""
+    from imednet.integrations.dispatcher import ExportRegistry
+    
+    registry = ExportRegistry()
+    # Assuming imednet_sinks is not installed in the core test environment,
+    # or we can force it by patching importlib.import_module
+    with patch("importlib.import_module", side_effect=ImportError("Mocked missing module")):
+        sink = registry.get_sink("mongodb")
+        assert sink is None
+
+
+def test_export_registry_lazy_load_success():
+    """Test that lazy loading correctly registers and returns the class."""
+    from imednet.integrations.dispatcher import ExportRegistry
+
+    registry = ExportRegistry()
+    
+    mock_module = MagicMock()
+    mock_sink_class = MagicMock()
+    setattr(mock_module, "MongoDbExportSink", mock_sink_class)
+    
+    with patch("importlib.import_module", return_value=mock_module):
+        sink = registry.get_sink("mongodb")
+        
+        # Verify it returns the mock class
+        assert sink is mock_sink_class
+        # Verify it cached the result (should be in _sink_targets)
+        assert registry._sink_targets["mongodb"] is mock_sink_class
