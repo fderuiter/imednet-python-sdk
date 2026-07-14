@@ -157,15 +157,14 @@ class SnowflakeExportSink(ExportSink):
         ImportError: When ``snowflake-connector-python`` or ``pyarrow`` are not installed.
     """
 
-    def __init__(self, config: Optional[SinkConfig] = None) -> None:
+    def __init__(self, config: SnowflakeSinkConfig) -> None:
         """Initialize the Snowflake export sink.
 
         Args:
-            config: Snowflake-specific sink configuration.
+            config: Mandatory Snowflake-specific sink configuration.
         """
-        cfg = config if isinstance(config, SnowflakeSinkConfig) else SnowflakeSinkConfig()
-        super().__init__(cfg)
-        self._cfg: SnowflakeSinkConfig = cfg
+        super().__init__(config)
+        self._cfg: SnowflakeSinkConfig = config
         self._conn: Any = None
         self._tmp_dir: Optional[tempfile.TemporaryDirectory[str]] = None
         self._connect()
