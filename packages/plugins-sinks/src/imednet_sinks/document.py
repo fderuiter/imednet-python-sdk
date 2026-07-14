@@ -86,21 +86,27 @@ logger = logging.getLogger(__name__)
 
 from dataclasses import dataclass, field
 
+
 @dataclass
 class MongoDbSinkConfig(SinkConfig):
     """Configuration for MongoDB export sink."""
-    
+
     uri: str = ""
     database: str = ""
     collection: str = ""
-    
+
     def __post_init__(self):
+        """Validate MongoDB config properties after initialization."""
         super().__post_init__()
         if not self.uri or not isinstance(self.uri, str) or not self.uri.strip():
             raise ValueError("uri must be a non-empty string")
         if not self.database or not isinstance(self.database, str) or not self.database.strip():
             raise ValueError("database must be a non-empty string")
-        if not self.collection or not isinstance(self.collection, str) or not self.collection.strip():
+        if (
+            not self.collection
+            or not isinstance(self.collection, str)
+            or not self.collection.strip()
+        ):
             raise ValueError("collection must be a non-empty string")
 
 
