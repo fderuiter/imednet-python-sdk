@@ -84,7 +84,7 @@ class Neo4jSinkConfig(SinkConfig):
     """
 
     uri: str = ""
-    auth: Tuple[str, str] = field(default_factory=tuple)
+    auth: Tuple[str, str] = ("", "")
     database: str = "neo4j"
 
     def __post_init__(self):
@@ -233,7 +233,7 @@ def export_to_neo4j(
     sdk: ImednetSDK,
     study_key: str,
     uri: str = "",
-    auth: Tuple[str, str] = (),
+    auth: Tuple[str, str] = ("", ""),
     *,
     config: Optional[Neo4jSinkConfig] = None,
 ) -> int:
