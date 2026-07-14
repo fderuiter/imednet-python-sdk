@@ -22,7 +22,7 @@ def mock_auth_env():
         ),
         patch(
             "imednet_streamlit.auth.get_tenant_credentials",
-            side_effect=lambda s: ("key-" + s, "sec-" + s),
+            side_effect=lambda s: ("key-" + s, "sec-" + s, None),
         ) as mock_get_creds,
         patch("imednet_streamlit.auth.ImednetSDK") as mock_sdk,
         patch.dict(os.environ, {"IMEDNET_BROWSER_TEST": "1"}),
@@ -125,7 +125,7 @@ def test_scenario_5_error_recovery(mock_auth_env) -> None:
 
     # 1. Simulate failure (missing credentials)
     mock_get_creds.side_effect = None
-    mock_get_creds.return_value = (None, None)
+    mock_get_creds.return_value = (None, None, None)
 
     connect_btn = next(b for b in at.sidebar.button if b.label == "Connect")
     connect_btn.click()
@@ -142,7 +142,7 @@ def test_scenario_5_error_recovery(mock_auth_env) -> None:
     assert connected is not True
 
     # 2. Recover - provide valid credentials
-    mock_get_creds.return_value = ("valid-key", "valid-sec")
+    mock_get_creds.return_value = ("valid-key", "valid-sec", None)
 
     connect_btn = next(b for b in at.sidebar.button if b.label == "Connect")
     connect_btn.click()
