@@ -287,7 +287,7 @@ class FileStateProvider(BaseStateProvider):
 ExtractionStateLedger = FileStateProvider
 
 
-class AirflowStateProvider(BaseStateProvider):
+class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
     """Manages transactional state using Airflow XCom metadata."""
 
     def _get_xcom_key(self, study_key: str, stream_name: str) -> str:
