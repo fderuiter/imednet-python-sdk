@@ -227,33 +227,52 @@ def test_study_structure_study() -> None:
     study = StudyStructure(studyKey="ST1", intervals=[])
     assert study.study_key == "ST1"
 
+
 def test_job_status_record_counts():
     from imednet.models.jobs import JobStatus
-    
+
     # List format
-    js_list = JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl="", results=[{"status": "PASS"}, {"status": "FAIL"}])
+    js_list = JobStatus(
+        batchId="1",
+        state="COMPLETED",
+        progress=100,
+        jobId="1",
+        resultUrl="",
+        results=[{"status": "PASS"}, {"status": "FAIL"}],
+    )
     assert js_list.total_records == 2
     assert js_list.successful_records == 1
     assert js_list.failed_records == 1
 
     # Dict format
-    js_dict = JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl="", results={"total": 5, "success": 3, "failed": 2})
+    js_dict = JobStatus(
+        batchId="1",
+        state="COMPLETED",
+        progress=100,
+        jobId="1",
+        resultUrl="",
+        results={"total": 5, "success": 3, "failed": 2},
+    )
     assert js_dict.total_records == 5
     assert js_dict.successful_records == 3
     assert js_dict.failed_records == 2
-    
+
     # Text format success
-    js_text_success = JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl="", results="ok")
+    js_text_success = JobStatus(
+        batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl="", results="ok"
+    )
     assert js_text_success.total_records == 1
     assert js_text_success.successful_records == 1
     assert js_text_success.failed_records == 0
-    
+
     # Text format fail
-    js_text_fail = JobStatus(batchId="1", state="FAILED", progress=100, jobId="1", resultUrl="", results="error")
+    js_text_fail = JobStatus(
+        batchId="1", state="FAILED", progress=100, jobId="1", resultUrl="", results="error"
+    )
     assert js_text_fail.total_records == 1
     assert js_text_fail.successful_records == 0
     assert js_text_fail.failed_records == 1
-    
+
     # Empty format
     js_empty = JobStatus(batchId="1", state="COMPLETED", progress=100, jobId="1", resultUrl="")
     assert js_empty.total_records == 0
