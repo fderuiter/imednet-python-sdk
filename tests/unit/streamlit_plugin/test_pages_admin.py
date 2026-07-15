@@ -54,6 +54,8 @@ def test_admin_page_renders():
             sys.modules["imednet_streamlit.pages.admin"] = prev_admin
         else:
             sys.modules.pop("imednet_streamlit.pages.admin", None)
+
+
 import importlib.util
 import sys
 from pathlib import Path
@@ -81,14 +83,24 @@ def _run_admin(fake_st):
         else:
             sys.modules.pop("streamlit", None)
 
+
 class FakeStMockAdmin:
     def __init__(self, logged_in=True):
         self.success_messages = []
         self.error_messages = []
-    def title(self, msg): pass
-    def markdown(self, msg): pass
-    def success(self, msg): self.success_messages.append(msg)
-    def error(self, msg): self.error_messages.append(msg)
+
+    def title(self, msg):
+        pass
+
+    def markdown(self, msg):
+        pass
+
+    def success(self, msg):
+        self.success_messages.append(msg)
+
+    def error(self, msg):
+        self.error_messages.append(msg)
+
 
 def test_admin_page_provision_success(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     db_path = tmp_path / "db.sqlite3"
@@ -96,25 +108,32 @@ def test_admin_page_provision_success(monkeypatch: pytest.MonkeyPatch, tmp_path)
 
     class FakeSt(FakeStMockAdmin):
         def text_input(self, label: str, **kwargs: object) -> str:
-            if "Study" in label: return "S1"
-            if "API" in label: return "A1"
-            if "Security" in label: return "SEC1"
-            if "URL" in label: return "http://env"
+            if "Study" in label:
+                return "S1"
+            if "API" in label:
+                return "A1"
+            if "Security" in label:
+                return "SEC1"
+            if "URL" in label:
+                return "http://env"
             return ""
+
         def button(self, _: str, **kwargs: object) -> bool:
             return True
 
     fake_st = FakeSt(logged_in=True)
     _run_admin(fake_st)
     assert len(fake_st.success_messages) > 0
-    
+
     _run_admin(fake_st)
     assert len(fake_st.success_messages) > 1
+
 
 def test_admin_page_provision_missing_fields(monkeypatch: pytest.MonkeyPatch) -> None:
     class FakeSt(FakeStMockAdmin):
         def text_input(self, label: str, **kwargs: object) -> str:
             return ""
+
         def button(self, _: str, **kwargs: object) -> bool:
             return True
 
@@ -122,18 +141,22 @@ def test_admin_page_provision_missing_fields(monkeypatch: pytest.MonkeyPatch) ->
     _run_admin(fake_st)
     assert len(fake_st.error_messages) > 0
 
+
 def test_admin_page_provision_exception(monkeypatch: pytest.MonkeyPatch) -> None:
     class FakeSt(FakeStMockAdmin):
         def text_input(self, label: str, **kwargs: object) -> str:
             return "valid"
+
         def button(self, _: str, **kwargs: object) -> bool:
             return True
 
     fake_st = FakeSt(logged_in=True)
     import os
+
     def raise_boom(*args, **kwargs):
         raise RuntimeError("boom")
+
     monkeypatch.setattr(os, "makedirs", raise_boom)
-    
+
     _run_admin(fake_st)
     assert len(fake_st.error_messages) > 0

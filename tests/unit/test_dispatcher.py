@@ -141,6 +141,7 @@ def test_get_sink_lazy_load_attribute_error(monkeypatch):
     sink = registry.get_sink("dummy_target")
     assert sink is None
 
+
 def test_get_config_class_lazy_load_success(monkeypatch):
     from imednet.integrations.dispatcher import ExportRegistry
 
@@ -166,6 +167,7 @@ def test_get_config_class_lazy_load_success(monkeypatch):
     assert config is DummyConfigClass
     assert registry._config_targets["dummy_target"] is DummyConfigClass
 
+
 def test_get_config_class_lazy_load_import_error(monkeypatch):
     from imednet.integrations.dispatcher import ExportRegistry, SinkConfig
 
@@ -179,6 +181,7 @@ def test_get_config_class_lazy_load_import_error(monkeypatch):
 
     config = registry.get_config_class("dummy_target")
     assert config is SinkConfig
+
 
 def test_get_config_class_lazy_load_attribute_error(monkeypatch):
     from imednet.integrations.dispatcher import ExportRegistry, SinkConfig
@@ -197,10 +200,12 @@ def test_get_config_class_lazy_load_attribute_error(monkeypatch):
     config = registry.get_config_class("dummy_target")
     assert config is SinkConfig
 
+
 @patch("imednet.integrations.dispatcher.iter_batches")
 @patch("imednet.integrations.dispatcher.apply_quality_gate")
 def test_export_sink_routing_with_explicit_config(mock_quality_gate, mock_iter_batches):
     from imednet.integrations.dispatcher import SinkConfig, export, register_sink_target
+
     register_sink_target("dummy_sink", DummySink)
 
     sdk_mock = MagicMock()

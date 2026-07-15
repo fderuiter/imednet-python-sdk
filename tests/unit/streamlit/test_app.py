@@ -8,23 +8,14 @@ from unittest.mock import patch
 from streamlit.testing.v1 import AppTest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-APP_PATH = (
-    REPO_ROOT
-    / "packages"
-    / "plugins-streamlit"
-    / "src"
-    / "imednet_streamlit"
-    / "app.py"
-)
+APP_PATH = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit" / "app.py"
 
 
 def test_dashboard_login_requires_all_fields() -> None:
     """Test that dashboard login requires all fields."""
     # We mock studies so the form renders, but mock credentials so it fails.
     with (
-        patch(
-            "imednet_streamlit.auth.get_provisioned_studies", return_value=["PROT-100"]
-        ),
+        patch("imednet_streamlit.auth.get_provisioned_studies", return_value=["PROT-100"]),
         patch(
             "imednet_streamlit.auth.get_tenant_credentials",
             return_value=(None, None, None),
@@ -38,10 +29,7 @@ def test_dashboard_login_requires_all_fields() -> None:
         at.run()
 
         # It should display an error about missing credentials
-        assert (
-            "Managed credentials for this tenant are missing"
-            in at.sidebar.error[0].value
-        )
+        assert "Managed credentials for this tenant are missing" in at.sidebar.error[0].value
 
 
 def test_dashboard_shows_auth_prompt_when_not_connected() -> None:
@@ -59,9 +47,7 @@ def test_dashboard_login_uses_sdk_after_credentials_entered() -> None:
     """Successful login should connect using managed credentials."""
     with (
         patch("imednet_streamlit.auth.ImednetSDK") as mock_sdk,
-        patch(
-            "imednet_streamlit.auth.get_provisioned_studies", return_value=["PROT-100"]
-        ),
+        patch("imednet_streamlit.auth.get_provisioned_studies", return_value=["PROT-100"]),
         patch(
             "imednet_streamlit.auth.get_tenant_credentials",
             return_value=("test-api", "test-sec", None),
@@ -72,9 +58,7 @@ def test_dashboard_login_uses_sdk_after_credentials_entered() -> None:
         at.session_state["_imednet_user_mock"] = True
         with patch(
             "imednet_streamlit.auth.getattr",
-            side_effect=lambda obj, name, default=None: (
-                True if name == "is_logged_in" else default
-            ),
+            side_effect=lambda obj, name, default=None: True if name == "is_logged_in" else default,
         ):
             at.run()
 

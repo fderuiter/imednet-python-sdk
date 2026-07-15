@@ -50,11 +50,7 @@ class _FakeStreamlit:
         self.info_messages: list[str] = []
         self.cache_data = _FakeCacheData()
 
-        self.user = (
-            {"email": "test@enterprise.com", "is_logged_in": logged_in}
-            if logged_in
-            else {}
-        )
+        self.user = {"email": "test@enterprise.com", "is_logged_in": logged_in} if logged_in else {}
         self.login_called = False
         self._selected_study = selected_study
 
@@ -68,9 +64,7 @@ class _FakeStreamlit:
         self.session_state[key] = ""
         return ""
 
-    def selectbox(
-        self, label: str, options: list[str], key: str, **kwargs: object
-    ) -> str:
+    def selectbox(self, label: str, options: list[str], key: str, **kwargs: object) -> str:
         """Helper function to selectbox."""
         self.session_state[key] = self._selected_study
         return self._selected_study
@@ -122,9 +116,7 @@ def test_render_auth_sidebar_connects_and_clears_secret_keys(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test that render auth sidebar connects and clears secret keys."""
-    fake_st = _FakeStreamlit(
-        logged_in=True, connect_clicked=True, selected_study="STUDY"
-    )
+    fake_st = _FakeStreamlit(logged_in=True, connect_clicked=True, selected_study="STUDY")
     monkeypatch.setattr(auth, "st", fake_st)
     monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
     monkeypatch.setattr(auth, "get_tenant_credentials", lambda x: ("api", "sec", None))
@@ -224,9 +216,7 @@ def test_build_sdk_calls_sdk_init(monkeypatch: pytest.MonkeyPatch) -> None:
     class FakeSDK:
         """Test suite for FakeSDK."""
 
-        def __init__(
-            self, api_key: str, security_key: str, base_url: str | None = None
-        ) -> None:
+        def __init__(self, api_key: str, security_key: str, base_url: str | None = None) -> None:
             """Initialize the test object."""
             sdk_args["api_key"] = api_key
             sdk_args["security_key"] = security_key
@@ -252,22 +242,16 @@ import os
 import sqlite3
 
 
-def test_get_tenant_credentials_no_db(
-    monkeypatch: pytest.MonkeyPatch, tmp_path
-) -> None:
+def test_get_tenant_credentials_no_db(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     monkeypatch.setenv("IMEDNET_TENANT_DB_PATH", str(tmp_path / "missing.sqlite3"))
     assert auth.get_tenant_credentials("S") == (None, None, None)
 
 
-def test_get_tenant_credentials_with_db(
-    monkeypatch: pytest.MonkeyPatch, tmp_path
-) -> None:
+def test_get_tenant_credentials_with_db(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     db_path = tmp_path / "db.sqlite3"
     monkeypatch.setenv("IMEDNET_TENANT_DB_PATH", str(db_path))
     with sqlite3.connect(db_path) as conn:
-        conn.execute(
-            "CREATE TABLE tenants (study_key TEXT, api_key TEXT, security_key TEXT)"
-        )
+        conn.execute("CREATE TABLE tenants (study_key TEXT, api_key TEXT, security_key TEXT)")
         conn.execute("INSERT INTO tenants VALUES ('S1', 'a1', 's1')")
 
     # Should migrate env_url and fetch
@@ -278,16 +262,12 @@ def test_get_tenant_credentials_with_db(
     assert auth.get_tenant_credentials("S1") == ("a1", "s1", "http://env")
 
 
-def test_get_provisioned_studies_no_db(
-    monkeypatch: pytest.MonkeyPatch, tmp_path
-) -> None:
+def test_get_provisioned_studies_no_db(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     monkeypatch.setenv("IMEDNET_TENANT_DB_PATH", str(tmp_path / "missing.sqlite3"))
     assert auth.get_provisioned_studies() == []
 
 
-def test_get_provisioned_studies_with_db(
-    monkeypatch: pytest.MonkeyPatch, tmp_path
-) -> None:
+def test_get_provisioned_studies_with_db(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     db_path = tmp_path / "db.sqlite3"
     monkeypatch.setenv("IMEDNET_TENANT_DB_PATH", str(db_path))
     with sqlite3.connect(db_path) as conn:
@@ -298,9 +278,7 @@ def test_get_provisioned_studies_with_db(
     assert auth.get_provisioned_studies() == ["S1", "S2"]
 
 
-def test_get_provisioned_studies_db_error(
-    monkeypatch: pytest.MonkeyPatch, tmp_path
-) -> None:
+def test_get_provisioned_studies_db_error(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     db_path = tmp_path / "db.sqlite3"
     monkeypatch.setenv("IMEDNET_TENANT_DB_PATH", str(db_path))
     with sqlite3.connect(db_path) as conn:

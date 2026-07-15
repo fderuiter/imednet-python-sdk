@@ -167,9 +167,7 @@ def render_auth_sidebar() -> bool:
             st.success("🟢 Active Environment: DEV")
 
         # OIDC integration for corporate credentials
-        is_logged_in = getattr(st.user, "is_logged_in", False) or "email" in getattr(
-            st, "user", {}
-        )
+        is_logged_in = getattr(st.user, "is_logged_in", False) or "email" in getattr(st, "user", {})
 
         # Test mode bypass for browser E2E tests
         if os.environ.get("IMEDNET_BROWSER_TEST") == "1":
@@ -199,9 +197,7 @@ def render_auth_sidebar() -> bool:
 
         studies = get_provisioned_studies()
         if not studies:
-            st.warning(
-                "No studies available. Contact Global Admin to provision environments."
-            )
+            st.warning("No studies available. Contact Global Admin to provision environments.")
             return False
 
         study_key = st.selectbox(
@@ -227,18 +223,14 @@ def render_auth_sidebar() -> bool:
 
                         st.session_state[_KEY_SDK] = MagicMock()
                     else:
-                        _build_sdk(
-                            api_key=api_key, security_key=security_key, env_url=env_url
-                        )
+                        _build_sdk(api_key=api_key, security_key=security_key, env_url=env_url)
                     st.session_state[_KEY_CONNECTED] = True
                     st.success("Connected ✓")
                 except Exception as exc:
                     _mark_disconnected()
                     err_str = str(exc)
                     if "Unauthorized" in err_str or "AuthError" in type(exc).__name__:
-                        st.warning(
-                            "Session expired or Unauthorized. Redirecting to SSO flow..."
-                        )
+                        st.warning("Session expired or Unauthorized. Redirecting to SSO flow...")
                         if hasattr(st, "login"):
                             st.login()
                     else:
