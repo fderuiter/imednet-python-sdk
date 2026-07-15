@@ -154,7 +154,13 @@ def test_neo4j_containerized_merges(fake_records, monkeypatch):
     uri = "bolt://localhost:7687"
     auth = ("neo4j", "password")
 
-    config = Neo4jSinkConfig(study_key="STUDY1", uri=uri, auth=auth, batch_size=10, idempotent=True)
+    config = Neo4jSinkConfig(
+        study_key="STUDY1",
+        uri=uri,
+        auth=auth,
+        batch_size=10,
+        idempotent=True,
+    )
 
     with Neo4jExportSink(config=config) as sink:
         sink.write_batch(fake_records, batch_id="STUDY1/test/0")
