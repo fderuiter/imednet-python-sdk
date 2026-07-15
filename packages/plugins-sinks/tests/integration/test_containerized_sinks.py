@@ -7,6 +7,7 @@ from typing import List
 import pytest
 from imednet_sinks import (
     MongoDbExportSink,
+    MongoDbSinkConfig,
     Neo4jExportSink,
     Neo4jSinkConfig,
     export_to_mongodb,
@@ -117,7 +118,13 @@ def test_mongodb_containerized_upserts(fake_records, monkeypatch):
     collection = "clinical_records"
 
     # Export records
-    with MongoDbExportSink(uri, database, collection, "STUDY1") as sink:
+    config = MongoDbSinkConfig(
+        study_key="STUDY1",
+        uri=uri,
+        database=database,
+        collection=collection
+    )
+    with MongoDbExportSink(config) as sink:
         sink.write_batch(fake_records, batch_id="STUDY1/test/0")
 
     # Verify directly via PyMongo
@@ -143,9 +150,15 @@ def test_neo4j_containerized_merges(fake_records, monkeypatch):
     uri = "bolt://localhost:7687"
     auth = ("neo4j", "password")
 
-    config = Neo4jSinkConfig(batch_size=10, idempotent=True)
+    config = Neo4jSinkConfig(
+        study_key="STUDY1",
+        uri=uri,
+        auth=auth,
+        batch_size=10,
+        idempotent=True
+    )
 
-    with Neo4jExportSink(uri, auth, "STUDY1", config=config) as sink:
+    with Neo4jExportSink(config) as sink:
         sink.write_batch(fake_records, batch_id="STUDY1/test/0")
 
     # Verify directly via Neo4j Driver
