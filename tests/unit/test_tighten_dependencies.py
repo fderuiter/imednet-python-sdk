@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-sys.path.append(str(Path(__file__).parent.parent.parent / "scripts"))
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent / "scripts"))
 import tighten_dependencies as td
 
 
