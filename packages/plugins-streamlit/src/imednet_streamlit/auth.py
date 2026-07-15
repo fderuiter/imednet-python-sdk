@@ -17,8 +17,15 @@ _KEY_SECURITY_KEY = "_imednet_security_key"
 _KEY_STUDY_KEY = "_imednet_study_key"
 _KEY_SDK = "_imednet_sdk"
 _KEY_CONNECTED = "_imednet_connected"
+_KEY_ENV = "_imednet_env"
 
-__all__ = ["render_auth_sidebar", "get_sdk", "get_study_key", "clear_credentials"]
+__all__ = [
+    "render_auth_sidebar",
+    "get_sdk",
+    "get_study_key",
+    "clear_credentials",
+    "get_db_path",
+]
 
 
 def _build_sdk(api_key: str, security_key: str, env_url: str | None = None) -> None:
@@ -52,6 +59,37 @@ import os
 import sqlite3
 
 
+def get_db_path() -> str:
+    """Resolve the database file path based on the selected environment."""
+    base_path = os.environ.get(
+        "IMEDNET_TENANT_DB_PATH",
+        os.path.expanduser("~/.imednet/enterprise_portal.sqlite3"),
+    )
+
+    env = st.session_state.get(_KEY_ENV, "Default")
+    if env != "Default":
+        dir_name = os.path.dirname(base_path)
+        base_name = os.path.basename(base_path)
+        name, ext = os.path.splitext(base_name)
+        new_name = f"{name}_{env.lower()}{ext}"
+        resolved_path = os.path.join(dir_name, new_name)
+    else:
+        resolved_path = base_path
+
+    if not os.path.exists(resolved_path):
+        os.makedirs(os.path.dirname(resolved_path), exist_ok=True)
+        with sqlite3.connect(resolved_path) as conn:
+            conn.execute(
+                "CREATE TABLE IF NOT EXISTS tenants (study_key TEXT PRIMARY KEY, api_key TEXT, security_key TEXT)"
+            )
+            cursor = conn.execute("PRAGMA table_info(tenants)")
+            columns = [row[1] for row in cursor.fetchall()]
+            if "env_url" not in columns:
+                conn.execute("ALTER TABLE tenants ADD COLUMN env_url TEXT")
+
+    return resolved_path
+
+
 def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None, str | None]:
     """Fetch API and Security keys and environment URL for a specific study from the tenant database.
 
@@ -61,9 +99,7 @@ def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None, str 
     Returns:
         A tuple of (api_key, security_key, env_url), or (None, None, None) if not found.
     """
-    db_path = os.environ.get(
-        "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
-    )
+    db_path = get_db_path()
     if not os.path.exists(db_path):
         return None, None, None
     try:
@@ -73,14 +109,15 @@ def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None, str 
             columns = [row[1] for row in cursor.fetchall()]
             if "env_url" not in columns:
                 conn.execute("ALTER TABLE tenants ADD COLUMN env_url TEXT")
-            
+
             # HEAD branch might have added environment_url, gracefully migrate or just ignore if both exist
             if "environment_url" in columns and "env_url" not in columns:
                 # Copy data from environment_url to env_url if we want, or just fallback
-                pass # SQLite doesn't make renaming columns trivial in older versions, but ALTER TABLE ADD COLUMN was just done.
+                pass  # SQLite doesn't make renaming columns trivial in older versions, but ALTER TABLE ADD COLUMN was just done.
 
             row = conn.execute(
-                "SELECT api_key, security_key, env_url FROM tenants WHERE study_key=?", (study_key,)
+                "SELECT api_key, security_key, env_url FROM tenants WHERE study_key=?",
+                (study_key,),
             ).fetchone()
             if row:
                 return row[0], row[1], row[2]
@@ -91,9 +128,7 @@ def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None, str 
 
 def get_provisioned_studies() -> list[str]:
     """Return a list of all study keys available in the tenant database."""
-    db_path = os.environ.get(
-        "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
-    )
+    db_path = get_db_path()
     if not os.path.exists(db_path):
         return []
     try:
@@ -113,8 +148,28 @@ def render_auth_sidebar() -> bool:
     with st.sidebar:
         st.header("🔐 Enterprise SSO")
 
+        def on_env_change():
+            clear_credentials()
+            _mark_disconnected()
+
+        env = st.selectbox(
+            "Environment",
+            options=["Default", "Dev", "UAT", "Prod"],
+            key=_KEY_ENV,
+            on_change=on_env_change,
+        )
+
+        if env == "Prod":
+            st.error("🚨 Active Environment: PROD")
+        elif env == "UAT":
+            st.warning("⚠️ Active Environment: UAT")
+        elif env == "Dev":
+            st.success("🟢 Active Environment: DEV")
+
         # OIDC integration for corporate credentials
-        is_logged_in = getattr(st.user, "is_logged_in", False) or "email" in getattr(st, "user", {})
+        is_logged_in = getattr(st.user, "is_logged_in", False) or "email" in getattr(
+            st, "user", {}
+        )
 
         # Test mode bypass for browser E2E tests
         if os.environ.get("IMEDNET_BROWSER_TEST") == "1":
@@ -144,7 +199,9 @@ def render_auth_sidebar() -> bool:
 
         studies = get_provisioned_studies()
         if not studies:
-            st.warning("No studies available. Contact Global Admin to provision environments.")
+            st.warning(
+                "No studies available. Contact Global Admin to provision environments."
+            )
             return False
 
         study_key = st.selectbox(
@@ -170,14 +227,18 @@ def render_auth_sidebar() -> bool:
 
                         st.session_state[_KEY_SDK] = MagicMock()
                     else:
-                        _build_sdk(api_key=api_key, security_key=security_key, env_url=env_url)
+                        _build_sdk(
+                            api_key=api_key, security_key=security_key, env_url=env_url
+                        )
                     st.session_state[_KEY_CONNECTED] = True
                     st.success("Connected ✓")
                 except Exception as exc:
                     _mark_disconnected()
                     err_str = str(exc)
                     if "Unauthorized" in err_str or "AuthError" in type(exc).__name__:
-                        st.warning("Session expired or Unauthorized. Redirecting to SSO flow...")
+                        st.warning(
+                            "Session expired or Unauthorized. Redirecting to SSO flow..."
+                        )
                         if hasattr(st, "login"):
                             st.login()
                     else:
@@ -224,7 +285,13 @@ def clear_credentials() -> None:
     This removes the cached SDK instance, connection flag, and any credential
     input values currently held in ``st.session_state``.
     """
-    for key in (_KEY_API_KEY, _KEY_SECURITY_KEY, _KEY_STUDY_KEY, _KEY_SDK, _KEY_CONNECTED):
+    for key in (
+        _KEY_API_KEY,
+        _KEY_SECURITY_KEY,
+        _KEY_STUDY_KEY,
+        _KEY_SDK,
+        _KEY_CONNECTED,
+    ):
         st.session_state.pop(key, None)
     # Ensure cache is also purged when credentials are cleared
     st.cache_data.clear()

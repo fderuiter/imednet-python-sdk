@@ -24,9 +24,9 @@ if st.button("Provision Tenant Environment"):
         st.error("All fields are required to provision a new study.")
     else:
         try:
-            db_path = os.environ.get(
-                "IMEDNET_TENANT_DB_PATH", os.path.expanduser("~/.imednet/enterprise_portal.sqlite3")
-            )
+            from imednet_streamlit.auth import get_db_path
+
+            db_path = get_db_path()
             os.makedirs(os.path.dirname(db_path), exist_ok=True)
             with sqlite3.connect(db_path) as conn:
                 conn.execute(
