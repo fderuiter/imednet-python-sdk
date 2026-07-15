@@ -198,13 +198,12 @@ class TabularSinkConfig(SinkConfig):
 class TabularCSVSink(ExportSink):
     """Sink for exporting data to CSV format."""
 
-    def __init__(self, path: str, config: Optional[TabularSinkConfig] = None):
+    def __init__(self, path: str, config: TabularSinkConfig):
         """Initialize the CSV sink."""
-        cfg = config if isinstance(config, TabularSinkConfig) else TabularSinkConfig()
-        super().__init__(cfg)
+        super().__init__(config)
         self.path = path
         self._is_first_batch = True
-        self._cfg = cfg
+        self._cfg = config
 
     def write_batch(self, records: Sequence[Any], *, batch_id: str) -> int:
         """Write a batch of records to the sink."""
@@ -272,14 +271,13 @@ class TabularCSVSink(ExportSink):
 class TabularSQLSink(ExportSink):
     """Sink for exporting data to SQL databases."""
 
-    def __init__(self, table: str, engine: Any, config: Optional[TabularSinkConfig] = None):
+    def __init__(self, table: str, engine: Any, config: TabularSinkConfig):
         """Initialize the SQL sink."""
-        cfg = config if isinstance(config, TabularSinkConfig) else TabularSinkConfig()
-        super().__init__(cfg)
+        super().__init__(config)
         self.table = table
         self.engine = engine
         self._is_first_batch = True
-        self._cfg = cfg
+        self._cfg = config
         self._initial_if_exists = self._cfg.pandas_kwargs.pop("if_exists", "replace")
 
     def write_batch(self, records: Sequence[Any], *, batch_id: str) -> int:
@@ -428,6 +426,7 @@ def export_to_csv(
     config = kwargs.pop("config", None)
     if not isinstance(config, TabularSinkConfig):
         config = TabularSinkConfig(
+            study_key=study_key,
             manifest_path=str(Path(path).with_suffix(".manifest.jsonl")),
             pandas_kwargs=kwargs,
             use_labels_as_columns=use_labels_as_columns,
@@ -565,6 +564,7 @@ def export_to_sql(
     if not isinstance(config, TabularSinkConfig):
         kwargs["if_exists"] = if_exists
         config = TabularSinkConfig(
+            study_key=study_key,
             manifest_path=f"export_{table}_manifest.jsonl",
             pandas_kwargs=kwargs,
             use_labels_as_columns=use_labels_as_columns,

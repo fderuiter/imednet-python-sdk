@@ -57,6 +57,7 @@ batching, staging, and cleanup automatically:
    sdk = ImednetSDK(api_key=os.environ["IMEDNET_API_KEY"])
 
    cfg = SnowflakeSinkConfig(
+       study_key="MY_STUDY",
        account="myorg-myaccount",
        user="loader",
        **{"password": os.environ["SNOWFLAKE_PASSWORD"]},  # never hardcode
@@ -87,6 +88,7 @@ per-batch control, custom ``batch_id`` keys, or integration with a workflow engi
    records = sdk.records.list(study_key="MY_STUDY")
 
    cfg = SnowflakeSinkConfig(
+       study_key="MY_STUDY",
        account="myorg-myaccount",
        user="loader",
        **{"password": os.environ["SNOWFLAKE_PASSWORD"]},
@@ -115,6 +117,7 @@ purposes or replay:
 .. testcode::
 
    cfg = SnowflakeSinkConfig(
+       study_key="MY_STUDY",
        account="myorg",
        user="user",
        database="db",

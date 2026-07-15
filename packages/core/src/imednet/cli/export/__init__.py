@@ -250,12 +250,17 @@ def setup_parser(subparsers):
                 "Error: pymongo is required for MongoDB export. Install with \"pip install 'imednet[mongodb]'\""
             )
             sys.exit(1)
-        from imednet.integrations import SinkConfig
-
         assert sdk.sinks is not None
-        cfg = SinkConfig(batch_size=batch_size, idempotent=upsert)
+        cfg = sdk.sinks.MongoDbSinkConfig(
+            study_key=study_key,
+            uri=uri,
+            database=database,
+            collection=collection,
+            batch_size=batch_size,
+            idempotent=upsert,
+        )
         with fetching_status("records for MongoDB export", study_key):
-            sdk.sinks.export_to_mongodb(sdk, study_key, uri, database, collection, config=cfg)
+            sdk.sinks.export_to_mongodb(sdk, study_key, config=cfg)
 
     m_parser.set_defaults(
         func=lambda args: export_mongodb(
@@ -302,9 +307,16 @@ def setup_parser(subparsers):
             )
             sys.exit(1)
         assert sdk.sinks is not None
-        cfg = sdk.sinks.Neo4jSinkConfig(batch_size=batch_size, idempotent=merge, database=database)
+        cfg = sdk.sinks.Neo4jSinkConfig(
+            study_key=study_key,
+            uri=uri,
+            auth=(username, password),
+            batch_size=batch_size,
+            idempotent=merge,
+            database=database,
+        )
         with fetching_status("records for Neo4j export", study_key):
-            sdk.sinks.export_to_neo4j(sdk, study_key, uri, (username, password), config=cfg)
+            sdk.sinks.export_to_neo4j(sdk, study_key, config=cfg)
 
     n_parser.set_defaults(
         func=lambda args: export_neo4j(
@@ -377,6 +389,7 @@ def setup_parser(subparsers):
             sys.exit(1)
         assert sdk.sinks is not None
         cfg = sdk.sinks.SnowflakeSinkConfig(
+            study_key=study_key,
             account=account,
             user=user,
             password=password,

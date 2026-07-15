@@ -105,7 +105,7 @@ class ImednetExportOperator(BaseOperator):
         if dest == "snowflake":
             from imednet_sinks import SnowflakeExportSink  # type: ignore
 
-            return SnowflakeExportSink(config=config)
+            return SnowflakeExportSink(config=config)  # type: ignore
         elif dest == "neo4j":
             from imednet_sinks import Neo4jExportSink  # type: ignore
 
@@ -144,7 +144,7 @@ class ImednetExportOperator(BaseOperator):
 
         sink = None
         if not export_callable:
-            config_for_check = sink_base.SinkConfig()
+            config_for_check = sink_base.SinkConfig(study_key=self.study_key)
             sink = self._resolve_sink(config_for_check)
             if not sink:
                 raise AirflowException(
@@ -154,6 +154,7 @@ class ImednetExportOperator(BaseOperator):
         sdk = self._get_sdk()
 
         config = sink_base.SinkConfig(
+            study_key=self.study_key,
             batch_size=self.batch_size,
             max_retries=self.max_retries,
             idempotent=self.idempotent,

@@ -4,7 +4,7 @@ import importlib.util
 from unittest.mock import ANY, MagicMock
 
 import pytest
-from imednet_sinks import Neo4jSinkConfig, SnowflakeSinkConfig
+from imednet_sinks import MongoDbSinkConfig, Neo4jSinkConfig, SnowflakeSinkConfig
 
 
 class Result:
@@ -157,6 +157,7 @@ def test_cli_export_mongodb_happy_path(
     runner: CliRunner, sdk: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """Test that cli export mongodb happy path."""
+    sdk.sinks.MongoDbSinkConfig = MongoDbSinkConfig
     monkeypatch.setattr(importlib.util, "find_spec", lambda _name: object())
 
     result = runner.invoke(
@@ -178,10 +179,14 @@ def test_cli_export_mongodb_happy_path(
     sdk.sinks.export_to_mongodb.assert_called_once_with(
         sdk,
         "STUDY",
-        "mongodb://localhost:27017",
-        "imednet",
-        "records",
-        config=SinkConfig(batch_size=100, idempotent=False),
+        config=MongoDbSinkConfig(
+            study_key="STUDY",
+            uri="mongodb://localhost:27017",
+            database="imednet",
+            collection="records",
+            batch_size=100,
+            idempotent=False,
+        ),
     )
 
 
@@ -235,9 +240,14 @@ def test_cli_export_neo4j_happy_path(
     sdk.sinks.export_to_neo4j.assert_called_once_with(
         sdk,
         "STUDY",
-        "bolt://localhost:7687",
-        ("neo4j", "password"),
-        config=Neo4jSinkConfig(batch_size=250, idempotent=False, database="analytics"),
+        config=Neo4jSinkConfig(
+            study_key="STUDY",
+            uri="bolt://localhost:7687",
+            auth=("neo4j", "password"),
+            batch_size=250,
+            idempotent=False,
+            database="analytics",
+        ),
     )
 
 
@@ -297,6 +307,7 @@ def test_cli_export_snowflake_happy_path(
         sdk,
         "STUDY",
         config=SnowflakeSinkConfig(
+            study_key="STUDY",
             account="acct",
             user="user",
             password="secret",

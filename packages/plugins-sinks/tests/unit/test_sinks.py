@@ -86,7 +86,9 @@ class TestNeo4jExportSink:
 
         from imednet_sinks.graph import Neo4jExportSink
 
-        sink = Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "STUDY1")
+        sink = Neo4jExportSink(
+            Neo4jSinkConfig(study_key="STUDY1", uri="bolt://localhost:7687", auth=("neo4j", "pass"))
+        )
         driver.verify_connectivity.assert_called_once()
         sink.close()
 
@@ -100,7 +102,11 @@ class TestNeo4jExportSink:
         from imednet_sinks.graph import Neo4jExportSink
 
         with pytest.raises(ExportConfigurationError, match="Cannot connect to Neo4j"):
-            Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "STUDY1")
+            Neo4jExportSink(
+                Neo4jSinkConfig(
+                    study_key="STUDY1", uri="bolt://localhost:7687", auth=("neo4j", "pass")
+                )
+            )
 
     def test_write_batch_returns_count(self, monkeypatch):
         """TODO: Add docstring."""
@@ -115,7 +121,9 @@ class TestNeo4jExportSink:
             MagicMock(record_id=i, form_id=1, visit_id=1, subject_key="S1", record_data={})
             for i in range(5)
         ]
-        with Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "STUDY1") as sink:
+        with Neo4jExportSink(
+            Neo4jSinkConfig(study_key="STUDY1", uri="bolt://localhost:7687", auth=("neo4j", "pass"))
+        ) as sink:
             count = sink.write_batch(records, batch_id="STUDY1/F1/0")
         assert count == 5
 
@@ -135,7 +143,9 @@ class TestNeo4jExportSink:
             subject_key="SUBJ-001",
             record_data={"labs": {"hemoglobin": 13.2}, "status": "Complete"},
         )
-        with Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "STUDY1") as sink:
+        with Neo4jExportSink(
+            Neo4jSinkConfig(study_key="STUDY1", uri="bolt://localhost:7687", auth=("neo4j", "pass"))
+        ) as sink:
             count = sink.write_batch([record], batch_id="STUDY1/F7/0")
 
         assert count == 1
@@ -173,7 +183,9 @@ class TestNeo4jExportSink:
 
         from imednet_sinks.graph import Neo4jExportSink
 
-        with Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "STUDY1") as sink:
+        with Neo4jExportSink(
+            Neo4jSinkConfig(study_key="STUDY1", uri="bolt://localhost:7687", auth=("neo4j", "pass"))
+        ) as sink:
             count = sink.write_batch([], batch_id="STUDY1/F1/0")
         assert count == 0
 
@@ -189,8 +201,14 @@ class TestNeo4jExportSink:
 
         from imednet_sinks.graph import Neo4jExportSink, Neo4jSinkConfig
 
-        cfg = Neo4jSinkConfig(max_retries=1, retry_backoff=0.0)
-        sink = Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "S1", config=cfg)
+        cfg = Neo4jSinkConfig(
+            study_key="STUDY1",
+            uri="bolt://localhost:7687",
+            auth=("n", "p"),
+            max_retries=1,
+            retry_backoff=0.0,
+        )
+        sink = Neo4jExportSink(config=cfg)
         with pytest.raises(ExportBatchError, match="STUDY1/F1/0"):
             records = [
                 MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={})
@@ -207,7 +225,9 @@ class TestNeo4jExportSink:
 
         from imednet_sinks.graph import Neo4jExportSink
 
-        sink = Neo4jExportSink("bolt://localhost:7687", ("neo4j", "pass"), "S1")
+        sink = Neo4jExportSink(
+            Neo4jSinkConfig(study_key="S1", uri="bolt://localhost:7687", auth=("neo4j", "pass"))
+        )
         sink.close()
         sink.close()  # must not raise
 
@@ -248,10 +268,17 @@ class TestMongoDbExportSink:
         pymongo, client, collection = _fake_pymongo_module(fail_connect=True)
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
 
-        from imednet_sinks.document import MongoDbExportSink
+        from imednet_sinks.document import MongoDbExportSink, MongoDbSinkConfig
 
         with pytest.raises(ExportConfigurationError, match="Cannot connect to MongoDB"):
-            MongoDbExportSink("mongodb://localhost:27017", "db", "col", "STUDY1")
+            MongoDbExportSink(
+                MongoDbSinkConfig(
+                    study_key="STUDY1",
+                    uri="mongodb://localhost:27017",
+                    database="db",
+                    collection="col",
+                )
+            )
 
     def test_connect_error_message_redacts_credentials(self, monkeypatch):
         """TODO: Add docstring."""
@@ -260,11 +287,13 @@ class TestMongoDbExportSink:
         pymongo, client, collection = _fake_pymongo_module(fail_connect=True)
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
 
-        from imednet_sinks.document import MongoDbExportSink
+        from imednet_sinks.document import MongoDbExportSink, MongoDbSinkConfig
 
         uri = "******localhost:27017"
         with pytest.raises(ExportConfigurationError) as exc_info:
-            MongoDbExportSink(uri, "db", "col", "STUDY1")
+            MongoDbExportSink(
+                MongoDbSinkConfig(study_key="STUDY1", uri=uri, database="db", collection="col")
+            )
 
         message = str(exc_info.value)
         assert "secret" not in message
@@ -277,13 +306,17 @@ class TestMongoDbExportSink:
         pymongo, client, collection = _fake_pymongo_module()
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
 
-        from imednet_sinks.document import MongoDbExportSink
+        from imednet_sinks.document import MongoDbExportSink, MongoDbSinkConfig
 
         records = [
             MagicMock(record_id=i, form_id=1, visit_id=1, subject_key="S1", record_data={})
             for i in range(3)
         ]
-        with MongoDbExportSink("mongodb://localhost:27017", "db", "col", "STUDY1") as sink:
+        with MongoDbExportSink(
+            MongoDbSinkConfig(
+                study_key="STUDY1", uri="mongodb://localhost:27017", database="db", collection="col"
+            )
+        ) as sink:
             count = sink.write_batch(records, batch_id="STUDY1/F1/0")
         # return value reflects number of exported records in the batch
         assert count == 3
@@ -295,7 +328,7 @@ class TestMongoDbExportSink:
         pymongo, client, collection = _fake_pymongo_module()
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
 
-        from imednet_sinks.document import MongoDbExportSink
+        from imednet_sinks.document import MongoDbExportSink, MongoDbSinkConfig
 
         record = SimpleNamespace(
             record_id=1234,
@@ -310,7 +343,11 @@ class TestMongoDbExportSink:
             date_modified=datetime(2024, 1, 15, tzinfo=timezone.utc),
             record_data={"labs": {"hemoglobin": 13.2}, "symptoms": ["fatigue"]},
         )
-        with MongoDbExportSink("mongodb://localhost:27017", "db", "col", "STUDY1") as sink:
+        with MongoDbExportSink(
+            MongoDbSinkConfig(
+                study_key="STUDY1", uri="mongodb://localhost:27017", database="db", collection="col"
+            )
+        ) as sink:
             count = sink.write_batch([record], batch_id="STUDY1/F1/0")
 
         assert count == 1
@@ -341,9 +378,13 @@ class TestMongoDbExportSink:
         pymongo, client, collection = _fake_pymongo_module()
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
 
-        from imednet_sinks.document import MongoDbExportSink
+        from imednet_sinks.document import MongoDbExportSink, MongoDbSinkConfig
 
-        with MongoDbExportSink("mongodb://localhost:27017", "db", "col", "STUDY1") as sink:
+        with MongoDbExportSink(
+            MongoDbSinkConfig(
+                study_key="STUDY1", uri="mongodb://localhost:27017", database="db", collection="col"
+            )
+        ) as sink:
             count = sink.write_batch([], batch_id="b0")
         assert count == 0
 
@@ -356,10 +397,17 @@ class TestMongoDbExportSink:
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
         monkeypatch.setattr(doc_mod.time, "sleep", lambda _: None)
 
-        from imednet_sinks.document import MongoDbExportSink
+        from imednet_sinks.document import MongoDbExportSink, MongoDbSinkConfig
 
-        cfg = SinkConfig(max_retries=1, retry_backoff=0.0)
-        with MongoDbExportSink("mongodb://localhost:27017", "db", "col", "S1", config=cfg) as sink:
+        cfg = MongoDbSinkConfig(
+            study_key="STUDY1",
+            uri="mongodb://localhost:27017",
+            database="db",
+            collection="col",
+            max_retries=1,
+            retry_backoff=0.0,
+        )
+        with MongoDbExportSink(config=cfg) as sink:
             with pytest.raises(ExportBatchError, match="S1/F1/0"):
                 records = [
                     MagicMock(record_id=1, form_id=1, visit_id=1, subject_key="S", record_data={})
@@ -379,9 +427,13 @@ class TestMongoDbExportSink:
         pymongo, client, collection = _fake_pymongo_module()
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
 
-        from imednet_sinks.document import MongoDbExportSink
+        from imednet_sinks.document import MongoDbExportSink, MongoDbSinkConfig
 
-        sink = MongoDbExportSink("mongodb://localhost:27017", "db", "col", "S1")
+        sink = MongoDbExportSink(
+            MongoDbSinkConfig(
+                study_key="S1", uri="mongodb://localhost:27017", database="db", collection="col"
+            )
+        )
         sink.close()
         sink.close()  # must not raise
 
@@ -438,6 +490,7 @@ class TestSnowflakeExportSink:
         monkeypatch.setattr(wh_mod, "_require_optional_dep", fake_require)
 
         cfg = SnowflakeSinkConfig(
+            study_key="STUDY1",
             account="acct",
             user="user",
             **{"password": "secret"},
@@ -468,6 +521,7 @@ class TestSnowflakeExportSink:
         monkeypatch.setattr(wh_mod, "_require_optional_dep", fake_require)
 
         cfg = SnowflakeSinkConfig(
+            study_key="STUDY1",
             account="acct",
             user="user",
             **{"password": "secret"},
@@ -490,7 +544,7 @@ class TestSnowflakeExportSink:
         monkeypatch.setattr(wh_mod, "_require_optional_dep", lambda *_: sf)
 
         # account is empty → should raise
-        cfg = SnowflakeSinkConfig(local_staging_dir=str(tmp_path))
+        cfg = SnowflakeSinkConfig(study_key="STUDY1", local_staging_dir=str(tmp_path))
         with pytest.raises(ExportConfigurationError, match="missing required fields"):
             SnowflakeExportSink(config=cfg)
 
@@ -596,6 +650,7 @@ class TestSnowflakeExportSink:
         monkeypatch.setattr(wh_mod.time, "sleep", lambda _: None)
 
         cfg = SnowflakeSinkConfig(
+            study_key="STUDY1",
             account="acct",
             user="user",
             **{"password": "secret"},
@@ -624,6 +679,7 @@ class TestSnowflakeExportSink:
         manifest = tmp_path / "manifest.jsonl"
 
         cfg = SnowflakeSinkConfig(
+            study_key="STUDY1",
             account="acct",
             user="user",
             **{"password": "secret"},
@@ -743,6 +799,7 @@ def test_export_to_snowflake(monkeypatch, tmp_path):
     sdk_mock.records.list.return_value = [MagicMock()]
 
     cfg = SnowflakeSinkConfig(
+        study_key="STUDY1",
         account="acct",
         user="user",
         **{"password": "secret"},

@@ -95,6 +95,8 @@ class SinkConfig:
 
     Parameters
     ----------
+    study_key:
+        Mandatory study key for the export.
     batch_size:
         Number of records per :meth:`ExportSink.write_batch` call.
     max_retries:
@@ -107,6 +109,7 @@ class SinkConfig:
         a batch with the same ``batch_id`` produces no duplicate data.
     """
 
+    study_key: str
     batch_size: int = _DEFAULT_BATCH_SIZE
     max_retries: int = _DEFAULT_MAX_RETRIES
     retry_backoff: float = _DEFAULT_RETRY_BACKOFF
@@ -115,6 +118,11 @@ class SinkConfig:
     quality_gate_enabled: bool = False
     min_schema_readiness_score: float = 100.0
     tracer: Optional[Any] = field(default=None, repr=False)
+
+    def __post_init__(self):
+        """Validate config properties after initialization."""
+        if not self.study_key or not isinstance(self.study_key, str) or not self.study_key.strip():
+            raise ValueError("study_key must be a non-empty string")
 
 
 # ---------------------------------------------------------------------------
@@ -135,9 +143,9 @@ class ExportSink(ABC):
         all values at their defaults.
     """
 
-    def __init__(self, config: Optional[SinkConfig] = None) -> None:
+    def __init__(self, config: SinkConfig) -> None:
         """Initialize the export sink with a configuration."""
-        self.config: SinkConfig = config if config is not None else SinkConfig()
+        self.config: SinkConfig = config
 
     # ------------------------------------------------------------------
     # Abstract interface

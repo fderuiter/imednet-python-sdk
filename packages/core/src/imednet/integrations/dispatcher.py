@@ -4,6 +4,8 @@ This module provides a single entry point `export()` for all data persistence ta
 supporting both tabular procedural functions and object-oriented sink classes.
 """
 
+import dataclasses
+import threading
 from typing import Any, Callable, Dict, Optional, Type
 
 from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate, iter_batches
@@ -19,42 +21,76 @@ class ExportRegistry:
         "snowflake": "imednet_sinks.warehouse:SnowflakeExportSink",
     }
 
+    _LAZY_CONFIGS = {
+        "mongodb": "imednet_sinks.document:MongoDbSinkConfig",
+        "neo4j": "imednet_sinks.graph:Neo4jSinkConfig",
+        "snowflake": "imednet_sinks.warehouse:SnowflakeSinkConfig",
+    }
+
     def __init__(self):
         """Initialize an empty ExportRegistry."""
         self._tabular_targets: Dict[str, Callable] = {}
         self._sink_targets: Dict[str, Type[ExportSink]] = {}
+        self._config_targets: Dict[str, Type[SinkConfig]] = {}
+        self._lock = threading.RLock()
 
     def register_tabular(self, target_type: str, func: Callable) -> None:
         """Register a tabular procedural function for a target type."""
-        self._tabular_targets[target_type] = func
+        with self._lock:
+            self._tabular_targets[target_type] = func
 
     def register_sink(self, target_type: str, sink_class: Type[ExportSink]) -> None:
         """Register an object-oriented sink class for a target type."""
-        self._sink_targets[target_type] = sink_class
+        with self._lock:
+            self._sink_targets[target_type] = sink_class
 
     def get_tabular(self, target_type: str) -> Optional[Callable]:
         """Retrieve a registered tabular function, or None if not found."""
-        return self._tabular_targets.get(target_type)
+        with self._lock:
+            return self._tabular_targets.get(target_type)
 
     def get_sink(self, target_type: str) -> Optional[Type[ExportSink]]:
         """Retrieve a registered sink class, or None if not found."""
-        if target_type in self._sink_targets:
-            return self._sink_targets[target_type]
+        with self._lock:
+            if target_type in self._sink_targets:
+                return self._sink_targets[target_type]
 
-        # Lazy load known sinks
-        if target_type in self._LAZY_SINKS:
-            module_path, class_name = self._LAZY_SINKS[target_type].split(":")
-            try:
-                import importlib
+            # Lazy load known sinks
+            if target_type in self._LAZY_SINKS:
+                module_path, class_name = self._LAZY_SINKS[target_type].split(":")
+                try:
+                    import importlib
 
-                module = importlib.import_module(module_path)  # nosem
-                sink_class = getattr(module, class_name)
-                self.register_sink(target_type, sink_class)
-                return sink_class
-            except (ImportError, AttributeError):
-                return None
+                    module = importlib.import_module(module_path)  # nosem
+                    sink_class = getattr(module, class_name)
+                    # Use self._sink_targets directly to avoid acquiring lock again unnecessarily,
+                    # or it's fine since we use RLock
+                    self.register_sink(target_type, sink_class)
+                    return sink_class
+                except (ImportError, AttributeError):
+                    return None
 
-        return None
+            return None
+
+    def get_config_class(self, target_type: str) -> Type[SinkConfig]:
+        """Retrieve a registered config class, or SinkConfig as default."""
+        with self._lock:
+            if target_type in self._config_targets:
+                return self._config_targets[target_type]
+
+            if target_type in self._LAZY_CONFIGS:
+                module_path, class_name = self._LAZY_CONFIGS[target_type].split(":")
+                try:
+                    import importlib
+
+                    module = importlib.import_module(module_path)
+                    config_class = getattr(module, class_name)
+                    self._config_targets[target_type] = config_class
+                    return config_class
+                except (ImportError, AttributeError):
+                    pass
+
+            return SinkConfig
 
 
 # Global registry instance
@@ -106,16 +142,21 @@ def export(
     # 2. Try sink path
     sink_class = _registry.get_sink(target)
     if sink_class is not None:
-        cfg = config if config is not None else SinkConfig()
+        if config is not None:
+            cfg = config
+        else:
+            config_class = _registry.get_config_class(target)
+            valid_fields = {f.name for f in dataclasses.fields(config_class)}
+            config_kwargs = {k: v for k, v in kwargs.items() if k in valid_fields}
+            cfg = config_class(study_key=study_key, **config_kwargs)
 
         records = sdk.records.list(study_key=study_key, record_data_filter=None)
         filtered_records = list(apply_quality_gate(sdk, study_key, records, cfg))
 
         total_written = 0
 
-        # Instantiate sink class using kwargs and cfg
-        # We assume sink constructors accept config=cfg and **kwargs
-        with sink_class(config=cfg, **kwargs) as sink:
+        # Instantiate sink class using ONLY the configured config object
+        with sink_class(config=cfg) as sink:
             for index, batch in enumerate(iter_batches(filtered_records, cfg.batch_size)):
                 total_written += sink.write_batch(batch, batch_id=f"{study_key}/records/{index}")
 

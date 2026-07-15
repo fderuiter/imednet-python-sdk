@@ -791,3 +791,54 @@ def test_intervals_list_empty(runner: CliRunner, sdk: MagicMock) -> None:
     result = runner.invoke(cli.app, ["intervals", "list", "STUDY"])
     assert result.exit_code == 0
     assert "No intervals found." in result.stdout
+
+
+def test_workflows_stub_uninstalled_mocked(monkeypatch, capsys):
+    monkeypatch.setattr("importlib.metadata.entry_points", lambda **kwargs: [])
+    from imednet.cli import get_parser
+
+    parser = get_parser()
+
+    # We can parse args
+    args = parser.parse_args(["workflows"])
+
+    import pytest
+
+    with pytest.raises(SystemExit) as e:
+        args.func(args)
+    assert e.value.code == 1
+    out, err = capsys.readouterr()
+    assert "The workflows plugin is not installed" in err
+
+
+def test_dashboard_stub_uninstalled_mocked(monkeypatch, capsys):
+    monkeypatch.setattr("importlib.metadata.entry_points", lambda **kwargs: [])
+    from imednet.cli import get_parser
+
+    parser = get_parser()
+
+    args = parser.parse_args(["dashboard"])
+
+    import pytest
+
+    with pytest.raises(SystemExit) as e:
+        args.func(args)
+    assert e.value.code == 1
+    out, err = capsys.readouterr()
+    assert "The dashboard plugin is not installed" in err
+
+
+def test_plugin_load_exception(monkeypatch, capsys):
+    class BrokenEntryPoint:
+        name = "broken"
+
+        def load(self):
+            raise ValueError("Test error loading plugin")
+
+    monkeypatch.setattr("importlib.metadata.entry_points", lambda **kwargs: [BrokenEntryPoint()])
+    from imednet.cli import get_parser
+
+    parser = get_parser()
+
+    out, err = capsys.readouterr()
+    assert "Warning: Failed to load CLI plugin 'broken': Test error loading plugin" in err
