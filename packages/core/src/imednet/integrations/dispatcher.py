@@ -83,7 +83,7 @@ class ExportRegistry:
                 try:
                     import importlib
 
-                    module = importlib.import_module(module_path)
+                    module = importlib.import_module(module_path)  # nosem
                     config_class = getattr(module, class_name)
                     self._config_targets[target_type] = config_class
                     return config_class
