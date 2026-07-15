@@ -72,6 +72,7 @@ class _FakeStreamlit:
         self.error_calls: list[str] = []
         self.titles: list[str] = []
         self.markdown_calls: list[str] = []
+        self.subheader_calls: list[str] = []
         self.code_calls: list[str] = []
         self.expander_calls: list[tuple[str, bool]] = []
 
@@ -79,9 +80,12 @@ class _FakeStreamlit:
         """Helper function to title."""
         self.titles.append(value)
 
+    def header(self, value: str) -> None:
+        pass
+
     def subheader(self, value: str) -> None:
         """Helper function to subheader."""
-        return None
+        self.subheader_calls.append(value)
 
     def markdown(self, value: str) -> None:
         """Helper function to markdown."""
@@ -232,6 +236,7 @@ def _run_setup_wizard(
     for attr in (
         "title",
         "subheader",
+        "header",
         "markdown",
         "caption",
         "expander",
@@ -382,11 +387,12 @@ def test_setup_wizard_renders_design_specification_sections() -> None:
     _run_setup_wizard(fake_st)
 
     joined_markdown = "\n".join(fake_st.markdown_calls)
+    joined_subheaders = "\n".join(fake_st.subheader_calls)
     assert ("UX Design Specification", False) in fake_st.expander_calls
     assert any("Step 1: Scan & Profile" in body for body in fake_st.code_calls)
-    assert "Flowchart / state transitions" in joined_markdown
-    assert "Wireframe mapped to session state" in joined_markdown
-    assert "UX review: Streamlit multi-page alignment" in joined_markdown
+    assert "Flowchart / state transitions" in joined_subheaders
+    assert "Wireframe mapped to session state" in joined_subheaders
+    assert "UX review: Streamlit multi-page alignment" in joined_subheaders
 
 
 def test_setup_wizard_mapping_normalization_preview_and_export() -> None:

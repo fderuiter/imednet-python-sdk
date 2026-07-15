@@ -37,7 +37,7 @@ def _get_store() -> ConfigVersionStore:
 
 def _render_auth_section() -> tuple[str, list[str]]:
     """Render user identity info resolved from auth session; return (user_id, roles)."""
-    st.subheader("🔐 Publisher Identity")
+    st.header("🔐 Publisher Identity")
     sdk = get_sdk()
     roles = sdk.auth.get_user_roles()
     user_id = sdk.auth.get_user_id() or ""
@@ -52,7 +52,7 @@ def _render_auth_section() -> tuple[str, list[str]]:
 
 def _render_commit_selector(study_key: str, store: ConfigVersionStore) -> str | None:
     """Render history selector; return selected commit_id or None."""
-    st.subheader("📋 Configuration History")
+    st.header("📋 Configuration History")
     history = store.get_history(study_key)
     if not history:
         st.info("No committed configuration versions found for this study.")
@@ -80,7 +80,7 @@ def _render_validation_checklist(
     Returns:
         A tuple of (all_passed, report_dict).
     """
-    st.subheader("✅ Standards-Readiness Checklist")
+    st.header("✅ Standards-Readiness Checklist")
 
     report: dict[str, Any] = {}
 
@@ -132,7 +132,7 @@ def _render_diff_section(
     target_commit_id: str,
 ) -> None:
     """Render a historical diff comparison prior to publishing."""
-    st.subheader("🔍 Historical Diff")
+    st.header("🔍 Historical Diff")
     history = store.get_history(study_key)
     if len(history) < 2:
         st.info("Not enough history to display a diff.")
@@ -204,7 +204,7 @@ def _render_publish_action(
     all_checks_passed: bool,
 ) -> None:
     """Render the approval gate and publish button."""
-    st.subheader("🚀 Publish to Production")
+    st.header("🚀 Publish to Production")
 
     is_authorized = bool(set(roles).intersection(_AUTHORIZED_ROLES))
     if not is_authorized:

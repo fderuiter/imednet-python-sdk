@@ -72,6 +72,9 @@ class _FakeStreamlit:
         """Helper function to title."""
         pass
 
+    def header(self, value: str) -> None:
+        pass
+
     def subheader(self, value: str) -> None:
         """Helper function to subheader."""
         pass
@@ -205,6 +208,7 @@ def _run_data_lineage(
     for attr in (
         "title",
         "subheader",
+        "header",
         "markdown",
         "info",
         "success",

@@ -69,6 +69,9 @@ class _FakeStreamlit:
         """Helper function to title."""
         pass
 
+    def header(self, value: str) -> None:
+        pass
+
     def subheader(self, value: str) -> None:
         """Helper function to subheader."""
         pass
@@ -179,6 +182,7 @@ def _run_page(*, multiselect_values: dict[str, list[Any]] | None = None) -> _Fak
     for attr in (
         "title",
         "subheader",
+        "header",
         "info",
         "success",
         "warning",
@@ -452,6 +456,7 @@ def _run_page_extended(
     for attr in (
         "title",
         "subheader",
+        "header",
         "info",
         "success",
         "warning",
