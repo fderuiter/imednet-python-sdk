@@ -65,7 +65,7 @@ else:
         }
     )
 
-st.subheader("Voluntary Product Accessibility Template (VPAT)")
+st.header("Voluntary Product Accessibility Template (VPAT)")
 vpat_path = getattr(config, "vpat_path", None)  # type: ignore[attr-defined]
 if vpat_path and os.path.exists(vpat_path):
     with open(vpat_path, "rb") as f_vpat:

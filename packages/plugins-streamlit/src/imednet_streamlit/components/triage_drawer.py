@@ -48,7 +48,7 @@ def render_triage_drawer(
     current_user: str,
 ) -> None:
     """Render triage detail and actions for a selected item."""
-    st.subheader(f"Review Item: {item.item_id}")
+    st.header(f"Review Item: {item.item_id}")
     st.caption(f"Study: {item.study_key} • Severity: {item.severity} • Status: {item.status.value}")
 
     timeline_entries: list[tuple[datetime, str]] = []
@@ -67,12 +67,12 @@ def render_triage_drawer(
 
     timeline_col, action_col = st.columns([_TIMELINE_COL_RATIO, _ACTION_COL_RATIO], gap="large")
     with timeline_col:
-        st.markdown("### Timeline")
+        st.subheader("Timeline")
         for timestamp, message in sorted(timeline_entries, key=lambda record: record[0]):
             st.write(f"• {timestamp.strftime('%Y-%m-%d %H:%M UTC')} — {message}")
 
     with action_col:
-        st.markdown("### Actions")
+        st.subheader("Actions")
         current_assignee = item.assignee if item.assignee in assignee_options else None
         assign_selection = st.selectbox(
             "Change Assignee",
@@ -95,7 +95,7 @@ def render_triage_drawer(
             else:
                 st.warning("Annotation comment is required.")
 
-        st.markdown("#### Triage Capture")
+        st.subheader("Triage Capture")
         triage_col, reject_col, approve_col = st.columns(_DECISION_BUTTON_COLS)
 
         if triage_col.button("Triage", key=f"triage_btn_{item.item_id}"):
