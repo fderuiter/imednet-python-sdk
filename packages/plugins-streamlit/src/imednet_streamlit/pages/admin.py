@@ -17,6 +17,7 @@ st.markdown("Automated provisioning and multi-tenant study management.")
 study_key = st.text_input("New Study Key")
 api_key = st.text_input("API Key", type="password")
 security_key = st.text_input("Security Key", type="password")
+environment_url = st.text_input("Environment URL (Optional)")
 
 if st.button("Provision Tenant Environment"):
     if not study_key or not api_key or not security_key:
@@ -31,9 +32,18 @@ if st.button("Provision Tenant Environment"):
                 conn.execute(
                     "CREATE TABLE IF NOT EXISTS tenants (study_key TEXT PRIMARY KEY, api_key TEXT, security_key TEXT)"
                 )
+                try:
+                    conn.execute("ALTER TABLE tenants ADD COLUMN environment_url TEXT")
+                except sqlite3.OperationalError:
+                    pass
                 conn.execute(
-                    "INSERT OR REPLACE INTO tenants VALUES (?, ?, ?)",
-                    (study_key.strip(), api_key.strip(), security_key.strip()),
+                    "INSERT OR REPLACE INTO tenants (study_key, api_key, security_key, environment_url) VALUES (?, ?, ?, ?)",
+                    (
+                        study_key.strip(),
+                        api_key.strip(),
+                        security_key.strip(),
+                        environment_url.strip() if environment_url else None,
+                    ),
                 )
             st.success(
                 f"Tenant environment for `{study_key}` automatically provisioned in managed database!"

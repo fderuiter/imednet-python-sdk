@@ -117,7 +117,7 @@ def test_render_auth_sidebar_connects_and_clears_secret_keys(
     fake_st = _FakeStreamlit(logged_in=True, connect_clicked=True, selected_study="STUDY")
     monkeypatch.setattr(auth, "st", fake_st)
     monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
-    monkeypatch.setattr(auth, "get_tenant_credentials", lambda x: ("api", "sec"))
+    monkeypatch.setattr(auth, "get_tenant_credentials", lambda x: ("api", "sec", None))
     sentinel_sdk = SimpleNamespace(name="sdk")
 
     def _fake_store_sdk(**_: object) -> None:
@@ -170,7 +170,7 @@ def test_render_auth_sidebar_build_failure_clears_secret_keys(
     fake_st = _FakeStreamlit(logged_in=True, connect_clicked=True)
     monkeypatch.setattr(auth, "st", fake_st)
     monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
-    monkeypatch.setattr(auth, "get_tenant_credentials", lambda x: ("api", "sec"))
+    monkeypatch.setattr(auth, "get_tenant_credentials", lambda x: ("api", "sec", None))
 
     def _raise_build_error(**_: object) -> None:
         """Helper function to  raise build error."""
@@ -189,7 +189,7 @@ def test_render_auth_sidebar_missing_fields_marks_disconnected_and_clears_secret
     fake_st = _FakeStreamlit(logged_in=True, connect_clicked=True)
     monkeypatch.setattr(auth, "st", fake_st)
     monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
-    monkeypatch.setattr(auth, "get_tenant_credentials", lambda x: (None, None))
+    monkeypatch.setattr(auth, "get_tenant_credentials", lambda x: (None, None, None))
 
     result = auth.render_auth_sidebar()
 
