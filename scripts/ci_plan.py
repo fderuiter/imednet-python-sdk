@@ -3,7 +3,19 @@
 import glob
 import json
 import os
+import re
 import sys
+
+
+def parse_dependency_name(dep_str: str) -> str:
+    """
+    Extracts the base package name from a PEP 508 dependency string.
+    This safely strips out optional extras, version bounds, and environment markers.
+    """
+    match = re.match(r'^([a-zA-Z0-9](?:[a-zA-Z0-9._-]*[a-zA-Z0-9])?)', dep_str.strip())
+    if match:
+        return match.group(1)
+    return dep_str.strip()
 
 
 def main():
@@ -24,10 +36,7 @@ def main():
         # extract package name from dependency strings (e.g. "imednet-workflows>=0.6.0" -> "imednet-workflows")
         parsed_deps = []
         for dep in all_deps:
-            # simply split by >=, <=, ==, <, >
-            for op in ['>=', '<=', '==', '<', '>', '[']:
-                dep = dep.split(op)[0]
-            parsed_deps.append(dep.strip())
+            parsed_deps.append(parse_dependency_name(dep))
 
         packages[pkg_dir] = {'name': pkg_name, 'deps': parsed_deps}
 
