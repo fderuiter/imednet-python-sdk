@@ -192,8 +192,11 @@ def paginator_factory(monkeypatch):
         from imednet.core.endpoint.base import SyncListGetEndpoint
 
         for obj in module.__dict__.values():
-            if isinstance(obj, type) and issubclass(obj, SyncListGetEndpoint):
-                monkeypatch.setattr(obj, "PAGINATOR_CLS", DummyPaginator, raising=False)
+            try:
+                if issubclass(obj, SyncListGetEndpoint):
+                    monkeypatch.setattr(obj, "PAGINATOR_CLS", DummyPaginator, raising=False)
+            except TypeError:
+                pass
 
         def fake_execute_sync(self, client, paginator_cls):
             """Fake implementation of the synchronous list operation execution."""
@@ -251,8 +254,11 @@ def async_paginator_factory(monkeypatch):
         from imednet.core.endpoint.base import AsyncListGetEndpoint
 
         for obj in module.__dict__.values():
-            if isinstance(obj, type) and issubclass(obj, AsyncListGetEndpoint):
-                monkeypatch.setattr(obj, "ASYNC_PAGINATOR_CLS", DummyPaginator, raising=False)
+            try:
+                if issubclass(obj, AsyncListGetEndpoint):
+                    monkeypatch.setattr(obj, "ASYNC_PAGINATOR_CLS", DummyPaginator, raising=False)
+            except TypeError:
+                pass
 
         def fake_execute_async(self, client, paginator_cls):
             """Fake implementation of the asynchronous list operation execution."""
