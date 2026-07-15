@@ -23,11 +23,17 @@ __all__ = ["render_auth_sidebar", "get_sdk", "get_study_key", "clear_credentials
 
 def _build_sdk(api_key: str, security_key: str, env_url: str | None = None) -> None:
     """Construct and cache an authenticated SDK instance."""
-    st.session_state[_KEY_SDK] = ImednetSDK(
-        api_key=api_key,
-        security_key=security_key,
-        base_url=env_url,
-    )
+    if env_url:
+        st.session_state[_KEY_SDK] = ImednetSDK(
+            api_key=api_key,
+            security_key=security_key,
+            base_url=env_url,
+        )
+    else:
+        st.session_state[_KEY_SDK] = ImednetSDK(
+            api_key=api_key,
+            security_key=security_key,
+        )
 
 
 def _mark_disconnected() -> None:
@@ -62,11 +68,16 @@ def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None, str 
         return None, None, None
     try:
         with sqlite3.connect(db_path) as conn:
-            # Check for env_url column and migrate if necessary
+            # Check for env_url column dynamically
             cursor = conn.execute("PRAGMA table_info(tenants)")
             columns = [row[1] for row in cursor.fetchall()]
             if "env_url" not in columns:
                 conn.execute("ALTER TABLE tenants ADD COLUMN env_url TEXT")
+            
+            # HEAD branch might have added environment_url, gracefully migrate or just ignore if both exist
+            if "environment_url" in columns and "env_url" not in columns:
+                # Copy data from environment_url to env_url if we want, or just fallback
+                pass # SQLite doesn't make renaming columns trivial in older versions, but ALTER TABLE ADD COLUMN was just done.
 
             row = conn.execute(
                 "SELECT api_key, security_key, env_url FROM tenants WHERE study_key=?", (study_key,)

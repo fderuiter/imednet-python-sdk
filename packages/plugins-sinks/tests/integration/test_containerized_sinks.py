@@ -7,6 +7,7 @@ from typing import List
 import pytest
 from imednet_sinks import (
     MongoDbExportSink,
+    MongoDbSinkConfig,
     Neo4jExportSink,
     Neo4jSinkConfig,
     export_to_mongodb,
@@ -119,6 +120,8 @@ def test_mongodb_containerized_upserts(fake_records, monkeypatch):
 
     config = MongoDbSinkConfig(
         study_key="STUDY1",
+        batch_size=10,
+        idempotent=True,
         uri=uri,
         database=database,
         collection=collection,
