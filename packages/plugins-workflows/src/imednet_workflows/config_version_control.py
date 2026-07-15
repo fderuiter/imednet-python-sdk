@@ -139,13 +139,13 @@ class ConfigVersionStore:
             roles = sdk.auth.get_user_roles()
 
             # Legacy fallback: if using static keys, validate server-side by making an API call
-            if not roles and hasattr(sdk.auth, "api_key") and getattr(sdk.auth, "api_key"):
+            if not roles and hasattr(sdk.auth, "api_key") and sdk.auth.api_key:
                 try:
                     # Validate the key has access by requesting study data
                     sdk.get_sites(study_key, limit=1)
                     roles = ["admin"]  # Legacy keys with access map to admin
                 except Exception as exc:
-                    raise PermissionError(
+                    raise PermissionError(  # noqa: B904
                         f"Server-side authorization failure for legacy key: {exc}"
                     )
 

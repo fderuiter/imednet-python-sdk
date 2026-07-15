@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List, TypeVar
+from typing import Any, Dict, List, TypeVar  # noqa: UP035
 
 from imednet.utils.dates import parse_iso_datetime  # Centralized date parsing
 
@@ -153,7 +154,7 @@ def parse_str_or_default(v: Any, default: str = "") -> str:
     return default if v is None else str(v)
 
 
-def parse_list_or_default(v: Any, default_factory: Callable[[], List[T]] = list) -> List[T]:
+def parse_list_or_default(v: Any, default_factory: Callable[[], list[T]] = list) -> list[T]:
     """Normalize list values, defaulting if None. Ensures result is a list."""
     if is_missing_value(v):
         return default_factory()
@@ -168,8 +169,8 @@ def parse_list_or_default(v: Any, default_factory: Callable[[], List[T]] = list)
 
 
 def parse_dict_or_default(
-    v: Any, default_factory: Callable[[], Dict[str, Any]] = dict
-) -> Dict[str, Any]:
+    v: Any, default_factory: Callable[[], dict[str, Any]] = dict
+) -> dict[str, Any]:
     """Normalize dictionary values, defaulting if None. Ensures result is a dict."""
     if is_missing_value(v):
         return default_factory()

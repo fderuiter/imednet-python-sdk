@@ -135,7 +135,7 @@ def _build_status_counts(df: pd.DataFrame) -> pd.DataFrame:
     status_counts = status_counts.sort_values(["sort_order", "record_status"]).drop(
         columns=["sort_order"]
     )
-    return status_counts
+    return status_counts  # noqa: RET504
 
 
 def _build_incomplete_form_counts(df: pd.DataFrame) -> pd.DataFrame:
@@ -210,7 +210,7 @@ def _build_heatmap_chart(heatmap_df: pd.DataFrame) -> alt.Chart:
                 alt.Tooltip("completion_status:N", title="Status"),
             ],
         )
-        .properties(width="container", height=chart_height, title="Subject × Form Completion")
+        .properties(width="container", height=chart_height, title="Subject × Form Completion")  # noqa: RUF001
     )
 
 
@@ -308,7 +308,7 @@ def render_page() -> None:
                 use_container_width=True,
             )
 
-    st.header("Subject × Form Completion")
+    st.header("Subject × Form Completion")  # noqa: RUF001
     heatmap_df = _build_heatmap_source(df_filtered)
     if heatmap_df.empty:
         st.info("No records found for the selected filters.")

@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import os
 import sys
+from collections.abc import Sequence
 from datetime import datetime
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, List  # noqa: UP035
 
 _ANSI_COLORS = {
     "green": "\033[32m",
@@ -88,7 +89,7 @@ def _colorize(text: str, color: str) -> str:
     return f"{_ANSI_COLORS.get(color, '')}{text}{_ANSI_COLORS['reset']}"
 
 
-def _print_table(items: Sequence[Any], fields: List[str]) -> None:
+def _print_table(items: Sequence[Any], fields: list[str]) -> None:
     if not items:
         return
 
@@ -98,7 +99,7 @@ def _print_table(items: Sequence[Any], fields: List[str]) -> None:
     for item in items:
         row = []
         for k in fields:
-            if isinstance(item, dict):
+            if isinstance(item, dict):  # noqa: SIM108
                 val = item.get(k)
             else:
                 val = getattr(item, k, None)
@@ -110,7 +111,7 @@ def _print_table(items: Sequence[Any], fields: List[str]) -> None:
         for i, cell in enumerate(row):
             col_widths[i] = max(col_widths[i], len(cell))
 
-    header_str = " | ".join(h.ljust(w) for h, w in zip(headers, col_widths))
+    header_str = " | ".join(h.ljust(w) for h, w in zip(headers, col_widths))  # noqa: B905
     print(_colorize(header_str, "bold_magenta"))
     print("-" * len(header_str))
 
@@ -157,7 +158,7 @@ def _print_table(items: Sequence[Any], fields: List[str]) -> None:
 
 
 def display_list(
-    items: Sequence[Any], label: str, empty_msg: str | None = None, fields: List[str] | None = None
+    items: Sequence[Any], label: str, empty_msg: str | None = None, fields: list[str] | None = None
 ) -> None:
     """Display a list of items."""
     if not items:
@@ -171,7 +172,7 @@ def display_list(
         return
 
     first = items[0]
-    data_list: List[Dict[str, Any]] = []
+    data_list: list[dict[str, Any]] = []
 
     if hasattr(first, "model_dump"):
         data_list = [item.model_dump() for item in items]

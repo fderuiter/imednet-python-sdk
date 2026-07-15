@@ -7,7 +7,7 @@ from ..hooks import ImednetHook
 from .export import ImednetExportOperator
 
 __all__ = [
+    "AirflowException",
     "ImednetExportOperator",
     "ImednetHook",
-    "AirflowException",
 ]

@@ -19,7 +19,7 @@ class JobsOperationDef:
 
     def _create_path_get_operation(
         self,
-        study_key: Optional[str],
+        study_key: str | None,
         item_id: ItemId,
     ) -> PathGetOperation[JobStatus]:
         """Create a PathGetOperation for a Job.
@@ -42,7 +42,7 @@ class JobsOperationDef:
 class JobsEndpoint(JobsOperationDef, EdcSyncListGetEndpoint[JobStatus]):  # type: ignore[misc]
     """Synchronous endpoint for managing Jobs."""
 
-    def get(self, study_key: Optional[str], item_id: ItemId) -> JobStatus:
+    def get(self, study_key: str | None, item_id: ItemId) -> JobStatus:
         """Get a single Job by ID.
 
         Args:
@@ -61,7 +61,7 @@ class JobsEndpoint(JobsOperationDef, EdcSyncListGetEndpoint[JobStatus]):  # type
 class AsyncJobsEndpoint(JobsOperationDef, EdcAsyncListGetEndpoint[JobStatus]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Jobs."""
 
-    async def async_get(self, study_key: Optional[str], item_id: ItemId) -> JobStatus:
+    async def async_get(self, study_key: str | None, item_id: ItemId) -> JobStatus:
         """Get a single Job by ID asynchronously.
 
         Args:

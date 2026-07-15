@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional  # noqa: UP035
 
 
 class _ValidatorMixin:
@@ -10,7 +10,7 @@ class _ValidatorMixin:
 
     schema: Any
 
-    def _resolve_form_key(self, record: Dict[str, Any]) -> Optional[str]:
+    def _resolve_form_key(self, record: dict[str, Any]) -> str | None:
         """Resolve the form key from a record payload.
 
         Args:
@@ -21,7 +21,7 @@ class _ValidatorMixin:
         """
         return record.get("formKey") or self.schema.form_key_from_id(record.get("formId", 0))
 
-    def _validate_cached(self, form_key: Optional[str], data: Dict[str, Any]) -> None:
+    def _validate_cached(self, form_key: str | None, data: dict[str, Any]) -> None:
         """Validate data against a cached form schema.
 
         Args:

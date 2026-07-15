@@ -6,12 +6,11 @@ They are architecturally linked to the core execution engine.
 
 from __future__ import annotations
 
+from collections.abc import Awaitable, Callable
 from importlib import import_module
-from typing import (
+from typing import (  # noqa: UP035
     TYPE_CHECKING,
     Any,
-    Awaitable,
-    Callable,
     Dict,
     Generic,
     List,
@@ -113,9 +112,9 @@ class _ListOperation(Generic[T]):
         if self.is_async:
 
             @_async_trace_method
-            async def wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
+            async def wrapper(study_key: str | None = None, **filters: FilterValue) -> list[T]:
                 """Execute the asynchronous list operation and return a list of items."""
-                _filters: Dict[str, Any] = dict(filters)
+                _filters: dict[str, Any] = dict(filters)
                 if self.endpoint_name == "studies":
                     res = endpoint.async_list(**_filters)
                 else:
@@ -126,9 +125,9 @@ class _ListOperation(Generic[T]):
         else:
 
             @_trace_method
-            def wrapper(study_key: str | None = None, **filters: FilterValue) -> List[T]:
+            def wrapper(study_key: str | None = None, **filters: FilterValue) -> list[T]:
                 """Execute the synchronous list operation and return a list of items."""
-                _filters: Dict[str, Any] = dict(filters)
+                _filters: dict[str, Any] = dict(filters)
                 if self.endpoint_name == "studies":
                     return list(endpoint.list(**_filters))
                 return list(endpoint.list(study_key, **_filters))
@@ -170,8 +169,8 @@ class SyncSDKConvenienceMixin:
     def create_record(
         self,
         study_key: str,
-        records_data: List[JsonDict],
-        email_notify: Union[bool, str, None] = None,
+        records_data: list[JsonDict],
+        email_notify: bool | str | None = None,
         *,
         schema: Any = None,
     ) -> Job:
@@ -234,8 +233,8 @@ class AsyncSDKConvenienceMixin:
     async def async_create_record(
         self,
         study_key: str,
-        records_data: List[JsonDict],
-        email_notify: Union[bool, str, None] = None,
+        records_data: list[JsonDict],
+        email_notify: bool | str | None = None,
         *,
         schema: Any = None,
     ) -> Job:

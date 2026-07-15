@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 class RequestMonitor:
     """Helper to handle request monitoring (tracing, timing, logging)."""
 
-    def __init__(self, tracer: Optional[Tracer], method: str, url: str) -> None:
+    def __init__(self, tracer: Tracer | None, method: str, url: str) -> None:
         """Initialize the request monitor.
 
         Args:
@@ -52,7 +52,7 @@ class RequestMonitor:
             )
         return nullcontext()
 
-    def __enter__(self) -> "RequestMonitor":
+    def __enter__(self) -> RequestMonitor:
         """Enter the synchronous monitoring context.
 
         Returns:
@@ -74,7 +74,7 @@ class RequestMonitor:
         if self._cm:
             self._cm.__exit__(exc_type, exc_val, exc_tb)
 
-    async def __aenter__(self) -> "RequestMonitor":
+    async def __aenter__(self) -> RequestMonitor:
         """Enter the asynchronous monitoring context.
 
         Returns:

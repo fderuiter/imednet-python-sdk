@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Optional, Protocol, runtime_checkable
+from typing import Any, Optional, Protocol, runtime_checkable
 
 import httpx
 from tenacity import AsyncRetrying, Retrying, stop_after_attempt, wait_random_exponential
@@ -22,9 +23,9 @@ class RetryState:
     """State information passed to :class:`RetryPolicy`."""
 
     attempt_number: int
-    exception: Optional[BaseException] = None
-    result: Optional[Any] = None
-    method: Optional[str] = None
+    exception: BaseException | None = None
+    result: Any | None = None
+    method: str | None = None
 
 
 @runtime_checkable
@@ -100,8 +101,8 @@ class RetryConfig:
 
     def create_retryer(
         self,
-        wait_strategy: Optional[Callable[[Any], float]] = None,
-        retry_predicate: Optional[Callable[[Any], bool]] = None,
+        wait_strategy: Callable[[Any], float] | None = None,
+        retry_predicate: Callable[[Any], bool] | None = None,
         **kwargs: Any,
     ) -> Retrying:
         """Create a synchronous retryer based on the configuration."""
@@ -116,8 +117,8 @@ class RetryConfig:
 
     def create_async_retryer(
         self,
-        wait_strategy: Optional[Callable[[Any], float]] = None,
-        retry_predicate: Optional[Callable[[Any], bool]] = None,
+        wait_strategy: Callable[[Any], float] | None = None,
+        retry_predicate: Callable[[Any], bool] | None = None,
         **kwargs: Any,
     ) -> AsyncRetrying:
         """Create an asynchronous retryer based on the configuration."""

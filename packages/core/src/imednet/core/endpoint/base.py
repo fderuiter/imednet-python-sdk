@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any, AsyncIterator, Callable, Dict, Iterator, List, Optional, TypeVar
+from collections.abc import AsyncIterator, Callable, Iterator
+from typing import Any, Dict, List, Optional, TypeVar  # noqa: UP035
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
@@ -34,14 +35,14 @@ class GenericEndpoint(EndpointABC[T]):
     """
 
     BASE_PATH = ""
-    _client: Optional[RequesterProtocol]
-    _async_client: Optional[AsyncRequesterProtocol]
+    _client: RequesterProtocol | None
+    _async_client: AsyncRequesterProtocol | None
 
     def __init__(
         self,
-        client: Optional[RequesterProtocol] = None,
+        client: RequesterProtocol | None = None,
         ctx: object | None = None,
-        async_client: Optional[AsyncRequesterProtocol] = None,
+        async_client: AsyncRequesterProtocol | None = None,
     ) -> None:
         """Initialize the generic endpoint.
 
@@ -60,7 +61,7 @@ class GenericEndpoint(EndpointABC[T]):
         self._client = client
         self._async_client = async_client
 
-    def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+    def _auto_filter(self, filters: dict[str, Any]) -> dict[str, Any]:
         """Pass-through for filters in generic endpoints."""
         return filters
 
@@ -97,9 +98,9 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
     PAGE_SIZE: int = DEFAULT_PAGE_SIZE
     PAGINATOR_CLS: type[Paginator] = Paginator
     ASYNC_PAGINATOR_CLS: type[AsyncPaginator] = AsyncPaginator
-    PARAM_PROCESSOR: Optional[ParamProcessor] = None
+    PARAM_PROCESSOR: ParamProcessor | None = None
     PARAM_PROCESSOR_CLS: type[ParamProcessor] = DefaultParamProcessor
-    STUDY_KEY_STRATEGY: Optional[StudyKeyStrategy] = None
+    STUDY_KEY_STRATEGY: StudyKeyStrategy | None = None
 
     @property
     def study_key_strategy(self) -> StudyKeyStrategy:
@@ -128,9 +129,9 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
 
     def _resolve_params(
         self,
-        study_key: Optional[str],
-        extra_params: Optional[Dict[str, Any]],
-        filters: Dict[str, Any],
+        study_key: str | None,
+        extra_params: dict[str, Any] | None,
+        filters: dict[str, Any],
     ) -> ParamState:
         """Resolve filters and extra parameters into a ParamState.
 
@@ -146,7 +147,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
 
         processed_filters, special_params = self.param_processor.process_filters(filters)
         if special_params:
-            if extra_params is None:
+            if extra_params is None:  # noqa: SIM108
                 extra_params = {}
             else:
                 extra_params = extra_params.copy()
@@ -160,7 +161,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
 
         other_filters = {k: v for k, v in processed_filters.items() if k != "studyKey"}
 
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
         if processed_filters:
             params["filter"] = build_filter_string(processed_filters)
         if extra_params:
@@ -170,9 +171,9 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
 
     def _prepare_list_request(
         self,
-        study_key: Optional[str],
-        extra_params: Optional[Dict[str, Any]],
-        filters: Dict[str, Any],
+        study_key: str | None,
+        extra_params: dict[str, Any] | None,
+        filters: dict[str, Any],
     ) -> ListRequestState[T]:
         """Prepare the state required for a list request.
 
@@ -195,7 +196,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
             study=study,
         )
 
-    def _validate_get_result(self, items: List[T], study_key: Optional[str], item_id: ItemId) -> T:
+    def _validate_get_result(self, items: list[T], study_key: str | None, item_id: ItemId) -> T:
         """Validate that a get operation returned exactly one item.
 
         Args:
@@ -241,8 +242,8 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         client: RequesterProtocol,
         paginator_cls: type[Paginator],
         *,
-        study_key: Optional[str] = None,
-        extra_params: Optional[Dict[str, Any]] = None,
+        study_key: str | None = None,
+        extra_params: dict[str, Any] | None = None,
         **filters: Any,
     ) -> Iterator[T]:
         """Internal synchronous list implementation.
@@ -265,7 +266,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
             parse_func=self._resolve_parse_func(),
         ).execute_sync(client, paginator_cls)
 
-    def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> Iterator[T]:
+    def list(self, study_key: str | None = None, **filters: FilterValue) -> Iterator[T]:
         """List resources matching the given filters.
 
         Args:
@@ -277,7 +278,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         """
         # Cast FilterValue → Any at the public/internal boundary to satisfy
         # mypy's invariant dict type-checking on `_list_sync`'s **filters: Any.
-        _filters: Dict[str, Any] = dict(filters)
+        _filters: dict[str, Any] = dict(filters)
         return self._list_sync(
             self._require_sync_client(),
             self.PAGINATOR_CLS,
@@ -290,7 +291,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         client: RequesterProtocol,
         paginator_cls: type[Paginator],
         *,
-        study_key: Optional[str],
+        study_key: str | None,
         item_id: ItemId,
     ) -> T:
         """Internal synchronous get implementation.
@@ -304,7 +305,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         Returns:
             The requested item.
         """
-        filters: Dict[str, Any] = {self._id_param: item_id}
+        filters: dict[str, Any] = {self._id_param: item_id}
         operation = FilterGetOperation[T](
             study_key=study_key,
             item_id=item_id,
@@ -314,7 +315,7 @@ class SyncListGetEndpoint(_ListGetEndpointBase[T]):
         )
         return operation.execute_sync(client, paginator_cls)
 
-    def get(self, study_key: Optional[str], item_id: ItemId) -> T:
+    def get(self, study_key: str | None, item_id: ItemId) -> T:
         """Retrieve a single resource by its ID.
 
         Args:
@@ -354,8 +355,8 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         client: AsyncRequesterProtocol,
         paginator_cls: type[AsyncPaginator],
         *,
-        study_key: Optional[str] = None,
-        extra_params: Optional[Dict[str, Any]] = None,
+        study_key: str | None = None,
+        extra_params: dict[str, Any] | None = None,
         **filters: Any,
     ) -> AsyncIterator[T]:
         """Internal asynchronous list implementation.
@@ -379,7 +380,7 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         ).execute_async(client, paginator_cls)
 
     def async_list(
-        self, study_key: Optional[str] = None, **filters: FilterValue
+        self, study_key: str | None = None, **filters: FilterValue
     ) -> AsyncIterator[T]:
         """List resources matching the given filters asynchronously.
 
@@ -391,7 +392,7 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
             An asynchronous iterator over the matching resources.
         """
         # Cast FilterValue → Any at the public/internal boundary.
-        _filters: Dict[str, Any] = dict(filters)
+        _filters: dict[str, Any] = dict(filters)
         return self._list_async(
             self._require_async_client(),
             self.ASYNC_PAGINATOR_CLS,
@@ -404,7 +405,7 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         client: AsyncRequesterProtocol,
         paginator_cls: type[AsyncPaginator],
         *,
-        study_key: Optional[str],
+        study_key: str | None,
         item_id: ItemId,
     ) -> T:
         """Internal asynchronous get implementation.
@@ -418,7 +419,7 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         Returns:
             The requested item.
         """
-        filters: Dict[str, Any] = {self._id_param: item_id}
+        filters: dict[str, Any] = {self._id_param: item_id}
         operation = FilterGetOperation[T](
             study_key=study_key,
             item_id=item_id,
@@ -428,14 +429,14 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
         )
         return await operation.execute_async(client, paginator_cls)
 
-    async def _list_async_for_get(self, *a: Any, **k: Any) -> List[T]:
+    async def _list_async_for_get(self, *a: Any, **k: Any) -> list[T]:
         """Helper to collect async list results into a list for get validation."""
         res = []
         async for item in self._list_async(*a, **k):
             res.append(item)
         return res
 
-    async def async_get(self, study_key: Optional[str], item_id: ItemId) -> T:
+    async def async_get(self, study_key: str | None, item_id: ItemId) -> T:
         """Retrieve a single resource by its ID asynchronously.
 
         Args:

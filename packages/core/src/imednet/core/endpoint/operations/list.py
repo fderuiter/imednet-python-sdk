@@ -6,7 +6,8 @@ from the API, handling pagination seamlessly.
 
 from __future__ import annotations
 
-from typing import Any, AsyncIterator, Callable, Dict, Generic, Iterator, List, TypeVar
+from collections.abc import AsyncIterator, Callable, Iterator
+from typing import Any, Dict, Generic, List, TypeVar  # noqa: UP035
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequesterProtocol, RequesterProtocol
@@ -24,7 +25,7 @@ class ListOperation(Generic[T]):
     def __init__(
         self,
         path: str,
-        params: Dict[str, Any],
+        params: dict[str, Any],
         page_size: int,
         parse_func: Callable[[Any], T],
     ) -> None:

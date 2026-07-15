@@ -3,7 +3,7 @@
 import json
 import os
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional  # noqa: UP035
 
 from pydantic import BaseModel, Field
 
@@ -14,21 +14,21 @@ class FieldDefinition(BaseModel):
     name: str
     type_name: str
     default_value: Any = None
-    alias: Optional[str] = None
+    alias: str | None = None
 
 
 class ModelDefinition(BaseModel):
     """Internal contract for a model."""
 
     name: str
-    fields: Dict[str, FieldDefinition]
+    fields: dict[str, FieldDefinition]
 
 
 class APIContract(BaseModel):
     """Unified API Contract."""
 
-    models: Dict[str, ModelDefinition] = Field(default_factory=dict)
-    paths: Dict[str, str] = Field(default_factory=dict)
+    models: dict[str, ModelDefinition] = Field(default_factory=dict)
+    paths: dict[str, str] = Field(default_factory=dict)
 
 
 def to_snake(name: str) -> str:
@@ -60,7 +60,7 @@ class ContractBuilder:
         if not os.path.exists(file_path):
             return
 
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             data = json.load(f)
 
         if not isinstance(data, dict):
@@ -83,7 +83,7 @@ class ContractBuilder:
             "User list": "User",
         }
 
-        def extract_schemas(items: List[Dict[str, Any]]) -> None:
+        def extract_schemas(items: list[dict[str, Any]]) -> None:
             if not isinstance(items, list):
                 return
             for item in items:
@@ -138,7 +138,7 @@ class ContractBuilder:
                                             # Typically paths are like ['studies'] or ['api', 'v1', 'studies']
                                             # We want to map the base resource name to the model.
                                             for p in reversed(path_segments):
-                                                if (
+                                                if (  # noqa: SIM102
                                                     isinstance(p, str)
                                                     and not p.startswith(':')
                                                     and not p.startswith('{{')
@@ -148,7 +148,7 @@ class ContractBuilder:
                                                         self.contract.paths[p] = model_name
                                                         break
 
-                                except Exception:
+                                except Exception:  # noqa: S110
                                     pass
 
         extract_schemas(data.get('item', []))
@@ -158,7 +158,7 @@ class ContractBuilder:
         if not os.path.exists(file_path):
             return
 
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             data = json.load(f)
 
         if not isinstance(data, dict):
@@ -205,7 +205,7 @@ class ContractBuilder:
                 for status, response_obj in responses.items():
                     if status.startswith("2"):
                         content = response_obj.get("content", {})
-                        for content_type, content_obj in content.items():
+                        for content_type, content_obj in content.items():  # noqa: B007
                             schema = content_obj.get("schema", {})
                             ref = None
 
@@ -244,7 +244,7 @@ class ContractBuilder:
                                 model_name = ref.split("/")[-1]
                                 path_segments = [p for p in path.split("/") if p]
                                 for p in reversed(path_segments):
-                                    if (
+                                    if (  # noqa: SIM102
                                         isinstance(p, str)
                                         and not p.startswith('{')
                                         and not p.startswith(':')

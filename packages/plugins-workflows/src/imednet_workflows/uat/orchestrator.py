@@ -6,7 +6,7 @@ import time
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union  # noqa: UP035
 
 from pydantic import Field
 
@@ -46,15 +46,15 @@ class UATRunResult(ImednetBaseModel):
     study_key: str
     run_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     started_at: datetime
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
 
     spec: UATSpecification
-    record_sets: List[GeneratedRecordSet]
+    record_sets: list[GeneratedRecordSet]
     submission_result: SubmissionResult
     poll_summary: Any  # JobPollSummary
 
     # Phase-level timing for performance profiling
-    phase_durations: Dict[str, float] = Field(default_factory=dict)  # phase name → seconds
+    phase_durations: dict[str, float] = Field(default_factory=dict)  # phase name → seconds
 
     @property
     def overall_success(self) -> bool:
@@ -93,9 +93,9 @@ class UATSpecificationBuilder:
         snapshot: StudySnapshot,
         *,
         subject_count: int = DEFAULT_SUBJECT_COUNT,
-        site_name: Optional[str] = None,
-        enabled_form_keys: Optional[List[str]] = None,
-        seed: Optional[int] = None,
+        site_name: str | None = None,
+        enabled_form_keys: list[str] | None = None,
+        seed: int | None = None,
     ) -> UATSpecification:
         """Build a complete UATSpecification from a StudySnapshot.
 
@@ -173,7 +173,7 @@ class UATSpecificationBuilder:
             strategy=VariableTestStrategy.SYNTHETIC,
         )
 
-    def _resolve_site_name(self, snapshot: StudySnapshot, site_name: Optional[str]) -> str:
+    def _resolve_site_name(self, snapshot: StudySnapshot, site_name: str | None) -> str:
         """Find the requested site or the first active site."""
         if site_name:
             for site in snapshot.sites:
@@ -189,7 +189,7 @@ class UATSpecificationBuilder:
 
         return "Default Site"
 
-    def _resolve_interval(self, snapshot: StudySnapshot, form_key: Optional[str]) -> Optional[str]:
+    def _resolve_interval(self, snapshot: StudySnapshot, form_key: str | None) -> str | None:
         """Find the first interval that contains this form."""
         if not form_key:
             return None
@@ -215,8 +215,8 @@ class UATWorkflow:
         batch_size: int = 100,
         poll_interval: float = 10.0,
         poll_timeout: float = 600.0,
-        seed: Optional[int] = None,
-        on_progress: Optional[JobProgressCallback] = None,
+        seed: int | None = None,
+        on_progress: JobProgressCallback | None = None,
     ) -> None:
         """Initialize the UAT workflow orchestrator."""
         from .generator import SyntheticRecordGenerator
@@ -258,15 +258,15 @@ class UATWorkflow:
         self,
         study_key: str,
         *,
-        spec: Optional[UATSpecification] = None,
+        spec: UATSpecification | None = None,
         subject_count: int = 2,
-        site_name: Optional[str] = None,
-        enabled_form_keys: Optional[List[str]] = None,
-        email_notify: Optional[Union[bool, str]] = None,
+        site_name: str | None = None,
+        enabled_form_keys: list[str] | None = None,
+        email_notify: bool | str | None = None,
     ) -> UATRunResult:
         """Execute the full UAT pipeline and return a UATRunResult."""
         started_at = datetime.now(timezone.utc)
-        phase_durations: Dict[str, float] = {}
+        phase_durations: dict[str, float] = {}
 
         # 1. Inspect
         t0 = time.monotonic()
@@ -318,15 +318,15 @@ class UATWorkflow:
         """Auto-generate a UATSpecification from the StudySnapshot."""
         return self._builder.build(snapshot, **kwargs)
 
-    def generate(self, spec: UATSpecification, snapshot: Any) -> List[GeneratedRecordSet]:
+    def generate(self, spec: UATSpecification, snapshot: Any) -> list[GeneratedRecordSet]:
         """Create synthetic record payloads via SyntheticRecordGenerator."""
         return self._generator.generate(spec, snapshot)
 
     def submit(
         self,
         study_key: str,
-        record_sets: List[GeneratedRecordSet],
-        email_notify: Optional[Union[bool, str]] = None,
+        record_sets: list[GeneratedRecordSet],
+        email_notify: bool | str | None = None,
     ) -> SubmissionResult:
         """Execute the two-phase bulk submission."""
         return self._get_submitter().submit(study_key, record_sets, email_notify=email_notify)

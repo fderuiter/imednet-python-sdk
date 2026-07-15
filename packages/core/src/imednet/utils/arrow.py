@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Dict, List, Optional, Protocol  # noqa: UP035
 
 try:
     import pyarrow as pa
@@ -14,7 +14,7 @@ except ImportError:  # pragma: no cover - exercised when optional dependency is 
 class _ModelDumpable(Protocol):
     """Protocol for objects that can be dumped to a dictionary (e.g., Pydantic models)."""
 
-    def model_dump(self) -> Dict[str, Any]: ...
+    def model_dump(self) -> dict[str, Any]: ...
 
 
 _TRUE_STRINGS = {"true", "1", "yes", "y", "t"}
@@ -28,7 +28,7 @@ def _normalize_datetime(value: datetime) -> datetime:
     return value.astimezone(timezone.utc)
 
 
-def _normalize_record(record: Any) -> Dict[str, Any]:
+def _normalize_record(record: Any) -> dict[str, Any]:
     """Convert an input record (dict or model) into a standard dictionary."""
     if isinstance(record, dict):
         return record
@@ -57,7 +57,7 @@ def _normalize_value(value: Any) -> Any:
     return value
 
 
-def _infer_type(values: List[Any]) -> pa.DataType:
+def _infer_type(values: list[Any]) -> pa.DataType:
     """Infer the Arrow data type from a list of normalized values."""
     non_null_values = [v for v in values if v is not None]
     if not non_null_values:
@@ -97,7 +97,7 @@ def _coerce_value(value: Any, target_type: pa.DataType) -> Any:
 
 
 def to_arrow_table(
-    data_records: List[Dict[str, Any] | _ModelDumpable], schema: Optional[pa.Schema] = None
+    data_records: list[dict[str, Any] | _ModelDumpable], schema: pa.Schema | None = None
 ) -> pa.Table:
     """Serialize record dictionaries (or Pydantic-like objects) into a ``pyarrow.Table``.
 
@@ -133,7 +133,7 @@ def to_arrow_table(
     else:
         column_names = list(schema.names)
 
-    arrays: List[pa.Array] = []
+    arrays: list[pa.Array] = []
     for name in column_names:
         values = [_normalize_value(record.get(name)) for record in records]
         target_type = schema.field(name).type if schema is not None else _infer_type(values)

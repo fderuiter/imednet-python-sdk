@@ -17,7 +17,7 @@ class AdverseEvent(ImednetBaseModel):
     ae_term: str = Field(
         ..., alias="aeTerm", description="Reported term for the adverse event (AETERM)"
     )
-    ae_decod: Optional[str] = Field(
+    ae_decod: str | None = Field(
         None, alias="aeDecod", description="Dictionary-derived preferred term (AEDECOD)"
     )
     ae_severity: str = Field(
@@ -26,21 +26,21 @@ class AdverseEvent(ImednetBaseModel):
     ae_serious: bool = Field(
         False, alias="aeSerious", description="Serious Adverse Event flag (AESER)"
     )
-    ae_start_date: Optional[datetime] = Field(
+    ae_start_date: datetime | None = Field(
         None, alias="aeStartDate", description="Start date/time of event (AESTDTC)"
     )
-    ae_end_date: Optional[datetime] = Field(
+    ae_end_date: datetime | None = Field(
         None, alias="aeEndDate", description="End date/time of event (AEENDTC)"
     )
-    ae_outcome: Optional[str] = Field(
+    ae_outcome: str | None = Field(
         None, alias="aeOutcome", description="Outcome of adverse event (AEOUT)"
     )
-    ae_relationship: Optional[str] = Field(
+    ae_relationship: str | None = Field(
         None,
         alias="aeRelationship",
         description="Causality / relationship to study drug/device (AEREL)",
     )
-    ae_action_taken: Optional[str] = Field(
+    ae_action_taken: str | None = Field(
         None,
         alias="aeActionTaken",
         description="Action taken with study drug/device (AEACN)",
@@ -89,19 +89,19 @@ class DeviceDeficiency(ImednetBaseModel):
 class SubjectLevelAnalysis(ImednetBaseModel):
     """Subject-Level Analysis Dataset (ADSL)."""
 
-    model_config = {"extra": "allow"}
+    model_config = {"extra": "allow"}  # noqa: RUF012
     subject_key: str = Field(..., alias="subjectKey")
 
 
 class AnalysisAdverseEvent(ImednetBaseModel):
     """Analysis Adverse Event Dataset (ADAE)."""
 
-    model_config = {"extra": "allow"}
+    model_config = {"extra": "allow"}  # noqa: RUF012
     subject_key: str = Field(..., alias="subjectKey")
 
 
 class AnalysisLabResult(ImednetBaseModel):
     """Analysis Lab Result Dataset (ADLB)."""
 
-    model_config = {"extra": "allow"}
+    model_config = {"extra": "allow"}  # noqa: RUF012
     subject_key: str = Field(..., alias="subjectKey")

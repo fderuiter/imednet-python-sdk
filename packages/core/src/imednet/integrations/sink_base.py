@@ -66,17 +66,18 @@ Public-API exposure rules
   :mod:`imednet.integrations` via explicit names.
 * Airflow helpers in :mod:`apache_airflow_providers_imednet.export` wrap only
   the tabular path; graph/document/warehouse sinks are not wrapped there.
-"""
+"""  # noqa: RUF002
 
 from __future__ import annotations
 
 import logging
 import re
 from abc import ABC, abstractmethod
+from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass, field
 from importlib import import_module
 from types import TracebackType
-from typing import Any, Iterable, Iterator, Optional, Sequence, Type
+from typing import Any, Optional, Type  # noqa: UP035
 
 logger = logging.getLogger(__name__)
 
@@ -117,7 +118,7 @@ class SinkConfig:
     extra: dict[str, Any] = field(default_factory=dict)
     quality_gate_enabled: bool = False
     min_schema_readiness_score: float = 100.0
-    tracer: Optional[Any] = field(default=None, repr=False)
+    tracer: Any | None = field(default=None, repr=False)
 
     def __post_init__(self):
         """Validate config properties after initialization."""
@@ -181,7 +182,7 @@ class ExportSink(ABC):
         -------
         ~imednet.errors.ExportBatchError
             When the batch cannot be written after all retries.
-        """
+        """  # noqa: RUF002
         ...
 
     @abstractmethod
@@ -208,15 +209,15 @@ class ExportSink(ABC):
     # Context-manager support
     # ------------------------------------------------------------------
 
-    def __enter__(self) -> "ExportSink":
+    def __enter__(self) -> ExportSink:
         """Enter the context manager, returning the sink instance."""
         return self
 
     def __exit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
     ) -> None:
         """Exit the context manager, flushing and closing the sink."""
         try:
@@ -351,9 +352,9 @@ def iter_batches(records: Sequence[Any], batch_size: int) -> Iterator[Sequence[A
 
 
 __all__ = [
-    "SinkConfig",
     "ExportSink",
-    "iter_batches",
+    "SinkConfig",
     "_redact_uri",
     "_require_optional_dep",
+    "iter_batches",
 ]

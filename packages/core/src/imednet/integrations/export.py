@@ -5,11 +5,12 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from importlib import import_module
 from pathlib import Path
-from typing import Any, List, Optional, Sequence
+from typing import Any, List, Optional  # noqa: UP035
 
 from imednet.core.operations.executor import UniversalExecutor
 from imednet.errors import ExportBatchError
@@ -99,13 +100,13 @@ def _records_df(
     study_key: str,
     *,
     use_labels_as_columns: bool = False,
-    variable_whitelist: Optional[List[str]] = None,
-    form_whitelist: Optional[List[int]] = None,
+    variable_whitelist: list[str] | None = None,
+    form_whitelist: list[int] | None = None,
 ) -> pd.DataFrame:
     """Return a DataFrame of study records with duplicate columns removed."""
     if pd is None:
         raise ImportError(
-            ("pandas is required for _records_df. Install with \"pip install 'imednet[export]'\".")
+            "pandas is required for _records_df. Install with \"pip install 'imednet[export]'\"."
         )
     df: pd.DataFrame = _record_mapper()(sdk).dataframe(
         study_key,
@@ -124,8 +125,8 @@ def _prepare_export_df(
     study_key: str,
     *,
     use_labels_as_columns: bool = False,
-    variable_whitelist: Optional[List[str]] = None,
-    form_whitelist: Optional[List[int]] = None,
+    variable_whitelist: list[str] | None = None,
+    form_whitelist: list[int] | None = None,
     sanitize: bool = False,
 ) -> pd.DataFrame:
     """Prepare a DataFrame for export by fetching records and optionally sanitizing."""
@@ -187,11 +188,11 @@ def _sanitize_df(df: pd.DataFrame) -> pd.DataFrame:
 class TabularSinkConfig(SinkConfig):
     """Configuration for tabular sinks."""
 
-    manifest_path: Optional[str] = None
+    manifest_path: str | None = None
     use_labels_as_columns: bool = False
     sanitize: bool = False
-    variable_whitelist: Optional[List[str]] = None
-    form_whitelist: Optional[List[int]] = None
+    variable_whitelist: list[str] | None = None
+    form_whitelist: list[int] | None = None
     pandas_kwargs: dict = field(default_factory=dict)
 
 
@@ -544,8 +545,8 @@ def export_to_sql(
     if_exists: str = "replace",
     *,
     use_labels_as_columns: bool = False,
-    variable_whitelist: Optional[List[str]] = None,
-    form_whitelist: Optional[List[int]] = None,
+    variable_whitelist: list[str] | None = None,
+    form_whitelist: list[int] | None = None,
     **kwargs: Any,
 ) -> None:
     """Export study records to a SQL table.
@@ -585,8 +586,8 @@ def export_to_duckdb(
     table_name: str,
     *,
     use_labels_as_columns: bool = False,
-    variable_whitelist: Optional[List[str]] = None,
-    form_whitelist: Optional[List[int]] = None,
+    variable_whitelist: list[str] | None = None,
+    form_whitelist: list[int] | None = None,
 ) -> None:
     """Export study records to a DuckDB table using native DataFrame registration.
 
@@ -634,7 +635,7 @@ def export_to_duckdb(
     try:
         conn.register(_DUCKDB_DF_ALIAS, df)
         conn.execute(
-            f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(table_name)} "  # noqa: S608
+            f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(table_name)} "
             f"AS SELECT * FROM {_quote_duckdb_identifier(_DUCKDB_DF_ALIAS)}"
         )
         conn.unregister(_DUCKDB_DF_ALIAS)
@@ -648,8 +649,8 @@ def export_to_duckdb_by_form(
     db_path: str,
     *,
     use_labels_as_columns: bool = False,
-    variable_whitelist: Optional[List[str]] = None,
-    form_whitelist: Optional[List[int]] = None,
+    variable_whitelist: list[str] | None = None,
+    form_whitelist: list[int] | None = None,
 ) -> None:
     """Export records to separate DuckDB tables for each form.
 
@@ -702,7 +703,7 @@ def export_to_duckdb_by_form(
 
             conn.register(_DUCKDB_DF_ALIAS, df)
             conn.execute(
-                f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(form.form_key)} "  # noqa: S608
+                f"CREATE OR REPLACE TABLE {_quote_duckdb_identifier(form.form_key)} "
                 f"AS SELECT * FROM {_quote_duckdb_identifier(_DUCKDB_DF_ALIAS)}"
             )
             conn.unregister(_DUCKDB_DF_ALIAS)
@@ -717,8 +718,8 @@ def export_to_sql_by_form(
     if_exists: str = "replace",
     *,
     use_labels_as_columns: bool = False,
-    variable_whitelist: Optional[List[str]] = None,
-    form_whitelist: Optional[List[int]] = None,
+    variable_whitelist: list[str] | None = None,
+    form_whitelist: list[int] | None = None,
     **kwargs: Any,
 ) -> None:
     """Export records to separate SQL tables for each form."""
@@ -789,10 +790,10 @@ def export_to_long_sql(
     """Export records to a normalized long-format SQL table."""
     if pd is None:
         raise ImportError(
-            (
+            
                 "pandas is required for export_to_long_sql. Install with "
                 "\"pip install 'imednet[export]'\"."
-            )
+            
         )
     from sqlalchemy import create_engine
 
@@ -800,7 +801,7 @@ def export_to_long_sql(
     mapper = _record_mapper()(sdk)
     records = mapper._fetch_records(study_key)
 
-    rows: List[dict[str, Any]] = []
+    rows: list[dict[str, Any]] = []
     first = True
     for rec in records:
         timestamp = rec.date_modified

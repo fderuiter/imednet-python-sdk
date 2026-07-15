@@ -46,7 +46,7 @@ class ImednetExportOperator(BaseOperator):
     # Fields intended for Airflow `.partial().expand()` runtime mapping.
     mapped_runtime_fields: Sequence[str] = ("study_key", "output_path", "export_kwargs")
     template_fields: Sequence[str] = mapped_runtime_fields
-    template_fields_renderers = {"export_kwargs": "json"}
+    template_fields_renderers = {"export_kwargs": "json"}  # noqa: RUF012
 
     def __init__(
         self,
@@ -121,7 +121,7 @@ class ImednetExportOperator(BaseOperator):
                 table=self.export_kwargs.get("table", ""),
             )
             return SnowflakeExportSink(config=snowflake_config)  # type: ignore
-        elif dest == "neo4j":
+        if dest == "neo4j":
             from imednet_sinks import Neo4jExportSink, Neo4jSinkConfig  # type: ignore
 
             neo4j_config = Neo4jSinkConfig(
@@ -134,7 +134,7 @@ class ImednetExportOperator(BaseOperator):
                 auth=self.export_kwargs.get("auth", ("", "")),
             )
             return Neo4jExportSink(config=neo4j_config)  # type: ignore
-        elif dest == "mongodb":
+        if dest == "mongodb":
             from imednet_sinks import MongoDbExportSink, MongoDbSinkConfig  # type: ignore
 
             mongo_config = MongoDbSinkConfig(

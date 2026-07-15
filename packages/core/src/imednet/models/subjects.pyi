@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa: UP035
 
 from pydantic import Field
 
@@ -23,18 +23,18 @@ class SubjectKeyword(ImednetBaseModel):
 class Subject(ImednetBaseModel):
     """A subject (participant) in a study, with status and site info."""
 
-    keywords: List[SubjectKeyword] = Field(default_factory=list, alias="keywords")
+    keywords: list[SubjectKeyword] = Field(default_factory=list, alias="keywords")
 
     pass
 
-    study_key: Optional[str]
-    subject_id: Optional[int]
-    subject_key: Optional[str]
-    subject_status: Optional[str]
-    site_id: Optional[int]
-    site_name: Optional[str]
-    deleted: Optional[bool]
-    date_created: Optional[str]
-    date_modified: Optional[str]
+    study_key: str | None
+    subject_id: int | None
+    subject_key: str | None
+    subject_status: str | None
+    site_id: int | None
+    site_name: str | None
+    deleted: bool | None
+    date_created: str | None
+    date_modified: str | None
     enrollment_start_date: Any
     subject_oid: Any

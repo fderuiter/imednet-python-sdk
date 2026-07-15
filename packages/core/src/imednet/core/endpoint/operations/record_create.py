@@ -5,7 +5,8 @@ Encapsulates validation, header construction, and execution logic for record cre
 
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar, Union
+from collections.abc import Callable
+from typing import Any, Dict, Generic, List, Optional, TypeVar, Union  # noqa: UP035
 
 from imednet.constants import HEADER_EMAIL_NOTIFY
 from imednet.core.protocols import AsyncRequesterProtocol, RequesterProtocol
@@ -25,9 +26,9 @@ class RecordCreateOperation(Generic[T]):
     def __init__(
         self,
         path: str,
-        records_data: List[Dict[str, Any]],
-        email_notify: Union[bool, str, None] = None,
-        schema: Optional[BaseSchemaCache[Any]] = None,
+        records_data: list[dict[str, Any]],
+        email_notify: bool | str | None = None,
+        schema: BaseSchemaCache[Any] | None = None,
     ) -> None:
         """Initialize the record creation operation.
 
@@ -55,7 +56,7 @@ class RecordCreateOperation(Generic[T]):
             for rec in self.records_data:
                 validate_record_entry(self.schema, rec)
 
-    def _build_headers(self) -> Dict[str, str]:
+    def _build_headers(self) -> dict[str, str]:
         """Build headers for record creation request.
 
         Returns:
@@ -64,7 +65,7 @@ class RecordCreateOperation(Generic[T]):
         Raises:
             ClientError: If email_notify contains newlines.
         """
-        headers: Dict[str, str] = {}
+        headers: dict[str, str] = {}
         if self.email_notify is not None:
             if isinstance(self.email_notify, str):
                 validate_header_value(self.email_notify)

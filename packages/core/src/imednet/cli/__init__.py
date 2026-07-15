@@ -24,7 +24,7 @@ except ImportError:
         file=sys.stderr,
     )
 
-from ..integrations import SinkConfig  # noqa: F401
+from ..integrations import SinkConfig
 from ..integrations.export import (
     export_to_csv,
     export_to_duckdb,
@@ -39,11 +39,8 @@ from .decorators import with_sdk
 from .utils import get_sdk, parse_filter_args
 
 __all__ = [
+    "SinkConfig",
     "app",
-    "get_parser",
-    "with_sdk",
-    "get_sdk",
-    "parse_filter_args",
     "export_to_csv",
     "export_to_duckdb",
     "export_to_excel",
@@ -52,7 +49,10 @@ __all__ = [
     "export_to_parquet",
     "export_to_sql",
     "export_to_sql_by_form",
-    "SinkConfig",
+    "get_parser",
+    "get_sdk",
+    "parse_filter_args",
+    "with_sdk",
 ]
 
 
@@ -75,7 +75,7 @@ def _setup_standalone_scripts(subparsers):
         def run_script(args, script_path=script_path):
             import subprocess
 
-            res = subprocess.run([sys.executable, script_path] + args.args)
+            res = subprocess.run([sys.executable, script_path] + args.args)  # noqa: RUF005, S603
             if res.returncode != 0:
                 sys.exit(res.returncode)
 

@@ -66,9 +66,9 @@ def mask_clinical_phi(value: Any) -> Any:
             )
             for k, v in value.items()
         }
-    elif isinstance(value, list):
+    if isinstance(value, list):
         return [mask_clinical_phi(v) for v in value]
-    elif isinstance(value, tuple):
+    if isinstance(value, tuple):
         return tuple(mask_clinical_phi(v) for v in value)
     return value
 
@@ -81,9 +81,9 @@ def sanitize_csv_formula(value: Any) -> Any:
     """
     if isinstance(value, str) and value.lstrip().startswith(("=", "+", "-", "@")):
         return f"'{value}"
-    elif isinstance(value, list):
+    if isinstance(value, list):
         return [sanitize_csv_formula(v) for v in value]
-    elif isinstance(value, tuple):
+    if isinstance(value, tuple):
         return tuple(sanitize_csv_formula(v) for v in value)
     return value
 

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List  # noqa: UP035
 
 from pydantic import Field, RootModel
 
@@ -39,7 +39,7 @@ class RecordJobResponse(ImednetBaseModel):
     pass
 
 
-class RecordData(RootModel[Dict[str, Any]]):
+class RecordData(RootModel[dict[str, Any]]):
     """Arbitrary record data as a dictionary."""
 
     pass

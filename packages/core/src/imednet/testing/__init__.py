@@ -10,7 +10,6 @@
 
 __all__ = [
     "canonical_type",
-    "value_for",
     "fake_coding",
     "fake_form",
     "fake_forms_for_cache",
@@ -26,4 +25,5 @@ __all__ = [
     "fake_variable",
     "fake_variables_for_cache",
     "fake_visit",
+    "value_for",
 ]

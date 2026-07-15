@@ -21,7 +21,7 @@ def paginated_slice(
 ) -> pd.DataFrame:
     """Render pager controls and return the current page slice."""
     if default_page_size not in page_size_options:
-        page_size_options = tuple(sorted(set((*page_size_options, default_page_size))))
+        page_size_options = tuple(sorted(set((*page_size_options, default_page_size))))  # noqa: C405
 
     page_size = st.selectbox(
         "Rows per page",

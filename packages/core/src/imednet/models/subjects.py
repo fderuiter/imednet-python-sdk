@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List
+from typing import List  # noqa: UP035
 
 from pydantic import Field
 
@@ -28,7 +28,7 @@ SubjectKeyword = ModelEngine.get_model('SubjectKeyword', SubjectKeyword)
 class Subject(ImednetBaseModel):
     """A subject (participant) in a study, with status and site info."""
 
-    keywords: List[SubjectKeyword] = Field(default_factory=list, alias="keywords")
+    keywords: list[SubjectKeyword] = Field(default_factory=list, alias="keywords")
 
     pass
 

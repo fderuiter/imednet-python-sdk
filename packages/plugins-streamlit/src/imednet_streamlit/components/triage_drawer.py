@@ -7,8 +7,8 @@ annotations.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from datetime import datetime, timezone
-from typing import Sequence
 
 import streamlit as st
 

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional  # noqa: UP035
 
 import httpx
 
@@ -23,7 +23,7 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
         return httpx.AsyncClient
 
     def _create_executor(
-        self, client: httpx.AsyncClient, retry_config: Optional[RetryConfig] = None
+        self, client: httpx.AsyncClient, retry_config: RetryConfig | None = None
     ) -> AsyncRequestExecutor:
         """Create an asynchronous request executor for this client."""
         return AsyncRequestExecutor(
@@ -32,7 +32,7 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
             retry_config=retry_config,
         )
 
-    async def __aenter__(self) -> "AsyncClient":
+    async def __aenter__(self) -> AsyncClient:
         """Enter the asynchronous context manager."""
         return self
 
@@ -51,7 +51,7 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
     async def get(
         self,
         path: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> httpx.Response:
         """Make an asynchronous GET request.
@@ -66,7 +66,7 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
     async def post(
         self,
         path: str,
-        json: Optional[Any] = None,
+        json: Any | None = None,
         **kwargs: Any,
     ) -> httpx.Response:
         """Make an asynchronous POST request.

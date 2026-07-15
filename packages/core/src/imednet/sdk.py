@@ -8,9 +8,10 @@ This module provides the ImednetSDK class which:
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from contextlib import contextmanager
 from importlib.metadata import EntryPoint, entry_points
-from typing import TYPE_CHECKING, Any, Iterator, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, Union, cast
 
 from .config import Config, load_config
 from .core.context import study_context
@@ -46,7 +47,7 @@ if TYPE_CHECKING:
 
 
 class WorkflowPluginProtocol(PluginProtocol):
-    """Alias kept for backwards compatibility; use :class:`~imednet.plugins.PluginProtocol` instead."""  # noqa: E501
+    """Alias kept for backwards compatibility; use :class:`~imednet.plugins.PluginProtocol` instead."""
 
 
 class _BaseSDK:
@@ -78,7 +79,7 @@ class _BaseSDK:
         """Return the configured workflow plugin entry point."""
         return self._get_plugin_entry_point("workflows")
 
-    def _init_workflows(self) -> Optional[WorkflowsNamespaceProtocol]:
+    def _init_workflows(self) -> WorkflowsNamespaceProtocol | None:
         """Instantiate workflow namespace when optional workflows plugin is available."""
         workflows_entry_point = self._get_workflow_entry_point()
         if workflows_entry_point is None:
@@ -119,7 +120,7 @@ class _BaseSDK:
                 "Failed to instantiate workflows from the discovered plugin entry point."
             ) from error
 
-    def _init_sinks(self) -> Optional[SinksNamespaceProtocol]:
+    def _init_sinks(self) -> SinksNamespaceProtocol | None:
         """Instantiate sinks namespace when optional sinks plugin is available."""
         sinks_entry_point = self._get_plugin_entry_point("sinks")
         if sinks_entry_point is None:
@@ -173,22 +174,22 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
     users: UsersEndpoint
     variables: VariablesEndpoint
     visits: VisitsEndpoint
-    workflows: Optional[WorkflowsNamespaceProtocol]
-    sinks: Optional[SinksNamespaceProtocol]
+    workflows: WorkflowsNamespaceProtocol | None
+    sinks: SinksNamespaceProtocol | None
     config: Config
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        security_key: Optional[str] = None,
-        base_url: Optional[str] = None,
-        timeout: Optional[float] = None,
-        strict_mode: Optional[bool] = None,
-        retry_config: Optional[RetryConfig] = None,
-        client: Optional[Client] = None,
-        retries: Optional[int] = None,
-        backoff_factor: Optional[float] = None,
-        retry_policy: Optional[RetryPolicy] = None,
+        api_key: str | None = None,
+        security_key: str | None = None,
+        base_url: str | None = None,
+        timeout: float | None = None,
+        strict_mode: bool | None = None,
+        retry_config: RetryConfig | None = None,
+        client: Client | None = None,
+        retries: int | None = None,
+        backoff_factor: float | None = None,
+        retry_policy: RetryPolicy | None = None,
     ) -> None:
         """Initialize the SDK with credentials and configuration."""
         config = load_config(
@@ -256,7 +257,7 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         """Cleanup resources when exiting context."""
         self.close()
 
-    async def __aenter__(self) -> "ImednetSDK":
+    async def __aenter__(self) -> ImednetSDK:
         """Prevent accidental ``async with`` usage on the synchronous client."""
         raise TypeError(
             "ImednetSDK is a synchronous client. "
@@ -306,21 +307,21 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
     users: AsyncUsersEndpoint
     variables: AsyncVariablesEndpoint
     visits: AsyncVisitsEndpoint
-    workflows: Optional[WorkflowsNamespaceProtocol]
-    sinks: Optional[SinksNamespaceProtocol]
+    workflows: WorkflowsNamespaceProtocol | None
+    sinks: SinksNamespaceProtocol | None
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        security_key: Optional[str] = None,
-        base_url: Optional[str] = None,
-        timeout: Optional[float] = None,
-        strict_mode: Optional[bool] = None,
-        retry_config: Optional[RetryConfig] = None,
-        async_client: Optional[AsyncClient] = None,
-        retries: Optional[int] = None,
-        backoff_factor: Optional[float] = None,
-        retry_policy: Optional[RetryPolicy] = None,
+        api_key: str | None = None,
+        security_key: str | None = None,
+        base_url: str | None = None,
+        timeout: float | None = None,
+        strict_mode: bool | None = None,
+        retry_config: RetryConfig | None = None,
+        async_client: AsyncClient | None = None,
+        retries: int | None = None,
+        backoff_factor: float | None = None,
+        retry_policy: RetryPolicy | None = None,
     ) -> None:
         """Initialize the asynchronous SDK.
 
@@ -399,7 +400,7 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
             "Use `await sdk.aclose()` or `async with AsyncImednetSDK(...)` instead."
         )
 
-    def __enter__(self) -> "AsyncImednetSDK":
+    def __enter__(self) -> AsyncImednetSDK:
         """Synchronous context manager is not supported."""
         raise TypeError(
             "AsyncImednetSDK does not support the synchronous context manager protocol. "
@@ -413,7 +414,7 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
             "Use `async with AsyncImednetSDK(...)` instead."
         )
 
-    async def __aenter__(self) -> "AsyncImednetSDK":
+    async def __aenter__(self) -> AsyncImednetSDK:
         """Enter the asynchronous context manager."""
         return self
 
@@ -426,4 +427,4 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
         await self._async_client.aclose()
 
 
-__all__ = ["ImednetSDK", "AsyncImednetSDK"]
+__all__ = ["AsyncImednetSDK", "ImednetSDK"]

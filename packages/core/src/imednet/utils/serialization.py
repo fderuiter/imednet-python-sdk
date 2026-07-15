@@ -1,11 +1,11 @@
 """Data serialization and flattening utilities."""
 
-from typing import Any, Dict
+from typing import Any, Dict  # noqa: UP035
 
 
-def flatten(data: Any, prefix: str = "") -> Dict[str, Any]:
+def flatten(data: Any, prefix: str = "") -> dict[str, Any]:
     """Recursively flatten a nested dict/list into dot-notation keys."""
-    result: Dict[str, Any] = {}
+    result: dict[str, Any] = {}
     if isinstance(data, dict):
         for key, value in data.items():
             full_key = f"{prefix}.{key}" if prefix else key

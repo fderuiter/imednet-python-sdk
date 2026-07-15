@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import sys
+from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Iterator
 
 from imednet.config import load_config
 from imednet.sdk import ImednetSDK
@@ -34,7 +34,7 @@ def get_sdk() -> ImednetSDK:
 @contextmanager
 def fetching_status(name: str, study_key: str | None = None) -> Iterator[None]:
     """Context manager to show a spinner while fetching data."""
-    if study_key:
+    if study_key:  # noqa: SIM108
         msg = f"Fetching {name} for study '{study_key}'..."
     else:
         msg = f"Fetching {name}..."

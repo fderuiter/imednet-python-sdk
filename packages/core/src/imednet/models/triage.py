@@ -35,7 +35,7 @@ class TriageHistoryEntry(ImednetBaseModel):
     from_status: TriageStatus
     to_status: TriageStatus
     user_id: str = Field(..., min_length=1)
-    comment: Optional[str] = None
+    comment: str | None = None
     timestamp: datetime
 
     @field_validator("comment", check_fields=False, mode="before")  # type: ignore[untyped-decorator]
@@ -54,7 +54,7 @@ class TriageItem(ImednetBaseModel):
     item_id: str = Field(..., min_length=1)
     study_key: str = Field(..., min_length=1)
     status: TriageStatus = TriageStatus.NEW
-    assignee: Optional[str] = None
+    assignee: str | None = None
     severity: str = Field(..., min_length=1)
     annotations: list[TriageAnnotation] = Field(default_factory=list)
     history: list[TriageHistoryEntry] = Field(default_factory=list)

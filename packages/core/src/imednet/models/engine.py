@@ -2,14 +2,14 @@
 
 import os
 import re
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional, Type  # noqa: UP035
 
 from pydantic import Field, create_model
 
 from imednet.models.base import ImednetBaseModel
 from imednet.models.contract import APIContract, ContractBuilder
 
-_CONTRACT_CACHE: Optional[APIContract] = None
+_CONTRACT_CACHE: APIContract | None = None
 
 
 def get_contract() -> APIContract:
@@ -74,7 +74,7 @@ class ModelEngine:
     """Engine for dynamically creating Pydantic models from schemas."""
 
     @classmethod
-    def get_model(cls, model_name: str, base_cls: Type[Any] = ImednetBaseModel) -> Type[Any]:
+    def get_model(cls, model_name: str, base_cls: type[Any] = ImednetBaseModel) -> type[Any]:
         """Get or create a dynamic Pydantic model for the given name.
 
         Args:
@@ -91,14 +91,14 @@ class ModelEngine:
         return cls._get_model(model_name, base_cls)
 
     @classmethod
-    def _get_model(cls, model_name: str, base_cls: Type[Any] = ImednetBaseModel) -> Type[Any]:
+    def _get_model(cls, model_name: str, base_cls: type[Any] = ImednetBaseModel) -> type[Any]:
         """Internal implementation for dynamic model creation."""
         contract = get_contract()
         if model_name not in contract.models:
             return create_model(model_name, __base__=base_cls)  # type: ignore[no-any-return]
 
         model_def = contract.models[model_name]
-        fields: Dict[str, Any] = {}
+        fields: dict[str, Any] = {}
 
         for snake_key, field_def in model_def.fields.items():
             # If the base class already defined this field, don't overwrite it
@@ -107,11 +107,11 @@ class ModelEngine:
 
             # Map internal type name to Python type
             if field_def.type_name == "string":
-                py_type = Optional[str]
+                py_type = Optional[str]  # noqa: UP045
             elif field_def.type_name == "integer":
-                py_type = Optional[int]  # type: ignore
+                py_type = Optional[int]  # type: ignore  # noqa: UP045
             elif field_def.type_name == "boolean":
-                py_type = Optional[bool]  # type: ignore
+                py_type = Optional[bool]  # type: ignore  # noqa: UP045
             else:
                 py_type = Any  # type: ignore
 
@@ -119,7 +119,7 @@ class ModelEngine:
             fields[snake_key] = (py_type, new_field)
 
         model = create_model(model_name, __base__=base_cls, **fields)
-        return model  # type: ignore[no-any-return]
+        return model  # type: ignore[no-any-return]  # noqa: RET504
 
     @classmethod
     def generate_stubs(cls, output_dir: str) -> None:
@@ -144,7 +144,7 @@ class ModelEngine:
             ):
                 continue
 
-            with open(py_file, "r") as f:
+            with open(py_file) as f:
                 content = f.read()
 
             matches = re.findall(
@@ -173,7 +173,7 @@ class ModelEngine:
                         )
                 pyi_content_str = pyi_content_str.replace(original_imports, new_imports, 1)
 
-            for class_name, model_name, base_class_name in matches:
+            for class_name, model_name, base_class_name in matches:  # noqa: B007
                 model = cls.get_model(model_name)
                 stub_lines = []
                 has_fields = False
@@ -206,7 +206,7 @@ class ModelEngine:
 
                     filtered_stub_lines = []
                     has_filtered_fields = False
-                    for field_name, field_info in model.model_fields.items():
+                    for field_name, field_info in model.model_fields.items():  # noqa: B023
                         if field_name in existing_fields:
                             continue
                         ann = str(field_info.annotation)
@@ -239,7 +239,7 @@ class ResourceRegistry:
     """Unified resource governance registry serving as the single source of truth for fields."""
 
     @classmethod
-    def get_fields(cls, model_name: str) -> List[str]:
+    def get_fields(cls, model_name: str) -> list[str]:
         """Get the field names for a specific dynamic model.
 
         Args:

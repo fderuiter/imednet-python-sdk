@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import logging
 from types import TracebackType
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional  # noqa: UP035
 
 import httpx
 
@@ -38,7 +38,7 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
         return httpx.Client
 
     def _create_executor(
-        self, client: httpx.Client, retry_config: Optional[RetryConfig] = None
+        self, client: httpx.Client, retry_config: RetryConfig | None = None
     ) -> SyncRequestExecutor:
         """Create a synchronous request executor for this client."""
         return SyncRequestExecutor(
@@ -53,9 +53,9 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
 
     def __exit__(
         self,
-        exc_type: Optional[type[BaseException]],
-        exc: Optional[BaseException],
-        tb: Optional[TracebackType],
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
     ) -> None:
         """Exit the synchronous context manager and close the client."""
         self.close()
@@ -71,7 +71,7 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
     def get(
         self,
         path: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> httpx.Response:
         """Make a GET request.
@@ -86,7 +86,7 @@ class Client(HTTPClientBase[httpx.Client, SyncRequestExecutor]):
     def post(
         self,
         path: str,
-        json: Optional[Any] = None,
+        json: Any | None = None,
         **kwargs: Any,
     ) -> httpx.Response:
         """Make a POST request.

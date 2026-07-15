@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List  # noqa: UP035
 
 try:
     import pandas as pd
@@ -15,7 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover - only for type checking
     from ..sdk import ImednetSDK
 
 
-def records_to_dataframe(records: List[Record], *, flatten: bool = False) -> pd.DataFrame:
+def records_to_dataframe(records: list[Record], *, flatten: bool = False) -> pd.DataFrame:
     """Convert a list of :class:`~imednet.models.records.Record` to a DataFrame.
 
     Each record is converted using :meth:`pydantic.BaseModel.model_dump` with
@@ -25,9 +25,9 @@ def records_to_dataframe(records: List[Record], *, flatten: bool = False) -> pd.
     """
     if pd is None:
         raise ImportError(
-            (
+            
                 "pandas is required for records_to_dataframe. Install with \"pip install 'imednet[export]'\"."
-            )
+            
         )
 
     rows = [r.model_dump(by_alias=False) for r in records]
@@ -39,7 +39,7 @@ def records_to_dataframe(records: List[Record], *, flatten: bool = False) -> pd.
 
 
 def export_records_csv(
-    sdk: "ImednetSDK", study_key: str, file_path: str, *, flatten: bool = True
+    sdk: ImednetSDK, study_key: str, file_path: str, *, flatten: bool = True
 ) -> None:
     """Fetch all records for ``study_key`` and write them to ``file_path``.
 
@@ -49,9 +49,9 @@ def export_records_csv(
     """
     if pd is None:
         raise ImportError(
-            (
+            
                 "pandas is required for export_records_csv. Install with \"pip install 'imednet[export]'\"."
-            )
+            
         )
 
     records = list(sdk.records.list(study_key=study_key))

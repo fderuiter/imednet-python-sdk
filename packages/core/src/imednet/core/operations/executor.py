@@ -7,7 +7,8 @@ from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Optional, TypeVar
+from collections.abc import Awaitable, Callable
+from typing import TYPE_CHECKING, Any, Optional, TypeVar
 
 from tenacity import (
     AsyncRetrying,
@@ -63,11 +64,11 @@ class UniversalExecutor:
 
     def __init__(
         self,
-        tracer: Optional[Tracer] = None,
-        retry_config: Optional[RetryConfig] = None,
+        tracer: Tracer | None = None,
+        retry_config: RetryConfig | None = None,
         operation_name: str = "operation",
-        wait_strategy: Optional[Callable[[RetryCallState], float]] = None,
-        retry_predicate: Optional[Callable[[RetryCallState], bool]] = None,
+        wait_strategy: Callable[[RetryCallState], float] | None = None,
+        retry_predicate: Callable[[RetryCallState], bool] | None = None,
         **attributes: Any,
     ) -> None:
         """Initialize the executor.
@@ -102,7 +103,7 @@ class UniversalExecutor:
         """
         if retry_state.outcome and retry_state.outcome.failed:
             exc = retry_state.outcome.exception()
-            if isinstance(exc, Exception):
+            if isinstance(exc, Exception):  # noqa: SIM102
                 if hasattr(self.retry_config.retry_policy, "should_retry"):
                     return self.retry_config.retry_policy.should_retry(exc)
         return False
@@ -132,7 +133,7 @@ class UniversalExecutor:
                         if _exc is not cause:
                             raise
                 if cause is not None and cause is not e:
-                    raise cause
+                    raise cause  # noqa: B904
                 raise
             except Exception as e:
                 get_global_circuit_breaker().record_failure()
@@ -173,7 +174,7 @@ class UniversalExecutor:
                         if _exc is not cause:
                             raise
                 if cause is not None and cause is not e:
-                    raise cause
+                    raise cause  # noqa: B904
                 raise
             except Exception as e:
                 get_global_circuit_breaker().record_failure()

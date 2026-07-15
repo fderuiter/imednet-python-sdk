@@ -1,6 +1,6 @@
 """Endpoint for managing subjects in a study."""
 
-from typing import List
+from typing import List  # noqa: UP035
 
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.models.subjects import Subject
@@ -17,7 +17,7 @@ class SubjectsOperationDef:
 class SubjectsEndpoint(SubjectsOperationDef, EdcSyncListGetEndpoint[Subject]):  # type: ignore[misc]
     """Synchronous endpoint for managing Subjects."""
 
-    def list_by_site(self, study_key: str, site_id: str | int) -> List[Subject]:
+    def list_by_site(self, study_key: str, site_id: str | int) -> list[Subject]:
         """List subjects by site ID.
 
         Args:
@@ -33,7 +33,7 @@ class SubjectsEndpoint(SubjectsOperationDef, EdcSyncListGetEndpoint[Subject]):  
 class AsyncSubjectsEndpoint(SubjectsOperationDef, EdcAsyncListGetEndpoint[Subject]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Subjects."""
 
-    async def async_list_by_site(self, study_key: str, site_id: str | int) -> List[Subject]:
+    async def async_list_by_site(self, study_key: str, site_id: str | int) -> list[Subject]:
         """List subjects by site ID asynchronously.
 
         Args:

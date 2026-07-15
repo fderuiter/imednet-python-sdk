@@ -33,7 +33,7 @@ def _fetch_queries(_sdk: object, study_key: str) -> pd.DataFrame:
         rows.append(row)
 
     if not rows:
-        return pd.DataFrame(columns=fields + ["status"])
+        return pd.DataFrame(columns=fields + ["status"])  # noqa: RUF005
     return pd.DataFrame(rows)
 
 

@@ -1,6 +1,7 @@
 """Standard form layout presets for the Form Designer."""
 
-from typing import Callable, Dict
+from collections.abc import Callable
+from typing import Dict  # noqa: UP035
 
 from .builder import FormBuilder
 
@@ -48,7 +49,7 @@ def build_cv_pathology(builder: FormBuilder) -> None:
     builder.add_field(type="upload", label="Upload Report", question_name="RPTFILE")
 
 
-PRESETS: Dict[str, FormPreset] = {
+PRESETS: dict[str, FormPreset] = {
     "Demo Form": build_demo_form,
     "CV Pathology": build_cv_pathology,
 }

@@ -68,8 +68,9 @@ from __future__ import annotations
 
 import logging
 import time
+from collections.abc import Sequence
 from datetime import datetime, timezone
-from typing import Any, Optional, Sequence
+from typing import Any, Optional
 
 from imednet.errors import ExportBatchError, ExportConfigurationError
 from imednet.integrations.sink_base import (
@@ -249,7 +250,7 @@ def export_to_mongodb(
     database: str = "",
     collection: str = "",
     *,
-    config: Optional[MongoDbSinkConfig] = None,
+    config: MongoDbSinkConfig | None = None,
 ) -> int:
     """Export study records to MongoDB using :class:`MongoDbExportSink`."""
     from imednet.integrations.sink_base import apply_quality_gate

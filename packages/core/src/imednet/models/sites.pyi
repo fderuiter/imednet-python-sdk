@@ -15,9 +15,9 @@ class Site(ImednetBaseModel):
 
     pass
 
-    study_key: Optional[str]
-    site_id: Optional[int]
-    site_name: Optional[str]
-    site_enrollment_status: Optional[str]
-    date_created: Optional[str]
-    date_modified: Optional[str]
+    study_key: str | None
+    site_id: int | None
+    site_name: str | None
+    site_enrollment_status: str | None
+    date_created: str | None
+    date_modified: str | None

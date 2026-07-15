@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa: UP035
 
 from pydantic import Field, computed_field
 
@@ -35,10 +35,10 @@ class User(ImednetBaseModel):
         # will strip extra spaces if either is empty
         return " ".join(filter(None, (self.first_name, self.last_name)))
 
-    user_id: Optional[str]
-    login: Optional[str]
-    first_name: Optional[str]
-    last_name: Optional[str]
-    email: Optional[str]
-    user_active_in_study: Optional[bool]
+    user_id: str | None
+    login: str | None
+    first_name: str | None
+    last_name: str | None
+    email: str | None
+    user_active_in_study: bool | None
     roles: Any

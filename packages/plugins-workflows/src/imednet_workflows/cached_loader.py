@@ -5,9 +5,9 @@ from __future__ import annotations
 import json
 import sqlite3
 import threading
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Iterable, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from tenacity import Retrying, retry_if_exception_type, stop_after_attempt, wait_exponential
 
@@ -59,7 +59,7 @@ class CachedRecordsLoader:
 
     def __init__(
         self,
-        sdk: "ImednetFacade",
+        sdk: ImednetFacade,
         *,
         cache_dir: str | Path | None = None,
         database_name: str = "records_cache.sqlite3",

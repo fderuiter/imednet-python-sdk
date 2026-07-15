@@ -12,9 +12,9 @@ from .handlers import handle_response
 from .monitor import RequestMonitor
 
 __all__ = [
-    "BaseRequestExecutor",
-    "SyncRequestExecutor",
     "AsyncRequestExecutor",
-    "handle_response",
+    "BaseRequestExecutor",
     "RequestMonitor",
+    "SyncRequestExecutor",
+    "handle_response",
 ]

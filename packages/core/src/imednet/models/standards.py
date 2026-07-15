@@ -227,11 +227,11 @@ PROFILE_REGISTRY.register(DeviceSafetyProfile())
 
 
 __all__ = [
-    "ValidationViolation",
-    "StandardsProfile",
-    "GeneralClinicalProfile",
-    "DrugSafetyProfile",
-    "DeviceSafetyProfile",
-    "StandardsProfileRegistry",
     "PROFILE_REGISTRY",
+    "DeviceSafetyProfile",
+    "DrugSafetyProfile",
+    "GeneralClinicalProfile",
+    "StandardsProfile",
+    "StandardsProfileRegistry",
+    "ValidationViolation",
 ]

@@ -5,15 +5,15 @@ from __future__ import annotations
 import random
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa: UP035
 
 
 class RandomDataGenerator:
     """A deterministic, standard-library based data generator replacement for Faker."""
 
-    def __init__(self, seed: Optional[int] = None) -> None:
+    def __init__(self, seed: int | None = None) -> None:
         """Return a mocked value."""
-        self._rng = random.Random(seed)
+        self._rng = random.Random(seed)  # noqa: S311
 
     def uuid4(self) -> str:
         """Return a mocked value."""
@@ -35,7 +35,7 @@ class RandomDataGenerator:
         """Return a mocked value."""
         return self._rng.choice([True, False])
 
-    def random_element(self, elements: List[Any]) -> Any:
+    def random_element(self, elements: list[Any]) -> Any:
         """Return a mocked value."""
         return self._rng.choice(elements)
 

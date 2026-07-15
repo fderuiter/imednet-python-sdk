@@ -21,8 +21,8 @@ class MappingRule(ImednetBaseModel):
     target_field: str = Field(..., alias="targetField")
     source_form_key: str = Field(..., alias="sourceFormKey")
     source_variable_name: str = Field(..., alias="sourceVariableName")
-    fallback_value: Optional[str] = Field(None, alias="fallbackValue")
-    business_logic: Optional[str] = Field(None, alias="businessLogic")
+    fallback_value: str | None = Field(None, alias="fallbackValue")
+    business_logic: str | None = Field(None, alias="businessLogic")
     is_baseline: bool = Field(False, alias="isBaseline")
 
 
@@ -33,8 +33,8 @@ class WidgetConfig(ImednetBaseModel):
     type: str = Field(..., alias="type")
     title: str = Field(..., alias="title")
     domain: str = Field(..., alias="domain")
-    x_axis: Optional[str] = Field(None, alias="xAxis")
-    y_axis: Optional[str] = Field(None, alias="yAxis")
+    x_axis: str | None = Field(None, alias="xAxis")
+    y_axis: str | None = Field(None, alias="yAxis")
     layout_cols: int = Field(12, alias="layoutCols")
 
 

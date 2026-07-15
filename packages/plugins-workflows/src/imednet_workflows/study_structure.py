@@ -1,7 +1,7 @@
 """Workflow for retrieving and aggregating study structural metadata."""
 
 import asyncio
-from typing import TYPE_CHECKING, Dict, List
+from typing import TYPE_CHECKING, Dict, List  # noqa: UP035
 
 # Import potential exceptions
 from imednet.spi.errors import ImednetError
@@ -23,20 +23,20 @@ if TYPE_CHECKING:
 
 def _build_study_structure(
     study_key: str,
-    intervals: List[Interval],
-    forms: List[Form],
-    variables: List[Variable],
+    intervals: list[Interval],
+    forms: list[Form],
+    variables: list[Variable],
 ) -> StudyStructure:
     """Helper to assemble the StudyStructure from its component parts."""
-    forms_by_id: Dict[int, Form] = {f.form_id: f for f in forms if f.form_id is not None}
-    variables_by_form_id: Dict[int, List[Variable]] = {}
+    forms_by_id: dict[int, Form] = {f.form_id: f for f in forms if f.form_id is not None}
+    variables_by_form_id: dict[int, list[Variable]] = {}
     for var in variables:
         if var.form_id is not None:
             variables_by_form_id.setdefault(var.form_id, []).append(var)
 
-    interval_structures: List[IntervalStructure] = []
+    interval_structures: list[IntervalStructure] = []
     for interval in intervals:
-        form_structures: List[FormStructure] = []
+        form_structures: list[FormStructure] = []
         for form_summary in getattr(interval, 'forms', []):
             if form_summary.form_id is not None:
                 full_form = forms_by_id.get(form_summary.form_id)
@@ -64,9 +64,9 @@ def get_study_structure(sdk: "ImednetFacade", study_key: str) -> StudyStructure:
     """
     try:
         # Fetch all components concurrently (if async were used) or sequentially
-        intervals: List[Interval] = list(sdk.get_intervals(study_key))
-        forms: List[Form] = list(sdk.get_forms(study_key))
-        variables: List[Variable] = list(sdk.get_variables(study_key))
+        intervals: list[Interval] = list(sdk.get_intervals(study_key))
+        forms: list[Form] = list(sdk.get_forms(study_key))
+        variables: list[Variable] = list(sdk.get_variables(study_key))
 
         return _build_study_structure(study_key, intervals, forms, variables)
 

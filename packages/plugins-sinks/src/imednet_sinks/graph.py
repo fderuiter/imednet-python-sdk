@@ -57,8 +57,9 @@ from __future__ import annotations
 
 import logging
 import time
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Any, Optional, Sequence, Tuple
+from typing import Any, Optional, Tuple  # noqa: UP035
 
 from imednet.errors import ExportBatchError, ExportConfigurationError
 from imednet.integrations.sink_base import (
@@ -84,7 +85,7 @@ class Neo4jSinkConfig(SinkConfig):
     """
 
     uri: str = ""
-    auth: Tuple[str, str] = ("", "")
+    auth: tuple[str, str] = ("", "")
     database: str = "neo4j"
 
     def __post_init__(self):
@@ -233,9 +234,9 @@ def export_to_neo4j(
     sdk: ImednetSDK,
     study_key: str,
     uri: str = "",
-    auth: Tuple[str, str] = ("", ""),
+    auth: tuple[str, str] = ("", ""),
     *,
-    config: Optional[Neo4jSinkConfig] = None,
+    config: Neo4jSinkConfig | None = None,
 ) -> int:
     """Export study records to Neo4j using :class:`Neo4jExportSink`."""
     if config is None:

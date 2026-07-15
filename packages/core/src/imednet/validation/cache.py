@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from typing import (
+from collections.abc import Callable, Iterable
+from typing import (  # noqa: UP035
     TYPE_CHECKING,
     Any,
-    Callable,
     Dict,
     Generic,
-    Iterable,
     Optional,
     Tuple,
     TypeVar,
@@ -38,8 +37,8 @@ class BaseSchemaCache(Generic[_TClient]):
             is_async: Whether this cache is used in an asynchronous context.
         """
         self._is_async = is_async
-        self._form_variables: Dict[str, Dict[str, Variable]] = {}
-        self._form_id_to_key: Dict[int, str] = {}
+        self._form_variables: dict[str, dict[str, Variable]] = {}
+        self._form_id_to_key: dict[int, str] = {}
 
     def populate(self, variables: Iterable[Variable]) -> None:
         """Populate the cache with the given variables."""
@@ -55,7 +54,7 @@ class BaseSchemaCache(Generic[_TClient]):
         self,
         forms: AsyncFormsEndpoint,
         variables: AsyncVariablesEndpoint,
-        study_key: Optional[str] = None,
+        study_key: str | None = None,
     ) -> None:
         """Refresh the cache asynchronously by fetching all variables for a study.
 
@@ -71,7 +70,7 @@ class BaseSchemaCache(Generic[_TClient]):
         self,
         forms: FormsEndpoint,
         variables: VariablesEndpoint,
-        study_key: Optional[str] = None,
+        study_key: str | None = None,
     ) -> None:
         """Refresh the cache synchronously by fetching all variables for a study.
 
@@ -87,7 +86,7 @@ class BaseSchemaCache(Generic[_TClient]):
         self,
         forms: FormsEndpoint | AsyncFormsEndpoint,
         variables: VariablesEndpoint | AsyncVariablesEndpoint,
-        study_key: Optional[str] = None,
+        study_key: str | None = None,
     ) -> Any:
         """Refresh the cache, using the appropriate sync or async implementation.
 
@@ -111,7 +110,7 @@ class BaseSchemaCache(Generic[_TClient]):
             study_key,
         )
 
-    def variables_for_form(self, form_key: str) -> Dict[str, Variable]:
+    def variables_for_form(self, form_key: str) -> dict[str, Variable]:
         """Return the variables associated with the given form key.
 
         Args:
@@ -122,7 +121,7 @@ class BaseSchemaCache(Generic[_TClient]):
         """
         return self._form_variables.get(form_key, {})
 
-    def form_key_from_id(self, form_id: int) -> Optional[str]:
+    def form_key_from_id(self, form_id: int) -> str | None:
         """Resolve a form key from a form ID.
 
         Args:
@@ -134,7 +133,7 @@ class BaseSchemaCache(Generic[_TClient]):
         return self._form_id_to_key.get(form_id)
 
     @property
-    def forms(self) -> Dict[str, Dict[str, Variable]]:
+    def forms(self) -> dict[str, dict[str, Variable]]:
         """Return cached variables grouped by form key."""
         return self._form_variables
 
@@ -207,7 +206,7 @@ def _validate_text(value: Any) -> None:
         raise ValidationError("Value must be a string")
 
 
-_TYPE_VALIDATORS: Dict[str, Callable[[Any], None]] = {
+_TYPE_VALIDATORS: dict[str, Callable[[Any], None]] = {
     "int": _validate_int,
     "integer": _validate_int,
     "number": _validate_int,
@@ -258,7 +257,7 @@ def _check_type(var_type: str | None, value: Any) -> None:
 def validate_record_data(
     schema: BaseSchemaCache[Any],
     form_key: str,
-    data: Dict[str, Any],
+    data: dict[str, Any],
 ) -> None:
     """Validate ``data`` for ``form_key`` using the provided schema cache.
 
@@ -283,8 +282,8 @@ def validate_record_data(
 def calculate_readiness_score(
     schema: BaseSchemaCache[Any],
     form_key: str,
-    data: Dict[str, Any],
-) -> Tuple[float, list[str]]:
+    data: dict[str, Any],
+) -> tuple[float, list[str]]:
     """Calculate the schema readiness score for a record's data.
 
     Returns:
@@ -315,7 +314,7 @@ def calculate_readiness_score(
             _check_type(var.variable_type, value)
             valid_count += 1
         except Exception as e:
-            reasons.append(f"Variable {name} invalid: {str(e)}")
+            reasons.append(f"Variable {name} invalid: {e!s}")
 
     score = (valid_count / expected_count) * 100.0
     return score, reasons
@@ -323,7 +322,7 @@ def calculate_readiness_score(
 
 def validate_record_entry(
     schema: BaseSchemaCache[Any],
-    record: Dict[str, Any],
+    record: dict[str, Any],
 ) -> None:
     """Validate a single record entry against the schema.
 
@@ -358,7 +357,7 @@ class BaseSchemaValidator(_ValidatorMixin, Generic[_TClient]):
         """
         self.schema.populate(variables)
 
-    def _needs_refresh(self, record: Dict[str, Any]) -> Tuple[Optional[str], bool]:
+    def _needs_refresh(self, record: dict[str, Any]) -> tuple[str | None, bool]:
         """Determine if the schema cache needs refreshing for the given record.
 
         Returns:
@@ -372,7 +371,7 @@ class BaseSchemaValidator(_ValidatorMixin, Generic[_TClient]):
 class SchemaValidator(BaseSchemaValidator["ImednetFacade"]):
     """Validate record payloads using variable metadata from the API (Synchronous)."""
 
-    def __new__(cls, sdk: "ImednetFacade", *args: Any, **kwargs: Any) -> Any:
+    def __new__(cls, sdk: ImednetFacade, *args: Any, **kwargs: Any) -> Any:
         """Create a new instance of the validator, handling deprecation of is_async.
 
         Args:
@@ -409,14 +408,14 @@ class SchemaValidator(BaseSchemaValidator["ImednetFacade"]):
         variables = self._sdk.get_variables(study_key=study_key)
         self._refresh_common(variables)
 
-    def validate_record(self, study_key: str, record: Dict[str, Any]) -> None:
+    def validate_record(self, study_key: str, record: dict[str, Any]) -> None:
         """Validate a single record payload."""
         form_key, needs_refresh = self._needs_refresh(record)
         if needs_refresh:
             self.refresh(study_key)
         self._validate_cached(form_key, record.get("recordData", record.get("data", {})))
 
-    def validate_batch(self, study_key: str, records: list[Dict[str, Any]]) -> None:
+    def validate_batch(self, study_key: str, records: list[dict[str, Any]]) -> None:
         """Validate a batch of record payloads."""
         for rec in records:
             self.validate_record(study_key, rec)
@@ -439,14 +438,14 @@ class AsyncSchemaValidator(BaseSchemaValidator["AsyncImednetFacade"]):
         variables = await self._sdk.async_get_variables(study_key=study_key)
         self._refresh_common(variables)
 
-    async def validate_record(self, study_key: str, record: Dict[str, Any]) -> None:
+    async def validate_record(self, study_key: str, record: dict[str, Any]) -> None:
         """Validate a single record payload asynchronously."""
         form_key, needs_refresh = self._needs_refresh(record)
         if needs_refresh:
             await self.refresh(study_key)
         self._validate_cached(form_key, record.get("recordData", record.get("data", {})))
 
-    async def validate_batch(self, study_key: str, records: list[Dict[str, Any]]) -> None:
+    async def validate_batch(self, study_key: str, records: list[dict[str, Any]]) -> None:
         """Validate a batch of record payloads asynchronously."""
         for rec in records:
             await self.validate_record(study_key, rec)

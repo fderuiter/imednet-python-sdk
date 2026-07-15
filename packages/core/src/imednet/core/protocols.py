@@ -1,6 +1,7 @@
 """Core protocols for the HTTP client to decouple endpoints from concrete implementations."""
 
-from typing import Any, Awaitable, Dict, Optional, Protocol, Tuple, runtime_checkable
+from collections.abc import Awaitable
+from typing import Any, Dict, Optional, Protocol, Tuple, runtime_checkable  # noqa: UP035
 
 import httpx
 
@@ -28,7 +29,7 @@ class RequesterProtocol(Protocol):
     def get(
         self,
         path: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> httpx.Response:
         """Make a GET request."""
@@ -37,7 +38,7 @@ class RequesterProtocol(Protocol):
     def post(
         self,
         path: str,
-        json: Optional[Any] = None,
+        json: Any | None = None,
         **kwargs: Any,
     ) -> httpx.Response:
         """Make a POST request."""
@@ -65,7 +66,7 @@ class AsyncRequesterProtocol(Protocol):
     def get(
         self,
         path: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> Awaitable[httpx.Response]:
         """Make a GET request."""
@@ -74,7 +75,7 @@ class AsyncRequesterProtocol(Protocol):
     def post(
         self,
         path: str,
-        json: Optional[Any] = None,
+        json: Any | None = None,
         **kwargs: Any,
     ) -> Awaitable[httpx.Response]:
         """Make a POST request."""
@@ -98,7 +99,7 @@ class ClientProvider(Protocol):
 class ParamProcessor(Protocol):
     """Protocol for parameter processing strategies."""
 
-    def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    def process_filters(self, filters: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
         """Process filters to extract special parameters.
 
         Args:

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, List, Literal, Optional, Union
+from typing import Any, List, Literal, Optional, Union  # noqa: UP035
 
 from pydantic import BaseModel, Field
 
@@ -11,45 +11,45 @@ class Choice(BaseModel):
     """A choice for radio or dropdown fields."""
 
     text: str
-    choice_id: Union[int, str]
+    choice_id: int | str
     code: str
 
 
 class BaseFieldProps(BaseModel):
     """Shared properties for all data capture fields."""
 
-    fld_id: Optional[Union[int, str]] = None
-    question_id: Optional[Union[int, str]] = None
-    question_name: Optional[str] = None
-    label: Optional[str] = None
-    sas_label: Optional[str] = None
-    sequence: Optional[str] = None
-    page_no: Optional[str] = None
+    fld_id: int | str | None = None
+    question_id: int | str | None = None
+    question_name: str | None = None
+    label: str | None = None
+    sas_label: str | None = None
+    sequence: str | None = None
+    page_no: str | None = None
 
     # Validation & Logic
-    sdv_req: Optional[Literal["yes", "no"]] = None
-    bl_req: Optional[Literal["optional", "hard", "soft", "autoquery", "confirm"]] = None
-    bl_req_id: Optional[Union[int, str]] = None
+    sdv_req: Literal["yes", "no"] | None = None
+    bl_req: Literal["optional", "hard", "soft", "autoquery", "confirm"] | None = None
+    bl_req_id: int | str | None = None
 
     # Dates & Logic
-    bl_future_date: Optional[int] = None
-    bl_future_date_id: Optional[Union[int, str]] = None
-    bl_inherit_date: Optional[int] = None
-    bl_inherit_date_id: Optional[Union[int, str]] = None
+    bl_future_date: int | None = None
+    bl_future_date_id: int | str | None = None
+    bl_inherit_date: int | None = None
+    bl_inherit_date_id: int | str | None = None
 
     # View Permissions
-    bl_related: Optional[Union[str, List[Any]]] = None
-    is_blinded: Optional[int] = None
-    blinded_roles: Optional[List[str]] = None
+    bl_related: str | list[Any] | None = None
+    is_blinded: int | None = None
+    blinded_roles: list[str] | None = None
 
     # Internal Flags
-    mv: Optional[int] = None
-    nodelete: Optional[int] = None
-    catalog: Optional[str] = None
-    comments: Optional[str] = None
+    mv: int | None = None
+    nodelete: int | None = None
+    catalog: str | None = None
+    comments: str | None = None
 
     # New Field ID (often used during creation before DB assignment)
-    new_fld_id: Optional[Union[int, str]] = None
+    new_fld_id: int | str | None = None
 
 
 class TableProps(BaseModel):
@@ -64,10 +64,10 @@ class LabelProps(BaseModel):
 
     type: Literal["label"]
     label: str
-    label_id: Optional[str] = None
-    label_name: Optional[str] = None
-    fld_id: Optional[Union[int, str]] = None
-    new_fld_id: Optional[Union[int, str]] = None
+    label_id: str | None = None
+    label_name: str | None = None
+    fld_id: int | str | None = None
+    new_fld_id: int | str | None = None
 
 
 class SeparatorProps(BaseModel):
@@ -75,7 +75,7 @@ class SeparatorProps(BaseModel):
 
     type: Literal["sep"]
     septype: int
-    label: Optional[str] = None
+    label: str | None = None
 
 
 class ExtQuestionProps(BaseModel):
@@ -84,64 +84,64 @@ class ExtQuestionProps(BaseModel):
     type: Literal["ext_question"]
     ext_source: Literal["interval", "form"]
     label: str
-    interval_source: Optional[str] = None
-    form: Optional[int] = None
-    field: Optional[int] = None
-    source: Optional[int] = None
+    interval_source: str | None = None
+    form: int | None = None
+    field: int | None = None
+    source: int | None = None
 
 
 class TextFieldProps(BaseFieldProps):
     """Properties for a text input field."""
 
     type: Literal["text"]
-    length: Union[str, int]
-    columns: Optional[Union[str, int]] = None
+    length: str | int
+    columns: str | int | None = None
 
 
 class NumberFieldProps(BaseFieldProps):
     """Properties for a number input field."""
 
     type: Literal["number"]
-    length: Union[str, int]
-    columns: Optional[Union[str, int]] = None
-    real: Optional[int] = None  # 0=Int, 1=Float
-    suffix: Optional[str] = None
+    length: str | int
+    columns: str | int | None = None
+    real: int | None = None  # 0=Int, 1=Float
+    suffix: str | None = None
 
 
 class MemoFieldProps(BaseFieldProps):
     """Properties for a memo/multiline text field."""
 
     type: Literal["memo"]
-    length: Union[str, int]
-    columns: Union[str, int]
-    rows: Union[str, int]
+    length: str | int
+    columns: str | int
+    rows: str | int
 
 
 class RadioFieldProps(BaseFieldProps):
     """Properties for a radio button field."""
 
     type: Literal["radio"]
-    choices: List[Choice]
-    radio: Optional[int] = None  # Layout: 1=Vertical, 2=Horizontal
+    choices: list[Choice]
+    radio: int | None = None  # Layout: 1=Vertical, 2=Horizontal
 
 
 class DropdownFieldProps(BaseFieldProps):
     """Properties for a dropdown/select field."""
 
     type: Literal["dropdown"]
-    choices: List[Choice]
-    lab_condition: Optional[str] = None
-    lab_default_form: Optional[str] = None
-    lab_default_form_type: Optional[str] = None
-    lab_default_question: Optional[str] = None
-    lab_normal: Optional[str] = None
+    choices: list[Choice]
+    lab_condition: str | None = None
+    lab_default_form: str | None = None
+    lab_default_form_type: str | None = None
+    lab_default_question: str | None = None
+    lab_normal: str | None = None
 
 
 class CheckboxFieldProps(BaseFieldProps):
     """Properties for a checkbox field."""
 
     type: Literal["checkbox"]
-    choices: Optional[List[Choice]] = None
+    choices: list[Choice] | None = None
 
 
 class FileUploadProps(BaseFieldProps):
@@ -149,23 +149,23 @@ class FileUploadProps(BaseFieldProps):
 
     type: Literal["upload"]
     mfs: int  # Multi-File Support
-    max_files: Union[str, int]
+    max_files: str | int
 
 
 class DateTimeFieldProps(BaseFieldProps):
     """Properties for a date/time input field."""
 
     type: Literal["datetime"]
-    time_ctrl: Optional[int] = None  # 1 = Show Time
-    date_ctrl: Optional[int] = None  # 1 = Show Date
-    use_seconds: Optional[int] = None  # 1 = Show Seconds
-    record_comp_date: Optional[int] = None
-    record_key_date: Optional[int] = None
+    time_ctrl: int | None = None  # 1 = Show Time
+    date_ctrl: int | None = None  # 1 = Show Date
+    use_seconds: int | None = None  # 1 = Show Seconds
+    record_comp_date: int | None = None
+    record_key_date: int | None = None
 
     # Legacy support from current builder logic
-    allow_no_day: Optional[int] = None
-    allow_no_month: Optional[int] = None
-    allow_no_year: Optional[int] = None
+    allow_no_day: int | None = None
+    allow_no_month: int | None = None
+    allow_no_year: int | None = None
 
 
 class PrecisionDateFieldProps(BaseFieldProps):
@@ -174,33 +174,33 @@ class PrecisionDateFieldProps(BaseFieldProps):
     type: Literal["precisiondate"]
 
     # Components Enabled
-    precision_secs: Optional[int] = None
-    precision_time: Optional[int] = None
+    precision_secs: int | None = None
+    precision_time: int | None = None
 
     # Partial Date Logic (1=Yes, 0=No)
-    allow_no_day: Optional[int] = None
-    allow_no_month: Optional[int] = None
-    allow_no_year: Optional[int] = None
-    allow_no_time: Optional[int] = None
+    allow_no_day: int | None = None
+    allow_no_month: int | None = None
+    allow_no_year: int | None = None
+    allow_no_time: int | None = None
 
     # Imputation Logic
-    impute_time: Optional[str] = None
-    impute_day: Optional[str] = None
-    impute_month: Optional[int] = None
-    impute_year: Optional[int] = None
+    impute_time: str | None = None
+    impute_day: str | None = None
+    impute_month: int | None = None
+    impute_year: int | None = None
 
     # Display Logic
-    display_text_time: Optional[str] = None
-    display_text_day: Optional[str] = None
-    display_text_month: Optional[str] = None
-    display_text_year: Optional[str] = None
+    display_text_time: str | None = None
+    display_text_day: str | None = None
+    display_text_month: str | None = None
+    display_text_year: str | None = None
 
     # Key Dates
-    record_key_date: Optional[int] = None
-    record_comp_date: Optional[int] = None
+    record_key_date: int | None = None
+    record_comp_date: int | None = None
 
 
-EntityProps = Union[
+EntityProps = Union[  # noqa: UP007
     TableProps,
     LabelProps,
     SeparatorProps,
@@ -222,31 +222,31 @@ class Entity(BaseModel):
 
     id: str
     props: EntityProps = Field(discriminator="type")
-    rows: Optional[List[Row]] = None
+    rows: list[Row] | None = None
 
 
 class Col(BaseModel):
     """A column in a layout table row."""
 
-    entities: Optional[List[Entity]] = None
+    entities: list[Entity] | None = None
 
 
 class Row(BaseModel):
     """A row in a layout table."""
 
-    cols: List[Col]
+    cols: list[Col]
 
 
 class Page(BaseModel):
     """Represents a single page within the electronic Case Report Form (CRF)."""
 
-    entities: List[Entity]
+    entities: list[Entity]
 
 
 class ProtocolDeviationFormPayload(BaseModel):
     """Root object representing the entire form definition payload."""
 
-    pages: List[Page]
+    pages: list[Page]
 
 
 # Alias for compatibility with builder

@@ -5,8 +5,9 @@ from __future__ import annotations
 import inspect
 import os
 import sys
+from collections.abc import Callable
 from functools import wraps
-from typing import Callable, Concatenate, ParamSpec, TypeVar
+from typing import Concatenate, ParamSpec, TypeVar
 
 from imednet.errors import (
     ApiError,

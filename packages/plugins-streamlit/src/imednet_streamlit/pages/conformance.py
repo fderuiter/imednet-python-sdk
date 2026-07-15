@@ -36,9 +36,9 @@ report = None
 a11y_path = getattr(config, "a11y_report_path", None)  # type: ignore[attr-defined]
 if a11y_path and isinstance(a11y_path, str) and os.path.exists(a11y_path):
     try:
-        with open(a11y_path, "r") as f:
+        with open(a11y_path) as f:
             report = json.load(f)
-    except Exception:
+    except Exception:  # noqa: S110
         pass
 
 # Fallback to local report
@@ -46,9 +46,9 @@ if not report:
     local_report_path = os.path.join(os.path.dirname(__file__), "a11y_report.json")
     if os.path.exists(local_report_path):
         try:
-            with open(local_report_path, "r") as f:
+            with open(local_report_path) as f:
                 report = json.load(f)
-        except Exception:
+        except Exception:  # noqa: S110
             pass
 
 if report:

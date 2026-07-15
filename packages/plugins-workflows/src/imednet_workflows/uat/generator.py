@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import random
 from datetime import date, datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional  # noqa: UP035
 
 from pydantic import Field
 
@@ -29,9 +29,9 @@ class GeneratedRecordSet(ImednetBaseModel):
     form_key: str
     form_name: str
     test_type: RecordTestType
-    payloads: List[Dict[str, Any]]  # ready to pass to records.create()
-    subject_keys: List[str]  # subject keys that were used/will be used
-    warnings: List[str] = Field(default_factory=list)  # non-fatal issues (skipped vars, etc.)
+    payloads: list[dict[str, Any]]  # ready to pass to records.create()
+    subject_keys: list[str]  # subject keys that were used/will be used
+    warnings: list[str] = Field(default_factory=list)  # non-fatal issues (skipped vars, etc.)
 
 
 class SyntheticRecordGenerator:
@@ -47,7 +47,7 @@ class SyntheticRecordGenerator:
 
     def __init__(
         self,
-        seed: Optional[int] = None,
+        seed: int | None = None,
         locale: str = "en_US",
     ) -> None:
         """Initialize the generator.
@@ -56,7 +56,7 @@ class SyntheticRecordGenerator:
             seed: Optional seed for reproducibility.
             locale: Ignored.
         """
-        self._rng = random.Random(seed)
+        self._rng = random.Random(seed)  # noqa: S311
         self._seed = seed
         self._locale = locale
 
@@ -84,13 +84,13 @@ class SyntheticRecordGenerator:
         self,
         spec: UATSpecification,
         snapshot: StudySnapshot,
-    ) -> List[GeneratedRecordSet]:
+    ) -> list[GeneratedRecordSet]:
         """Generate all record payloads for the enabled forms in the spec.
 
         Returns one GeneratedRecordSet per enabled UATFormSpec, in the correct
         submission order: RegisterSubject records first, then scheduled/unscheduled.
         """
-        results: List[GeneratedRecordSet] = []
+        results: list[GeneratedRecordSet] = []
         subject_pool = self._get_subject_pool(spec)
 
         # Phase 1: Enrollment/registration forms
@@ -107,7 +107,7 @@ class SyntheticRecordGenerator:
 
         return results
 
-    def _get_subject_pool(self, spec: UATSpecification) -> List[str]:
+    def _get_subject_pool(self, spec: UATSpecification) -> list[str]:
         """Return a mocked value."""
         pool = []
         for s_spec in spec.subject_specs:
@@ -117,7 +117,7 @@ class SyntheticRecordGenerator:
             pool = ["UAT-TEST-001"]
         return pool
 
-    def _generate_value(self, var_spec: UATVariableSpec, spec: UATSpecification) -> Optional[str]:
+    def _generate_value(self, var_spec: UATVariableSpec, spec: UATSpecification) -> str | None:
         """Generate a single value for a variable according to its strategy."""
         if var_spec.strategy == VariableTestStrategy.SKIP:
             return None
@@ -181,8 +181,8 @@ class SyntheticRecordGenerator:
         return self._lexify("???????")
 
     def _generate_data_payloads(
-        self, spec: UATSpecification, form_spec: UATFormSpec, subject_pool: List[str]
-    ) -> tuple[List[Dict[str, Any]], List[str], List[str]]:
+        self, spec: UATSpecification, form_spec: UATFormSpec, subject_pool: list[str]
+    ) -> tuple[list[dict[str, Any]], list[str], list[str]]:
         warnings = []
         coded_all_vars = [
             v for v in form_spec.variables if v.strategy == VariableTestStrategy.CODED_ALL
@@ -271,7 +271,7 @@ class SyntheticRecordGenerator:
         spec: UATSpecification,
         form_spec: UATFormSpec,
         snapshot: StudySnapshot,
-        subject_pool: List[str],
+        subject_pool: list[str],
     ) -> GeneratedRecordSet:
         data_payloads, warnings, subject_keys = self._generate_data_payloads(
             spec, form_spec, subject_pool
@@ -306,7 +306,7 @@ class SyntheticRecordGenerator:
         spec: UATSpecification,
         form_spec: UATFormSpec,
         snapshot: StudySnapshot,
-        subject_pool: List[str],
+        subject_pool: list[str],
     ) -> GeneratedRecordSet:
         data_payloads, warnings, subject_keys = self._generate_data_payloads(
             spec, form_spec, subject_pool
@@ -337,7 +337,7 @@ class SyntheticRecordGenerator:
         spec: UATSpecification,
         form_spec: UATFormSpec,
         snapshot: StudySnapshot,
-        subject_pool: List[str],
+        subject_pool: list[str],
     ) -> GeneratedRecordSet:
         data_payloads, warnings, subject_keys = self._generate_data_payloads(
             spec, form_spec, subject_pool

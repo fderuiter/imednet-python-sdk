@@ -29,7 +29,7 @@ try:
     from opentelemetry import trace as _trace
 
     trace = _trace
-except Exception:  # pragma: no cover - optional dependency
+except Exception:  # pragma: no cover - optional dependency  # noqa: S110
     pass
 logger = logging.getLogger(__name__)
 
@@ -39,13 +39,13 @@ class BaseClient:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        security_key: Optional[str] = None,
-        base_url: Optional[str] = None,
-        timeout: Union[float, httpx.Timeout] = DEFAULT_TIMEOUT,
-        tracer: Optional[Tracer] = None,
-        retry_config: Optional[RetryConfig] = None,
-        auth: Optional[AuthStrategy] = None,
+        api_key: str | None = None,
+        security_key: str | None = None,
+        base_url: str | None = None,
+        timeout: float | httpx.Timeout = DEFAULT_TIMEOUT,
+        tracer: Tracer | None = None,
+        retry_config: RetryConfig | None = None,
+        auth: AuthStrategy | None = None,
     ) -> None:
         """Initialize common client settings.
 
@@ -72,7 +72,7 @@ class BaseClient:
             self.auth = ApiKeyAuth(config.api_key or "", config.security_key or "")
 
         self._client = self._create_client(self.auth)
-        self._tracer: Optional[Tracer] = None
+        self._tracer: Tracer | None = None
 
         if tracer is not None:
             self._tracer = tracer

@@ -7,9 +7,9 @@ filtering and saved view support.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date
-from typing import Sequence
 
 import pandas as pd
 import streamlit as st
@@ -135,7 +135,7 @@ def _fallback_direct_models(
                 pds.append(ProtocolDeviation.model_validate(payload))
             elif {"ddTerm", "ddCategory", "ddDate"} <= payload.keys():
                 dds.append(DeviceDeficiency.model_validate(payload))
-        except Exception:
+        except Exception:  # noqa: S112
             continue
     return aes, pds, dds
 
@@ -706,7 +706,7 @@ def render_page() -> None:
         if not records_filtered.empty and "subject_key" in records_filtered
         else 0
     )
-    for tab_name, tab in zip(selected_tabs, tab_objects):
+    for tab_name, tab in zip(selected_tabs, tab_objects):  # noqa: B905
         with tab:
             if tab_name == "Adverse Events":
                 _render_adverse_events_tab(ae_filtered, enrolled_subjects)

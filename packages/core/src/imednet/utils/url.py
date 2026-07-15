@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import re
-from typing import Any, Optional, Set
+from typing import Any, Optional, Set  # noqa: UP035
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 import httpx
 
-__all__ = ["sanitize_base_url", "redact_url_query", "build_safe_path", "redact_sensitive_text"]
+__all__ = ["build_safe_path", "redact_sensitive_text", "redact_url_query", "sanitize_base_url"]
 _DUMMY_BASE_URL = "http://dummy/"
 
 
@@ -30,7 +30,7 @@ def redact_sensitive_text(text: Any) -> str:
 
     text = re.sub(r"[a-zA-Z][a-zA-Z0-9+.-]*://[^\s\"'>]*[^\s\"'>.,;:!?\)\]]", replace_url, text)
 
-    return text
+    return text  # noqa: RET504
 
 
 def sanitize_base_url(url: str) -> str:
@@ -39,7 +39,7 @@ def sanitize_base_url(url: str) -> str:
     return re.sub(r"/api\Z", "", url)
 
 
-def redact_url_query(url: str, sensitive_params: Optional[Set[str]] = None) -> str:
+def redact_url_query(url: str, sensitive_params: set[str] | None = None) -> str:
     """Return URL with sensitive query parameters redacted."""
     if sensitive_params is None:
         sensitive_params = {"api_key", "security_key", "token", "secret", "password"}

@@ -1,7 +1,7 @@
 """API-level errors."""
 
 import re
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Union  # noqa: UP035
 
 from .base import ImednetError
 
@@ -71,7 +71,7 @@ class ApiError(ImednetError):
     """
 
     def __init__(
-        self, response: Union[Dict[str, Any], str, Any], status_code: Optional[int] = None
+        self, response: dict[str, Any] | str | Any, status_code: int | None = None
     ) -> None:
         """Initialize an API error.
 
@@ -93,7 +93,7 @@ class ApiError(ImednetError):
                 parsed_message = str(sanitized_response["error"])
 
             if "code" in sanitized_response:
-                try:
+                try:  # noqa: SIM105
                     code = int(sanitized_response["code"])
                 except (ValueError, TypeError):
                     pass

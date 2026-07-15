@@ -27,14 +27,14 @@ class Config:
         strict_mode: Toggle strict mode for data validation.
     """
 
-    api_key: Optional[str] = None
-    security_key: Optional[str] = None
-    base_url: Optional[str] = None
-    oidc_token: Optional[str] = None
+    api_key: str | None = None
+    security_key: str | None = None
+    base_url: str | None = None
+    oidc_token: str | None = None
     timeout: float = 30.0
     strict_mode: bool = False
     vpat_path: str = "/app/docs/VPAT.md"
-    a11y_report_path: Optional[str] = None
+    a11y_report_path: str | None = None
 
     def __repr__(self) -> str:
         """Return a string representation of the configuration.
@@ -48,14 +48,14 @@ class Config:
 
 
 def load_config(
-    api_key: Optional[str] = None,
-    security_key: Optional[str] = None,
-    base_url: Optional[str] = None,
-    oidc_token: Optional[str] = None,
-    timeout: Optional[float] = None,
-    strict_mode: Optional[bool] = None,
-    vpat_path: Optional[str] = None,
-    a11y_report_path: Optional[str] = None,
+    api_key: str | None = None,
+    security_key: str | None = None,
+    base_url: str | None = None,
+    oidc_token: str | None = None,
+    timeout: float | None = None,
+    strict_mode: bool | None = None,
+    vpat_path: str | None = None,
+    a11y_report_path: str | None = None,
 ) -> Config:
     """Return configuration using arguments or environment variables.
 
@@ -98,7 +98,7 @@ def load_config(
 
     if strict_mode is None:
         env_strict_mode = os.getenv("IMEDNET_STRICT_MODE")
-        if env_strict_mode is not None:
+        if env_strict_mode is not None:  # noqa: SIM108
             strict_mode = parse_bool(env_strict_mode)
         else:
             strict_mode = False

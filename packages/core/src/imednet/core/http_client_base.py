@@ -21,7 +21,7 @@ from .retry import RetryConfig, RetryPolicy
 
 logger = logging.getLogger(__name__)
 
-ClientT = TypeVar("ClientT", bound=Union[httpx.Client, httpx.AsyncClient])
+ClientT = TypeVar("ClientT", bound=httpx.Client | httpx.AsyncClient)
 ExecutorT = TypeVar("ExecutorT", bound=BaseRequestExecutor)
 
 
@@ -37,19 +37,19 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
 
     @abstractmethod
     def _create_executor(
-        self, client: ClientT, retry_config: Optional[RetryConfig] = None
+        self, client: ClientT, retry_config: RetryConfig | None = None
     ) -> ExecutorT:
         """Create the request executor."""
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        security_key: Optional[str] = None,
-        base_url: Optional[str] = None,
-        timeout: Union[float, httpx.Timeout] = 30.0,
-        tracer: Optional[Tracer] = None,
-        retry_config: Optional[RetryConfig] = None,
-        auth: Optional[AuthStrategy] = None,
+        api_key: str | None = None,
+        security_key: str | None = None,
+        base_url: str | None = None,
+        timeout: float | httpx.Timeout = 30.0,
+        tracer: Tracer | None = None,
+        retry_config: RetryConfig | None = None,
+        auth: AuthStrategy | None = None,
     ) -> None:
         """Initialize the HTTP client.
 

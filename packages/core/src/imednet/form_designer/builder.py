@@ -6,7 +6,7 @@ form layouts for iMednet, handling ID generation and hierarchical structure.
 
 import secrets
 import string
-from typing import Any, List, Literal, Optional, cast
+from typing import Any, List, Literal, Optional, cast  # noqa: UP035
 
 from .models import (
     CheckboxFieldProps,
@@ -38,7 +38,7 @@ class FormBuilder:
 
     def __init__(self) -> None:
         """Initialize a new FormBuilder instance."""
-        self.pages: List[Page] = []
+        self.pages: list[Page] = []
         self._ensure_page()
         # Track generated IDs to avoid collisions (though random large int makes it rare)
         self._generated_ids: set[int] = set()
@@ -68,10 +68,10 @@ class FormBuilder:
 
     def _generate_dom_id(self) -> str:
         """Generate a random DOM ID (e.g., lfdiv_38492)."""
-        suffix = "".join((secrets.choice(string.digits) for _ in range(5)))
+        suffix = "".join(secrets.choice(string.digits) for _ in range(5))
         return f"lfdiv_{suffix}"
 
-    def _create_entity(self, props: EntityProps, rows: Optional[List[Row]] = None) -> Entity:
+    def _create_entity(self, props: EntityProps, rows: list[Row] | None = None) -> Entity:
         """Create a new layout entity with a generated DOM ID.
 
         Args:
@@ -133,8 +133,8 @@ class FormBuilder:
         question_name: str,
         required: bool = False,
         # Type specific args
-        choices: Optional[List[tuple[str, str]]] = None,  # (text, code)
-        max_length: Optional[int] = None,
+        choices: list[tuple[str, str]] | None = None,  # (text, code)
+        max_length: int | None = None,
         is_float: bool = False,
     ) -> None:
         """Add a standard field (Label + Control).

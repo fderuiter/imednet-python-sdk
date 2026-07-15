@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Iterator
 from datetime import datetime, timezone
-from typing import Any, Dict, Iterator, List, Literal, Optional, Set, Union
+from typing import Any, Dict, List, Literal, Optional, Set, Union  # noqa: UP035
 
 from pydantic import Field
 
@@ -22,8 +23,8 @@ class BatchSubmission(ImednetBaseModel):
     """Tracks a single API call to records.create()."""
 
     phase: Literal["registration", "data"]
-    form_key: Optional[str] = None
-    form_name: Optional[str] = None
+    form_key: str | None = None
+    form_name: str | None = None
     record_count: int
     job: Job
     submitted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -34,19 +35,19 @@ class SubmissionResult(ImednetBaseModel):
 
     study_key: str
     started_at: datetime
-    completed_at: Optional[datetime] = None
-    registration_batches: List[BatchSubmission] = Field(default_factory=list)
-    data_batches: List[BatchSubmission] = Field(default_factory=list)
-    skipped_forms: List[str] = Field(default_factory=list)
-    warnings: List[str] = Field(default_factory=list)
+    completed_at: datetime | None = None
+    registration_batches: list[BatchSubmission] = Field(default_factory=list)
+    data_batches: list[BatchSubmission] = Field(default_factory=list)
+    skipped_forms: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
 
     @property
-    def all_batches(self) -> List[BatchSubmission]:
+    def all_batches(self) -> list[BatchSubmission]:
         """Return all submission batches from both phases."""
         return self.registration_batches + self.data_batches
 
     @property
-    def all_batch_ids(self) -> List[str]:
+    def all_batch_ids(self) -> list[str]:
         """Return all batch IDs from all submitted jobs."""
         return [b.job.batch_id for b in self.all_batches if b.job.batch_id]
 
@@ -59,7 +60,7 @@ class SubmissionResult(ImednetBaseModel):
 class BulkSubmissionError(Exception):
     """Raised when Phase 1 registration jobs fail, blocking Phase 2 submission."""
 
-    def __init__(self, message: str, failed_batches: List[BatchSubmission]) -> None:
+    def __init__(self, message: str, failed_batches: list[BatchSubmission]) -> None:
         """Initialize the error.
 
         Args:
@@ -110,9 +111,9 @@ class BulkRecordSubmissionWorkflow:
     def submit(
         self,
         study_key: str,
-        record_sets: List[GeneratedRecordSet],
+        record_sets: list[GeneratedRecordSet],
         *,
-        email_notify: Optional[Union[bool, str]] = None,
+        email_notify: bool | str | None = None,
         keyword_tag: str = "UAT",
     ) -> SubmissionResult:
         """Execute the two-phase submission.
@@ -130,7 +131,7 @@ class BulkRecordSubmissionWorkflow:
         ]
         data_sets = [rs for rs in record_sets if rs.test_type != RecordTestType.REGISTER_SUBJECT]
 
-        existing_subjects: Set[str] = set()
+        existing_subjects: set[str] = set()
         if self.skip_existing_subjects:
             existing_subjects = self._find_existing_uat_subjects(study_key, keyword_tag)
 
@@ -180,7 +181,7 @@ class BulkRecordSubmissionWorkflow:
         result.completed_at = datetime.now(timezone.utc)
         return result
 
-    def _chunk_payloads(self, payloads: List[Dict[str, Any]]) -> Iterator[List[Dict[str, Any]]]:
+    def _chunk_payloads(self, payloads: list[dict[str, Any]]) -> Iterator[list[dict[str, Any]]]:
         """Yield successive batch_size chunks of payloads."""
         for i in range(0, len(payloads), self.batch_size):
             yield payloads[i : i + self.batch_size]
@@ -188,11 +189,11 @@ class BulkRecordSubmissionWorkflow:
     def _submit_batch(
         self,
         study_key: str,
-        payloads: List[Dict[str, Any]],
+        payloads: list[dict[str, Any]],
         phase: Literal["registration", "data"],
-        form_key: Optional[str],
-        form_name: Optional[str],
-        email_notify: Optional[Union[bool, str]],
+        form_key: str | None,
+        form_name: str | None,
+        email_notify: bool | str | None,
     ) -> BatchSubmission:
         """Submit a single batch and return a BatchSubmission."""
         job = self.sdk.create_record(study_key, payloads, email_notify=email_notify)
@@ -204,7 +205,7 @@ class BulkRecordSubmissionWorkflow:
             job=job,
         )
 
-    def _await_registration_jobs(self, study_key: str, batches: List[BatchSubmission]) -> None:
+    def _await_registration_jobs(self, study_key: str, batches: list[BatchSubmission]) -> None:
         """Block until all Phase 1 jobs reach terminal state."""
         poller = JobPoller(get_job=self.sdk.get_job)
         failed_batches = []
@@ -238,7 +239,7 @@ class BulkRecordSubmissionWorkflow:
                 failed_batches=failed_batches,
             )
 
-    def _find_existing_uat_subjects(self, study_key: str, keyword_tag: str) -> Set[str]:
+    def _find_existing_uat_subjects(self, study_key: str, keyword_tag: str) -> set[str]:
         """Query subjects filtered by keyword to find pre-existing UAT subjects."""
         subjects = self.sdk.get_subjects(study_key, keyword=keyword_tag)
         existing_keys = set()
