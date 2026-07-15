@@ -32,7 +32,6 @@ if st.button("Provision Tenant Environment"):
                 conn.execute(
                     "CREATE TABLE IF NOT EXISTS tenants (study_key TEXT PRIMARY KEY, api_key TEXT, security_key TEXT)"
                 )
-
                 # Check for env_url column dynamically
                 cursor = conn.execute("PRAGMA table_info(tenants)")
                 columns = [row[1] for row in cursor.fetchall()]

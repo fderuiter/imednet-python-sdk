@@ -120,6 +120,8 @@ def test_mongodb_containerized_upserts(fake_records, monkeypatch):
 
     config = MongoDbSinkConfig(
         study_key="STUDY1",
+        batch_size=10,
+        idempotent=True,
         uri=uri,
         database=database,
         collection=collection,

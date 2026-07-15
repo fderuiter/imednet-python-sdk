@@ -103,28 +103,51 @@ class ImednetExportOperator(BaseOperator):
             dest = self.export_func.replace("export_to_", "")
 
         if dest == "snowflake":
-            from imednet_sinks import SnowflakeExportSink  # type: ignore
+            from imednet_sinks import SnowflakeExportSink, SnowflakeSinkConfig  # type: ignore
 
-            return SnowflakeExportSink(config=config)  # type: ignore
+            snowflake_config = SnowflakeSinkConfig(
+                study_key=config.study_key,
+                batch_size=config.batch_size,
+                max_retries=config.max_retries,
+                idempotent=config.idempotent,
+                extra=config.extra,
+                account=self.export_kwargs.get("account", ""),
+                user=self.export_kwargs.get("user", ""),
+                password=self.export_kwargs.get("password", ""),
+                database=self.export_kwargs.get("database", ""),
+                schema=self.export_kwargs.get("schema", "PUBLIC"),
+                warehouse=self.export_kwargs.get("warehouse", ""),
+                stage=self.export_kwargs.get("stage", ""),
+                table=self.export_kwargs.get("table", ""),
+            )
+            return SnowflakeExportSink(config=snowflake_config)  # type: ignore
         elif dest == "neo4j":
-            from imednet_sinks import Neo4jExportSink  # type: ignore
+            from imednet_sinks import Neo4jExportSink, Neo4jSinkConfig  # type: ignore
 
-            return Neo4jExportSink(
+            neo4j_config = Neo4jSinkConfig(
+                study_key=config.study_key,
+                batch_size=config.batch_size,
+                max_retries=config.max_retries,
+                idempotent=config.idempotent,
+                extra=config.extra,
                 uri=self.export_kwargs.get("uri", ""),
                 auth=self.export_kwargs.get("auth", ("", "")),
-                study_key=self.study_key,
-                config=config,  # type: ignore
             )
+            return Neo4jExportSink(config=neo4j_config)  # type: ignore
         elif dest == "mongodb":
-            from imednet_sinks import MongoDbExportSink  # type: ignore
+            from imednet_sinks import MongoDbExportSink, MongoDbSinkConfig  # type: ignore
 
-            return MongoDbExportSink(
+            mongo_config = MongoDbSinkConfig(
+                study_key=config.study_key,
+                batch_size=config.batch_size,
+                max_retries=config.max_retries,
+                idempotent=config.idempotent,
+                extra=config.extra,
                 uri=self.export_kwargs.get("uri", ""),
                 database=self.export_kwargs.get("database", ""),
                 collection=self.export_kwargs.get("collection", ""),
-                study_key=self.study_key,
-                config=config,  # type: ignore
             )
+            return MongoDbExportSink(config=mongo_config)  # type: ignore
         return None
 
     def execute(self, context: Context) -> str | None:
