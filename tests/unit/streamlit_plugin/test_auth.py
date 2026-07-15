@@ -101,7 +101,9 @@ class _FakeStreamlit:
         self.login_called = True
 
 
-def test_render_auth_sidebar_not_connected_returns_false(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_render_auth_sidebar_not_connected_returns_false(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Test that render auth sidebar not connected returns false."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
@@ -135,7 +137,9 @@ def test_render_auth_sidebar_connects_and_clears_secret_keys(
     assert auth.get_study_key() == "STUDY"
 
 
-def test_get_sdk_before_connect_raises_runtime_error(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_get_sdk_before_connect_raises_runtime_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Test that get sdk before connect raises runtime error."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
@@ -144,7 +148,9 @@ def test_get_sdk_before_connect_raises_runtime_error(monkeypatch: pytest.MonkeyP
         auth.get_sdk()
 
 
-def test_clear_credentials_removes_all_session_keys(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_clear_credentials_removes_all_session_keys(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Test that clear credentials removes all session keys."""
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
     fake_st.session_state.update(
@@ -231,6 +237,7 @@ def test_get_study_key_raises_when_missing(monkeypatch: pytest.MonkeyPatch) -> N
     with pytest.raises(RuntimeError, match="Study key is not set"):
         auth.get_study_key()
 
+
 import os
 import sqlite3
 
@@ -239,23 +246,26 @@ def test_get_tenant_credentials_no_db(monkeypatch: pytest.MonkeyPatch, tmp_path)
     monkeypatch.setenv("IMEDNET_TENANT_DB_PATH", str(tmp_path / "missing.sqlite3"))
     assert auth.get_tenant_credentials("S") == (None, None, None)
 
+
 def test_get_tenant_credentials_with_db(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     db_path = tmp_path / "db.sqlite3"
     monkeypatch.setenv("IMEDNET_TENANT_DB_PATH", str(db_path))
     with sqlite3.connect(db_path) as conn:
         conn.execute("CREATE TABLE tenants (study_key TEXT, api_key TEXT, security_key TEXT)")
         conn.execute("INSERT INTO tenants VALUES ('S1', 'a1', 's1')")
-    
+
     # Should migrate env_url and fetch
     assert auth.get_tenant_credentials("S1") == ("a1", "s1", None)
-    
+
     with sqlite3.connect(db_path) as conn:
         conn.execute("UPDATE tenants SET env_url='http://env' WHERE study_key='S1'")
     assert auth.get_tenant_credentials("S1") == ("a1", "s1", "http://env")
 
+
 def test_get_provisioned_studies_no_db(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     monkeypatch.setenv("IMEDNET_TENANT_DB_PATH", str(tmp_path / "missing.sqlite3"))
     assert auth.get_provisioned_studies() == []
+
 
 def test_get_provisioned_studies_with_db(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     db_path = tmp_path / "db.sqlite3"
@@ -264,60 +274,92 @@ def test_get_provisioned_studies_with_db(monkeypatch: pytest.MonkeyPatch, tmp_pa
         conn.execute("CREATE TABLE tenants (study_key TEXT)")
         conn.execute("INSERT INTO tenants VALUES ('S1')")
         conn.execute("INSERT INTO tenants VALUES ('S2')")
-    
+
     assert auth.get_provisioned_studies() == ["S1", "S2"]
+
 
 def test_get_provisioned_studies_db_error(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     db_path = tmp_path / "db.sqlite3"
     monkeypatch.setenv("IMEDNET_TENANT_DB_PATH", str(db_path))
     with sqlite3.connect(db_path) as conn:
         conn.execute("CREATE TABLE different (study_key TEXT)")
-    
+
     assert auth.get_provisioned_studies() == []
 
-def test_render_auth_sidebar_no_login_method_fixed(monkeypatch: pytest.MonkeyPatch) -> None:
+
+def test_render_auth_sidebar_no_login_method_fixed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     fake_st = _FakeStreamlit(logged_in=False, connect_clicked=False)
+
     # create a mock that does not have login
     class NoLoginSt:
         user = {}
         sidebar = _FakeStreamlit().sidebar
+
         @staticmethod
-        def header(msg): pass
+        def header(msg):
+            pass
+
         @staticmethod
-        def info(msg): fake_st.info(msg)
+        def info(msg):
+            fake_st.info(msg)
+
         @staticmethod
-        def warning(msg): fake_st.warning(msg)
+        def warning(msg):
+            fake_st.warning(msg)
+
+        @staticmethod
+        def selectbox(*args, **kwargs):
+            return "Default"
+
+        @staticmethod
+        def error(msg):
+            pass
+
+        @staticmethod
+        def success(msg):
+            pass
 
     monkeypatch.setattr(auth, "st", NoLoginSt)
     assert auth.render_auth_sidebar() is False
     assert len(fake_st.warning_messages) > 0
 
+
 def test_auth_py_misc_coverage(monkeypatch: pytest.MonkeyPatch) -> None:
     fake_st = _FakeStreamlit(logged_in=True, connect_clicked=False)
+
     # mock get missing email
     class MockUserDict(dict):
         pass
+
     fake_st.user = MockUserDict()
-    
+
     monkeypatch.setattr(auth, "st", fake_st)
     monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
-    
+
     assert auth.render_auth_sidebar() is False
 
-def test_render_auth_sidebar_connect_disconnect(monkeypatch: pytest.MonkeyPatch) -> None:
+
+def test_render_auth_sidebar_connect_disconnect(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     fake_st = _FakeStreamlit(logged_in=True, connect_clicked=True)
     fake_st.session_state[auth._KEY_CONNECTED] = True
     monkeypatch.setattr(auth, "st", fake_st)
     monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
     monkeypatch.setattr(auth, "clear_credentials", lambda: None)
-    
+
     assert auth.render_auth_sidebar() is True
+
+
 def test_render_auth_sidebar_no_studies(monkeypatch: pytest.MonkeyPatch) -> None:
     fake_st = _FakeStreamlit(logged_in=True, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
     monkeypatch.setattr(auth, "get_provisioned_studies", lambda: [])
     assert auth.render_auth_sidebar() is False
     assert len(fake_st.warning_messages) > 0
+
 
 def test_render_auth_sidebar_browser_test(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("IMEDNET_BROWSER_TEST", "1")
@@ -327,6 +369,6 @@ def test_render_auth_sidebar_browser_test(monkeypatch: pytest.MonkeyPatch) -> No
     monkeypatch.setattr(auth, "get_provisioned_studies", lambda: ["STUDY"])
     monkeypatch.setattr(auth, "get_tenant_credentials", lambda x: ("api", "sec", None))
     monkeypatch.setattr(auth, "_build_sdk", lambda *args, **kwargs: None)
-    
+
     assert auth.render_auth_sidebar() is True
     assert fake_st.user.email == "test-operator@example.com"

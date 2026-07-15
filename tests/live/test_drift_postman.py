@@ -3,6 +3,7 @@
 import json
 import logging
 import os
+from pathlib import Path
 
 import pytest
 
@@ -19,7 +20,7 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
     """
     os.environ["IMEDNET_STRICT_MODE"] = "1"
 
-    collection_path = "/app/imednet.postman_collection.json"
+    collection_path = str(Path(__file__).resolve().parent.parent.parent / "imednet.postman_collection.json")
     if not os.path.exists(collection_path):
         pytest.skip("Postman collection not found")
 
