@@ -246,7 +246,7 @@ def render_page() -> None:
 
     with st.sidebar:
         st.markdown("---")
-        st.subheader("Filters")
+        st.header("Filters")
         form_filter: list[str] = st.multiselect("Form", form_options)
         site_filter = st.multiselect("Site", site_options)
         status_filter: list[str] = st.multiselect("Status", status_options, default=status_options)
@@ -277,7 +277,7 @@ def render_page() -> None:
     col_left, col_right = st.columns(2)
 
     with col_left:
-        st.subheader("Records by Status")
+        st.header("Records by Status")
         status_counts = _build_status_counts(df_filtered)
         if not status_counts.empty:
             render_accessible_chart(
@@ -293,7 +293,7 @@ def render_page() -> None:
             )
 
     with col_right:
-        st.subheader("Top 10 Forms by Incomplete Count")
+        st.header("Top 10 Forms by Incomplete Count")
         incomplete_forms = _build_incomplete_form_counts(df_filtered)
         if not incomplete_forms.empty:
             render_accessible_chart(
@@ -308,14 +308,14 @@ def render_page() -> None:
                 use_container_width=True,
             )
 
-    st.subheader("Subject × Form Completion")
+    st.header("Subject × Form Completion")
     heatmap_df = _build_heatmap_source(df_filtered)
     if heatmap_df.empty:
         st.info("No records found for the selected filters.")
     else:
         render_accessible_chart(_build_heatmap_chart(heatmap_df), use_container_width=True)
 
-    st.subheader("Records Overview")
+    st.header("Records Overview")
     from imednet.spi.models import Query, Record, Subject
 
     all_fields = list(Record.model_fields.keys())

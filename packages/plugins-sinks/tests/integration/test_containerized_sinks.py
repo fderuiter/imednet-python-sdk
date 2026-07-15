@@ -112,12 +112,12 @@ def mock_record_mapper(monkeypatch, fake_records):
 def test_mongodb_containerized_upserts(fake_records, monkeypatch):
     """TODO: Add docstring."""
     import pymongo
+    from imednet_sinks import MongoDbSinkConfig
 
     uri = "mongodb://root:password@localhost:27017"
     database = "imednet_test"
     collection = "clinical_records"
 
-    # Export records
     config = MongoDbSinkConfig(
         study_key="STUDY1",
         batch_size=10,
@@ -126,6 +126,8 @@ def test_mongodb_containerized_upserts(fake_records, monkeypatch):
         database=database,
         collection=collection,
     )
+
+    # Export records
     with MongoDbExportSink(config=config) as sink:
         sink.write_batch(fake_records, batch_id="STUDY1/test/0")
 
@@ -152,7 +154,7 @@ def test_neo4j_containerized_merges(fake_records, monkeypatch):
     uri = "bolt://localhost:7687"
     auth = ("neo4j", "password")
 
-    config = Neo4jSinkConfig(study_key="STUDY1", batch_size=10, idempotent=True, uri=uri, auth=auth)
+    config = Neo4jSinkConfig(study_key="STUDY1", uri=uri, auth=auth, batch_size=10, idempotent=True)
 
     with Neo4jExportSink(config=config) as sink:
         sink.write_batch(fake_records, batch_id="STUDY1/test/0")

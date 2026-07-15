@@ -138,12 +138,12 @@ _WIDGET_TYPES = ("kpi_card", "bar_chart", "line_chart", "data_table")
 
 def _render_design_specification() -> None:
     """Render the wizard UX design specification in an expander."""
-    st.markdown("### Wizard UX design specification")
-    st.markdown("#### Flowchart / state transitions")
+    st.header("Wizard UX design specification")
+    st.subheader("Flowchart / state transitions")
     st.code(_STATE_TRANSITION_DIAGRAM, language="text")
-    st.markdown("#### Wireframe mapped to session state")
+    st.subheader("Wireframe mapped to session state")
     st.markdown(_SESSION_STATE_WIREFRAME)
-    st.markdown("#### UX review: Streamlit multi-page alignment")
+    st.subheader("UX review: Streamlit multi-page alignment")
     st.markdown(_UX_REVIEW_NOTES)
 
 
@@ -293,7 +293,7 @@ def _existing_mapping_index(
 
 def _step_scan_and_profile(sdk: ImednetFacade, study_key: str) -> None:
     """Render Step 1: Scan and Profile Study Structure."""
-    st.subheader("1. Scan & Profile Study Structure")
+    st.header("1. Scan & Profile Study Structure")
     st.markdown(
         "Discover forms, profile field populations, and choose source forms "
         "for AE, PD, and DD mapping."
@@ -337,7 +337,7 @@ def _step_scan_and_profile(sdk: ImednetFacade, study_key: str) -> None:
 
 def _step_field_mapping() -> None:
     """Render Step 2: Field Mapping."""
-    st.subheader("2. Field Mapping")
+    st.header("2. Field Mapping")
     st.markdown(
         "Map canonical CDISC targets to discovered source variables using card-style mapping rows."
     )
@@ -453,7 +453,7 @@ def _lookup_unique_values(
 
 def _step_terminology() -> None:
     """Render Step 3: Categorical Terminology Normalization."""
-    st.subheader("3. Categorical Terminology Normalization")
+    st.header("3. Categorical Terminology Normalization")
     st.markdown("Teach the system how raw categorical values should normalize to canonical values.")
 
     config = _get_mapping_config()
@@ -542,7 +542,7 @@ def _build_preview_rows(
 
 def _step_preview_and_layout() -> None:
     """Render Step 4: Layout and Visual Configuration."""
-    st.subheader("4. Layout & Visual Configuration")
+    st.header("4. Layout & Visual Configuration")
     st.markdown("Configure dashboard widgets and preview mapped values for the first five records.")
 
     config = _get_mapping_config()
@@ -599,7 +599,7 @@ def _step_preview_and_layout() -> None:
 
 def _step_export(study_key: str) -> None:
     """Render Step 5: Export / Save."""
-    st.subheader("5. Export / Save")
+    st.header("5. Export / Save")
     st.markdown("Download or persist the finalized StudyConfiguration JSON.")
 
     config = _get_mapping_config()

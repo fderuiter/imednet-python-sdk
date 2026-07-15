@@ -105,6 +105,9 @@ class _FakeStreamlit:
         """Helper function to selectbox."""
         return self.selectbox_values.get(label, options[index])
 
+    def header(self, value: str) -> None:
+        pass
+
     def subheader(self, value: str) -> None:
         """Helper function to subheader."""
         pass
@@ -199,6 +202,7 @@ def test_review_workbench_renders_kpis_and_filters_queue() -> None:
         "dataframe",
         "selectbox",
         "subheader",
+        "header",
         "caption",
         "write",
         "button",
@@ -276,6 +280,7 @@ def test_triage_drawer_submits_assignment_annotation_and_status() -> None:
     fake_streamlit_module.session_state = fake_st.session_state  # type: ignore[attr-defined]
     for attr in (
         "subheader",
+        "header",
         "caption",
         "markdown",
         "columns",

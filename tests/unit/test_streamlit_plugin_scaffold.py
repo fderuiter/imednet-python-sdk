@@ -86,6 +86,10 @@ class _FakeStreamlit:
         """Helper function to markdown."""
         pass
 
+    def header(self, body: str, **kwargs: Any) -> None:
+        """Helper function to header."""
+        pass
+
     def altair_chart(self, chart: Any, **kwargs: Any) -> None:
         """Helper function to altair chart."""
         pass
@@ -125,6 +129,7 @@ class _FakePageStreamlit:
         self.infos: list[str] = []
         self.successes: list[str] = []
         self.markdowns: list[str] = []
+        self.headers: list[str] = []
 
     def title(self, value: str) -> None:
         """Helper function to title."""
@@ -141,6 +146,10 @@ class _FakePageStreamlit:
     def markdown(self, value: str) -> None:
         """Helper function to markdown."""
         self.markdowns.append(value)
+
+    def header(self, value: str, **kwargs: Any) -> None:
+        """Helper function to header."""
+        self.headers.append(value)
 
 
 class _FakeContextManager:
@@ -300,6 +309,7 @@ def _run_queries_page() -> _FakeDashboardStreamlit:
         "info",
         "success",
         "markdown",
+        "header",
         "warning",
         "button",
         "subheader",
@@ -410,6 +420,7 @@ def _run_sites_page(
         "info",
         "success",
         "markdown",
+        "header",
         "warning",
         "button",
         "subheader",
@@ -517,6 +528,7 @@ def _run_records_page(
         "info",
         "success",
         "markdown",
+        "header",
         "warning",
         "button",
         "subheader",
@@ -1015,6 +1027,7 @@ def _run_enrollment_page() -> _FakeDashboardStreamlit:
         "info",
         "success",
         "markdown",
+        "header",
         "button",
         "subheader",
         "altair_chart",
