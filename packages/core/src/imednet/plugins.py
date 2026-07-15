@@ -113,9 +113,7 @@ class PluginProtocol(Protocol):
 class SinksPluginProtocol(Protocol):
     """Protocol for the sinks plugin factory."""
 
-    def __call__(
-        self, sdk_instance: ImednetFacade | AsyncImednetFacade
-    ) -> SinksNamespaceProtocol:
+    def __call__(self, sdk_instance: ImednetFacade | AsyncImednetFacade) -> SinksNamespaceProtocol:
         """Initialize the sinks plugin with an SDK instance."""
         ...
 

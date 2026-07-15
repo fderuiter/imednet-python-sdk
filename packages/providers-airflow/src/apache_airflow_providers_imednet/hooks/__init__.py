@@ -13,7 +13,9 @@ from imednet import Config, ImednetSDK, load_config
 
 Primitive = Union[str, int, float, bool, None]  # noqa: UP007
 # Primitive-only payload contract for discovery helpers that feed Airflow mapping/XCom.
-PrimitiveContainer: TypeAlias = Primitive | list["PrimitiveContainer"] | dict[str, "PrimitiveContainer"]
+PrimitiveContainer: TypeAlias = (
+    Primitive | list["PrimitiveContainer"] | dict[str, "PrimitiveContainer"]
+)
 _SENSITIVE_KEYS = {
     "api_key",
     "security_key",

@@ -379,9 +379,7 @@ class AsyncListGetEndpoint(_ListGetEndpointBase[T]):
             parse_func=self._resolve_parse_func(),
         ).execute_async(client, paginator_cls)
 
-    def async_list(
-        self, study_key: str | None = None, **filters: FilterValue
-    ) -> AsyncIterator[T]:
+    def async_list(self, study_key: str | None = None, **filters: FilterValue) -> AsyncIterator[T]:
         """List resources matching the given filters asynchronously.
 
         Args:

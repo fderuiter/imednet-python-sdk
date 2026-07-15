@@ -336,10 +336,8 @@ class RecordMapper:
         """
         if pd is None:
             raise ImportError(
-                
-                    "pandas is required for RecordMapper.dataframe. Install "
-                    "with 'pip install \"imednet[pandas]\"'."
-                
+                "pandas is required for RecordMapper.dataframe. Install "
+                "with 'pip install \"imednet[pandas]\"'."
             )
         variable_keys, label_map = self._fetch_variable_metadata(
             study_key,
@@ -519,10 +517,8 @@ class RecordMapper:
         """
         if pd is None:
             raise ImportError(
-                
-                    "pandas is required for RecordMapper.dataframe. Install "
-                    "with 'pip install \"imednet[pandas]\"'."
-                
+                "pandas is required for RecordMapper.dataframe. Install "
+                "with 'pip install \"imednet[pandas]\"'."
             )
         frames = list(
             self.iter_dataframes(

@@ -790,10 +790,8 @@ def export_to_long_sql(
     """Export records to a normalized long-format SQL table."""
     if pd is None:
         raise ImportError(
-            
-                "pandas is required for export_to_long_sql. Install with "
-                "\"pip install 'imednet[export]'\"."
-            
+            "pandas is required for export_to_long_sql. Install with "
+            "\"pip install 'imednet[export]'\"."
         )
     from sqlalchemy import create_engine
 
