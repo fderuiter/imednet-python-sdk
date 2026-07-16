@@ -1,16 +1,21 @@
-# Voluntary Product Accessibility Template (VPAT)
+===============================================
+Voluntary Product Accessibility Template (VPAT)
+===============================================
 
-## Accessibility Conformance Report
+Accessibility Conformance Report
+--------------------------------
 **Product:** iMednet Enterprise Platform
 **Version:** 1.0
 **Date:** 2026-05-28
 **Contact:** accessibility@imednet.com
 
-### Summary
+Summary
+^^^^^^^
 The platform achieves WCAG 2.1 Level AA compliance across all primary user workflows. 
 No "Critically Non-Compliant" findings.
 
-### WCAG 2.1 Report
+WCAG 2.1 Report
+^^^^^^^^^^^^^^^
 - **Principle 1: Perceivable:** Pass
 - **Principle 2: Operable:** Pass
 - **Principle 3: Understandable:** Pass

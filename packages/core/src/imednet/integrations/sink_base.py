@@ -240,11 +240,10 @@ def _redact_uri(uri: str) -> str:
     """Replace user-info in *uri* with ``***`` to prevent credential leakage.
 
     Examples:
-    ---------
-    >>> _redact_uri("mongodb://user:pass@localhost:27017/db")
-    'mongodb://***@localhost:27017/db'
-    >>> _redact_uri("neo4j+s://bolt.example.com")
-    'neo4j+s://bolt.example.com'
+        >>> _redact_uri("mongodb://user:pass@localhost:27017/db")
+        'mongodb://***@localhost:27017/db'
+        >>> _redact_uri("neo4j+s://bolt.example.com")
+        'neo4j+s://bolt.example.com'
     """
     return _URI_USERINFO_RE.sub(r"\1***@", uri)
 

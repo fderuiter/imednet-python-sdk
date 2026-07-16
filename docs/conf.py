@@ -31,6 +31,22 @@ Note:
 """
 
 
+import sys
+from unittest.mock import MagicMock
+
+sys.modules["streamlit"] = MagicMock()
+sys.modules["streamlit.testing"] = MagicMock()
+sys.modules["streamlit.testing.v1"] = MagicMock()
+
+# Mock get_sdk and get_study_key to prevent autodoc from failing
+import imednet_streamlit.auth
+def mock_get_sdk():
+    return MagicMock()
+def mock_get_study_key():
+    return "MOCK_STUDY"
+imednet_streamlit.auth.get_sdk = mock_get_sdk
+imednet_streamlit.auth.get_study_key = mock_get_study_key
+
 # Add package source roots so API modules can be imported for docs builds.
 sys.path[:0] = [
     os.path.abspath("../packages/core/src"),
@@ -72,7 +88,6 @@ version = imednet_version
 
 # Sphinx extensions
 extensions = [
-    "myst_parser",
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
@@ -90,25 +105,18 @@ autosummary_generate = False
 # blocks (evaluated when set_type_checking_flag=True) do not cause
 # ModuleNotFoundError during the docs build.
 autodoc_mock_imports = [
-    "pandas",
-    "numpy",
     "matplotlib",
     "airflow",
     "opentelemetry",
-    "streamlit",
     "altair",
     "pyarrow",
     "duckdb",
 ]
 
 suppress_warnings = [
-    "toc.excluded",
     "autodoc.import",
     "autodoc",
     "sphinx_autodoc_typehints",
-    "app.add_directive",
-    "myst.header",
-    "myst.xref_missing",
 ]
 
 # Sphinx 6.x does not assign a filterable type code to "duplicate object
@@ -169,7 +177,7 @@ napoleon_include_init_with_doc = True
 templates_path: list[str] = ["_templates"]
 exclude_patterns: list[str] = [
     "tutorials/examples/dummy.py",
-    "reference/VPAT.md",
+    "reference/VPAT.rst",
 ]  # annotated per mypy requirement
 html_static_path: list[str] = ["_static"]
 

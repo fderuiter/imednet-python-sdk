@@ -36,6 +36,9 @@ Set your credentials by copying the environment template or exporting them direc
 
 List studies asynchronously and poll a job:
 
+.. note::
+   Ensure you've run ``cp .env.example .env`` or exported keys to your shell before running this script.
+
 .. testcode::
 
    import asyncio
@@ -44,7 +47,6 @@ List studies asynchronously and poll a job:
 
    async def main() -> None:
        configure_json_logging()
-       # Note: Ensure you've run `cp .env.example .env` or exported keys to your shell.
        cfg = load_config()
        async with AsyncImednetSDK(
            api_key=cfg.api_key,
