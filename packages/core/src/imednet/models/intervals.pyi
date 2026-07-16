@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa: UP035
 
 from pydantic import Field
 
@@ -24,16 +24,16 @@ class Interval(ImednetBaseModel):
 
     forms: list[FormSummary] | None = Field(default=None, alias="forms")
 
-    study_key: Optional[str]
-    interval_id: Optional[int]
-    interval_name: Optional[str]
-    interval_description: Optional[str]
-    interval_sequence: Optional[int]
-    interval_group_id: Optional[int]
-    interval_group_name: Optional[str]
-    disabled: Optional[bool]
-    date_created: Optional[str]
-    date_modified: Optional[str]
+    study_key: str | None
+    interval_id: int | None
+    interval_name: str | None
+    interval_description: str | None
+    interval_sequence: int | None
+    interval_group_id: int | None
+    interval_group_name: str | None
+    disabled: bool | None
+    date_created: str | None
+    date_modified: str | None
     actual_date: Any
     actual_date_form: Any
     defined_using_interval: Any

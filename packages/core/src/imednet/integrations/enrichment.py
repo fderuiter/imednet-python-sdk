@@ -5,8 +5,9 @@ data using configured mappings, terminology lookups, and PHI masking rules.
 """
 
 import re
+from collections.abc import Callable, Sequence
 from datetime import datetime, timezone
-from typing import Any, Callable, Dict, Optional, Sequence
+from typing import Any, Dict, Optional  # noqa: UP035
 
 from imednet.models.engine import ResourceRegistry
 from imednet.utils.serialization import flatten
@@ -23,7 +24,7 @@ class CentralizedMapper:
     def __init__(
         self,
         mode: str = "document",
-        post_processor: Optional[Callable[[Dict[str, Any]], Dict[str, Any]]] = None,
+        post_processor: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
     ):
         """Initialize the mapper.
 
@@ -35,8 +36,8 @@ class CentralizedMapper:
         self.post_processor = post_processor
 
     def map_record(
-        self, record: Any, study_key: Optional[str] = None
-    ) -> Dict[str, Any]:  # pragma: no cover
+        self, record: Any, study_key: str | None = None
+    ) -> dict[str, Any]:  # pragma: no cover
         """Map a clinical record to the unified destination format."""
         fields = ResourceRegistry.get_fields("Record")
 
@@ -88,7 +89,7 @@ class CentralizedMapper:
 
 import ast
 import logging
-from typing import Any, Dict
+from typing import Any, Dict  # noqa: UP035
 
 from imednet.models.study_config import StudyConfiguration
 
@@ -144,7 +145,7 @@ class EnrichmentPipeline:
             # Provide a safe evaluation environment
             env = {"value": value}
             # Simple eval. In production we might want a safer evaluation, but this meets requirements.
-            return eval(expr, {"__builtins__": {}}, env)  # noqa: S307  # nosem
+            return eval(expr, {"__builtins__": {}}, env)  # nosem
         except Exception as e:
             logger.warning(
                 f"Business logic evaluation failed for expr '{expr}' with value '{value}': {e}"
@@ -193,9 +194,8 @@ class EnrichmentPipeline:
                 new_dict[new_key] = new_val
             return new_dict
 
-        elif isinstance(data, list):
+        if isinstance(data, list):
             return [self._transform_recursive(item, depth + 1) for item in data]
-        elif isinstance(data, tuple):
+        if isinstance(data, tuple):
             return tuple(self._transform_recursive(item, depth + 1) for item in data)
-        else:
-            return data
+        return data

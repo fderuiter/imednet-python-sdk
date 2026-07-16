@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Iterable, Literal, Optional
+from typing import TYPE_CHECKING, Any, Literal, Optional
 
 from .data_extraction import DataExtractionWorkflow
 
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
 class DuckDBIngestionWorkflow:
     """Incremental eCRF centralization pipeline using a bronze/silver DuckDB layout."""
 
-    def __init__(self, sdk: "ImednetFacade", db_path: str) -> None:
+    def __init__(self, sdk: ImednetFacade, db_path: str) -> None:
         """Initialize the DuckDB ingestion workflow.
 
         Args:
@@ -37,8 +38,8 @@ class DuckDBIngestionWorkflow:
         self,
         study_key: str,
         *,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
         mode: Literal["append", "replace"] = "append",
     ) -> int:
         """Fetch RecordRevisions and write to the bronze_revisions table."""
@@ -95,7 +96,7 @@ class DuckDBIngestionWorkflow:
                 PARTITION BY record_id, variable_name
                 ORDER BY revision_number DESC
             ) = 1
-            """  # noqa: S608
+            """
         self._connection.execute(query)  # nosem
 
     def _ensure_bronze_table(self) -> None:
@@ -114,8 +115,8 @@ class DuckDBIngestionWorkflow:
             """)
 
     def _to_rows(
-        self, study_key: str, revisions: Iterable["RecordRevision"]
-    ) -> Iterable[tuple[str, int, int, str, str, int, Optional[datetime], str]]:
+        self, study_key: str, revisions: Iterable[RecordRevision]
+    ) -> Iterable[tuple[str, int, int, str, str, int, datetime | None, str]]:
         """Internal helper to convert RecordRevision models into database rows."""
         for revision in revisions:
             value = getattr(revision, "value", "")

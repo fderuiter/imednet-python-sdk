@@ -5,8 +5,9 @@ from __future__ import annotations
 import logging
 import threading
 import time
+from collections.abc import Callable
 from enum import Enum
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, Optional, TypeVar
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +65,7 @@ class CircuitBreaker:
         """
         with self._lock:
             # Check if we should transition from OPEN to HALF_OPEN
-            if self._state == CircuitState.OPEN:
+            if self._state == CircuitState.OPEN:  # noqa: SIM102
                 if time.monotonic() - self._last_failure_time >= self.recovery_timeout:
                     self._state = CircuitState.HALF_OPEN
                     self._half_open_probes = 0
@@ -77,7 +78,7 @@ class CircuitBreaker:
             state = self.state
             if state == CircuitState.OPEN:
                 raise CircuitBreakerError("fail-fast is active: circuit is open")
-            elif state == CircuitState.HALF_OPEN:
+            if state == CircuitState.HALF_OPEN:
                 if self._half_open_probes >= self.half_open_max_probes:
                     raise CircuitBreakerError("fail-fast is active: probe limit reached")
                 self._half_open_probes += 1

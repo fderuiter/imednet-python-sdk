@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Generic, Optional, Type, TypeVar
+from typing import Any, Dict, Generic, Optional, Type, TypeVar  # noqa: UP035
 
 from imednet.core.protocols import ClientProvider
 from imednet.models.base import ImednetBaseModel
@@ -20,13 +20,13 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
 
     @property
     @abstractmethod
-    def PATH(self) -> str:  # noqa: N802
+    def PATH(self) -> str:
         """The relative path for the endpoint."""
         pass
 
     @property
     @abstractmethod
-    def MODEL(self) -> Type[T]:  # noqa: N802
+    def MODEL(self) -> type[T]:
         """The model class associated with this endpoint."""
         pass
 
@@ -51,14 +51,14 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
         pass
 
     @abstractmethod
-    def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+    def _auto_filter(self, filters: dict[str, Any]) -> dict[str, Any]:
         """Apply automatic filters (e.g., default study key).
 
         Must be implemented by the base endpoint logic.
         """
         pass
 
-    def _validate_study_key(self, study_key: Optional[str]) -> None:
+    def _validate_study_key(self, study_key: str | None) -> None:
         """Validate that a study key is provided if required."""
         if self.requires_study_key and not study_key:
             from imednet.errors.validation import ConfigurationError
@@ -68,7 +68,7 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
                 "to the endpoint method or set it using ImednetSDK.study_context(...)."
             )
 
-    def _get_endpoint_path(self, study_key: Optional[str], *extra_segments: Any) -> str:
+    def _get_endpoint_path(self, study_key: str | None, *extra_segments: Any) -> str:
         """Build the endpoint path with optional study key and extra segments."""
         self._validate_study_key(study_key)
         segments = []
@@ -79,7 +79,7 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
         segments.extend(extra_segments)
         return self._build_path(*segments)
 
-    def _raise_not_found(self, study_key: Optional[str], item_id: Any = None) -> None:
+    def _raise_not_found(self, study_key: str | None, item_id: Any = None) -> None:
         """Raise a standardized NotFoundError."""
         from imednet.errors import NotFoundError
 

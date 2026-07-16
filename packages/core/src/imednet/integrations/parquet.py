@@ -5,7 +5,7 @@ from __future__ import annotations
 import inspect
 from importlib import import_module
 from types import ModuleType
-from typing import Any, List, Optional
+from typing import Any, List, Optional  # noqa: UP035
 
 from ..sdk import ImednetSDK
 from ..utils import validate_partition_key
@@ -69,8 +69,8 @@ def export_to_hive_parquet(
     base_dir: str,
     *,
     use_labels_as_columns: bool = False,
-    variable_whitelist: Optional[List[str]] = None,
-    form_whitelist: Optional[List[int]] = None,
+    variable_whitelist: list[str] | None = None,
+    form_whitelist: list[int] | None = None,
     chunk_size: int = 5_000,
 ) -> None:
     """Export study records to a Hive-partitioned Parquet directory layout."""
@@ -163,8 +163,8 @@ def hive_parquet_query(base_dir: str) -> str:
     """Return the DuckDB read_parquet query string for the given Hive base directory."""
     escaped_base_dir = base_dir.replace("'", "''")
     return (
-        f"SELECT * FROM read_parquet('{escaped_base_dir}/**/*.parquet', "  # noqa: S608
-        "hive_partitioning = true, union_by_name = true)"  # noqa: S608
+        f"SELECT * FROM read_parquet('{escaped_base_dir}/**/*.parquet', "
+        "hive_partitioning = true, union_by_name = true)"
     )
 
 

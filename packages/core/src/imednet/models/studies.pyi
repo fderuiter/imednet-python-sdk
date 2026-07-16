@@ -13,11 +13,11 @@ from imednet.models.engine import ModelEngine
 class Study(ImednetBaseModel):
     """Represents a clinical study and its metadata."""
 
-    sponsor_key: Optional[str]
-    study_key: Optional[str]
-    study_id: Optional[int]
-    study_name: Optional[str]
-    study_description: Optional[str]
-    study_type: Optional[str]
-    date_created: Optional[str]
-    date_modified: Optional[str]
+    sponsor_key: str | None
+    study_key: str | None
+    study_id: int | None
+    study_name: str | None
+    study_description: str | None
+    study_type: str | None
+    date_created: str | None
+    date_modified: str | None

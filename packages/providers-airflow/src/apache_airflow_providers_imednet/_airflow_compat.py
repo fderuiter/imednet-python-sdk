@@ -6,7 +6,7 @@ to allow the package to be imported even when Airflow is not installed.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Dict  # noqa: UP035
 
 if TYPE_CHECKING:
     from airflow.exceptions import AirflowException
@@ -15,7 +15,7 @@ else:  # pragma: no cover - typing fallback for optional Airflow dependency
     try:
         from airflow.sdk.definitions.context import Context  # type: ignore
     except (ImportError, ModuleNotFoundError):
-        Context = Dict[str, Any]
+        Context = dict[str, Any]
     try:
         from airflow.exceptions import AirflowException
     except (ImportError, ModuleNotFoundError):

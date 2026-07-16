@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Generic, Optional, TypeVar
+from typing import Any, Dict, Generic, Optional, TypeVar  # noqa: UP035
 
 from imednet.models.base import ImednetBaseModel
 
@@ -20,9 +20,9 @@ class ParamState:
         other_filters: Remaining filters after study key extraction.
     """
 
-    study: Optional[str]
-    params: Dict[str, Any]
-    other_filters: Dict[str, Any]
+    study: str | None
+    params: dict[str, Any]
+    other_filters: dict[str, Any]
 
 
 @dataclass
@@ -36,5 +36,5 @@ class ListRequestState(Generic[T]):
     """
 
     path: str
-    params: Dict[str, Any]
-    study: Optional[str]
+    params: dict[str, Any]
+    study: str | None

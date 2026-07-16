@@ -1,6 +1,6 @@
 """Provides a workflow to retrieve comprehensive data for a specific subject."""
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional  # noqa: UP035
 
 from pydantic import BaseModel, Field
 
@@ -13,12 +13,12 @@ if TYPE_CHECKING:
 class SubjectComprehensiveData(BaseModel):
     """Structure to hold aggregated data for a subject."""
 
-    subject_details: Optional[Subject] = Field(None, description="Core details of the subject.")
-    visits: List[Visit] = Field(default_factory=list, description="List of visits for the subject.")
-    records: List[Record] = Field(
+    subject_details: Subject | None = Field(None, description="Core details of the subject.")
+    visits: list[Visit] = Field(default_factory=list, description="List of visits for the subject.")
+    records: list[Record] = Field(
         default_factory=list, description="List of records for the subject."
     )
-    queries: List[Query] = Field(
+    queries: list[Query] = Field(
         default_factory=list, description="List of queries related to the subject."
     )
 
@@ -49,7 +49,7 @@ class SubjectDataWorkflow:
             A SubjectComprehensiveData object containing the aggregated data.
         """
         results = SubjectComprehensiveData(subject_details=None)
-        subject_filter_dict: Dict[str, Any] = {"subject_key": subject_key}
+        subject_filter_dict: dict[str, Any] = {"subject_key": subject_key}
 
         # Fetch Subject Details
         subject_list = list(self._sdk.get_subjects(study_key, **subject_filter_dict))

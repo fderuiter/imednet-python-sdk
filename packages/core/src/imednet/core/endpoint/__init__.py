@@ -5,14 +5,14 @@ from .edc_mixin import EdcAsyncListGetEndpoint, EdcGenericListGetEndpoint, EdcSy
 from .protocols import SupportsCreate, SupportsGet, SupportsList
 
 __all__ = [
+    "AsyncListGetEndpoint",
+    "EdcAsyncListGetEndpoint",
     "EdcGenericListGetEndpoint",
     "EdcSyncListGetEndpoint",
-    "EdcAsyncListGetEndpoint",
-    "SyncListGetEndpoint",
-    "AsyncListGetEndpoint",
     "GenericEndpoint",
     "GenericListGetEndpoint",
     "SupportsCreate",
     "SupportsGet",
     "SupportsList",
+    "SyncListGetEndpoint",
 ]

@@ -20,8 +20,8 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover - sensor requires
     sensors = None  # type: ignore
 
 __all__ = [
+    "ImednetExportOperator",
     "ImednetHook",
     "ImednetJobSensor",
-    "ImednetExportOperator",
     "export",
 ]

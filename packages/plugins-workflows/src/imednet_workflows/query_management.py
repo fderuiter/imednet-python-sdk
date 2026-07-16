@@ -1,6 +1,6 @@
 """Provides workflows for managing queries within iMednet studies."""
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union  # noqa: UP035
 
 from imednet.spi.models import Query
 
@@ -24,7 +24,7 @@ class QueryManagementWorkflow:
         self._sdk = sdk
 
     @staticmethod
-    def _is_query_open(query: Query) -> Optional[bool]:
+    def _is_query_open(query: Query) -> bool | None:
         """Determines if a query is open based on its comments.
 
         Returns None if the state cannot be determined (no comments).
@@ -56,9 +56,9 @@ class QueryManagementWorkflow:
     def get_open_queries(
         self,
         study_key: str,
-        additional_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        additional_filter: dict[str, Any | tuple[str, Any] | list[Any]] | None = None,
         **kwargs: Any,
-    ) -> List[Query]:
+    ) -> list[Query]:
         """Retrieves all open queries for a given study, potentially filtered further.
 
         An 'open' query is defined as one where the query comment with the highest
@@ -80,7 +80,7 @@ class QueryManagementWorkflow:
         # Fetch potentially relevant queries
         all_matching_queries = self._sdk.get_queries(study_key, **filters, **kwargs)
 
-        open_queries: List[Query] = []
+        open_queries: list[Query] = []
         for query in all_matching_queries:
             if self._is_query_open(query) is True:
                 open_queries.append(query)
@@ -91,9 +91,9 @@ class QueryManagementWorkflow:
         self,
         study_key: str,
         subject_key: str,
-        additional_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        additional_filter: dict[str, Any | tuple[str, Any] | list[Any]] | None = None,
         **kwargs: Any,
-    ) -> List[Query]:
+    ) -> list[Query]:
         """Retrieves all queries for a specific subject within a study.
 
         Args:
@@ -107,7 +107,7 @@ class QueryManagementWorkflow:
             A list of Query objects for the specified subject.
         """
         # Build filter dictionary
-        final_filter_dict: Dict[str, Any] = {"subject_key": subject_key}
+        final_filter_dict: dict[str, Any] = {"subject_key": subject_key}
         if additional_filter:
             final_filter_dict.update(additional_filter)
 
@@ -117,9 +117,9 @@ class QueryManagementWorkflow:
         self,
         study_key: str,
         site_key: str,
-        additional_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        additional_filter: dict[str, Any | tuple[str, Any] | list[Any]] | None = None,
         **kwargs: Any,
-    ) -> List[Query]:
+    ) -> list[Query]:
         """Retrieves all queries for a specific site within a study.
 
         Args:
@@ -136,13 +136,13 @@ class QueryManagementWorkflow:
         if not subject_keys:
             return []
 
-        final_filter_dict: Dict[str, Any] = {"subject_key": subject_keys}
+        final_filter_dict: dict[str, Any] = {"subject_key": subject_keys}
         if additional_filter:
             final_filter_dict.update(additional_filter)
 
         return list(self._sdk.get_queries(study_key, **final_filter_dict, **kwargs))
 
-    def get_query_state_counts(self, study_key: str, **kwargs: Any) -> Dict[str, int]:
+    def get_query_state_counts(self, study_key: str, **kwargs: Any) -> dict[str, int]:
         """Counts queries grouped by their current state (open/closed/unknown).
 
         The state is determined by the 'closed' field of the query comment
@@ -162,7 +162,7 @@ class QueryManagementWorkflow:
         """
         all_queries = self._sdk.get_queries(study_key, **kwargs)
         # Initialize counts for all possible states
-        state_counts: Dict[str, int] = {"open": 0, "closed": 0, "unknown": 0}
+        state_counts: dict[str, int] = {"open": 0, "closed": 0, "unknown": 0}
 
         for query in all_queries:
             is_open = self._is_query_open(query)

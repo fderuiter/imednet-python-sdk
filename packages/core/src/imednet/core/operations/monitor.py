@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class OperationMonitor:
     """Helper to handle generic operation monitoring (tracing, timing, logging)."""
 
-    def __init__(self, tracer: Optional[Tracer], operation_name: str, **attributes: Any) -> None:
+    def __init__(self, tracer: Tracer | None, operation_name: str, **attributes: Any) -> None:
         """Initialize the operation monitor.
 
         Args:
@@ -46,7 +46,7 @@ class OperationMonitor:
             )
         return nullcontext()
 
-    def __enter__(self) -> "OperationMonitor":
+    def __enter__(self) -> OperationMonitor:
         """Enter the synchronous monitoring context.
 
         Returns:
@@ -68,7 +68,7 @@ class OperationMonitor:
         if self._cm:
             self._cm.__exit__(exc_type, exc_val, exc_tb)
 
-    async def __aenter__(self) -> "OperationMonitor":
+    async def __aenter__(self) -> OperationMonitor:
         """Enter the asynchronous monitoring context.
 
         Returns:

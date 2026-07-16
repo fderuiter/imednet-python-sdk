@@ -1,15 +1,13 @@
 """Protocols defining the interfaces for API endpoints and operations."""
 
-from typing import (
+from collections.abc import AsyncIterator, Iterator, Sequence
+from typing import (  # noqa: UP035
     Any,
-    AsyncIterator,
     Dict,
     Generic,
-    Iterator,
     List,
     Optional,
     Protocol,
-    Sequence,
     Type,
     TypeVar,
     runtime_checkable,
@@ -29,12 +27,12 @@ class EndpointProtocol(Protocol):
     """Protocol defining the interface for endpoint classes."""
 
     PATH: str
-    MODEL: Type[ImednetBaseModel]
+    MODEL: type[ImednetBaseModel]
     _id_param: str
     requires_study_key: bool
     PAGE_SIZE: int
 
-    def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+    def _auto_filter(self, filters: dict[str, Any]) -> dict[str, Any]:
         """Apply automatic filters (e.g., default study key)."""
         ...
 
@@ -42,15 +40,15 @@ class EndpointProtocol(Protocol):
         """Build the API path."""
         ...
 
-    def _validate_study_key(self, study_key: Optional[str]) -> None:
+    def _validate_study_key(self, study_key: str | None) -> None:
         """Validate that a study key is provided if required."""
         ...
 
-    def _get_endpoint_path(self, study_key: Optional[str], *extra_segments: Any) -> str:
+    def _get_endpoint_path(self, study_key: str | None, *extra_segments: Any) -> str:
         """Build the API path with optional study key and extra segments."""
         ...
 
-    def _raise_not_found(self, study_key: Optional[str], item_id: Optional[ItemId] = None) -> None:
+    def _raise_not_found(self, study_key: str | None, item_id: ItemId | None = None) -> None:
         """Raise a standardized NotFoundError."""
         ...
 
@@ -64,8 +62,8 @@ class ListEndpointProtocol(Protocol[T_co]):
         client: RequesterProtocol,
         paginator_cls: type[Paginator],
         *,
-        study_key: Optional[str] = None,
-        extra_params: Optional[Dict[str, Any]] = None,
+        study_key: str | None = None,
+        extra_params: dict[str, Any] | None = None,
         **filters: Any,
     ) -> Iterator[T]:
         """List items synchronously."""
@@ -76,8 +74,8 @@ class ListEndpointProtocol(Protocol[T_co]):
         client: AsyncRequesterProtocol,
         paginator_cls: type[AsyncPaginator],
         *,
-        study_key: Optional[str] = None,
-        extra_params: Optional[Dict[str, Any]] = None,
+        study_key: str | None = None,
+        extra_params: dict[str, Any] | None = None,
         **filters: Any,
     ) -> AsyncIterator[T]:
         """List items asynchronously."""
@@ -87,11 +85,11 @@ class ListEndpointProtocol(Protocol[T_co]):
 class SupportsGet(Protocol[T_co]):
     """Protocol for resources that support ``get`` operations."""
 
-    def get(self, study_key: Optional[str], item_id: ItemId) -> T_co:
+    def get(self, study_key: str | None, item_id: ItemId) -> T_co:
         """Get a single item synchronously."""
         ...
 
-    async def async_get(self, study_key: Optional[str], item_id: ItemId) -> T_co:
+    async def async_get(self, study_key: str | None, item_id: ItemId) -> T_co:
         """Get a single item asynchronously."""
         ...
 
@@ -99,12 +97,12 @@ class SupportsGet(Protocol[T_co]):
 class SupportsList(Protocol[T_co]):
     """Protocol for resources that support ``list`` operations."""
 
-    def list(self, study_key: Optional[str] = None, **filters: FilterValue) -> Iterator[T_co]:
+    def list(self, study_key: str | None = None, **filters: FilterValue) -> Iterator[T_co]:
         """List items synchronously."""
         ...
 
     def async_list(
-        self, study_key: Optional[str] = None, **filters: FilterValue
+        self, study_key: str | None = None, **filters: FilterValue
     ) -> AsyncIterator[T_co]:
         """List items asynchronously."""
         ...

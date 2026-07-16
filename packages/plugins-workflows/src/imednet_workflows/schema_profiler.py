@@ -55,7 +55,7 @@ class FormProfile(BaseModel):
 class SchemaProfiler:
     """Profile form and record-data population across cached records."""
 
-    def __init__(self, sdk: "ImednetFacade", loader: CachedRecordsLoader | None = None) -> None:
+    def __init__(self, sdk: ImednetFacade, loader: CachedRecordsLoader | None = None) -> None:
         """Initialize the schema profiler.
 
         Args:
@@ -136,7 +136,7 @@ class SchemaProfiler:
         *,
         field_name: str,
         record_count: int,
-        accumulator: "_FieldAccumulator",
+        accumulator: _FieldAccumulator,
         variable: Variable | None,
     ) -> FieldProfile:
         """Internal helper to construct a FieldProfile from accumulated statistics."""
@@ -170,7 +170,7 @@ class _FormAccumulator:
     """Internal helper to accumulate statistics for a form."""
 
     record_count: int = 0
-    fields: dict[str, "_FieldAccumulator"] = field(default_factory=dict)
+    fields: dict[str, _FieldAccumulator] = field(default_factory=dict)
 
 
 @dataclass

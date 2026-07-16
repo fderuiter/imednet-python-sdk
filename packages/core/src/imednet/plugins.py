@@ -103,7 +103,7 @@ class PluginProtocol(Protocol):
     """
 
     def __call__(
-        self, sdk_instance: Union[ImednetFacade, AsyncImednetFacade]
+        self, sdk_instance: ImednetFacade | AsyncImednetFacade
     ) -> WorkflowsNamespaceProtocol:
         """Initialize the workflows plugin with an SDK instance."""
         ...
@@ -113,16 +113,14 @@ class PluginProtocol(Protocol):
 class SinksPluginProtocol(Protocol):
     """Protocol for the sinks plugin factory."""
 
-    def __call__(
-        self, sdk_instance: Union[ImednetFacade, AsyncImednetFacade]
-    ) -> SinksNamespaceProtocol:
+    def __call__(self, sdk_instance: ImednetFacade | AsyncImednetFacade) -> SinksNamespaceProtocol:
         """Initialize the sinks plugin with an SDK instance."""
         ...
 
 
 __all__ = [
     "PluginProtocol",
+    "SinksNamespaceProtocol",
     "SinksPluginProtocol",
     "WorkflowsNamespaceProtocol",
-    "SinksNamespaceProtocol",
 ]

@@ -32,18 +32,18 @@ class Visit(ImednetBaseModel):
                     data[key] = None
         return data
 
-    visit_id: Optional[int]
-    study_key: Optional[str]
-    interval_id: Optional[int]
-    interval_name: Optional[str]
-    subject_id: Optional[int]
-    subject_key: Optional[str]
-    start_date: Optional[str]
-    end_date: Optional[str]
-    due_date: Optional[str]
-    visit_date: Optional[str]
-    deleted: Optional[bool]
-    date_created: Optional[str]
-    date_modified: Optional[str]
+    visit_id: int | None
+    study_key: str | None
+    interval_id: int | None
+    interval_name: str | None
+    subject_id: int | None
+    subject_key: str | None
+    start_date: str | None
+    end_date: str | None
+    due_date: str | None
+    visit_date: str | None
+    deleted: bool | None
+    date_created: str | None
+    date_modified: str | None
     visit_date_form: Any
     visit_date_question: Any

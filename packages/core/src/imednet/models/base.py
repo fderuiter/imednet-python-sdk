@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import os
 import types
+from collections.abc import Callable
 from datetime import datetime
-from typing import (
+from typing import (  # noqa: UP035
     Any,
-    Callable,
     Dict,
     Generic,
     List,
@@ -31,7 +31,7 @@ from imednet.utils.validators import (
     parse_str_or_default,
 )
 
-_NORMALIZERS: Dict[type, Dict[str, Callable[[Any], Any]]] = {}
+_NORMALIZERS: dict[type, dict[str, Callable[[Any], Any]]] = {}
 
 
 def _identity(v: Any) -> Any:
@@ -176,7 +176,7 @@ class ImednetBaseModel(BaseModel):
         logger = logging.getLogger("imednet.drift")
 
         defined_fields = set(cls.model_fields.keys())
-        for name, field in cls.model_fields.items():
+        for name, field in cls.model_fields.items():  # noqa: B007
             if field.alias:
                 defined_fields.add(field.alias)
 
@@ -191,14 +191,14 @@ class ImednetBaseModel(BaseModel):
             msg = f"Drift detected (additive): {cls.__name__} received unexpected fields: {', '.join(sorted(unexpected_fields))}"
             if is_strict:
                 raise ValueError(msg)
-            elif cls.model_config.get("extra") != "ignore":
+            if cls.model_config.get("extra") != "ignore":  # noqa: SIM102
                 if msg not in _drift_reported:
                     _drift_reported.add(msg)
                     logger.warning(msg)
 
         missing_fields = []
         for name, field in cls.model_fields.items():
-            if field.is_required():
+            if field.is_required():  # noqa: SIM102
                 if name not in incoming_keys and (
                     not field.alias or field.alias not in incoming_keys
                 ):
@@ -212,7 +212,7 @@ class ImednetBaseModel(BaseModel):
         return data
 
     @field_validator("*", check_fields=False, mode="before")  # type: ignore[untyped-decorator]
-    def _normalise(cls, v: Any, info: Any) -> Any:  # noqa: D401
+    def _normalise(cls, v: Any, info: Any) -> Any:
         """Normalize common primitive types before validation."""
         if not info.field_name:
             return v
@@ -238,7 +238,7 @@ class Pagination(ImednetBaseModel):
     size: int = Field(25, alias="size")
     total_pages: int = Field(0, alias="totalPages")
     total_elements: int = Field(0, alias="totalElements")
-    sort: List[SortField] = Field(default_factory=list)
+    sort: list[SortField] = Field(default_factory=list)
 
 
 class Error(ImednetBaseModel):
@@ -246,7 +246,7 @@ class Error(ImednetBaseModel):
 
     code: str = Field("", description="Error code")
     message: str = Field("", description="Error message")
-    details: Dict[str, Any] = Field(default_factory=dict)
+    details: dict[str, Any] = Field(default_factory=dict)
 
 
 class Metadata(ImednetBaseModel):
@@ -266,5 +266,5 @@ class ApiResponse(ImednetBaseModel, Generic[T]):
     """Generic API response model."""
 
     metadata: Metadata
-    pagination: Optional[Pagination] = None
+    pagination: Pagination | None = None
     data: T

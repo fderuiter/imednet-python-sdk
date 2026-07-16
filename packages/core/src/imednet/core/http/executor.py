@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
+from collections.abc import Awaitable, Callable, Iterator
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterator, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 import httpx
 from tenacity import (
@@ -38,8 +39,8 @@ class BaseRequestExecutor(ABC):
     def __init__(
         self,
         send: Any,
-        tracer: Optional[Tracer] = None,
-        retry_config: Optional[RetryConfig] = None,
+        tracer: Tracer | None = None,
+        retry_config: RetryConfig | None = None,
     ) -> None:
         """Initialize the request executor.
 
@@ -106,7 +107,7 @@ class BaseRequestExecutor(ABC):
         return should_retry
 
     def _process_result(
-        self, response: Optional[httpx.Response], monitor: RequestMonitor
+        self, response: httpx.Response | None, monitor: RequestMonitor
     ) -> httpx.Response:
         """Process successful response or raise error if None."""
         if response is not None:
@@ -142,7 +143,7 @@ class BaseRequestExecutor(ABC):
         raise RuntimeError("Request failed without response or exception")  # Unreachable
 
     @staticmethod
-    def _parse_retry_after_seconds(response: httpx.Response) -> Optional[float]:
+    def _parse_retry_after_seconds(response: httpx.Response) -> float | None:
         """Parse the 'Retry-After' header from an HTTP response.
 
         Args:
@@ -202,9 +203,8 @@ class BaseRequestExecutor(ABC):
         """Handle exceptions raised during request execution."""
         if isinstance(e, RetryError):
             return self._process_retry_error(e, monitor)
-        else:
-            get_global_circuit_breaker().record_failure()
-            raise
+        get_global_circuit_breaker().record_failure()
+        raise
 
     @abstractmethod
     def __call__(self, method: str, url: str, **kwargs: Any) -> Any:
@@ -217,8 +217,8 @@ class SyncRequestExecutor(BaseRequestExecutor):
     def __init__(
         self,
         send: Callable[..., httpx.Response],
-        tracer: Optional[Tracer] = None,
-        retry_config: Optional[RetryConfig] = None,
+        tracer: Tracer | None = None,
+        retry_config: RetryConfig | None = None,
     ) -> None:
         """Initialize the synchronous request executor.
 
@@ -260,7 +260,7 @@ class SyncRequestExecutor(BaseRequestExecutor):
 
         with RequestMonitor(self.tracer, method, url) as monitor:
             try:
-                response: Optional[httpx.Response] = retryer(send_fn)
+                response: httpx.Response | None = retryer(send_fn)
                 return self._process_result(response, monitor)
             except Exception as e:
                 return self._handle_exception(e, monitor)
@@ -272,8 +272,8 @@ class AsyncRequestExecutor(BaseRequestExecutor):
     def __init__(
         self,
         send: Callable[..., Awaitable[httpx.Response]],
-        tracer: Optional[Tracer] = None,
-        retry_config: Optional[RetryConfig] = None,
+        tracer: Tracer | None = None,
+        retry_config: RetryConfig | None = None,
     ) -> None:
         """Initialize the asynchronous request executor.
 
@@ -315,7 +315,7 @@ class AsyncRequestExecutor(BaseRequestExecutor):
 
         async with RequestMonitor(self.tracer, method, url) as monitor:
             try:
-                response: Optional[httpx.Response] = await retryer(send_fn)
+                response: httpx.Response | None = await retryer(send_fn)
                 return self._process_result(response, monitor)
             except Exception as e:
                 return self._handle_exception(e, monitor)

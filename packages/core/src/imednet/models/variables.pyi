@@ -16,17 +16,17 @@ class Variable(ImednetBaseModel):
     label: str | None = Field(default=None, alias="label")
     variable_oid: str | None = Field(default=None, alias="variableOid")
 
-    study_key: Optional[str]
-    variable_id: Optional[int]
-    variable_type: Optional[str]
-    variable_name: Optional[str]
-    sequence: Optional[int]
-    revision: Optional[int]
-    date_created: Optional[str]
-    date_modified: Optional[str]
-    form_id: Optional[int]
-    form_key: Optional[str]
-    form_name: Optional[str]
+    study_key: str | None
+    variable_id: int | None
+    variable_type: str | None
+    variable_name: str | None
+    sequence: int | None
+    revision: int | None
+    date_created: str | None
+    date_modified: str | None
+    form_id: int | None
+    form_key: str | None
+    form_name: str | None
     blinded: Any
     deleted: Any
     disabled: Any

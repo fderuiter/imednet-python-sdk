@@ -1,6 +1,6 @@
 """Provides workflows for extracting specific datasets from iMednet studies."""
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union  # noqa: UP035
 
 from imednet.spi.models import Record, RecordRevision
 
@@ -26,11 +26,11 @@ class DataExtractionWorkflow:
     def extract_records_by_criteria(
         self,
         study_key: str,
-        record_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
-        subject_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
-        visit_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        record_filter: dict[str, Any | tuple[str, Any] | list[Any]] | None = None,
+        subject_filter: dict[str, Any | tuple[str, Any] | list[Any]] | None = None,
+        visit_filter: dict[str, Any | tuple[str, Any] | list[Any]] | None = None,
         **other_filters: Any,
-    ) -> List[Record]:
+    ) -> list[Record]:
         """Extracts records based on criteria spanning subjects, visits, and records.
 
         Args:
@@ -44,7 +44,7 @@ class DataExtractionWorkflow:
         Returns:
             A list of Record objects matching all specified criteria.
         """
-        matching_subject_keys: Optional[List[str]] = None
+        matching_subject_keys: list[str] | None = None
         if subject_filter:
             subjects = self._sdk.get_subjects(study_key, **subject_filter)
             matching_subject_keys = [s.subject_key for s in subjects]  # type: ignore
@@ -52,7 +52,7 @@ class DataExtractionWorkflow:
                 return []
 
         # Changed type hint from List[str] to List[int]
-        matching_visit_ids: Optional[List[int]] = None
+        matching_visit_ids: list[int] | None = None
         if visit_filter:
             # Client-side filtering for subject_key on visits is still needed
             # as build_filter_string doesn't handle complex AND/OR structures easily
@@ -92,11 +92,11 @@ class DataExtractionWorkflow:
     def extract_audit_trail(
         self,
         study_key: str,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
-        user_filter: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        user_filter: dict[str, Any | tuple[str, Any] | list[Any]] | None = None,
         **filters: Any,
-    ) -> List[RecordRevision]:
+    ) -> list[RecordRevision]:
         """Extracts the audit trail (record revisions) based on specified filters.
 
         Args:

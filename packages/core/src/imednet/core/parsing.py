@@ -6,7 +6,8 @@ Pydantic models, eliminating duplicated parsing logic across endpoints.
 
 from __future__ import annotations
 
-from typing import Any, Callable, Type, TypeVar
+from collections.abc import Callable
+from typing import Any, Type, TypeVar  # noqa: UP035
 
 from pydantic import BaseModel
 
@@ -16,7 +17,7 @@ __all__ = ["ModelParser", "get_model_parser"]
 T = TypeVar("T", bound=BaseModel)
 
 
-def get_model_parser(model: Type[T]) -> Callable[[Any], T]:
+def get_model_parser(model: type[T]) -> Callable[[Any], T]:
     """Return the appropriate parsing function for a model.
 
     This function implements a strategy pattern for model parsing:
@@ -36,8 +37,8 @@ def get_model_parser(model: Type[T]) -> Callable[[Any], T]:
         >>> study = parser({"study_name": "Test", "study_key": "123"})
     """
     # Check for custom from_json method
-    if hasattr(model, "from_json") and callable(getattr(model, "from_json")):
-        return model.from_json  # type: ignore[attr-defined,return-value]
+    if hasattr(model, "from_json") and callable(getattr(model, "from_json")):  # noqa: B009
+        return getattr(model, "from_json")  # type: ignore[return-value] # noqa: B009
 
     # Fall back to Pydantic's model_validate
     return model.model_validate
@@ -59,7 +60,7 @@ class ModelParser:
         2
     """
 
-    def __init__(self, model: Type[BaseModel]) -> None:
+    def __init__(self, model: type[BaseModel]) -> None:
         """Initialize parser with a model type.
 
         Args:

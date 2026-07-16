@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional  # noqa: UP035
 
 from imednet.spi.errors import ApiError, ClientError
 from imednet.spi.facade import ImednetFacade
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class EditCheckResultStatus(str, Enum):
     """Possible outcomes for an edit check verification rule."""
 
-    PASS = "Pass"
+    PASS = "Pass"  # noqa: S105
     FAIL = "Fail"
     ERROR = "Error"
     SKIPPED = "Skipped"
@@ -32,7 +32,7 @@ class EditCheckVerificationReport:
     passed_rules: int = 0
     failed_rules: int = 0
     skipped_rules: int = 0
-    results: List[Dict[str, Any]] = field(default_factory=list)
+    results: list[dict[str, Any]] = field(default_factory=list)
 
 
 class UATExecutionEngine:
@@ -117,7 +117,7 @@ class UATExecutionEngine:
         return data
 
     def run_verification(
-        self, study_key: str, form_scope: Optional[str] = None, site_name: str = "TestSite"
+        self, study_key: str, form_scope: str | None = None, site_name: str = "TestSite"
     ) -> EditCheckVerificationReport:
         """Run the end-to-end UAT verification against the EDC API."""
         report = EditCheckVerificationReport(study_key=study_key)

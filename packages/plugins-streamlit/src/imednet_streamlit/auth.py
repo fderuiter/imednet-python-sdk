@@ -20,11 +20,11 @@ _KEY_CONNECTED = "_imednet_connected"
 _KEY_ENV = "_imednet_env"
 
 __all__ = [
-    "render_auth_sidebar",
-    "get_sdk",
-    "get_study_key",
     "clear_credentials",
     "get_db_path",
+    "get_sdk",
+    "get_study_key",
+    "render_auth_sidebar",
 ]
 
 
@@ -121,7 +121,7 @@ def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None, str 
             ).fetchone()
             if row:
                 return row[0], row[1], row[2]
-    except Exception:
+    except Exception:  # noqa: S110
         pass
     return None, None, None
 

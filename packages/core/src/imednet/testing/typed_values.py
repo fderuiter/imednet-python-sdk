@@ -5,10 +5,10 @@ Used in tests and smoke scripts to exercise typed fields.
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional  # noqa: UP035
 
 # Maps variable type synonyms to example values.
-_TYPED_VALUES: Dict[str, Any] = {
+_TYPED_VALUES: dict[str, Any] = {
     "string": "example",
     "text": "example",
     "memo": "example memo",
@@ -24,7 +24,7 @@ _TYPED_VALUES: Dict[str, Any] = {
 }
 
 # Maps variable type synonyms to canonical categories.
-_CANONICAL_TYPES: Dict[str, str] = {
+_CANONICAL_TYPES: dict[str, str] = {
     "string": "string",
     "text": "string",
     "memo": "memo",
@@ -40,11 +40,11 @@ _CANONICAL_TYPES: Dict[str, str] = {
 }
 
 
-def canonical_type(var_type: str) -> Optional[str]:
+def canonical_type(var_type: str) -> str | None:
     """Return the canonical type for ``var_type`` or ``None`` if unsupported."""
     return _CANONICAL_TYPES.get((var_type or "").lower())
 
 
-def value_for(var_type: str) -> Optional[Any]:
+def value_for(var_type: str) -> Any | None:
     """Return a deterministic example value for ``var_type`` if supported."""
     return _TYPED_VALUES.get((var_type or "").lower())

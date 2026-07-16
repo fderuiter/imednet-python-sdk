@@ -1,7 +1,7 @@
 """Utilities for submitting and updating records in iMedNet studies."""
 
 import warnings
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union, cast  # noqa: UP035
 
 from imednet.spi.models import Job
 from imednet.spi.validation import AsyncSchemaValidator, SchemaCache, SchemaValidator
@@ -33,7 +33,7 @@ class RecordUpdateWorkflow:
 
         self._schema: SchemaCache = cast(SchemaCache, self._validator.schema)
 
-    def _validate_form_key(self, study_key: str, records_data: List[Dict[str, Any]]) -> None:
+    def _validate_form_key(self, study_key: str, records_data: list[dict[str, Any]]) -> None:
         """Refresh schema if the form key is missing from cache."""
         if not records_data:
             return
@@ -46,7 +46,7 @@ class RecordUpdateWorkflow:
                 raise ValueError(f"Form key '{first_ref}' not found")
 
     async def _async_validate_form_key(
-        self, study_key: str, records_data: List[Dict[str, Any]]
+        self, study_key: str, records_data: list[dict[str, Any]]
     ) -> None:
         """Asynchronous variant of :meth:`_validate_form_key`."""
         if not records_data:
@@ -62,7 +62,7 @@ class RecordUpdateWorkflow:
     def create_or_update_records(
         self,
         study_key: str,
-        records_data: List[Dict[str, Any]],
+        records_data: list[dict[str, Any]],
         wait_for_completion: bool = False,
         timeout: int = 300,
         poll_interval: int = 5,
@@ -86,7 +86,7 @@ class RecordUpdateWorkflow:
     async def async_create_or_update_records(
         self,
         study_key: str,
-        records_data: List[Dict[str, Any]],
+        records_data: list[dict[str, Any]],
         wait_for_completion: bool = False,
         timeout: int = 300,
         poll_interval: int = 5,
@@ -126,18 +126,18 @@ class RecordUpdateWorkflow:
     def _build_record_payload(
         self,
         *,
-        form_identifier: Union[str, int],
+        form_identifier: str | int,
         form_identifier_type: Literal["key", "id"] = "key",
-        data: Dict[str, Any],
-        subject_identifier: Union[str, int, None] = None,
+        data: dict[str, Any],
+        subject_identifier: str | int | None = None,
         subject_identifier_type: Literal["key", "id", "oid"] = "key",
-        site_identifier: Union[str, int, None] = None,
+        site_identifier: str | int | None = None,
         site_identifier_type: Literal["name", "id"] = "name",
-        interval_identifier: Union[str, int, None] = None,
+        interval_identifier: str | int | None = None,
         interval_identifier_type: Literal["name", "id"] = "name",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Return a record payload for ``create_or_update_records``."""
-        record: Dict[str, Any] = {
+        record: dict[str, Any] = {
             "formKey" if form_identifier_type == "key" else "formId": form_identifier,
             "data": data,
         }
@@ -169,9 +169,9 @@ class RecordUpdateWorkflow:
     def register_subject(
         self,
         study_key: str,
-        form_identifier: Union[str, int],
-        site_identifier: Union[str, int],
-        data: Dict[str, Any],
+        form_identifier: str | int,
+        site_identifier: str | int,
+        data: dict[str, Any],
         form_identifier_type: Literal["key", "id"] = "key",
         site_identifier_type: Literal["name", "id"] = "name",
         wait_for_completion: bool = False,
@@ -212,10 +212,10 @@ class RecordUpdateWorkflow:
     def update_scheduled_record(
         self,
         study_key: str,
-        form_identifier: Union[str, int],
-        subject_identifier: Union[str, int],
-        interval_identifier: Union[str, int],
-        data: Dict[str, Any],
+        form_identifier: str | int,
+        subject_identifier: str | int,
+        interval_identifier: str | int,
+        data: dict[str, Any],
         form_identifier_type: Literal["key", "id"] = "key",
         subject_identifier_type: Literal["key", "id", "oid"] = "key",
         interval_identifier_type: Literal["name", "id"] = "name",
@@ -261,9 +261,9 @@ class RecordUpdateWorkflow:
     def create_new_record(
         self,
         study_key: str,
-        form_identifier: Union[str, int],
-        subject_identifier: Union[str, int],
-        data: Dict[str, Any],
+        form_identifier: str | int,
+        subject_identifier: str | int,
+        data: dict[str, Any],
         form_identifier_type: Literal["key", "id"] = "key",
         subject_identifier_type: Literal["key", "id", "oid"] = "key",
         wait_for_completion: bool = False,

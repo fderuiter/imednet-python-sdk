@@ -13,22 +13,22 @@ from imednet.models.engine import ModelEngine
 class Coding(ImednetBaseModel):
     """Represents a medical coding entry associated with a record."""
 
-    study_key: Optional[str]
-    site_name: Optional[str]
-    site_id: Optional[int]
-    subject_id: Optional[int]
-    subject_key: Optional[str]
-    form_id: Optional[int]
-    form_name: Optional[str]
-    form_key: Optional[str]
-    record_id: Optional[int]
-    variable: Optional[str]
-    value: Optional[str]
-    coding_id: Optional[str]
-    code: Optional[str]
-    coded_by: Optional[str]
-    dictionary_name: Optional[str]
-    dictionary_version: Optional[str]
-    date_coded: Optional[str]
+    study_key: str | None
+    site_name: str | None
+    site_id: int | None
+    subject_id: int | None
+    subject_key: str | None
+    form_id: int | None
+    form_name: str | None
+    form_key: str | None
+    record_id: int | None
+    variable: str | None
+    value: str | None
+    coding_id: str | None
+    code: str | None
+    coded_by: str | None
+    dictionary_name: str | None
+    dictionary_version: str | None
+    date_coded: str | None
     reason: Any
     revision: Any

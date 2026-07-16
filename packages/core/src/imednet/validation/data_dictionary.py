@@ -5,10 +5,11 @@ from __future__ import annotations
 import csv
 import io
 import zipfile
+from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import BinaryIO, Iterator, TextIO
+from typing import BinaryIO, TextIO
 
 
 @dataclass
@@ -24,7 +25,7 @@ class DataDictionary:
 class DataDictionaryLoader:
     """Load data dictionary files from various sources."""
 
-    REQUIRED_FILES = {
+    REQUIRED_FILES = {  # noqa: RUF012
         "BUSINESS_LOGIC.csv": "business_logic",
         "CHOICES.csv": "choices",
         "FORMS.csv": "forms",
@@ -92,7 +93,7 @@ class DataDictionaryLoader:
         with zipfile.ZipFile(source) as zf:
             data: dict[str, list[dict[str, str]]] = {}
             for name, attr in cls.REQUIRED_FILES.items():
-                with zf.open(name) as fh:
+                with zf.open(name) as fh:  # noqa: SIM117
                     with io.TextIOWrapper(fh, encoding="utf-8") as text_fh:
                         data[attr] = cls._load_csv(text_fh)
         return DataDictionary(**data)

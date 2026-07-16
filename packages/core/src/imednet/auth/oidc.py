@@ -2,7 +2,7 @@
 
 import base64
 import json
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional  # noqa: UP035
 
 from .strategy import AuthStrategy
 
@@ -38,11 +38,11 @@ class OIDCAuth:
         except Exception:
             return {}
 
-    def get_headers(self) -> Dict[str, str]:
+    def get_headers(self) -> dict[str, str]:
         """Return the Authorization header."""
         return {"Authorization": f"Bearer {self.token}"}
 
-    def get_user_id(self) -> Optional[str]:
+    def get_user_id(self) -> str | None:
         """Extract the user identifier from the token claims.
 
         Returns:
@@ -50,7 +50,7 @@ class OIDCAuth:
         """
         return self._decoded_claims.get("sub") or self._decoded_claims.get("preferred_username")
 
-    def get_user_roles(self) -> List[str]:
+    def get_user_roles(self) -> list[str]:
         """Extract and map user roles from the token claims.
 
         Returns:

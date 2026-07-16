@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import types
-from typing import Any, Mapping, Type
+from collections.abc import Mapping
+from typing import Any, Type  # noqa: UP035
 
 from .api import (
     ApiError,
@@ -17,7 +18,7 @@ from .api import (
 from .validation import BadRequestError
 
 # Use MappingProxyType to ensure immutability, avoiding global mutable state
-STATUS_TO_ERROR: Mapping[int, Type[ApiError]] = types.MappingProxyType(
+STATUS_TO_ERROR: Mapping[int, type[ApiError]] = types.MappingProxyType(
     {
         400: BadRequestError,
         401: UnauthorizedError,
@@ -29,7 +30,7 @@ STATUS_TO_ERROR: Mapping[int, Type[ApiError]] = types.MappingProxyType(
 )
 
 
-def get_error_class(status_code: int, response_body: Any = None) -> Type[ApiError]:
+def get_error_class(status_code: int, response_body: Any = None) -> type[ApiError]:
     """Get error class for status code.
 
     Defaults to generic ApiError for unmapped client/server errors.

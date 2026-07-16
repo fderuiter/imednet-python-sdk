@@ -25,7 +25,7 @@ def run_dashboard(port: int = 8501, no_browser: bool = False) -> None:
 
     print(f"Launching iMednet Dashboard on port {port}...")
     try:
-        result = subprocess.run(cmd, check=False)
+        result = subprocess.run(cmd, check=False)  # noqa: S603
     except OSError as exc:
         print(f"Dashboard failed to launch: {exc}")
         sys.exit(1)

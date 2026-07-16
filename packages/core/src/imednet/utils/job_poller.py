@@ -7,8 +7,9 @@ import inspect
 import logging
 import threading
 import time
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Any, Awaitable, Callable, Dict, List, Optional, Protocol, cast, runtime_checkable
+from typing import Any, Dict, List, Optional, Protocol, cast, runtime_checkable  # noqa: UP035
 
 from imednet.models.jobs import JobStatus
 
@@ -55,8 +56,8 @@ class JobPollSummary:
     """Aggregate result of polling multiple jobs."""
 
     study_key: str
-    results: Dict[str, JobStatus]  # batch_id → final JobStatus
-    failures: Dict[str, Exception]  # batch_id → exception (timeout or API error)
+    results: dict[str, JobStatus]  # batch_id → final JobStatus
+    failures: dict[str, Exception]  # batch_id → exception (timeout or API error)
     elapsed_total: float
 
     @property
@@ -120,16 +121,16 @@ class BaseJobPoller:
         """Process the fetched result data and attach to the status object."""
         if hasattr(res, "json"):
             try:
-                setattr(status, "results", res.json())
+                status.results = res.json()
             except Exception:
-                setattr(status, "results", getattr(res, "text", str(res)))
+                status.results = getattr(res, "text", str(res))
         else:
-            setattr(status, "results", res)
+            status.results = res
         return status
 
     def _trigger_callback(
         self,
-        on_progress: Optional[JobProgressCallback],
+        on_progress: JobProgressCallback | None,
         event: JobStatusEvent,
     ) -> None:
         """Invoke the progress callback with signature detection."""
@@ -169,7 +170,7 @@ class JobPoller(BaseJobPoller):
         interval: float = 5.0,
         timeout: float = 300.0,
         *,
-        on_progress: Optional[JobProgressCallback] = None,
+        on_progress: JobProgressCallback | None = None,
     ) -> JobStatus:
         """Synchronously poll a job until completion."""
         start = time.monotonic()
@@ -220,7 +221,7 @@ class JobPoller(BaseJobPoller):
                     try:
                         res = self._fetch_result(status.result_url)  # type: ignore
                         self._process_fetch_result(status, res)
-                    except Exception:
+                    except Exception:  # noqa: S110
                         pass
                 evaluate_job_state(status)
                 return status
@@ -230,11 +231,11 @@ class JobPoller(BaseJobPoller):
     def poll_many(
         self,
         study_key: str,
-        batch_ids: List[str],
+        batch_ids: list[str],
         interval: float = 5.0,
         timeout: float = 300.0,
         *,
-        on_progress: Optional[JobProgressCallback] = None,
+        on_progress: JobProgressCallback | None = None,
         fail_fast: bool = False,
     ) -> JobPollSummary:
         """Poll multiple jobs concurrently using threading.
@@ -257,8 +258,8 @@ class JobPoller(BaseJobPoller):
             Called for each job on each poll cycle. Thread-safe: the callback
             must be safe to call from multiple threads simultaneously.
         """
-        results: Dict[str, JobStatus] = {}
-        failures: Dict[str, Exception] = {}
+        results: dict[str, JobStatus] = {}
+        failures: dict[str, Exception] = {}
         lock = threading.Lock()
         start = time.monotonic()
 
@@ -320,7 +321,7 @@ class AsyncJobPoller(BaseJobPoller):
         interval: float = 5.0,
         timeout: float = 300.0,
         *,
-        on_progress: Optional[JobProgressCallback] = None,
+        on_progress: JobProgressCallback | None = None,
     ) -> JobStatus:
         """Asynchronously poll a job until completion."""
         start = time.monotonic()
@@ -371,7 +372,7 @@ class AsyncJobPoller(BaseJobPoller):
                     try:
                         res = await self._fetch_result(status.result_url)  # type: ignore
                         self._process_fetch_result(status, res)
-                    except Exception:
+                    except Exception:  # noqa: S110
                         pass
                 evaluate_job_state(status)
                 return status
@@ -381,11 +382,11 @@ class AsyncJobPoller(BaseJobPoller):
     async def async_poll_many(
         self,
         study_key: str,
-        batch_ids: List[str],
+        batch_ids: list[str],
         interval: float = 5.0,
         timeout: float = 300.0,
         *,
-        on_progress: Optional[JobProgressCallback] = None,
+        on_progress: JobProgressCallback | None = None,
         fail_fast: bool = False,
     ) -> JobPollSummary:
         """Asynchronously poll multiple jobs concurrently via asyncio.gather.
@@ -394,8 +395,8 @@ class AsyncJobPoller(BaseJobPoller):
         individual failures unless fail_fast=True.
         """
         start = time.monotonic()
-        results: Dict[str, JobStatus] = {}
-        failures: Dict[str, Exception] = {}
+        results: dict[str, JobStatus] = {}
+        failures: dict[str, Exception] = {}
 
         async def _poll_one(batch_id: str) -> None:
             try:

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List
+from typing import List  # noqa: UP035
 
 from pydantic import Field
 
@@ -34,10 +34,10 @@ class FormStructure(ImednetBaseModel):
     date_modified: datetime = Field(..., alias="dateModified")
 
     # Nested variables
-    variables: List[Variable] = Field(default_factory=list)
+    variables: list[Variable] = Field(default_factory=list)
 
     @classmethod
-    def from_form(cls, form: Form, variables: List[Variable]) -> FormStructure:
+    def from_form(cls, form: Form, variables: list[Variable]) -> FormStructure:
         """Creates FormStructure from a Form model and its associated variables."""
         form_data = form.model_dump(by_alias=True)
         return cls(**form_data, variables=variables)
@@ -60,10 +60,10 @@ class IntervalStructure(ImednetBaseModel):
     date_modified: datetime = Field(..., alias="dateModified")
 
     # Nested forms
-    forms: List[FormStructure] = Field(default_factory=list)
+    forms: list[FormStructure] = Field(default_factory=list)
 
     @classmethod
-    def from_interval(cls, interval: Interval, forms: List[FormStructure]) -> IntervalStructure:
+    def from_interval(cls, interval: Interval, forms: list[FormStructure]) -> IntervalStructure:
         """Creates IntervalStructure from an Interval model and its associated FormStructures."""
         interval_data = interval.model_dump(by_alias=True)
         # Remove the 'forms' key to avoid multiple values for keyword argument 'forms'
@@ -76,4 +76,4 @@ class StudyStructure(ImednetBaseModel):
     """Hierarchical representation of a full study including intervals and forms."""
 
     study_key: str = Field(..., alias="studyKey")
-    intervals: List[IntervalStructure] = Field(default_factory=list)
+    intervals: list[IntervalStructure] = Field(default_factory=list)

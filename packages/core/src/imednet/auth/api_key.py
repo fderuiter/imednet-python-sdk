@@ -1,6 +1,6 @@
 """API Key authentication strategy."""
 
-from typing import Dict
+from typing import Dict  # noqa: UP035
 
 from imednet.constants import HEADER_API_KEY, HEADER_SECURITY_KEY
 
@@ -18,7 +18,7 @@ class ApiKeyAuth:
         self.api_key = api_key
         self.security_key = security_key
 
-    def get_headers(self) -> Dict[str, str]:
+    def get_headers(self) -> dict[str, str]:
         """Return the API key and security key headers."""
         return {
             HEADER_API_KEY: self.api_key,

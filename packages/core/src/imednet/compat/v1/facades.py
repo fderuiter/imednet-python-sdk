@@ -8,7 +8,7 @@ def is_async_client(sdk: Any) -> bool:
     return getattr(sdk, "_async_client", None) is not None
 
 
-def execute_list_sync(endpoint: Any, study_key: Optional[str] = None, **filters: Any) -> Any:
+def execute_list_sync(endpoint: Any, study_key: str | None = None, **filters: Any) -> Any:
     """Stable facade to execute synchronous list operations on endpoints."""
     list_sync = getattr(endpoint, "_list_sync", None)
     require_sync_client = getattr(endpoint, "_require_sync_client", None)
@@ -25,7 +25,7 @@ def execute_list_sync(endpoint: Any, study_key: Optional[str] = None, **filters:
     )
 
 
-def execute_list_async(endpoint: Any, study_key: Optional[str] = None, **filters: Any) -> Any:
+def execute_list_async(endpoint: Any, study_key: str | None = None, **filters: Any) -> Any:
     """Stable facade to execute asynchronous list operations on endpoints."""
     list_async = getattr(endpoint, "_list_async", None)
     require_async_client = getattr(endpoint, "_require_async_client", None)

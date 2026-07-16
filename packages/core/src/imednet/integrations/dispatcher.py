@@ -6,7 +6,8 @@ supporting both tabular procedural functions and object-oriented sink classes.
 
 import dataclasses
 import threading
-from typing import Any, Callable, Dict, Optional, Type
+from collections.abc import Callable
+from typing import Any, Dict, Optional, Type  # noqa: UP035
 
 from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate, iter_batches
 from imednet.sdk import ImednetSDK
@@ -15,13 +16,13 @@ from imednet.sdk import ImednetSDK
 class ExportRegistry:
     """Central registry mapping target types to their implementations."""
 
-    _LAZY_SINKS = {
+    _LAZY_SINKS = {  # noqa: RUF012
         "mongodb": "imednet_sinks.document:MongoDbExportSink",
         "neo4j": "imednet_sinks.graph:Neo4jExportSink",
         "snowflake": "imednet_sinks.warehouse:SnowflakeExportSink",
     }
 
-    _LAZY_CONFIGS = {
+    _LAZY_CONFIGS = {  # noqa: RUF012
         "mongodb": "imednet_sinks.document:MongoDbSinkConfig",
         "neo4j": "imednet_sinks.graph:Neo4jSinkConfig",
         "snowflake": "imednet_sinks.warehouse:SnowflakeSinkConfig",
@@ -29,9 +30,9 @@ class ExportRegistry:
 
     def __init__(self):
         """Initialize an empty ExportRegistry."""
-        self._tabular_targets: Dict[str, Callable] = {}
-        self._sink_targets: Dict[str, Type[ExportSink]] = {}
-        self._config_targets: Dict[str, Type[SinkConfig]] = {}
+        self._tabular_targets: dict[str, Callable] = {}
+        self._sink_targets: dict[str, type[ExportSink]] = {}
+        self._config_targets: dict[str, type[SinkConfig]] = {}
         self._lock = threading.RLock()
 
     def register_tabular(self, target_type: str, func: Callable) -> None:
@@ -39,17 +40,17 @@ class ExportRegistry:
         with self._lock:
             self._tabular_targets[target_type] = func
 
-    def register_sink(self, target_type: str, sink_class: Type[ExportSink]) -> None:
+    def register_sink(self, target_type: str, sink_class: type[ExportSink]) -> None:
         """Register an object-oriented sink class for a target type."""
         with self._lock:
             self._sink_targets[target_type] = sink_class
 
-    def get_tabular(self, target_type: str) -> Optional[Callable]:
+    def get_tabular(self, target_type: str) -> Callable | None:
         """Retrieve a registered tabular function, or None if not found."""
         with self._lock:
             return self._tabular_targets.get(target_type)
 
-    def get_sink(self, target_type: str) -> Optional[Type[ExportSink]]:
+    def get_sink(self, target_type: str) -> type[ExportSink] | None:
         """Retrieve a registered sink class, or None if not found."""
         with self._lock:
             if target_type in self._sink_targets:
@@ -72,7 +73,7 @@ class ExportRegistry:
 
             return None
 
-    def get_config_class(self, target_type: str) -> Type[SinkConfig]:
+    def get_config_class(self, target_type: str) -> type[SinkConfig]:
         """Retrieve a registered config class, or SinkConfig as default."""
         with self._lock:
             if target_type in self._config_targets:
@@ -102,7 +103,7 @@ def register_tabular_target(target_type: str, func: Callable) -> None:
     _registry.register_tabular(target_type, func)
 
 
-def register_sink_target(target_type: str, sink_class: Type[ExportSink]) -> None:
+def register_sink_target(target_type: str, sink_class: type[ExportSink]) -> None:
     """Register an object-oriented sink class for a target type."""
     _registry.register_sink(target_type, sink_class)
 
@@ -112,7 +113,7 @@ def export(
     sdk: ImednetSDK,
     study_key: str,
     *,
-    config: Optional[SinkConfig] = None,
+    config: SinkConfig | None = None,
     **kwargs: Any,
 ) -> Any:
     """Unified entry point for data export.

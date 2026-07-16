@@ -3,18 +3,19 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping, MutableMapping
 from datetime import date, datetime
-from typing import Any, Dict, List, Mapping, MutableMapping, TypeAlias, Union, cast
+from typing import Any, Dict, List, TypeAlias, Union, cast  # noqa: UP035
 
 from airflow.sdk.bases.hook import BaseHook
 
 from imednet import Config, ImednetSDK, load_config
 
-Primitive = Union[str, int, float, bool, None]
+Primitive = Union[str, int, float, bool, None]  # noqa: UP007
 # Primitive-only payload contract for discovery helpers that feed Airflow mapping/XCom.
-PrimitiveContainer: TypeAlias = Union[
-    Primitive, List["PrimitiveContainer"], Dict[str, "PrimitiveContainer"]
-]
+PrimitiveContainer: TypeAlias = (
+    Primitive | list["PrimitiveContainer"] | dict[str, "PrimitiveContainer"]
+)
 _SENSITIVE_KEYS = {
     "api_key",
     "security_key",
@@ -91,7 +92,7 @@ class ImednetHook(BaseHook):
             or self._string_or_none(getattr(conn, "password", None)),
             base_url=self._string_or_none(extras_dict.get("base_url")),
         )
-        return config
+        return config  # noqa: RET504
 
     @classmethod
     def _to_primitive(cls, value: Any) -> PrimitiveContainer:
@@ -109,7 +110,7 @@ class ImednetHook(BaseHook):
             dumped = value.model_dump(mode="json", by_alias=True)
             value = cast(Any, dumped)
         if isinstance(value, Mapping):
-            output: Dict[str, PrimitiveContainer] = {}
+            output: dict[str, PrimitiveContainer] = {}
             for key, item in value.items():
                 key_str = str(key)
                 if key_str.lower() in _SENSITIVE_KEYS:
@@ -134,7 +135,7 @@ class ImednetHook(BaseHook):
         """Backward compatible alias for :meth:`get_sdk_client`."""
         return self.get_sdk_client()
 
-    def describe_connection(self) -> Dict[str, PrimitiveContainer]:
+    def describe_connection(self) -> dict[str, PrimitiveContainer]:
         """Return redacted primitive metadata about resolved hook configuration."""
         config = self._resolved_config()
         return {
@@ -146,19 +147,19 @@ class ImednetHook(BaseHook):
             "security_key_configured": bool(config.security_key),
         }
 
-    def list_studies_metadata(self) -> List[Dict[str, PrimitiveContainer]]:
+    def list_studies_metadata(self) -> list[dict[str, PrimitiveContainer]]:
         """Return primitive, serialization-safe study metadata for task mapping."""
         studies = self.get_sdk_client().studies.list()
-        metadata: List[Dict[str, PrimitiveContainer]] = []
+        metadata: list[dict[str, PrimitiveContainer]] = []
         for study in studies:
             primitive_study = self._to_primitive(study)
             if isinstance(primitive_study, dict):
                 metadata.append(primitive_study)
         return metadata
 
-    def list_study_keys(self) -> List[str]:
+    def list_study_keys(self) -> list[str]:
         """Return primitive study keys for mapped Airflow task expansion."""
-        keys: List[str] = []
+        keys: list[str] = []
         for study in self.list_studies_metadata():
             study_key = study.get("studyKey") or study.get("study_key")
             if isinstance(study_key, str) and study_key:

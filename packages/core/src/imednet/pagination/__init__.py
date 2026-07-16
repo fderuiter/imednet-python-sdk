@@ -15,4 +15,4 @@ from imednet.core.paginator import (
     Paginator,
 )
 
-__all__ = ["Paginator", "AsyncPaginator", "JsonListPaginator", "AsyncJsonListPaginator"]
+__all__ = ["AsyncJsonListPaginator", "AsyncPaginator", "JsonListPaginator", "Paginator"]

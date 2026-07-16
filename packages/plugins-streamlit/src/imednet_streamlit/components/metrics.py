@@ -34,7 +34,7 @@ def kpi_row(metrics: list[dict]) -> None:
             Optional keys are ``delta`` and ``help``.
     """
     cols = st.columns(len(metrics))
-    for col, metric in zip(cols, metrics):
+    for col, metric in zip(cols, metrics):  # noqa: B905
         with col:
             kpi_card(
                 label=metric["label"],

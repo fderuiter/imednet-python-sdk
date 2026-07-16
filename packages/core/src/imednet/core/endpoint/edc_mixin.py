@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, TypeVar
+from typing import Any, Dict, TypeVar  # noqa: UP035
 
 from imednet.core.context import get_study_context
 from imednet.core.endpoint.base import AsyncListGetEndpoint, SyncListGetEndpoint
@@ -13,7 +13,7 @@ T = TypeVar("T", bound=ImednetBaseModel)
 _EDC_BASE_PATH = "/api/v1/edc/studies"
 
 
-def _inject_study_key(filters: Dict[str, Any]) -> Dict[str, Any]:
+def _inject_study_key(filters: dict[str, Any]) -> dict[str, Any]:
     """Inject the default study key from context into filters if absent."""
     study_key = get_study_context()
     if "studyKey" not in filters and study_key:
@@ -30,7 +30,7 @@ class EdcEndpointMixin:
 
     BASE_PATH = _EDC_BASE_PATH
 
-    def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+    def _auto_filter(self, filters: dict[str, Any]) -> dict[str, Any]:
         """Inject default studyKey if missing.
 
         Args:
@@ -61,7 +61,7 @@ class _EdcEndpointBase:
             _id_param = "recordId"
     """
 
-    def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+    def _auto_filter(self, filters: dict[str, Any]) -> dict[str, Any]:
         """Inject the default study key from context if not already present.
 
         Args:

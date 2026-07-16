@@ -18,10 +18,10 @@ warnings.warn(msg, DeprecationWarning, stacklevel=2)
 logger.warning(msg)
 
 __all__ = [
-    "execute_list_sync",
-    "execute_list_async",
-    "is_async_client",
-    "get_resource_sync",
-    "get_resource_async",
     "ItemId",
+    "execute_list_async",
+    "execute_list_sync",
+    "get_resource_async",
+    "get_resource_sync",
+    "is_async_client",
 ]

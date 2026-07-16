@@ -6,7 +6,7 @@ and improve maintainability.
 
 from __future__ import annotations
 
-__all__ = [
+__all__ = [  # noqa: RUF022
     "DEFAULT_BASE_URL",
     "DEFAULT_TIMEOUT",
     "DEFAULT_RETRIES",

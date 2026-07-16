@@ -6,11 +6,12 @@ import re
 import sqlite3
 import time
 import uuid
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from threading import RLock
-from typing import Callable, Iterator, Optional
+from typing import Optional
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from imednet.spi.models import TriageAnnotation, TriageHistoryEntry, TriageItem, TriageStatus
@@ -138,10 +139,8 @@ class TriageStore:
         last_error: sqlite3.OperationalError | None = None
         for attempt in range(self._retry_attempts):
             try:
-                with self._lock:
-                    with self._connection() as conn:
-                        with conn:
-                            callback(conn)
+                with self._lock, self._connection() as conn, conn:
+                    callback(conn)
                 return
             except sqlite3.OperationalError as exc:
                 last_error = exc
@@ -226,7 +225,7 @@ class TriageStore:
 
         self._execute_write(_write)
 
-    def get_triage_item(self, item_id: str) -> Optional[TriageItem]:
+    def get_triage_item(self, item_id: str) -> TriageItem | None:
         """Fetch a single triage item by ID."""
         with self._connection() as conn:
             row = conn.execute(
@@ -252,7 +251,7 @@ class TriageStore:
                 history=history,
             )
 
-    def get_queue(self, study_key: str, status: Optional[TriageStatus] = None) -> list[TriageItem]:
+    def get_queue(self, study_key: str, status: TriageStatus | None = None) -> list[TriageItem]:
         """Fetch the triage queue for a study, optionally filtered by status."""
         with self._connection() as conn:
             if status is None:
@@ -381,7 +380,7 @@ class TriageStore:
         item_id: str,
         to_status: TriageStatus,
         user_id: str,
-        comment: Optional[str],
+        comment: str | None,
     ) -> None:
         """Update the status of a triage item and record the transition in history."""
         normalized_comment = comment.strip() if comment else None
@@ -456,7 +455,7 @@ class TriageStore:
 
         self._execute_write(_write)
 
-    def get_item_last_updated(self, item_id: str) -> Optional[datetime]:
+    def get_item_last_updated(self, item_id: str) -> datetime | None:
         """Get the last updated timestamp for a triage item."""
         with self._connection() as conn:
             row = conn.execute(

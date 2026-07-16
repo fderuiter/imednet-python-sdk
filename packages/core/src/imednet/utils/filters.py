@@ -6,7 +6,7 @@ for iMednet API endpoints based on the reference documentation.
 
 import functools
 import re
-from typing import Any, Dict, List, Tuple, TypeVar, Union
+from typing import Any, Dict, List, Tuple, TypeVar, Union  # noqa: UP035
 
 # Pre-compiled regex for performance to avoid re-compilation in loops
 _UNSAFE_CHARS_REGEX = re.compile(r"[^A-Za-z0-9_.-]")
@@ -36,22 +36,21 @@ def _format_filter_value(val: Any) -> str:
 
 
 def _build_filter_part(
-    key: str, value: Union[Any, Tuple[str, Any], List[Any]], or_connector: str = ","
+    key: str, value: Any | tuple[str, Any] | list[Any], or_connector: str = ","
 ) -> str:
     """Build a single filter string part from a key and value."""
     camel_key = _snake_to_camel(key)
     if isinstance(value, tuple) and len(value) == 2:
         op, val = value
         return f"{camel_key}{op}{_format_filter_value(val)}"
-    elif isinstance(value, list):
+    if isinstance(value, list):
         subparts = [f"{camel_key}=={_format_filter_value(v)}" for v in value]
         return or_connector.join(subparts)
-    else:
-        return f"{camel_key}=={_format_filter_value(value)}"
+    return f"{camel_key}=={_format_filter_value(value)}"
 
 
 def build_filter_string(
-    filters: Dict[str, Union[Any, Tuple[str, Any], List[Any]]],
+    filters: dict[str, Any | tuple[str, Any] | list[Any]],
     and_connector: str = ";",
     or_connector: str = ",",
 ) -> str:

@@ -62,8 +62,8 @@ src = ["packages/core/src", "packages/plugins-workflows/src", "packages/provider
 known-first-party = ["imednet", "imednet_workflows", "apache_airflow_providers_imednet", "imednet_streamlit"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "SLF", "D", "S"]
-ignore = ["ANN", "S101", "S105", "S110", "S112", "S311", "S603", "E501", "E402", "E701", "E713", "F401", "F403", "F405", "N802", "F841", "F811"]
+select = ["E", "F", "I", "N", "SLF", "D", "S", "B", "C4", "SIM", "UP", "PT", "RET", "RUF"]
+ignore = ["ANN", "S101", "E501", "E402", "E701", "E713", "F401", "F403", "F405", "N802", "F841", "F811"]
 
 [tool.ruff.lint.pep8-naming]
 classmethod-decorators = ["field_validator", "model_validator"]
@@ -186,7 +186,7 @@ fmt = "ruff format --check {args:packages}"
 ruff-check = "ruff check {args:packages}"
 mypy-check = "mypy {args:packages}"
 typos-check = "typos {args:packages}"
-semgrep-check = "semgrep scan --config auto --error {args:packages}"
+semgrep-check = "semgrep scan --config p/security-audit --error {args:packages}"
 audit = "pip-audit -s osv --timeout 60"
 secrets = "detect-secrets-hook --baseline .secrets.baseline {args:packages}"
 all = [

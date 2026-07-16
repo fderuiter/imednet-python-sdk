@@ -23,7 +23,7 @@ def _get_palette() -> list[str]:
     try:
         if st.session_state.get("high_contrast", False):
             return HIGH_CONTRAST_PALETTE
-    except Exception:
+    except Exception:  # noqa: S110
         pass
     return PALETTE
 

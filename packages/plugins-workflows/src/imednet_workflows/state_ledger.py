@@ -7,9 +7,10 @@ import contextlib
 import json
 import os
 import tempfile
+from collections.abc import Generator
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Generator, Optional
+from typing import Any, Dict, Optional  # noqa: UP035
 
 from pydantic import BaseModel, Field
 
@@ -26,27 +27,27 @@ class StreamState(BaseModel):
     last_timestamp: datetime
     records_processed: int = 0
     last_run_status: str = "success"
-    error_message: Optional[str] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    error_message: str | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class StudyState(BaseModel):
     """Schema for all streams in a given study context."""
 
-    streams: Dict[str, StreamState] = Field(default_factory=dict)
+    streams: dict[str, StreamState] = Field(default_factory=dict)
 
 
 class LedgerState(BaseModel):
     """Schema for the entire ledger file containing all studies."""
 
-    studies: Dict[str, StudyState] = Field(default_factory=dict)
+    studies: dict[str, StudyState] = Field(default_factory=dict)
 
 
 class BaseStateProvider(abc.ABC):
     """Abstract interface for managing high-water marks and state transactions."""
 
     @abc.abstractmethod
-    def get_last_timestamp(self, study_key: str, stream_name: str) -> Optional[datetime]:
+    def get_last_timestamp(self, study_key: str, stream_name: str) -> datetime | None:
         """Returns the high-water mark timestamp for a given study and stream."""
         pass
 
@@ -58,8 +59,8 @@ class BaseStateProvider(abc.ABC):
         timestamp: datetime,
         records_processed: int = 0,
         status: str = "success",
-        error_message: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        error_message: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         """Sets the high-water mark timestamp atomically."""
         pass
@@ -70,13 +71,13 @@ class BaseStateProvider(abc.ABC):
         self,
         study_key: str,
         stream_name: str,
-        fallback_timestamp: Optional[datetime] = None,
-    ) -> Generator[Dict[str, Any], None, None]:
+        fallback_timestamp: datetime | None = None,
+    ) -> Generator[dict[str, Any], None, None]:
         """Context manager for transactional state tracking."""
         pass
 
     @abc.abstractmethod
-    def delete_entry(self, study_key: str, stream_name: Optional[str] = None) -> bool:
+    def delete_entry(self, study_key: str, stream_name: str | None = None) -> bool:
         """Deletes a study or specific stream entry from the state.
 
         Returns ``True`` if the entry existed and was removed, ``False`` otherwise.
@@ -127,7 +128,7 @@ class FileStateProvider(BaseStateProvider):
     def read_state(self) -> LedgerState:
         """Reads and validates the current ledger state."""
         self._ensure_ledger_exists()
-        with open(self.ledger_path, "r", encoding="utf-8") as f:
+        with open(self.ledger_path, encoding="utf-8") as f:
             try:
                 data = json.load(f)
             except json.JSONDecodeError:
@@ -155,7 +156,7 @@ class FileStateProvider(BaseStateProvider):
                 os.remove(temp_name)
             raise
 
-    def get_last_timestamp(self, study_key: str, stream_name: str) -> Optional[datetime]:
+    def get_last_timestamp(self, study_key: str, stream_name: str) -> datetime | None:
         """Returns the high-water mark timestamp for a given study and stream."""
         with self._lock():
             state = self.read_state()
@@ -178,8 +179,8 @@ class FileStateProvider(BaseStateProvider):
         timestamp: datetime,
         records_processed: int = 0,
         status: str = "success",
-        error_message: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        error_message: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         """Sets the high-water mark timestamp atomically."""
         with self._lock():
@@ -204,8 +205,8 @@ class FileStateProvider(BaseStateProvider):
         self,
         study_key: str,
         stream_name: str,
-        fallback_timestamp: Optional[datetime] = None,
-    ) -> Generator[Dict[str, Any], None, None]:
+        fallback_timestamp: datetime | None = None,
+    ) -> Generator[dict[str, Any], None, None]:
         """Context manager for transactional state tracking.
 
         Yields a dict where user can record 'records_processed', 'new_timestamp', and 'metadata'.
@@ -215,7 +216,7 @@ class FileStateProvider(BaseStateProvider):
         with self._lock():
             state = self.read_state()
             study = state.studies.get(study_key)
-            last_ts: Optional[datetime] = None
+            last_ts: datetime | None = None
             if study:
                 stream_state = study.streams.get(stream_name)
                 if stream_state:
@@ -227,7 +228,7 @@ class FileStateProvider(BaseStateProvider):
             if last_ts is not None and last_ts.tzinfo is None:
                 last_ts = last_ts.replace(tzinfo=timezone.utc)
 
-            tx_data: Dict[str, Any] = {
+            tx_data: dict[str, Any] = {
                 "last_timestamp": last_ts,
                 "new_timestamp": None,
                 "records_processed": 0,
@@ -264,7 +265,7 @@ class FileStateProvider(BaseStateProvider):
                 self.write_state(state)
                 raise
 
-    def delete_entry(self, study_key: str, stream_name: Optional[str] = None) -> bool:
+    def delete_entry(self, study_key: str, stream_name: str | None = None) -> bool:
         """Deletes a study or specific stream entry from the ledger under the file lock.
 
         Returns ``True`` if the entry existed and was removed, ``False`` otherwise.
@@ -293,7 +294,7 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
     def _get_xcom_key(self, study_key: str, stream_name: str) -> str:
         return f"state_{study_key}_{stream_name}"
 
-    def get_last_timestamp(self, study_key: str, stream_name: str) -> Optional[datetime]:
+    def get_last_timestamp(self, study_key: str, stream_name: str) -> datetime | None:
         """Returns the high-water mark timestamp from Airflow XCom."""
         try:
             from airflow.operators.python import get_current_context
@@ -306,7 +307,7 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
             )
             if val and isinstance(val, dict) and "last_timestamp" in val:
                 return datetime.fromisoformat(val["last_timestamp"])
-        except Exception:
+        except Exception:  # noqa: S110
             pass
 
         # Fallback to DB query if not running within a context
@@ -338,8 +339,8 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
         timestamp: datetime,
         records_processed: int = 0,
         status: str = "success",
-        error_message: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        error_message: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         """Sets the high-water mark timestamp atomically using Airflow XCom."""
         if timestamp.tzinfo is None:
@@ -360,7 +361,7 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
             ti = context["ti"]
             ti.xcom_push(key=self._get_xcom_key(study_key, stream_name), value=val)
             return
-        except Exception:
+        except Exception:  # noqa: S110
             pass
 
         # Fallback to DB if out of context but within Airflow environment
@@ -391,8 +392,8 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
         self,
         study_key: str,
         stream_name: str,
-        fallback_timestamp: Optional[datetime] = None,
-    ) -> Generator[Dict[str, Any], None, None]:
+        fallback_timestamp: datetime | None = None,
+    ) -> Generator[dict[str, Any], None, None]:
         """Context manager for transactional state tracking using Airflow XCom."""
         last_ts = self.get_last_timestamp(study_key, stream_name)
         if last_ts is None:
@@ -400,7 +401,7 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
         if last_ts is not None and last_ts.tzinfo is None:
             last_ts = last_ts.replace(tzinfo=timezone.utc)
 
-        tx_data: Dict[str, Any] = {
+        tx_data: dict[str, Any] = {
             "last_timestamp": last_ts,
             "new_timestamp": None,
             "records_processed": 0,
@@ -432,7 +433,7 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
             )
             raise
 
-    def delete_entry(self, study_key: str, stream_name: Optional[str] = None) -> bool:
+    def delete_entry(self, study_key: str, stream_name: str | None = None) -> bool:
         """Deletes a study or specific stream entry from XCom."""
         try:
             from airflow.models.xcom import XCom

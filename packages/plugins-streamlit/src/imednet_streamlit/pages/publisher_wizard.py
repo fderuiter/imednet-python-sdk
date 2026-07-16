@@ -184,10 +184,10 @@ def _render_diff_section(
         return
 
     if added:
-        st.markdown("**➕ Added keys**")
+        st.markdown("**➕ Added keys**")  # noqa: RUF001
         st.json(added)
     if removed:
-        st.markdown("**➖ Removed keys**")
+        st.markdown("**➖ Removed keys**")  # noqa: RUF001
         st.json(removed)
     if changed:
         st.markdown("**✏️ Changed values**")

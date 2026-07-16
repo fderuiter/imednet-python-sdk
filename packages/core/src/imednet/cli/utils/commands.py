@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-from typing import List
+from typing import List  # noqa: UP035
 
 from imednet.cli.decorators import with_sdk
 from imednet.sdk import ImednetSDK
@@ -20,7 +20,7 @@ def register_list_command(
     *,
     requires_study_key: bool = True,
     empty_msg: str | None = None,
-    summary_fields: List[str] | None = None,
+    summary_fields: list[str] | None = None,
 ) -> None:
     """Attach a standard ``list`` command to parser."""
     subparsers = getattr(parser, '_subparsers', None)
@@ -28,7 +28,7 @@ def register_list_command(
         subparsers = [
             action for action in parser._actions if isinstance(action, argparse._SubParsersAction)
         ]
-        if subparsers:
+        if subparsers:  # noqa: SIM108
             subparsers = subparsers[0]
         else:
             subparsers = parser.add_subparsers(dest="command")

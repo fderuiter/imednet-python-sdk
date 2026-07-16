@@ -3,16 +3,16 @@
 from __future__ import annotations
 
 import sys
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union  # noqa: UP035
 
 STUDY_KEY_ARG = "The key identifying the study."
 
 
-def parse_filter_args(filter_args: Optional[List[str]]) -> Optional[Dict[str, Any]]:
+def parse_filter_args(filter_args: list[str] | None) -> dict[str, Any] | None:
     """Parse a list of ``key=value`` strings into a dictionary."""
     if not filter_args:
         return None
-    filter_dict: Dict[str, Union[str, bool, int]] = {}
+    filter_dict: dict[str, str | bool | int] = {}
     for arg in filter_args:
         if "=" not in arg or arg.startswith("=") or arg.endswith("="):
             print(

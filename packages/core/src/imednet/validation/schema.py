@@ -13,8 +13,8 @@ warnings.warn(
 )
 
 __all__ = [
+    "AsyncSchemaValidator",
     "BaseSchemaCache",
     "SchemaValidator",
-    "AsyncSchemaValidator",
     "validate_record_data",
 ]

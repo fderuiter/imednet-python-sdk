@@ -1,6 +1,7 @@
 """Pagination helpers for iterating through API responses."""
 
-from typing import Any, AsyncIterator, Dict, Generic, Iterator, Optional, TypeVar
+from collections.abc import AsyncIterator, Iterator
+from typing import Any, Dict, Generic, Optional, TypeVar  # noqa: UP035
 
 import httpx
 
@@ -17,7 +18,7 @@ class BasePaginator(Generic[ClientT]):
         self,
         client: ClientT,
         path: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: dict[str, Any] | None = None,
         page_size: int = 100,
         page_param: str = "page",
         size_param: str = "size",
@@ -44,21 +45,21 @@ class BasePaginator(Generic[ClientT]):
         self.size_param = size_param
         self.data_key = data_key
         self.metadata_key = metadata_key
-        self._cursor: Optional[int] = None
+        self._cursor: int | None = None
 
     @property
-    def cursor(self) -> Optional[int]:
+    def cursor(self) -> int | None:
         """The next page cursor (0-based page index), or ``None`` when exhausted."""
         return self._cursor
 
-    def _build_params(self, page: int) -> Dict[str, Any]:
+    def _build_params(self, page: int) -> dict[str, Any]:
         """Build the query parameters for a specific page."""
         query = dict(self.params)
         query[self.page_param] = page
         query[self.size_param] = self.page_size
         return query
 
-    def _extract_items(self, payload: Dict[str, Any]) -> list[Any]:
+    def _extract_items(self, payload: dict[str, Any]) -> list[Any]:
         """Extract item list from the API response payload."""
         if not isinstance(payload, dict):
             raise TypeError(f"API response must be a dictionary, got {type(payload).__name__}")
@@ -74,7 +75,7 @@ class BasePaginator(Generic[ClientT]):
             )
         return items
 
-    def _next_page(self, payload: Dict[str, Any], page: int, items_count: int) -> Optional[int]:
+    def _next_page(self, payload: dict[str, Any], page: int, items_count: int) -> int | None:
         """Determine the next page index based on the response payload and metadata."""
         pagination = payload.get("pagination")
         if pagination is not None and not isinstance(pagination, dict):
@@ -110,13 +111,13 @@ class BasePaginator(Generic[ClientT]):
             return None
         return page + 1
 
-    def _get_page_params(self) -> Optional[Dict[str, Any]]:
+    def _get_page_params(self) -> dict[str, Any] | None:
         """Return parameters for the current page or None if exhausted."""
         if self._cursor is None:
             return None
         return self._build_params(self._cursor)
 
-    def _process_page_response(self, payload: Dict[str, Any]) -> list[Any]:
+    def _process_page_response(self, payload: dict[str, Any]) -> list[Any]:
         """Process payload, update cursor, and return items."""
         if self._cursor is None:
             return []
@@ -142,7 +143,7 @@ class Paginator(BasePaginator[RequesterProtocol]):
         backoff_factor = getattr(self.client, "backoff_factor", 1.0)
         tracer = getattr(self.client, "_tracer", None)
 
-        attributes: Dict[str, Any] = {"path": self.path}
+        attributes: dict[str, Any] = {"path": self.path}
         if self.params:
             for k, v in self.params.items():
                 attributes[k] = v
@@ -160,7 +161,7 @@ class Paginator(BasePaginator[RequesterProtocol]):
             params = self._get_page_params()
 
             def _fetch() -> httpx.Response:
-                return self.client.get(self.path, params=params)
+                return self.client.get(self.path, params=params)  # noqa: B023
 
             response: httpx.Response = executor.execute(_fetch)
             payload = response.json()
@@ -179,7 +180,7 @@ class AsyncPaginator(BasePaginator[AsyncRequesterProtocol]):
         backoff_factor = getattr(self.client, "backoff_factor", 1.0)
         tracer = getattr(self.client, "_tracer", None)
 
-        attributes: Dict[str, Any] = {"path": self.path}
+        attributes: dict[str, Any] = {"path": self.path}
         if self.params:
             for k, v in self.params.items():
                 attributes[k] = v
@@ -197,7 +198,7 @@ class AsyncPaginator(BasePaginator[AsyncRequesterProtocol]):
             params = self._get_page_params()
 
             async def _fetch() -> httpx.Response:
-                return await self.client.get(self.path, params=params)
+                return await self.client.get(self.path, params=params)  # noqa: B023
 
             response: httpx.Response = await executor.execute_async(_fetch)
             payload = response.json()
@@ -217,7 +218,7 @@ class JsonListPaginator(Paginator):
         backoff_factor = getattr(self.client, "backoff_factor", 1.0)
         tracer = getattr(self.client, "_tracer", None)
 
-        attributes: Dict[str, Any] = {"path": self.path}
+        attributes: dict[str, Any] = {"path": self.path}
         if self.params:
             for k, v in self.params.items():
                 attributes[k] = v
@@ -249,7 +250,7 @@ class AsyncJsonListPaginator(AsyncPaginator):
         backoff_factor = getattr(self.client, "backoff_factor", 1.0)
         tracer = getattr(self.client, "_tracer", None)
 
-        attributes: Dict[str, Any] = {"path": self.path}
+        attributes: dict[str, Any] = {"path": self.path}
         if self.params:
             for k, v in self.params.items():
                 attributes[k] = v

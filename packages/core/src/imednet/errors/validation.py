@@ -1,6 +1,6 @@
 """Validation errors."""
 
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Union  # noqa: UP035
 
 from .api import ApiError
 from .client import ClientError
@@ -9,9 +9,7 @@ from .client import ClientError
 class ValidationError(ApiError):
     """Raised when a request is malformed or validation fails (HTTP 400)."""
 
-    def __init__(
-        self, response: Union[Dict[str, Any], str, Any], status_code: Optional[int] = 400
-    ) -> None:
+    def __init__(self, response: dict[str, Any] | str | Any, status_code: int | None = 400) -> None:
         """Initialize validation error."""
         super().__init__(response, status_code=status_code)
         if not self.status:

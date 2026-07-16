@@ -6,7 +6,8 @@ and then parsing and validating that a single item was found.
 
 from __future__ import annotations
 
-from typing import Any, Awaitable, Callable, Dict, Generic, List, Optional, TypeVar
+from collections.abc import Awaitable, Callable
+from typing import Any, Dict, Generic, List, Optional, TypeVar  # noqa: UP035
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequesterProtocol, RequesterProtocol
@@ -23,12 +24,12 @@ class FilterGetOperation(Generic[T]):
 
     def __init__(
         self,
-        study_key: Optional[str],
+        study_key: str | None,
         item_id: Any,
-        filters: Dict[str, Any],
-        validate_func: Callable[[List[T], Optional[str], Any], T],
-        list_sync_func: Optional[Callable[..., List[T]]] = None,
-        list_async_func: Optional[Callable[..., Awaitable[List[T]]]] = None,
+        filters: dict[str, Any],
+        validate_func: Callable[[list[T], str | None, Any], T],
+        list_sync_func: Callable[..., list[T]] | None = None,
+        list_async_func: Callable[..., Awaitable[list[T]]] | None = None,
     ) -> None:
         """Initialize the filter get operation.
 
@@ -47,7 +48,7 @@ class FilterGetOperation(Generic[T]):
         self.list_sync_func = list_sync_func
         self.list_async_func = list_async_func
 
-    def _process_response(self, result: List[T]) -> T:
+    def _process_response(self, result: list[T]) -> T:
         """Process the list of results and validate the specific item."""
         return self.validate_func(result, self.study_key, self.item_id)
 

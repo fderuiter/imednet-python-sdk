@@ -1,6 +1,7 @@
 """Protocols defining the interface for operations within the iMednet SDK."""
 
-from typing import Any, Awaitable, Protocol, TypeVar, runtime_checkable
+from collections.abc import Awaitable
+from typing import Any, Protocol, TypeVar, runtime_checkable
 
 T = TypeVar("T", covariant=True)
 

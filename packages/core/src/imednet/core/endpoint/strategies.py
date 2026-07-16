@@ -4,7 +4,7 @@ This module implements the ParamProcessor strategy pattern, allowing endpoints
 to customize how filters are processed and special parameters are extracted.
 """
 
-from typing import Any, Dict, Optional, Protocol, Tuple, runtime_checkable
+from typing import Any, Dict, Optional, Protocol, Tuple, runtime_checkable  # noqa: UP035
 
 from imednet.core.protocols import ParamProcessor
 
@@ -15,7 +15,7 @@ class DefaultParamProcessor(ParamProcessor):
     Simply passes filters through without modification.
     """
 
-    def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    def process_filters(self, filters: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
         """Return filters as-is and no special parameters.
 
         Args:
@@ -36,8 +36,8 @@ class MappingParamProcessor(ParamProcessor):
 
     def __init__(
         self,
-        mapping: Dict[str, str],
-        defaults: Optional[Dict[str, Any]] = None,
+        mapping: dict[str, str],
+        defaults: dict[str, Any] | None = None,
     ) -> None:
         """Initialize the processor with a mapping.
 
@@ -49,7 +49,7 @@ class MappingParamProcessor(ParamProcessor):
         self.mapping = mapping
         self.defaults = defaults or {}
 
-    def process_filters(self, filters: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    def process_filters(self, filters: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
         """Process filters using the configured mapping.
 
         Args:
@@ -82,7 +82,7 @@ class MappingParamProcessor(ParamProcessor):
 class StudyKeyStrategy(Protocol):
     """Protocol for study key handling strategies."""
 
-    def process(self, filters: Dict[str, Any]) -> Tuple[Optional[str], Dict[str, Any]]:
+    def process(self, filters: dict[str, Any]) -> tuple[str | None, dict[str, Any]]:
         """Process the study key from filters.
 
         Args:
@@ -100,7 +100,7 @@ class KeepStudyKeyStrategy:
     Used when the API expects 'studyKey' as a query parameter.
     """
 
-    def process(self, filters: Dict[str, Any]) -> Tuple[Optional[str], Dict[str, Any]]:
+    def process(self, filters: dict[str, Any]) -> tuple[str | None, dict[str, Any]]:
         """Extract study key and keep in filters.
 
         Args:
@@ -120,7 +120,7 @@ class PopStudyKeyStrategy:
     not sent as a query parameter.
     """
 
-    def process(self, filters: Dict[str, Any]) -> Tuple[Optional[str], Dict[str, Any]]:
+    def process(self, filters: dict[str, Any]) -> tuple[str | None, dict[str, Any]]:
         """Extract study key and remove from filters.
 
         Args:
@@ -140,7 +140,7 @@ class OptionalStudyKeyStrategy:
     If present, it is kept in the filters.
     """
 
-    def process(self, filters: Dict[str, Any]) -> Tuple[Optional[str], Dict[str, Any]]:
+    def process(self, filters: dict[str, Any]) -> tuple[str | None, dict[str, Any]]:
         """Extract study key if present.
 
         Args:

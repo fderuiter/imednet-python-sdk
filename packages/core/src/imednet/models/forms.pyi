@@ -17,16 +17,16 @@ class Form(ImednetBaseModel):
     unscheduled_visit: bool | None = Field(default=None, alias="unscheduledVisit")
     disabled: bool | None = Field(default=None, alias="disabled")
 
-    study_key: Optional[str]
-    form_id: Optional[int]
-    form_key: Optional[str]
-    form_name: Optional[str]
-    form_type: Optional[str]
-    revision: Optional[int]
-    date_created: Optional[str]
-    date_modified: Optional[str]
-    epro_form: Optional[bool]
-    allow_copy: Optional[bool]
+    study_key: str | None
+    form_id: int | None
+    form_key: str | None
+    form_name: str | None
+    form_type: str | None
+    revision: int | None
+    date_created: str | None
+    date_modified: str | None
+    epro_form: bool | None
+    allow_copy: bool | None
     embedded_log: Any
     enforce_ownership: Any
     other_forms: Any

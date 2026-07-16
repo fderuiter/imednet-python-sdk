@@ -63,7 +63,7 @@ class AdaptiveConcurrencyLimiter:
         self._max_concurrency = initial_concurrency
         self._current_concurrency = 0
         self._cond = threading.Condition()
-        self._latency_baseline: Optional[float] = None
+        self._latency_baseline: float | None = None
         self._lock = threading.Lock()
         self._min_concurrency = 1
         self._initial_concurrency = initial_concurrency
@@ -128,7 +128,7 @@ def _run_with_context(
     func: StudyWorkerCallable[Any],
     args: tuple[Any, ...],
     kwargs: dict[str, Any],
-    limiter: Optional[AdaptiveConcurrencyLimiter] = None,
+    limiter: AdaptiveConcurrencyLimiter | None = None,
 ) -> Any:
     """Execute *func* inside the ``study_context()`` context manager.
 
@@ -191,8 +191,8 @@ class MultiStudyOrchestrator:
 
     def resolve_active_studies(
         self,
-        whitelist: Optional[set[str]] = None,
-        blacklist: Optional[set[str]] = None,
+        whitelist: set[str] | None = None,
+        blacklist: set[str] | None = None,
     ) -> list[str]:
         """Query the iMednet registry and apply filtering rules.
 
@@ -241,8 +241,8 @@ class MultiStudyOrchestrator:
     def execute_pipeline(
         self,
         pipeline_func: StudyWorkerCallable[Any],
-        whitelist: Optional[set[str]] = None,
-        blacklist: Optional[set[str]] = None,
+        whitelist: set[str] | None = None,
+        blacklist: set[str] | None = None,
         *args: Any,
         **kwargs: Any,
     ) -> dict[str, OrchestratorResult]:
@@ -305,7 +305,7 @@ class MultiStudyOrchestrator:
                             study_key,
                             duration,
                         )
-                    except Exception as exc:  # noqa: BLE001 - broad catch for per-study isolation.
+                    except Exception as exc:
                         results[study_key] = OrchestratorResult(
                             status="FAILED",
                             data=None,

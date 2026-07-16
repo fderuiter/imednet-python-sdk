@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Iterable, Iterator
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union  # noqa: UP035
 
 try:
     import pandas as pd
@@ -52,7 +52,7 @@ class RecordMapper:
 
     def __init__(
         self,
-        sdk: "ImednetFacade",
+        sdk: ImednetFacade,
         *,
         loader: CachedRecordsLoader | None = None,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
@@ -73,17 +73,17 @@ class RecordMapper:
     def _fetch_variable_metadata(
         self,
         study_key: str,
-        variable_whitelist: Optional[List[str]] = None,
-        form_whitelist: Optional[List[int]] = None,
-    ) -> Tuple[List[str], Dict[str, str]]:
+        variable_whitelist: list[str] | None = None,
+        form_whitelist: list[int] | None = None,
+    ) -> tuple[list[str], dict[str, str]]:
         """Return variable names and label mapping for a study."""
-        filters: Dict[str, Any] = {}
+        filters: dict[str, Any] = {}
         if variable_whitelist is not None:
             filters["variableNames"] = variable_whitelist
         if form_whitelist is not None:
             filters["formIds"] = form_whitelist
 
-        variables: List[VariableModel] = list(
+        variables: list[VariableModel] = list(
             self.sdk.get_variables(
                 study_key=study_key,
                 **filters,
@@ -101,13 +101,13 @@ class RecordMapper:
         return variable_keys, label_map  # type: ignore
 
     def _build_record_model(
-        self, variable_keys: List[str], label_map: Dict[str, str]
-    ) -> Type[BaseModel]:
+        self, variable_keys: list[str], label_map: dict[str, str]
+    ) -> type[BaseModel]:
         """Create a dynamic model for the record data payload."""
-        fields: Dict[str, Tuple[Optional[Any], Any]] = {}
+        fields: dict[str, tuple[Any | None, Any]] = {}
         for key in variable_keys:
             fields[key] = (
-                Optional[Any],
+                Optional[Any],  # noqa: UP045
                 Field(None, alias=key, description=label_map.get(key, key)),
             )
         return create_model("RecordData", __base__=BaseModel, **fields)  # type: ignore
@@ -115,11 +115,11 @@ class RecordMapper:
     def _fetch_records(
         self,
         study_key: str,
-        visit_key: Optional[str] = None,
-        extra_filters: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
-    ) -> List[RecordModel]:
+        visit_key: str | None = None,
+        extra_filters: dict[str, Any | tuple[str, Any] | list[Any]] | None = None,
+    ) -> list[RecordModel]:
         """Fetch records for a study applying optional filters."""
-        filters: Dict[str, Union[Any, Tuple[str, Any], List[Any]]] = (
+        filters: dict[str, Any | tuple[str, Any] | list[Any]] = (
             dict(extra_filters) if extra_filters else {}
         )
         if visit_key is not None:
@@ -145,8 +145,8 @@ class RecordMapper:
     def _iter_records(
         self,
         study_key: str,
-        visit_key: Optional[str] = None,
-        extra_filters: Optional[Dict[str, Union[Any, Tuple[str, Any], List[Any]]]] = None,
+        visit_key: str | None = None,
+        extra_filters: dict[str, Any | tuple[str, Any] | list[Any]] | None = None,
     ) -> Iterable[RecordModel]:
         """Iterate over records for a study, using cache if available.
 
@@ -187,7 +187,7 @@ class RecordMapper:
         self,
         records: Iterable[RecordModel],
         *,
-        visit_key: Optional[str],
+        visit_key: str | None,
         form_ids: set[Any] | None,
     ) -> Iterator[RecordModel]:
         """Apply visit and form filters to an iterable of records.
@@ -220,8 +220,8 @@ class RecordMapper:
     def _parse_record(
         self,
         rec: RecordModel,
-        record_model: Type[BaseModel],
-    ) -> Dict[str, Any]:
+        record_model: type[BaseModel],
+    ) -> dict[str, Any]:
         """Parse a single record using the dynamic Pydantic model.
 
         Args:
@@ -250,10 +250,10 @@ class RecordMapper:
         return {**meta, **parsed}
 
     def _parse_records(
-        self, records: Iterable[RecordModel], record_model: Type[BaseModel]
-    ) -> Tuple[List[Dict[str, Any]], int]:
+        self, records: Iterable[RecordModel], record_model: type[BaseModel]
+    ) -> tuple[list[dict[str, Any]], int]:
         """Parse raw records into row dictionaries and count failures."""
-        rows: List[Dict[str, Any]] = []
+        rows: list[dict[str, Any]] = []
         errors = 0
         for chunk_rows, chunk_errors in self._iter_parsed_rows(records, record_model):
             rows.extend(chunk_rows)
@@ -263,15 +263,15 @@ class RecordMapper:
     def _iter_parsed_rows(
         self,
         records: Iterable[RecordModel],
-        record_model: Type[BaseModel],
-    ) -> Iterator[Tuple[List[Dict[str, Any]], int]]:
+        record_model: type[BaseModel],
+    ) -> Iterator[tuple[list[dict[str, Any]], int]]:
         """Iterate over records and parse them in chunks.
 
         Yields:
             Tuples of (parsed_rows_list, error_count) for each chunk.
         """
         for chunk in iter_chunks(records, chunk_size=self._pipeline.chunk_size):
-            rows: List[Dict[str, Any]] = []
+            rows: list[dict[str, Any]] = []
             errors = 0
             for rec in chunk:
                 try:
@@ -290,9 +290,9 @@ class RecordMapper:
 
     def _build_dataframe(
         self,
-        rows: List[Dict[str, Any]],
-        variable_keys: List[str],
-        label_map: Dict[str, str],
+        rows: list[dict[str, Any]],
+        variable_keys: list[str],
+        label_map: dict[str, str],
         use_labels: bool,
     ) -> pd.DataFrame:
         """Create the output DataFrame from parsed rows."""
@@ -322,10 +322,10 @@ class RecordMapper:
     def iter_dataframes(
         self,
         study_key: str,
-        visit_key: Optional[str] = None,
+        visit_key: str | None = None,
         use_labels_as_columns: bool = True,
-        variable_whitelist: Optional[List[str]] = None,
-        form_whitelist: Optional[List[int]] = None,
+        variable_whitelist: list[str] | None = None,
+        form_whitelist: list[int] | None = None,
     ) -> Iterator[pd.DataFrame]:
         """Yield mapped record DataFrames in bounded chunks.
 
@@ -336,10 +336,8 @@ class RecordMapper:
         """
         if pd is None:
             raise ImportError(
-                (
-                    "pandas is required for RecordMapper.dataframe. Install "
-                    "with 'pip install \"imednet[pandas]\"'."
-                )
+                "pandas is required for RecordMapper.dataframe. Install "
+                "with 'pip install \"imednet[pandas]\"'."
             )
         variable_keys, label_map = self._fetch_variable_metadata(
             study_key,
@@ -350,7 +348,7 @@ class RecordMapper:
             return
 
         record_model = self._build_record_model(variable_keys, label_map)
-        extra_filters: Dict[str, Any] = {}
+        extra_filters: dict[str, Any] = {}
         if variable_whitelist is not None:
             extra_filters["variableNames"] = variable_whitelist
         if form_whitelist is not None:
@@ -384,11 +382,11 @@ class RecordMapper:
     def build_hierarchy(
         self,
         study_key: str,
-        visit_key: Optional[str] = None,
+        visit_key: str | None = None,
         use_labels_as_keys: bool = False,
-        variable_whitelist: Optional[List[str]] = None,
-        form_whitelist: Optional[List[int]] = None,
-    ) -> List[Dict[str, Any]]:
+        variable_whitelist: list[str] | None = None,
+        form_whitelist: list[int] | None = None,
+    ) -> list[dict[str, Any]]:
         """Generate a nested JSON tree structure up to three levels deep.
 
         Outputs a Subject -> Visit -> Form tree of records. Maps variables
@@ -401,8 +399,8 @@ class RecordMapper:
         study_struct = get_study_structure(self.sdk, study_key)
 
         # 1. Build form-scoped models
-        form_models: Dict[int, Type[BaseModel]] = {}
-        form_label_maps: Dict[int, Dict[str, str]] = {}
+        form_models: dict[int, type[BaseModel]] = {}
+        form_label_maps: dict[int, dict[str, str]] = {}
 
         for interval in study_struct.intervals:
             for form in interval.forms:
@@ -417,7 +415,7 @@ class RecordMapper:
                 form_models[form.form_id] = self._build_record_model(var_keys, label_map)  # type: ignore
                 form_label_maps[form.form_id] = label_map  # type: ignore
 
-        extra_filters: Dict[str, Any] = {}
+        extra_filters: dict[str, Any] = {}
         if form_whitelist is not None:
             extra_filters["formIds"] = form_whitelist
         if variable_whitelist is not None:
@@ -430,7 +428,7 @@ class RecordMapper:
             extra_filters=extra_filters or None,
         )
 
-        tree: Dict[str, Dict[str, Any]] = {}
+        tree: dict[str, dict[str, Any]] = {}
 
         for rec in records:
             if rec.form_id not in form_models:
@@ -453,7 +451,7 @@ class RecordMapper:
                 continue
 
             if use_labels_as_keys:
-                remapped: Dict[str, Any] = {}
+                remapped: dict[str, Any] = {}
                 for k, v in parsed_data.items():
                     lbl = label_map.get(k)
                     remapped[lbl if lbl is not None else k] = v
@@ -491,11 +489,11 @@ class RecordMapper:
 
         # 3. Convert dicts to lists
         result = []
-        for subj_key, subj in tree.items():
+        for subj_key, subj in tree.items():  # noqa: B007
             subj_visits = []
-            for visit_id, visit in subj["visits"].items():
+            for visit_id, visit in subj["visits"].items():  # noqa: B007
                 visit_forms = []
-                for form_id, form in visit["forms"].items():
+                for form_id, form in visit["forms"].items():  # noqa: B007
                     visit_forms.append(form)
                 visit["forms"] = visit_forms
                 subj_visits.append(visit)
@@ -507,10 +505,10 @@ class RecordMapper:
     def dataframe(
         self,
         study_key: str,
-        visit_key: Optional[str] = None,
+        visit_key: str | None = None,
         use_labels_as_columns: bool = True,
-        variable_whitelist: Optional[List[str]] = None,
-        form_whitelist: Optional[List[int]] = None,
+        variable_whitelist: list[str] | None = None,
+        form_whitelist: list[int] | None = None,
     ) -> pd.DataFrame:
         """Return a :class:`pandas.DataFrame` of records for a study.
 
@@ -519,10 +517,8 @@ class RecordMapper:
         """
         if pd is None:
             raise ImportError(
-                (
-                    "pandas is required for RecordMapper.dataframe. Install "
-                    "with 'pip install \"imednet[pandas]\"'."
-                )
+                "pandas is required for RecordMapper.dataframe. Install "
+                "with 'pip install \"imednet[pandas]\"'."
             )
         frames = list(
             self.iter_dataframes(

@@ -1,6 +1,6 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-from typing import List, Optional, Union
+from typing import List, Optional, Union  # noqa: UP035
 
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.core.endpoint.operations import RecordCreateOperation
@@ -22,10 +22,10 @@ class RecordsOperationDef:
     def _create_operation(
         self,
         study_key: str,
-        records_data: List[JsonDict],
-        email_notify: Union[bool, str, None] = None,
+        records_data: list[JsonDict],
+        email_notify: bool | str | None = None,
         *,
-        schema: Optional[SchemaCache] = None,
+        schema: SchemaCache | None = None,
     ) -> RecordCreateOperation[Job]:
         """Create a RecordCreateOperation.
 
@@ -53,10 +53,10 @@ class RecordsEndpoint(RecordsOperationDef, EdcSyncListGetEndpoint[Record]):  # t
     def create(
         self,
         study_key: str,
-        records_data: List[JsonDict],
-        email_notify: Union[bool, str, None] = None,
+        records_data: list[JsonDict],
+        email_notify: bool | str | None = None,
         *,
-        schema: Optional[SchemaCache] = None,
+        schema: SchemaCache | None = None,
     ) -> Job:
         """Create one or more records in a study.
 
@@ -80,10 +80,10 @@ class AsyncRecordsEndpoint(RecordsOperationDef, EdcAsyncListGetEndpoint[Record])
     async def async_create(
         self,
         study_key: str,
-        records_data: List[JsonDict],
-        email_notify: Union[bool, str, None] = None,
+        records_data: list[JsonDict],
+        email_notify: bool | str | None = None,
         *,
-        schema: Optional[SchemaCache] = None,
+        schema: SchemaCache | None = None,
     ) -> Job:
         """Create one or more records in a study asynchronously.
 

@@ -5,8 +5,9 @@ from __future__ import annotations
 import csv
 import json
 import sys
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Dict, Protocol, Sequence
+from typing import Any, Dict, Protocol  # noqa: UP035
 
 from imednet.utils import sanitize_csv_formula
 
@@ -14,7 +15,7 @@ from imednet.utils import sanitize_csv_formula
 class Model(Protocol):
     """Protocol for objects that can be dumped to a dictionary."""
 
-    def model_dump(self, *, by_alias: bool = False) -> Dict[str, Any]:
+    def model_dump(self, *, by_alias: bool = False) -> dict[str, Any]:
         """Dump the model to a dictionary."""
         ...
 

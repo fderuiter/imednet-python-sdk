@@ -181,7 +181,7 @@ def _evaluate_business_logic(
             "bool": bool,
             "len": len,
         }
-        return eval(logic, {"__builtins__": builtins}, env)  # noqa: S307  # nosem
+        return eval(logic, {"__builtins__": builtins}, env)  # nosem
     except Exception as e:
         logger.warning(f"Derivation logic failed for {context.subject_key}: {e}")
         return None

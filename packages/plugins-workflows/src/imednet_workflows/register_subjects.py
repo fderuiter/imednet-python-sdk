@@ -4,7 +4,7 @@ This workflow is self-contained and does not borrow from record_update.py.
 It provides a simple, robust interface for registering one or more subjects.
 """
 
-from typing import TYPE_CHECKING, List, Optional, cast
+from typing import TYPE_CHECKING, List, Optional, cast  # noqa: UP035
 
 from imednet.spi.models import Job, RegisterSubjectRequest
 
@@ -31,8 +31,8 @@ class RegisterSubjectsWorkflow:
     def register_subjects(
         self,
         study_key: str,
-        subjects: List[RegisterSubjectRequest],
-        email_notify: Optional[str] = None,
+        subjects: list[RegisterSubjectRequest],
+        email_notify: str | None = None,
         wait_for_completion: bool = False,
         timeout: int = 300,
         poll_interval: int = 5,
@@ -59,7 +59,7 @@ class RegisterSubjectsWorkflow:
         """
         # Validate that each site exists before posting
         sites = {s.site_name for s in self._sdk.get_sites(study_key=study_key)}
-        errors: List[str] = []
+        errors: list[str] = []
         for idx, subj in enumerate(subjects):
             if not subj.site_name:
                 errors.append(f"Index {idx}: siteName is required")

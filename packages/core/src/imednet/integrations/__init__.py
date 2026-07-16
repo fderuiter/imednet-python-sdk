@@ -28,7 +28,7 @@ register_tabular_target("sql", export_to_sql)
 register_tabular_target("sql_by_form", export_to_sql_by_form)
 register_tabular_target("hive_parquet", export_to_hive_parquet)
 
-__all__ = [
+__all__ = [  # noqa: RUF022
     # Unified entry point
     "export",
     # Tabular path

@@ -25,7 +25,7 @@ _LAZY_ATTRS: dict[str, tuple[str, str]] = {
 }
 
 
-def __getattr__(name: str):  # noqa: D401
+def __getattr__(name: str):
     """Lazy load utility functions from their respective modules."""
     try:
         module_path, obj_name = _LAZY_ATTRS[name]
@@ -38,26 +38,26 @@ def __getattr__(name: str):  # noqa: D401
 
 
 __all__ = [
-    "flatten",
-    "parse_iso_datetime",
-    "format_iso_datetime",
-    "build_filter_string",
-    "configure_json_logging",
-    "to_arrow_table",
-    "records_to_dataframe",
-    "export_records_csv",
-    "JsonDict",
-    "ItemId",
-    "FilterValue",
     "DataFrame",
+    "FilterValue",
+    "ItemId",
+    "JsonDict",
+    "build_filter_string",
+    "build_safe_path",
+    "configure_json_logging",
+    "export_records_csv",
+    "flatten",
+    "format_iso_datetime",
     "parse_bool",
     "parse_datetime",
-    "parse_int_or_default",
-    "parse_str_or_default",
-    "parse_list_or_default",
     "parse_dict_or_default",
+    "parse_int_or_default",
+    "parse_iso_datetime",
+    "parse_list_or_default",
+    "parse_str_or_default",
+    "records_to_dataframe",
     "sanitize_base_url",
-    "build_safe_path",
     "sanitize_csv_formula",
+    "to_arrow_table",
     "validate_partition_key",
 ]

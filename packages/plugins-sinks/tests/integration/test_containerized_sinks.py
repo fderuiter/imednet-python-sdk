@@ -2,7 +2,7 @@
 
 import logging
 import os
-from typing import List
+from typing import List  # noqa: UP035
 
 import pytest
 from imednet_sinks import (
@@ -62,7 +62,7 @@ class FakeRecord:
 
 
 @pytest.fixture
-def fake_records() -> List[FakeRecord]:
+def fake_records() -> list[FakeRecord]:
     """TODO: Add docstring."""
     return [
         FakeRecord(

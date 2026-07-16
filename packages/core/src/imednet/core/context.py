@@ -3,22 +3,23 @@
 from __future__ import annotations
 
 import contextvars
+from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Iterator, Optional
+from typing import Optional
 
 from imednet.errors.validation import ConfigurationError
 
-_active_study: contextvars.ContextVar[Optional[str]] = contextvars.ContextVar(
+_active_study: contextvars.ContextVar[str | None] = contextvars.ContextVar(
     "active_study", default=None
 )
 
 
-def set_study_context(study_key: str) -> contextvars.Token[Optional[str]]:
+def set_study_context(study_key: str) -> contextvars.Token[str | None]:
     """Set the active study key for the current thread/task context."""
     return _active_study.set(study_key)
 
 
-def reset_study_context(token: contextvars.Token[Optional[str]]) -> None:
+def reset_study_context(token: contextvars.Token[str | None]) -> None:
     """Reset the active study key using a token from :func:`set_study_context`."""
     _active_study.reset(token)
 
@@ -28,7 +29,7 @@ def clear_study_context() -> None:
     _active_study.set(None)
 
 
-def get_study_context() -> Optional[str]:
+def get_study_context() -> str | None:
     """Get the current study key for the active thread/task context."""
     return _active_study.get()
 
@@ -58,7 +59,7 @@ class Context:
     """Compatibility shim backed by thread/task-local context variables."""
 
     @property
-    def default_study_key(self) -> Optional[str]:
+    def default_study_key(self) -> str | None:
         """Return the current default study key from the context."""
         return _active_study.get()
 

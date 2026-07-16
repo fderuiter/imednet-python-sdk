@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional  # noqa: UP035
 
 from pydantic import Field
 
@@ -28,7 +28,7 @@ QueryComment = ModelEngine.get_model('QueryComment', QueryComment)
 class Query(ImednetBaseModel):
     """Represents a data query (discrepancy) raised on a record."""
 
-    query_comments: List[QueryComment] = Field(default_factory=list, alias="queryComments")
+    query_comments: list[QueryComment] = Field(default_factory=list, alias="queryComments")
 
 
 Query = ModelEngine.get_model('Query', Query)

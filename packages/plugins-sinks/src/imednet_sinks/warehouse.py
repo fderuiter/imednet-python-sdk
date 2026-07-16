@@ -69,10 +69,11 @@ import logging
 import os
 import tempfile
 import time
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Optional, Sequence
+from typing import Any, Optional
 
 from imednet.errors import ExportBatchError, ExportConfigurationError
 from imednet.integrations.sink_base import (
@@ -127,8 +128,8 @@ class SnowflakeSinkConfig(SinkConfig):
     stage: str = ""
     table: str = ""
     stage_prefix: str = "imednet"
-    local_staging_dir: Optional[str | os.PathLike[str]] = None
-    manifest_path: Optional[str | os.PathLike[str]] = None
+    local_staging_dir: str | os.PathLike[str] | None = None
+    manifest_path: str | os.PathLike[str] | None = None
 
 
 def _records_to_arrow_table(records: Sequence[Any]) -> Any:
@@ -166,7 +167,7 @@ class SnowflakeExportSink(ExportSink):
         super().__init__(config)
         self._cfg: SnowflakeSinkConfig = config
         self._conn: Any = None
-        self._tmp_dir: Optional[tempfile.TemporaryDirectory[str]] = None
+        self._tmp_dir: tempfile.TemporaryDirectory[str] | None = None
         self._connect()
 
     # ------------------------------------------------------------------
