@@ -39,7 +39,7 @@ versions.
 
 .. rubric:: Quick-start
 
-.. testcode::
+.. code-block:: python
 
     from imednet.models.study_config import StudyConfiguration, MappingRule
     from imednet_workflows import ConfigVersionStore
@@ -71,9 +71,9 @@ versions.
     for entry in store.get_history("MY_STUDY"):
         print(entry["version_tag"], entry["commit_id"][:12], entry["timestamp"])
 
-    # Diff two versions
-    diff = store.diff_configs(commit_a, commit_b)
-    print(diff["added"], diff["removed"], diff["changed"])
+    # Diff two versions (example)
+    # diff = store.diff_configs(commit_id, other_commit_id)
+    # print(diff["added"], diff["removed"], diff["changed"])
 
     # Rollback (read-only)
     old_config = store.rollback_config("MY_STUDY", commit_id)
