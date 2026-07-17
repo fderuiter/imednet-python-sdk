@@ -24,8 +24,8 @@ workflows = "imednet_workflows.cli:setup_parser"
 subject_data = "imednet_workflows.cli:setup_subject_parser"
 
 [project.entry-points."imednet.pollers"]
-JobPoller = "imednet_workflows.job_poller:JobPoller"
-AsyncJobPoller = "imednet_workflows.job_poller:AsyncJobPoller"
+JobPoller = "imednet_workflows:JobPoller"
+AsyncJobPoller = "imednet_workflows:AsyncJobPoller"
 
 [project.entry-points."imednet.mappers"]
 RecordMapper = "imednet_workflows.record_mapper:RecordMapper"
