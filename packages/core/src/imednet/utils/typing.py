@@ -23,4 +23,4 @@ ItemId = Union[str, int]  # noqa: UP007
 FilterScalar = Union[str, int, float, bool, None]  # noqa: UP007
 FilterValue = Union[FilterScalar, tuple[str, FilterScalar], list[FilterScalar]]  # noqa: UP007
 
-__all__ = ["DataFrame", "FilterScalar", "FilterValue", "ItemId", "JsonDict"]
+__all__ = ["FilterScalar", "FilterValue", "ItemId", "JsonDict"]
