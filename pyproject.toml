@@ -209,3 +209,23 @@ imednet-streamlit = { workspace = true }
 imednet-plugins-sinks = { workspace = true }
 apache-airflow-providers-imednet = { workspace = true }
 
+
+[tool.poetry]
+name = "imednet-workspace"
+version = "0.1.0"
+description = "Developer workspace and sanitization tools"
+authors = ["Imednet Developers"]
+packages = [
+    { include = "scripts" }
+]
+
+[tool.poetry.dependencies]
+imednet = { path = "packages/core", develop = true }
+imednet-workflows = { path = "packages/plugins-workflows", develop = true }
+imednet-streamlit = { path = "packages/plugins-streamlit", develop = true }
+imednet-plugins-sinks = { path = "packages/plugins-sinks", develop = true }
+python = "^3.11"
+
+[tool.poetry.scripts]
+generate-docstrings = "scripts.final_automate:main"
+patch-docstrings = "scripts.fix_docstrings:main"
