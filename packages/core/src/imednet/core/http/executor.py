@@ -137,6 +137,7 @@ class BaseRequestExecutor(ABC):
             monitor.on_success(response)
             return handle_response(response)
         monitor.on_retry_error(e)
+        raise e
 
     @staticmethod
     def _parse_retry_after_seconds(response: httpx.Response) -> float | None:
