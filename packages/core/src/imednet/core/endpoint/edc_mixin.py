@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, TypeVar  # noqa: UP035
+from typing import Any, TypeVar
 
 from imednet.core.context import get_study_context
 from imednet.core.endpoint.base import AsyncListGetEndpoint, SyncListGetEndpoint

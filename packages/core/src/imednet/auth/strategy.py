@@ -1,6 +1,6 @@
 """Authentication strategy protocol."""
 
-from typing import Dict, List, Optional, Protocol, runtime_checkable  # noqa: UP035
+from typing import Protocol, runtime_checkable
 
 
 @runtime_checkable

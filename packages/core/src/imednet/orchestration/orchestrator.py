@@ -40,7 +40,7 @@ import logging
 import threading
 import time
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
-from typing import Any, Optional
+from typing import Any
 
 from imednet.core.context import study_context as _study_context
 from imednet.errors.orchestration import FilterConflictError

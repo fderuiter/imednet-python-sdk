@@ -10,11 +10,11 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from importlib import import_module
 from pathlib import Path
-from typing import Any, List, Optional  # noqa: UP035
+from typing import Any
 
 from imednet.core.operations.executor import UniversalExecutor
 from imednet.errors import ExportBatchError
-from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate, iter_batches
+from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate
 
 try:
     import pandas as pd

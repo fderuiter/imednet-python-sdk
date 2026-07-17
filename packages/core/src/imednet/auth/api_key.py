@@ -1,7 +1,5 @@
 """API Key authentication strategy."""
 
-from typing import Dict  # noqa: UP035
-
 from imednet.constants import HEADER_API_KEY, HEADER_SECURITY_KEY
 
 

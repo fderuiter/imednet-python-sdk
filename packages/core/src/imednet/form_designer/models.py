@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, List, Literal, Optional, Union  # noqa: UP035
+from typing import Any, Literal, Union
 
 from pydantic import BaseModel, Field
 

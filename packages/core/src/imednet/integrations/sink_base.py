@@ -77,7 +77,7 @@ from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass, field
 from importlib import import_module
 from types import TracebackType
-from typing import Any, Optional, Type  # noqa: UP035
+from typing import Any
 
 logger = logging.getLogger(__name__)
 

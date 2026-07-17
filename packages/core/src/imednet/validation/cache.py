@@ -3,13 +3,10 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from typing import (  # noqa: UP035
+from typing import (
     TYPE_CHECKING,
     Any,
-    Dict,
     Generic,
-    Optional,
-    Tuple,
     TypeVar,
     cast,
 )

@@ -19,7 +19,7 @@ from imednet_streamlit.components.charts import render_accessible_chart
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_subjects(_sdk: object, study_key: str) -> pd.DataFrame:
     """Fetches all subjects and returns a normalized DataFrame (deleted excluded)."""
-    from imednet.spi.models import Query, Record, Subject
+    from imednet.spi.models import Subject
 
     subjects = _sdk.get_subjects(study_key=study_key)  # type: ignore[attr-defined]
     fields = list(Subject.model_fields.keys())

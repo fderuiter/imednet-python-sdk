@@ -2,7 +2,7 @@
 
 import os
 import re
-from typing import Any, Dict, List, Optional, Type  # noqa: UP035
+from typing import Any, Optional
 
 from pydantic import Field, create_model
 
@@ -175,26 +175,6 @@ class ModelEngine:
 
             for class_name, model_name, base_class_name in matches:  # noqa: B007
                 model = cls.get_model(model_name)
-                stub_lines = []
-                has_fields = False
-                for field_name, field_info in model.model_fields.items():
-                    ann = str(field_info.annotation)
-                    ann = ann.replace("typing.", "")
-                    ann = ann.replace("NoneType", "None")
-
-                    if "Union" in ann and "None" in ann:
-                        inner = (
-                            ann.replace("Union[", "").replace(", None]", "").replace("None, ", "")
-                        )
-                        ann = f"Optional[{inner}]"
-
-                    stub_lines.append(f"    {field_name}: {ann}")
-                    has_fields = True
-
-                if not has_fields:
-                    stub_lines.append("    pass")
-
-                stub_str = "\n".join(stub_lines)
 
                 pattern = rf"(class {class_name}\([^)]*\):.*?)\n+{class_name}\s*=\s*ModelEngine\.get_model\(['\"]{model_name}['\"]\s*,\s*{class_name}\)"
 

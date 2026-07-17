@@ -7,7 +7,7 @@ and then parsing and validating that a single item was found.
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
-from typing import Any, Dict, Generic, List, Optional, TypeVar  # noqa: UP035
+from typing import Any, Generic, TypeVar
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequesterProtocol, RequesterProtocol

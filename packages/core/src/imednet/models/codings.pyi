@@ -2,13 +2,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Any, Optional
-
-from pydantic import Field
+from typing import Any
 
 from imednet.models.base import ImednetBaseModel
-from imednet.models.engine import ModelEngine
 
 class Coding(ImednetBaseModel):
     """Represents a medical coding entry associated with a record."""

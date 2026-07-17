@@ -1,7 +1,5 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-from typing import List, Optional, Union  # noqa: UP035
-
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.core.endpoint.operations import RecordCreateOperation
 from imednet.core.endpoint.strategies import MappingParamProcessor

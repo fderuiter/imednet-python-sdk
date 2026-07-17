@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
-from pydantic import Field, model_validator
+from pydantic import model_validator
 
 from imednet.models.base import ImednetBaseModel
 from imednet.models.engine import ModelEngine

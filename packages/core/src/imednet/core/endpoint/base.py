@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import AsyncIterator, Callable, Iterator
-from typing import Any, Dict, List, Optional, TypeVar  # noqa: UP035
+from typing import Any, TypeVar
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC

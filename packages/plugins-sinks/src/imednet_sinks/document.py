@@ -67,10 +67,9 @@ Usage
 from __future__ import annotations
 
 import logging
-import time
 from collections.abc import Sequence
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 
 from imednet.errors import ExportBatchError, ExportConfigurationError
 from imednet.integrations.sink_base import (
@@ -85,7 +84,7 @@ from imednet.sdk import ImednetSDK
 logger = logging.getLogger(__name__)
 
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass

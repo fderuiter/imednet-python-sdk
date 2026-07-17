@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Protocol  # noqa: UP035
+from typing import Any, Protocol
 
 try:
     import pyarrow as pa

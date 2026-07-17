@@ -7,7 +7,7 @@ from the API, handling pagination seamlessly.
 from __future__ import annotations
 
 from collections.abc import AsyncIterator, Callable, Iterator
-from typing import Any, Dict, Generic, List, TypeVar  # noqa: UP035
+from typing import Any, Generic, TypeVar
 
 from imednet.core.paginator import AsyncPaginator, Paginator
 from imednet.core.protocols import AsyncRequesterProtocol, RequesterProtocol

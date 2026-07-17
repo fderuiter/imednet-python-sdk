@@ -5,7 +5,6 @@ from __future__ import annotations
 import contextvars
 from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Optional
 
 from imednet.errors.validation import ConfigurationError
 

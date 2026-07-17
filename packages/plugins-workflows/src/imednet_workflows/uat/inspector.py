@@ -11,7 +11,6 @@ from pydantic import Field
 from imednet.spi.models import Form, ImednetBaseModel, Interval, Site, Variable
 
 if TYPE_CHECKING:
-    from imednet import AsyncImednetSDK, ImednetSDK
     from imednet.spi.facade import AsyncImednetFacade, ImednetFacade
 
 

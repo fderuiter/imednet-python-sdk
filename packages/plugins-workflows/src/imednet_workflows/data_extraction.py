@@ -1,6 +1,6 @@
 """Provides workflows for extracting specific datasets from iMednet studies."""
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union  # noqa: UP035
+from typing import TYPE_CHECKING, Any
 
 from imednet.spi.models import Record, RecordRevision
 

@@ -4,7 +4,7 @@ This workflow is self-contained and does not borrow from record_update.py.
 It provides a simple, robust interface for registering one or more subjects.
 """
 
-from typing import TYPE_CHECKING, List, Optional, cast  # noqa: UP035
+from typing import TYPE_CHECKING, cast
 
 from imednet.spi.models import Job, RegisterSubjectRequest
 

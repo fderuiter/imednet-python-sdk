@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import datetime, timezone
-from typing import Any, Dict, List, TypeVar  # noqa: UP035
+from typing import Any, TypeVar
 
 from imednet.utils.dates import parse_iso_datetime  # Centralized date parsing
 

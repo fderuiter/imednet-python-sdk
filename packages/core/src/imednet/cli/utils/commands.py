@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-from typing import List  # noqa: UP035
 
 from imednet.cli.decorators import with_sdk
 from imednet.sdk import ImednetSDK

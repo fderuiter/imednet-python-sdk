@@ -1,14 +1,10 @@
 """Protocols defining the interfaces for API endpoints and operations."""
 
-from collections.abc import AsyncIterator, Iterator, Sequence
-from typing import (  # noqa: UP035
+from collections.abc import AsyncIterator, Iterator
+from typing import (
     Any,
-    Dict,
     Generic,
-    List,
-    Optional,
     Protocol,
-    Type,
     TypeVar,
     runtime_checkable,
 )

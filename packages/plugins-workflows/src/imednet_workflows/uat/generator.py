@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import random
 from datetime import date, datetime, timezone
-from typing import Any, Dict, List, Optional  # noqa: UP035
+from typing import Any
 
 from pydantic import Field
 

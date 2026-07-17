@@ -10,7 +10,7 @@ import tempfile
 from collections.abc import Generator
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Optional  # noqa: UP035
+from typing import Any
 
 from pydantic import BaseModel, Field
 
