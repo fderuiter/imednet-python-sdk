@@ -1,11 +1,13 @@
 """Type definitions for imednet SDK utilities."""
 
-from typing import Any, Union
+from typing import Any, TypeAlias, Union
 
 try:
-    from pandas import DataFrame
+    import pandas as pd
+
+    DataFrame: TypeAlias = pd.DataFrame
 except ImportError:
-    DataFrame = Any  # type: ignore
+    DataFrame: TypeAlias = Any  # type: ignore
 
 #: Generic JSON object type (mapping of string keys to arbitrary values).
 JsonDict = dict[str, Any]

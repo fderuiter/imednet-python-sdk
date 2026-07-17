@@ -11,7 +11,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from contextlib import contextmanager
 from importlib.metadata import EntryPoint, entry_points
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from .config import Config, load_config
 from .core.context import study_context
@@ -43,7 +43,6 @@ if TYPE_CHECKING:
     from .endpoints.users import AsyncUsersEndpoint, UsersEndpoint
     from .endpoints.variables import AsyncVariablesEndpoint, VariablesEndpoint
     from .endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
-    from .spi.facade import AsyncImednetFacade, ImednetFacade
 
 
 class WorkflowPluginProtocol(PluginProtocol):
@@ -52,7 +51,7 @@ class WorkflowPluginProtocol(PluginProtocol):
 
 class WorkflowRegistry:
     """Dynamic registry for resolving and instantiating iMednet workflows.
-    
+
     Lazily loads plugins registered under the 'imednet.workflows' entrypoint group
     and injects the active SDK client instance upon loading.
     """
@@ -91,12 +90,10 @@ class WorkflowRegistry:
             return self._loaded_workflows[name]
 
         if name not in self._entry_points:
-            raise ImportError(
-                f"Workflow '{name}' not found. Please install the required package."
-            )
+            raise ImportError(f"Workflow '{name}' not found. Please install the required package.")
 
         ep = self._entry_points[name]
-        
+
         try:
             workflow_factory = ep.load()
         except (AttributeError, ImportError, ModuleNotFoundError) as error:
@@ -109,7 +106,7 @@ class WorkflowRegistry:
                 f"The workflows plugin entry point '{ep.value}' must be a callable "
                 f"that accepts an SDK instance; got {type(workflow_factory).__name__}."
             )
-            
+
         try:
             workflow_instance = workflow_factory(self._sdk)
             self._loaded_workflows[name] = workflow_instance
@@ -118,6 +115,7 @@ class WorkflowRegistry:
             raise PluginLoadError(
                 "Failed to instantiate workflows from the discovered plugin entry point."
             ) from error
+
 
 class _BaseSDK:
     """Base class for iMednet SDK variants.

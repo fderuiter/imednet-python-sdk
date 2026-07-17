@@ -5,7 +5,7 @@ from importlib import import_module
 from .dates import format_iso_datetime, parse_iso_datetime
 from .filters import build_filter_string
 from .json_logging import configure_json_logging
-from .typing import DataFrame, FilterValue, ItemId, JsonDict
+from .typing import FilterValue, ItemId, JsonDict
 
 _LAZY_ATTRS: dict[str, tuple[str, str]] = {
     "flatten": ("imednet.utils.serialization", "flatten"),
