@@ -113,7 +113,7 @@ You can also generate the query string via
 For incremental bronze/silver ingestion, use
 :class:`imednet_workflows.DuckDBIngestionWorkflow`.
 
-.. testcode::
+.. code-block:: python
 
    import duckdb
    from imednet import ImednetSDK
