@@ -1,9 +1,8 @@
+import argparse
 import ast
 import os
-import re
 
 PLACEHOLDER = '"""TODO: Add docstring."""'
-
 
 def get_meaningful_docstring(node, filepath):
     if isinstance(node, ast.Module):
@@ -29,7 +28,6 @@ def get_meaningful_docstring(node, filepath):
 
     return PLACEHOLDER
 
-
 def process_file(filepath):
     with open(filepath, 'r') as f:
         content = f.read()
@@ -46,10 +44,8 @@ def process_file(filepath):
 
     for node in ast.walk(tree):
         if isinstance(node, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
-            # Check for docstring
             docstring = ast.get_docstring(node, clean=False)
             if docstring == "TODO: Add docstring.":
-                # Find the line number of the docstring.
                 for body_node in node.body:
                     if isinstance(body_node, ast.Expr) and isinstance(
                         body_node.value, (ast.Constant, ast.Str)
@@ -64,23 +60,15 @@ def process_file(filepath):
                             modifications.append((body_node.lineno, new_doc))
                             break
 
-    if not modifications:
-        # Sometimes there's a TODO at the very top of the file that ast doesn't pick up if it's not a proper docstring?
-        # No, ast.Module should pick it up.
-        # But let's check for any remaining placeholders manually if needed.
-        pass
-
     lines = content.splitlines()
     for lineno, new_doc in sorted(modifications, reverse=True):
         idx = lineno - 1
         if idx < len(lines) and PLACEHOLDER in lines[idx]:
             lines[idx] = lines[idx].replace(PLACEHOLDER, new_doc)
         else:
-            found = False
             for i in range(max(0, idx - 5), min(len(lines), idx + 6)):
                 if PLACEHOLDER in lines[i]:
                     lines[i] = lines[i].replace(PLACEHOLDER, new_doc)
-                    found = True
                     break
 
     new_content = '\n'.join(lines)
@@ -90,13 +78,22 @@ def process_file(filepath):
     with open(filepath, 'w') as f:
         f.write(new_content)
 
-
 def main():
-    for root, dirs, files in os.walk('tests'):
-        for file in files:
-            if file.endswith('.py'):
-                process_file(os.path.join(root, file))
-
+    parser = argparse.ArgumentParser(description="Generate and patch missing docstrings using AST.")
+    parser.add_argument("targets", nargs="*", default=["tests"], help="Target directories or files to patch (defaults to 'tests').")
+    args = parser.parse_args()
+    
+    for target in args.targets:
+        if os.path.isfile(target):
+            if target.endswith(".py"):
+                process_file(target)
+        elif os.path.isdir(target):
+            for root, _, files in os.walk(target):
+                for file in files:
+                    if file.endswith('.py'):
+                        process_file(os.path.join(root, file))
+        else:
+            print(f"Warning: Target '{target}' not found or is invalid.")
 
 if __name__ == '__main__':
     main()
