@@ -84,7 +84,7 @@ def test_plugin_load_error_is_imednet_error() -> None:
 
 
 # ---------------------------------------------------------------------------
-# _BaseSDK._get_workflow_entry_point
+# Helpers
 # ---------------------------------------------------------------------------
 
 
@@ -92,38 +92,6 @@ def _make_sdk() -> _BaseSDK:
     """Return a _BaseSDK instance without triggering full ImednetSDK init."""
     sdk = object.__new__(_BaseSDK)
     return sdk
-
-
-def test_get_workflow_entry_point_returns_none_when_no_plugins_installed() -> None:
-    """Test that get workflow entry point returns none when no plugins installed."""
-    sdk = _make_sdk()
-    with patch("imednet.sdk.entry_points", return_value=[]):
-        result = sdk._get_workflow_entry_point()
-    assert result is None
-
-
-def test_get_workflow_entry_point_raises_plugin_load_error_on_multiple_plugins() -> None:
-    """Test that get workflow entry point raises plugin load error on multiple plugins."""
-    ep1 = MagicMock(spec=EntryPoint)
-    ep1.value = "plugin_a.ns:factory"
-    ep2 = MagicMock(spec=EntryPoint)
-    ep2.value = "plugin_b.ns:factory"
-
-    sdk = _make_sdk()
-    with patch("imednet.sdk.entry_points", return_value=[ep1, ep2]):
-        with pytest.raises(PluginLoadError, match="Multiple 'workflows' plugins"):
-            sdk._get_workflow_entry_point()
-
-
-def test_get_workflow_entry_point_returns_single_entry_point() -> None:
-    """Test that get workflow entry point returns single entry point."""
-    ep = MagicMock(spec=EntryPoint)
-    ep.value = "myplugin.ns:factory"
-
-    sdk = _make_sdk()
-    with patch("imednet.sdk.entry_points", return_value=[ep]):
-        result = sdk._get_workflow_entry_point()
-    assert result is ep
 
 
 # ---------------------------------------------------------------------------
@@ -138,8 +106,8 @@ def test_init_workflows_returns_missing_workflows_when_no_plugin() -> None:
         ns = sdk._init_workflows()
 
     # Accessing any attribute should raise ImportError (not PluginLoadError)
-    with pytest.raises(ImportError, match="imednet-workflows"):
-        _ = ns.data_extraction  # type: ignore[union-attr]
+    with pytest.raises(ImportError, match="Workflow 'data_extraction' not found. Please install the required package."):
+        _ = ns.data_extraction
 
 
 # ---------------------------------------------------------------------------
@@ -150,13 +118,15 @@ def test_init_workflows_returns_missing_workflows_when_no_plugin() -> None:
 def test_init_workflows_raises_plugin_load_error_on_broken_entry_point() -> None:
     """Test that init workflows raises plugin load error on broken entry point."""
     ep = MagicMock(spec=EntryPoint)
+    ep.name = "data_extraction"
     ep.value = "broken.module:factory"
     ep.load.side_effect = ModuleNotFoundError("No module named 'broken'")
 
     sdk = _make_sdk()
     with patch("imednet.sdk.entry_points", return_value=[ep]):
-        with pytest.raises(PluginLoadError, match="Failed to load workflows plugin"):
-            sdk._init_workflows()
+        ns = sdk._init_workflows()
+        with pytest.raises(PluginLoadError, match="Failed to load workflow plugin"):
+            _ = ns.data_extraction
 
 
 # ---------------------------------------------------------------------------
@@ -167,13 +137,15 @@ def test_init_workflows_raises_plugin_load_error_on_broken_entry_point() -> None
 def test_init_workflows_raises_plugin_load_error_when_entry_point_not_callable() -> None:
     """Test that init workflows raises plugin load error when entry point not callable."""
     ep = MagicMock(spec=EntryPoint)
+    ep.name = "data_extraction"
     ep.value = "myplugin.ns:NOT_A_CALLABLE"
     ep.load.return_value = "I am a string, not a callable"  # type: ignore[assignment]
 
     sdk = _make_sdk()
     with patch("imednet.sdk.entry_points", return_value=[ep]):
+        ns = sdk._init_workflows()
         with pytest.raises(PluginLoadError, match="must be a callable"):
-            sdk._init_workflows()
+            _ = ns.data_extraction
 
 
 # ---------------------------------------------------------------------------
@@ -184,6 +156,7 @@ def test_init_workflows_raises_plugin_load_error_when_entry_point_not_callable()
 def test_init_workflows_returns_namespace_from_valid_plugin() -> None:
     """Test that init workflows returns namespace from valid plugin."""
     ep = MagicMock(spec=EntryPoint)
+    ep.name = "data_extraction"
     ep.value = "myplugin.ns:factory"
     ep.load.return_value = _valid_factory
 
@@ -191,7 +164,7 @@ def test_init_workflows_returns_namespace_from_valid_plugin() -> None:
     with patch("imednet.sdk.entry_points", return_value=[ep]):
         ns = sdk._init_workflows()
 
-    assert isinstance(ns, _ValidNamespace)
+    assert isinstance(ns.data_extraction, _ValidNamespace)
 
 
 # ---------------------------------------------------------------------------
@@ -207,10 +180,12 @@ def test_init_workflows_raises_plugin_load_error_when_factory_raises_type_error(
         raise TypeError("unexpected argument")
 
     ep = MagicMock(spec=EntryPoint)
+    ep.name = "data_extraction"
     ep.value = "myplugin.ns:bad_factory"
     ep.load.return_value = _bad_factory
 
     sdk = _make_sdk()
     with patch("imednet.sdk.entry_points", return_value=[ep]):
+        ns = sdk._init_workflows()
         with pytest.raises(PluginLoadError, match="Failed to instantiate workflows"):
-            sdk._init_workflows()
+            _ = ns.data_extraction

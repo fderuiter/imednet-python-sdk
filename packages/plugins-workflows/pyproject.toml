@@ -16,8 +16,14 @@ dependencies = [
 [project.optional-dependencies]
 uat = ["faker>=24.9.0,<25.0.0"]
 
-[project.entry-points."imednet.plugins"]
-workflows = "imednet_workflows.namespace:Workflows"
+[project.entry-points."imednet.workflows"]
+data_extraction = "imednet_workflows.data_extraction:DataExtractionWorkflow"
+query_management = "imednet_workflows.query_management:QueryManagementWorkflow"
+record_mapper = "imednet_workflows.record_mapper:RecordMapper"
+record_update = "imednet_workflows.record_update:RecordUpdateWorkflow"
+subject_data = "imednet_workflows.subject_data:SubjectDataWorkflow"
+uat_inspector = "imednet_workflows.uat:StudySchemaInspector"
+uat = "imednet_workflows.uat:UATWorkflow"
 
 [project.entry-points."imednet.cli_plugins"]
 workflows = "imednet_workflows.cli:setup_parser"
