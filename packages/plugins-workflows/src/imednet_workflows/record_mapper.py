@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Iterable, Iterator
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union  # noqa: UP035
+from typing import TYPE_CHECKING, Any, Optional
 
 try:
     import pandas as pd

@@ -6,7 +6,7 @@ to allow the package to be imported even when Airflow is not installed.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict  # noqa: UP035
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from airflow.exceptions import AirflowException

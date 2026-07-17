@@ -5,7 +5,7 @@ from __future__ import annotations
 import inspect
 from importlib import import_module
 from types import ModuleType
-from typing import Any, List, Optional  # noqa: UP035
+from typing import Any
 
 from ..sdk import ImednetSDK
 from ..utils import validate_partition_key

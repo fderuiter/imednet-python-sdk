@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Any, Dict, List, Optional  # noqa: UP035
+from typing import Any
 
 from pydantic import Field, RootModel
 
 from imednet.models.base import ImednetBaseModel
-from imednet.models.engine import ModelEngine
 
 class Keyword(ImednetBaseModel):
     """A keyword or tag associated with a record."""

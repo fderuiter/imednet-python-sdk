@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Generic, Optional, TypeVar  # noqa: UP035
+from typing import Any, Generic, TypeVar
 
 from imednet.models.base import ImednetBaseModel
 

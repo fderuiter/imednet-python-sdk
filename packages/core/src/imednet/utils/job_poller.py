@@ -9,7 +9,7 @@ import threading
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Protocol, cast, runtime_checkable  # noqa: UP035
+from typing import Any, Protocol, cast, runtime_checkable
 
 from imednet.models.jobs import JobStatus
 

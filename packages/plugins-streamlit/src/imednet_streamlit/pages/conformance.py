@@ -6,7 +6,6 @@ compliance status, and documentation for assistive technologies.
 
 import json
 import os
-import traceback
 
 import streamlit as st
 

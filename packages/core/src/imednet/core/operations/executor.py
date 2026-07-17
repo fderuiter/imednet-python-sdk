@@ -8,14 +8,11 @@ from __future__ import annotations
 import logging
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable
-from typing import TYPE_CHECKING, Any, Optional, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from tenacity import (
-    AsyncRetrying,
     RetryCallState,
     RetryError,
-    Retrying,
-    stop_after_attempt,
     wait_random_exponential,
 )
 

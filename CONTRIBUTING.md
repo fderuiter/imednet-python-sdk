@@ -22,8 +22,26 @@ For the architecture view, see `docs/architecture.rst`.
 - [Make](https://www.gnu.org/software/make/) (optional, for building docs)
 
 ## Setup
+**Hatch** and **uv** are the mandatory tools for repository environment setup.
+
+Hatch uses `uv` as a backend installer. Ensure both are installed globally, or configure Hatch to use uv via `hatch config set installer uv`.
+
+To initialize the default development workspace environment and install all package dependencies:
+
 ```bash
-./scripts/setup.sh
+hatch env create
+```
+
+To run the unified quality and linter suite (Ruff, MyPy, etc.):
+
+```bash
+hatch run lint:all
+```
+
+To run the testing suite with strict coverage gates:
+
+```bash
+hatch run test
 ```
 
 ## Issue reporting and triage
@@ -42,16 +60,8 @@ Issue titles should use the format `<type>(<area>): <concise outcome>`, for exam
 Run before committing:
 
 ```bash
-ruff format --check .
-ruff check .
-mypy packages/core/src/imednet
-mypy packages/plugins-workflows/src/imednet_workflows
-mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-pytest -q \
-  --cov=imednet \
-  --cov=imednet_workflows \
-  --cov=apache_airflow_providers_imednet \
-  --cov-fail-under=90
+hatch run lint:all
+hatch run test
 hatch run docs
 ```
 Coverage must stay ≥ 90%.
@@ -121,16 +131,8 @@ Releases are fully automated and driven by merged PR titles:
    `Semantic PR Title` check enforces this.
 2. Ensure your branch is up to date and all validation checks pass:
    ```bash
-   ruff format --check .
-   ruff check .
-   mypy packages/core/src/imednet
-   mypy packages/plugins-workflows/src/imednet_workflows
-   mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-   pytest -q \
-     --cov=imednet \
-     --cov=imednet_workflows \
-     --cov=apache_airflow_providers_imednet \
-     --cov-fail-under=90
+   hatch run lint:all
+   hatch run test
    hatch run docs
    ```
 3. Merge to `main` using **Squash and merge** so the PR title becomes the merged commit message.

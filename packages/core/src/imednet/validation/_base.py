@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional  # noqa: UP035
+from typing import Any
 
 
 class _ValidatorMixin:

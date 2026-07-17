@@ -1,7 +1,5 @@
 """Endpoint for managing subjects in a study."""
 
-from typing import List  # noqa: UP035
-
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.models.subjects import Subject
 

@@ -6,12 +6,9 @@ import os
 import types
 from collections.abc import Callable
 from datetime import datetime
-from typing import (  # noqa: UP035
+from typing import (
     Any,
-    Dict,
     Generic,
-    List,
-    Optional,
     TypeVar,
     Union,
     get_args,

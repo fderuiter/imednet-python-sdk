@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import argparse
-
 from ...sdk import ImednetSDK
 from ..decorators import with_sdk
 from ..utils import STUDY_KEY_ARG, fetching_status

@@ -6,7 +6,7 @@ import time
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union  # noqa: UP035
+from typing import TYPE_CHECKING, Any
 
 from pydantic import Field
 
@@ -24,8 +24,8 @@ from .models import (
 from .submission import SubmissionResult
 
 if TYPE_CHECKING:
-    from imednet.spi.facade import AsyncImednetFacade, ImednetFacade
-    from imednet.spi.utils import JobPollSummary, JobProgressCallback
+    from imednet.spi.facade import ImednetFacade
+    from imednet.spi.utils import JobProgressCallback
 
     from .inspector import StudySnapshot
 

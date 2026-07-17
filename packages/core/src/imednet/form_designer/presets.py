@@ -1,7 +1,6 @@
 """Standard form layout presets for the Form Designer."""
 
 from collections.abc import Callable
-from typing import Dict  # noqa: UP035
 
 from .builder import FormBuilder
 

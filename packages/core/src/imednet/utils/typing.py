@@ -1,6 +1,6 @@
 """Type definitions for imednet SDK utilities."""
 
-from typing import Any, Dict, List, Tuple, Union  # noqa: UP035
+from typing import Any, Union
 
 try:
     from pandas import DataFrame

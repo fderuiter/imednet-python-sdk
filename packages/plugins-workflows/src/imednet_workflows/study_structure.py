@@ -1,7 +1,7 @@
 """Workflow for retrieving and aggregating study structural metadata."""
 
 import asyncio
-from typing import TYPE_CHECKING, Dict, List  # noqa: UP035
+from typing import TYPE_CHECKING
 
 # Import potential exceptions
 from imednet.spi.errors import ImednetError

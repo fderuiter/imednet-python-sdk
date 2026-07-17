@@ -56,10 +56,9 @@ Usage
 from __future__ import annotations
 
 import logging
-import time
 from collections.abc import Sequence
-from dataclasses import dataclass, field
-from typing import Any, Optional, Tuple  # noqa: UP035
+from dataclasses import dataclass
+from typing import Any
 
 from imednet.errors import ExportBatchError, ExportConfigurationError
 from imednet.integrations.sink_base import (

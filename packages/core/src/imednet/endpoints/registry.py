@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from types import MappingProxyType
-from typing import Type  # noqa: UP035
 
 from imednet.core.endpoint.base import GenericEndpoint
 from imednet.endpoints.codings import AsyncCodingsEndpoint, CodingsEndpoint

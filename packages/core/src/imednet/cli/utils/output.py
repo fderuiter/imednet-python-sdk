@@ -6,7 +6,7 @@ import os
 import sys
 from collections.abc import Sequence
 from datetime import datetime
-from typing import Any, Dict, List  # noqa: UP035
+from typing import Any
 
 _ANSI_COLORS = {
     "green": "\033[32m",

@@ -5,9 +5,9 @@ data using configured mappings, terminology lookups, and PHI masking rules.
 """
 
 import re
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional  # noqa: UP035
+from typing import Any
 
 from imednet.models.engine import ResourceRegistry
 from imednet.utils.serialization import flatten
@@ -87,9 +87,8 @@ class CentralizedMapper:
         return mapped
 
 
-import ast
 import logging
-from typing import Any, Dict  # noqa: UP035
+from typing import Any
 
 from imednet.models.study_config import StudyConfiguration
 

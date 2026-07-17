@@ -6,7 +6,7 @@ Encapsulates validation, header construction, and execution logic for record cre
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union  # noqa: UP035
+from typing import Any, Generic, TypeVar
 
 from imednet.constants import HEADER_EMAIL_NOTIFY
 from imednet.core.protocols import AsyncRequesterProtocol, RequesterProtocol

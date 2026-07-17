@@ -1,7 +1,7 @@
 """Utilities for submitting and updating records in iMedNet studies."""
 
 import warnings
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union, cast  # noqa: UP035
+from typing import TYPE_CHECKING, Any, Literal, Union, cast
 
 from imednet.spi.models import Job
 from imednet.spi.validation import AsyncSchemaValidator, SchemaCache, SchemaValidator

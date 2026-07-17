@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import types
 from collections.abc import Mapping
-from typing import Any, Type  # noqa: UP035
+from typing import Any
 
 from .api import (
     ApiError,

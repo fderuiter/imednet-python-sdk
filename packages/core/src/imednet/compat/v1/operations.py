@@ -1,6 +1,6 @@
 """Compatibility facades for aliasing divergent operational patterns."""
 
-from typing import Any, Optional
+from typing import Any
 
 
 def get_resource_sync(endpoint: Any, study_key: str | None, item_id: Any) -> Any:

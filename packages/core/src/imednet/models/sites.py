@@ -2,10 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import datetime
-
-from pydantic import Field
-
 from imednet.models.base import ImednetBaseModel
 from imednet.models.engine import ModelEngine
 

@@ -3,7 +3,7 @@
 import json
 import os
 import re
-from typing import Any, Dict, List, Optional  # noqa: UP035
+from typing import Any
 
 from pydantic import BaseModel, Field
 

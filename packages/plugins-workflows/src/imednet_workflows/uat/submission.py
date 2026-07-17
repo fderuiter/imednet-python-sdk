@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Iterator
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Literal, Optional, Set, Union  # noqa: UP035
+from typing import Any, Literal
 
 from pydantic import Field
 
@@ -226,7 +226,7 @@ class BulkRecordSubmissionWorkflow:
             except JobFailedError as e:
                 batch.job.state = getattr(e, "status", type("S", (), {"state": "FAILED"})).state  # type: ignore
                 failed_batches.append(batch)
-            except JobTimeoutError as e:
+            except JobTimeoutError:
                 batch.job.state = "TIMEOUT"
                 failed_batches.append(batch)
             else:

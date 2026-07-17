@@ -1,6 +1,6 @@
 """Compatibility facades for exposing internal endpoint methods safely."""
 
-from typing import Any, Optional
+from typing import Any
 
 
 def is_async_client(sdk: Any) -> bool:

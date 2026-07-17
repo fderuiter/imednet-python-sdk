@@ -1,7 +1,7 @@
 """API-level errors."""
 
 import re
-from typing import Any, Dict, Optional, Union  # noqa: UP035
+from typing import Any
 
 from .base import ImednetError
 

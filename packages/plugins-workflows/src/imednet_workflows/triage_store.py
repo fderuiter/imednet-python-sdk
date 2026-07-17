@@ -11,7 +11,6 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from threading import RLock
-from typing import Optional
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from imednet.spi.models import TriageAnnotation, TriageHistoryEntry, TriageItem, TriageStatus

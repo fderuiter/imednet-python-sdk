@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List  # noqa: UP035
+from typing import TYPE_CHECKING
 
 try:
     import pandas as pd
