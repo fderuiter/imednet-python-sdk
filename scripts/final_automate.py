@@ -18,9 +18,8 @@ def get_meaningful_docstring(node, filepath):
             name = node.name[5:].replace('_', ' ')
             suffix = " asynchronously" if isinstance(node, ast.AsyncFunctionDef) else ""
             return f'"""Test that {name}{suffix}."""'
-        else:
-            name = node.name.replace('_', ' ')
-            return f'"""Helper function to {name}."""'
+        name = node.name.replace('_', ' ')
+        return f'"""Helper function to {name}."""'
 
     if isinstance(node, ast.ClassDef):
         name = node.name.replace('Test', '').replace('_', ' ')
@@ -29,7 +28,7 @@ def get_meaningful_docstring(node, filepath):
     return PLACEHOLDER
 
 def process_file(filepath):
-    with open(filepath, 'r') as f:
+    with open(filepath) as f:
         content = f.read()
 
     if PLACEHOLDER not in content:

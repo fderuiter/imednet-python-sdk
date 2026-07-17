@@ -2,6 +2,7 @@
 import os
 import sys
 
+
 def main():
     root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     
@@ -25,8 +26,7 @@ def main():
     
     for item in os.listdir(root_dir):
         item_path = os.path.join(root_dir, item)
-        if os.path.isfile(item_path):
-            if item not in approved_files:
+        if os.path.isfile(item_path) and item not in approved_files:
                 print(f"Error: Unapproved file found in repository root: {item}")
                 unapproved_found = True
 

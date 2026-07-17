@@ -1,13 +1,14 @@
 """Script to fix docstrings in the codebase."""
 
-import os
 import argparse
+import os
+
 
 def process_file_export(filepath):
     if not os.path.isfile(filepath):
         print(f"Warning: File {filepath} not found.")
         return
-    with open(filepath, "r") as f:
+    with open(filepath) as f:
         content = f.read()
 
     content = content.replace(
@@ -48,7 +49,7 @@ def process_file_job_poller(filepath):
     if not os.path.isfile(filepath):
         print(f"Warning: File {filepath} not found.")
         return
-    with open(filepath, "r") as f:
+    with open(filepath) as f:
         content = f.read()
 
     content = content.replace(
