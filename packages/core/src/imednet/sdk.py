@@ -190,15 +190,19 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         retries: int | None = None,
         backoff_factor: float | None = None,
         retry_policy: RetryPolicy | None = None,
+        config: Config | None = None,
+        oidc_token: str | None = None,
     ) -> None:
         """Initialize the SDK with credentials and configuration."""
-        config = load_config(
-            api_key=api_key,
-            security_key=security_key,
-            base_url=base_url,
-            timeout=timeout,
-            strict_mode=strict_mode,
-        )
+        if config is None:
+            config = load_config(
+                api_key=api_key,
+                security_key=security_key,
+                base_url=base_url,
+                timeout=timeout,
+                strict_mode=strict_mode,
+                oidc_token=oidc_token,
+            )
 
         self.config = config
         self._api_key = config.api_key
@@ -322,6 +326,8 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
         retries: int | None = None,
         backoff_factor: float | None = None,
         retry_policy: RetryPolicy | None = None,
+        config: Config | None = None,
+        oidc_token: str | None = None,
     ) -> None:
         """Initialize the asynchronous SDK.
 
@@ -336,14 +342,18 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
             retries: Number of retries for failed requests.
             backoff_factor: Backoff factor for retry delays.
             retry_policy: Custom retry policy.
+            config: Optional pre-resolved Config object.
+            oidc_token: Optional OIDC token.
         """
-        config = load_config(
-            api_key=api_key,
-            security_key=security_key,
-            base_url=base_url,
-            timeout=timeout,
-            strict_mode=strict_mode,
-        )
+        if config is None:
+            config = load_config(
+                api_key=api_key,
+                security_key=security_key,
+                base_url=base_url,
+                timeout=timeout,
+                strict_mode=strict_mode,
+                oidc_token=oidc_token,
+            )
         self.config = config
         self._api_key = config.api_key
         self._security_key = config.security_key

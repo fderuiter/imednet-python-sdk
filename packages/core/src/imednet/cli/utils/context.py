@@ -25,6 +25,8 @@ def get_sdk() -> ImednetSDK:
             api_key=config.api_key,
             security_key=config.security_key,
             base_url=config.base_url,
+            config=config,
+            oidc_token=config.oidc_token,
         )
     except Exception as exc:  # pragma: no cover - defensive
         print(f"Error initializing SDK: {exc}")

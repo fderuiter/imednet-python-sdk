@@ -38,6 +38,7 @@ class ClientFactory:
             timeout=timeout,
             retry_config=retry_config,
             auth=auth,
+            config=config,
         )
         client.auth = auth  # type: ignore[attr-defined]
         return client
@@ -61,6 +62,7 @@ class ClientFactory:
             timeout=timeout,
             retry_config=retry_config,
             auth=auth,
+            config=config,
         )
         async_client.auth = auth  # type: ignore[attr-defined]
         return async_client

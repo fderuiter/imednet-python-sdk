@@ -36,6 +36,20 @@ class Config:
     vpat_path: str = "/app/docs/VPAT.md"
     a11y_report_path: str | None = None
 
+    def __post_init__(self) -> None:
+        """Validate credentials upon instantiation."""
+        api_key = (self.api_key or "").strip() or None
+        security_key = (self.security_key or "").strip() or None
+        oidc_token = (self.oidc_token or "").strip() or None
+
+        if not oidc_token:
+            if not api_key and not security_key:
+                raise ValueError("Either OIDC token or both API key and security key are required")
+            if not api_key:
+                raise ValueError("API key is required when not using OIDC")
+            if not security_key:
+                raise ValueError("Security key is required when not using OIDC")
+
     def __repr__(self) -> str:
         """Return a string representation of the configuration.
 

@@ -19,6 +19,8 @@ from imednet.core.http.executor import BaseRequestExecutor
 from .base_client import BaseClient, Tracer
 from .retry import RetryConfig, RetryPolicy
 
+from imednet.config import Config
+
 logger = logging.getLogger(__name__)
 
 ClientT = TypeVar("ClientT", bound=httpx.Client | httpx.AsyncClient)
@@ -50,6 +52,8 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
         tracer: Tracer | None = None,
         retry_config: RetryConfig | None = None,
         auth: AuthStrategy | None = None,
+        config: Config | None = None,
+        oidc_token: str | None = None,
     ) -> None:
         """Initialize the HTTP client.
 
@@ -61,6 +65,8 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
             tracer: Optional OpenTelemetry tracer instance.
             retry_config: Centralized configuration for retry behaviors.
             auth: Optional pre-configured AuthStrategy.
+            config: Optional pre-resolved Config object.
+            oidc_token: Optional OIDC token.
         """
         super().__init__(
             api_key=api_key,
@@ -70,6 +76,8 @@ class HTTPClientBase(BaseClient, ABC, Generic[ClientT, ExecutorT]):
             tracer=tracer,
             retry_config=retry_config,
             auth=auth,
+            config=config,
+            oidc_token=oidc_token,
         )
 
         self._executor = self._create_executor(self._client, self.retry_config)

@@ -15,8 +15,9 @@ else:  # pragma: no cover - typing fallback for optional dependency
 import httpx
 
 from imednet.auth.api_key import ApiKeyAuth
+from imednet.auth.oidc import OIDCAuth
 from imednet.auth.strategy import AuthStrategy
-from imednet.config import load_config
+from imednet.config import Config, load_config
 from imednet.constants import (
     DEFAULT_BASE_URL,
     DEFAULT_TIMEOUT,
@@ -46,6 +47,8 @@ class BaseClient:
         tracer: Tracer | None = None,
         retry_config: RetryConfig | None = None,
         auth: AuthStrategy | None = None,
+        config: Config | None = None,
+        oidc_token: str | None = None,
     ) -> None:
         """Initialize common client settings.
 
@@ -57,8 +60,16 @@ class BaseClient:
             tracer: Optional OpenTelemetry tracer instance.
             retry_config: Centralized configuration for retry behaviors.
             auth: Optional pre-configured AuthStrategy.
+            config: Optional pre-resolved Config object.
+            oidc_token: Optional OIDC token.
         """
-        config = load_config(api_key=api_key, security_key=security_key, base_url=base_url)
+        if config is None:
+            config = load_config(
+                api_key=api_key,
+                security_key=security_key,
+                base_url=base_url,
+                oidc_token=oidc_token,
+            )
 
         self.base_url = sanitize_base_url(config.base_url or DEFAULT_BASE_URL)
         self._base_url = httpx.URL(self.base_url)
@@ -68,6 +79,8 @@ class BaseClient:
 
         if auth:
             self.auth = auth
+        elif config.oidc_token:
+            self.auth = OIDCAuth(config.oidc_token)
         else:
             self.auth = ApiKeyAuth(config.api_key or "", config.security_key or "")
 
