@@ -28,13 +28,6 @@ Subpackages
 Submodules
 ----------
 
-imednet.async\_sdk module
--------------------------
-
-.. automodule:: imednet.async_sdk
-   :members:
-   :show-inheritance:
-
 imednet.config module
 ---------------------
 

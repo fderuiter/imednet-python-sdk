@@ -21,10 +21,3 @@ imednet.validation.data\_dictionary module
 .. automodule:: imednet.validation.data_dictionary
    :members:
    :show-inheritance:
-
-imednet.validation.schema module
---------------------------------
-
-.. automodule:: imednet.validation.schema
-   :members:
-   :show-inheritance:
