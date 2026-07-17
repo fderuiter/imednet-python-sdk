@@ -17,7 +17,7 @@ class RegisterSubjectsWorkflow:
     """Manages the registration of subjects using the iMedNet SDK.
 
     Attributes:
-        _sdk (ImednetSDK): An instance of the ImednetSDK.
+        _sdk (imednet.ImednetSDK): An instance of the ImednetSDK.
     """
 
     def __init__(self, sdk: "ImednetFacade"):  # Use string literal for type hint

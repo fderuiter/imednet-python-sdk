@@ -81,6 +81,6 @@ class BaseClient:
         else:
             self._tracer = None
 
-    def _create_client(self, auth: AuthStrategy) -> Any:
+    def _create_client(self, auth: "imednet.auth.AuthStrategy") -> Any:
         """Create the underlying HTTP client (to be implemented by subclasses)."""
         raise NotImplementedError

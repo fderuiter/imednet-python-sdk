@@ -44,6 +44,12 @@ __all__ = [
     "load_config",
 ]
 
+for _name in __all__:
+    if _name != "__version__":
+        _cls = globals().get(_name)
+        if isinstance(_cls, type):
+            _cls.__module__ = "imednet"
+
 try:
     __version__: str = _metadata.version("imednet")
 except _metadata.PackageNotFoundError:  # local editable install

@@ -55,7 +55,6 @@ sys.path[:0] = [
     os.path.abspath("../packages/plugins-streamlit/src"),
     os.path.abspath("../packages/plugins-sinks/src"),
 ]
-warnings.filterwarnings("ignore", message="duplicate object description*")
 warnings.filterwarnings("ignore", message="Failed guarded type import*")
 
 # Mock heavy optional dependencies so autodoc does not require them.
@@ -129,11 +128,26 @@ suppress_warnings = [
 class _SuppressDuplicateDescriptions(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:  # pragma: no cover
         message = record.getMessage()
-        return (
-            "duplicate object description" not in message
-            and "Failed guarded type import" not in message
-            and "more than one target found for cross-reference" not in message
-        )
+        
+        if "Failed guarded type import" in message:
+            return False
+
+        if "duplicate object description" in message:
+            import re
+            match = re.search(r"duplicate object description of ([a-zA-Z0-9_.]+)", message)
+            if match:
+                fullname = match.group(1)
+                parts = fullname.split('.')
+                if len(parts) > 1 and parts[-1] and parts[-1][0].isupper():
+                    try:
+                        with open(os.path.join(os.path.dirname(__file__), "suppressed_warnings.log"), "a") as f:
+                            f.write(f"Suppressed duplicate class warning: {fullname} - {message}\n")
+                    except Exception:
+                        pass
+                    return False
+            return True
+
+        return True
 
 
 def setup(app: Any) -> None:  # pragma: no cover

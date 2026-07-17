@@ -81,9 +81,7 @@ versions.
 .. rubric:: API reference
 
 .. autoclass:: imednet_workflows.config_version_control.ConfigVersionStore
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   :noindex:
 
 .. _publisher-wizard:
 

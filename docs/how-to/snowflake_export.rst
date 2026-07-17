@@ -200,13 +200,13 @@ Configuration reference
 -----------------------
 
 .. autoclass:: imednet_sinks.warehouse.SnowflakeSinkConfig
-   :members:
-   :undoc-members:
+   :noindex:
 
 .. autofunction:: imednet_sinks.warehouse.export_to_snowflake
+   :noindex:
 
 .. autoclass:: imednet_sinks.warehouse.SnowflakeExportSink
-   :members:
+   :noindex:
 
 Out of scope
 ------------

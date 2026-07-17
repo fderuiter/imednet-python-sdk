@@ -209,7 +209,7 @@ class MultiStudyOrchestrator:
             Ordered list of study key strings targeting this execution run.
 
         Raises:
-            FilterConflictError: When both ``whitelist`` and ``blacklist`` are
+            imednet.errors.FilterConflictError: When both ``whitelist`` and ``blacklist`` are
                 non-empty simultaneously.
         """
         if whitelist and blacklist:

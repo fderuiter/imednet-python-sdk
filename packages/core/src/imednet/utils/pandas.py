@@ -12,7 +12,7 @@ from ..models.records import Record
 from .security import sanitize_csv_formula
 
 if TYPE_CHECKING:  # pragma: no cover - only for type checking
-    from ..sdk import ImednetSDK
+    import imednet
 
 
 def records_to_dataframe(records: list[Record], *, flatten: bool = False) -> pd.DataFrame:
@@ -37,7 +37,7 @@ def records_to_dataframe(records: list[Record], *, flatten: bool = False) -> pd.
 
 
 def export_records_csv(
-    sdk: ImednetSDK, study_key: str, file_path: str, *, flatten: bool = True
+    sdk: "imednet.ImednetSDK", study_key: str, file_path: str, *, flatten: bool = True
 ) -> None:
     """Fetch all records for ``study_key`` and write them to ``file_path``.
 

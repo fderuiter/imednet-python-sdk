@@ -53,3 +53,8 @@ __all__ = [
     "ValidationError",
     "get_error_class",
 ]
+
+for _name in __all__:
+    _cls = globals().get(_name)
+    if isinstance(_cls, type):
+        _cls.__module__ = "imednet.errors"
