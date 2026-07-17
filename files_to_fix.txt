@@ -29,7 +29,6 @@
 ./scripts/__init__.py
 ./scripts/fuzz.py
 ./scripts/post_smoke_record.py
-./scripts/quick_start_test.py
 ./scripts/ci_plan.py
 ./packages/plugins-workflows/src/imednet_workflows/record_update.py
 ./packages/plugins-workflows/src/imednet_workflows/subject_data.py
