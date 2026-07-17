@@ -84,12 +84,58 @@ def check_packages_registered() -> bool:
     return has_errors
 
 
+def check_package_docs() -> bool:
+    """Validate that all packages have README.md, CHANGELOG.md, and are mentioned in root CHANGELOG.md."""
+    print("Checking if all packages have local documentation and are mentioned in root CHANGELOG.md...")
+    packages_dir = Path("packages")
+    if not packages_dir.exists():
+        print(f"Warning: Path {packages_dir} not found.")
+        return False
+
+    root_changelog = Path("CHANGELOG.md")
+    if not root_changelog.exists():
+        print("Error: Root CHANGELOG.md not found.")
+        return True
+    
+    root_changelog_content = root_changelog.read_text()
+
+    has_errors = False
+
+    for pkg_dir in packages_dir.iterdir():
+        if not pkg_dir.is_dir() or pkg_dir.name.startswith("."):
+            continue
+
+        pkg_name = pkg_dir.name
+
+        # Check for local README.md
+        readme_path = pkg_dir / "README.md"
+        if not readme_path.exists():
+            print(f"Error: Package {pkg_name} is missing a local README.md.")
+            has_errors = True
+
+        # Check for local CHANGELOG.md
+        changelog_path = pkg_dir / "CHANGELOG.md"
+        if not changelog_path.exists():
+            print(f"Error: Package {pkg_name} is missing a local CHANGELOG.md.")
+            has_errors = True
+
+        # Check if package is mentioned in root CHANGELOG.md
+        if pkg_name not in root_changelog_content:
+            print(f"Error: Package {pkg_name} is not mentioned in the root CHANGELOG.md.")
+            has_errors = True
+
+    if not has_errors:
+        print("All package docs checks passed.")
+    return has_errors
+
+
 def main():
     """Run validation scripts."""
     todos_failed = check_todos_in_init()
     packages_failed = check_packages_registered()
+    docs_failed = check_package_docs()
 
-    if todos_failed or packages_failed:
+    if todos_failed or packages_failed or docs_failed:
         print("Validation failed.")
         sys.exit(1)
 
