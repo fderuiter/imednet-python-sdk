@@ -9,6 +9,7 @@ from typing import Any, Generic, Optional, TypeVar, Union, cast
 import httpx
 
 from imednet.auth.strategy import AuthStrategy
+from imednet.config import Config
 from imednet.constants import (
     CONTENT_TYPE_JSON,
     HEADER_ACCEPT,
@@ -18,8 +19,6 @@ from imednet.core.http.executor import BaseRequestExecutor
 
 from .base_client import BaseClient, Tracer
 from .retry import RetryConfig, RetryPolicy
-
-from imednet.config import Config
 
 logger = logging.getLogger(__name__)
 
