@@ -13,11 +13,6 @@ see `CONTRIBUTING.md <../CONTRIBUTING.md>`__ for complete details.
    project_standards
    triage_playbook
 
-.. include:: ../../CONTRIBUTING.md
-   :parser: myst_parser.sphinx_
-   :start-after: ## Setup
-   :end-before: ## Issue reporting and triage
-
 Public API stability
 --------------------
 
@@ -111,11 +106,6 @@ maintainer triage follow the same rules across the repository.
 - Apply the label taxonomy and lifecycle in ``issue_management``.
 - Follow the intake and rewrite workflow in ``triage_playbook``.
 
-.. include:: ../../CONTRIBUTING.md
-   :parser: myst_parser.sphinx_
-   :start-after: ## Validation
-   :end-before: ### Containerized Integration Tests
-
 HTTP transport mocking
 ----------------------
 Use ``respx`` for any test that exercises ``Client`` or ``AsyncClient`` HTTP behavior.
@@ -150,7 +140,3 @@ routes fail fast:
 
 This keeps production clients free of test-only wrappers while still validating request
 construction, retry behavior, dynamic URLs, and query parameters.
-
-.. include:: ../../CONTRIBUTING.md
-   :parser: myst_parser.sphinx_
-   :start-after: ## Release workflow

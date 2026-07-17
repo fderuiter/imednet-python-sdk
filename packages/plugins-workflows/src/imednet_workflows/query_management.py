@@ -64,8 +64,9 @@ class QueryManagementWorkflow:
         An 'open' query is defined as one where the query comment with the highest
         sequence number has its 'closed' field set to False.
 
-        Note: This method fetches queries based on `additional_filter` and then
-        filters for the 'open' state client-side.
+        Note:
+            This method fetches queries based on `additional_filter` and then
+            filters for the 'open' state client-side.
 
         Args:
             study_key: The key identifying the study.
@@ -149,8 +150,9 @@ class QueryManagementWorkflow:
         with the highest sequence number. Queries without any comments are
         counted as 'unknown'.
 
-        Note: This method fetches all queries matching the base criteria (if any
-        are passed via kwargs) and then performs the aggregation client-side.
+        Note:
+            This method fetches all queries matching the base criteria (if any
+            are passed via kwargs) and then performs the aggregation client-side.
 
         Args:
             study_key: The key identifying the study.
