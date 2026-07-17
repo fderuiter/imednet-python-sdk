@@ -30,6 +30,11 @@ This changelog tracks releases across the following workspace packages:
 
 * require Airflow `>=3.2.0` in the provider package, raise the optional Amazon provider floor to `>=9.0.0`, and harden Airflow connection/context compatibility helpers for Airflow 3.x environments.
 
+### Deprecated
+
+* **Legacy Compatibility Namespace:** The legacy `imednet.compat.v1` namespace is deprecated. Please migrate to the modernized top-level exports exposed directly by the modern core APIs (such as standard clients inside `imednet.sdk` or types exported directly via the `imednet` package).
+* **Endpoint Context Constructor Parameter:** The `ctx` constructor argument in endpoints is deprecated and ignored. Please transition to passing the `study_key` parameter explicitly in individual endpoint method calls (e.g., `sdk.forms.list(study_key="YOUR_STUDY_KEY")`), or leverage the configuration context manager (e.g., `with sdk.study_context("YOUR_STUDY_KEY"): ...`).
+
 ### Migration notes
 
 The following changes affect code that imports from internal implementation packages:
