@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-import argparse
 import importlib.util
 import sys
 from pathlib import Path
-from typing import Optional
 
 from ...sdk import ImednetSDK
 from ..decorators import with_sdk

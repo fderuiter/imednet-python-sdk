@@ -40,7 +40,7 @@ Example factory::
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Protocol, Union, runtime_checkable
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     from .spi.facade import AsyncImednetFacade, ImednetFacade

@@ -1,7 +1,7 @@
 """Core protocols for the HTTP client to decouple endpoints from concrete implementations."""
 
 from collections.abc import Awaitable
-from typing import Any, Dict, Optional, Protocol, Tuple, runtime_checkable  # noqa: UP035
+from typing import Any, Protocol, runtime_checkable
 
 import httpx
 

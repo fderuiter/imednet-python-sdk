@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, Optional  # noqa: UP035
+from typing import Any
 
 import httpx
 

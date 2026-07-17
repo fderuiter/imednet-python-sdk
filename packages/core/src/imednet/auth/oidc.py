@@ -2,9 +2,6 @@
 
 import base64
 import json
-from typing import Dict, List, Optional  # noqa: UP035
-
-from .strategy import AuthStrategy
 
 
 class OIDCAuth:

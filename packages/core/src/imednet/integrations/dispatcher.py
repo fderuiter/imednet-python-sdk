@@ -7,7 +7,7 @@ supporting both tabular procedural functions and object-oriented sink classes.
 import dataclasses
 import threading
 from collections.abc import Callable
-from typing import Any, Dict, Optional, Type  # noqa: UP035
+from typing import Any
 
 from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate, iter_batches
 from imednet.sdk import ImednetSDK

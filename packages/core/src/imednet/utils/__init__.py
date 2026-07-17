@@ -38,6 +38,7 @@ def __getattr__(name: str):
 
 
 __all__ = [
+    "DataFrame",
     "FilterValue",
     "ItemId",
     "JsonDict",

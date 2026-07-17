@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import sys
-from typing import Any, Dict, List, Optional, Union  # noqa: UP035
+from typing import Any
 
 STUDY_KEY_ARG = "The key identifying the study."
 

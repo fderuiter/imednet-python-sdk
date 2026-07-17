@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional  # noqa: UP035
+from typing import Any
 
 from imednet.spi.errors import ApiError, ClientError
 from imednet.spi.facade import ImednetFacade
@@ -156,7 +156,7 @@ class UATExecutionEngine:
             try:
                 # Submit the record. If the EDC is enforcing the business logic correctly,
                 # this request should fail with a 400 ClientError (ValidationError).
-                job = self._sdk.create_record(study_key, [payload])
+                self._sdk.create_record(study_key, [payload])
 
                 # If we reach here, the record was ACCEPTED by the EDC.
                 # This means the edit check FAILED to catch the invalid data.

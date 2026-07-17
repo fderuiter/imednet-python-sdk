@@ -6,17 +6,12 @@ They are architecturally linked to the core execution engine.
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
-from importlib import import_module
-from typing import (  # noqa: UP035
+from collections.abc import Callable
+from typing import (
     TYPE_CHECKING,
     Any,
-    Dict,
     Generic,
-    List,
-    Protocol,
     TypeVar,
-    Union,
 )
 
 from imednet.models.codings import Coding
@@ -73,22 +68,8 @@ def _async_trace_method(func: Any) -> Any:
 
 
 if TYPE_CHECKING:
-    from imednet.endpoints.codings import AsyncCodingsEndpoint, CodingsEndpoint
-    from imednet.endpoints.forms import AsyncFormsEndpoint, FormsEndpoint
-    from imednet.endpoints.intervals import AsyncIntervalsEndpoint, IntervalsEndpoint
     from imednet.endpoints.jobs import AsyncJobsEndpoint, JobsEndpoint
-    from imednet.endpoints.queries import AsyncQueriesEndpoint, QueriesEndpoint
-    from imednet.endpoints.record_revisions import (
-        AsyncRecordRevisionsEndpoint,
-        RecordRevisionsEndpoint,
-    )
     from imednet.endpoints.records import AsyncRecordsEndpoint, RecordsEndpoint
-    from imednet.endpoints.sites import AsyncSitesEndpoint, SitesEndpoint
-    from imednet.endpoints.studies import AsyncStudiesEndpoint, StudiesEndpoint
-    from imednet.endpoints.subjects import AsyncSubjectsEndpoint, SubjectsEndpoint
-    from imednet.endpoints.users import AsyncUsersEndpoint, UsersEndpoint
-    from imednet.endpoints.variables import AsyncVariablesEndpoint, VariablesEndpoint
-    from imednet.endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
 
 
 T = TypeVar("T")

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import argparse
-
 from ..utils import register_list_command
 
 

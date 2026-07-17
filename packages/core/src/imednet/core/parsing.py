@@ -7,7 +7,7 @@ Pydantic models, eliminating duplicated parsing logic across endpoints.
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, Type, TypeVar  # noqa: UP035
+from typing import Any, TypeVar
 
 from pydantic import BaseModel
 

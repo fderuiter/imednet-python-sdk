@@ -1,7 +1,7 @@
 """Pagination helpers for iterating through API responses."""
 
 from collections.abc import AsyncIterator, Iterator
-from typing import Any, Dict, Generic, Optional, TypeVar  # noqa: UP035
+from typing import Any, Generic, TypeVar
 
 import httpx
 

@@ -5,9 +5,8 @@ from __future__ import annotations
 import logging
 import threading
 import time
-from collections.abc import Callable
 from enum import Enum
-from typing import Any, Optional, TypeVar
+from typing import TypeVar
 
 logger = logging.getLogger(__name__)
 

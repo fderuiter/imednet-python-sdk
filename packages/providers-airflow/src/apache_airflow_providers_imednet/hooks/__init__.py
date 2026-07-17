@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from collections.abc import Mapping, MutableMapping
 from datetime import date, datetime
-from typing import Any, Dict, List, TypeAlias, Union, cast  # noqa: UP035
+from typing import Any, TypeAlias, Union, cast
 
 from airflow.sdk.bases.hook import BaseHook
 

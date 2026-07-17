@@ -6,7 +6,7 @@ for iMednet API endpoints based on the reference documentation.
 
 import functools
 import re
-from typing import Any, Dict, List, Tuple, TypeVar, Union  # noqa: UP035
+from typing import Any, TypeVar
 
 # Pre-compiled regex for performance to avoid re-compilation in loops
 _UNSAFE_CHARS_REGEX = re.compile(r"[^A-Za-z0-9_.-]")

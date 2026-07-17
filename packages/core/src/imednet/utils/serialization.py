@@ -1,6 +1,6 @@
 """Data serialization and flattening utilities."""
 
-from typing import Any, Dict  # noqa: UP035
+from typing import Any
 
 
 def flatten(data: Any, prefix: str = "") -> dict[str, Any]:

@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import Field, field_validator
 
 from imednet.models.base import ImednetBaseModel
-from imednet.models.engine import ModelEngine
 
 class Job(ImednetBaseModel):
     """Represents an asynchronous background job."""

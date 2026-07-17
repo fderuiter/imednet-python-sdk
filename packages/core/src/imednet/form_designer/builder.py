@@ -6,7 +6,7 @@ form layouts for iMednet, handling ID generation and hierarchical structure.
 
 import secrets
 import string
-from typing import Any, List, Literal, Optional, cast  # noqa: UP035
+from typing import Any, Literal, cast
 
 from .models import (
     CheckboxFieldProps,

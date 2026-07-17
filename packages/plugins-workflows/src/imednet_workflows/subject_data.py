@@ -1,6 +1,6 @@
 """Provides a workflow to retrieve comprehensive data for a specific subject."""
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional  # noqa: UP035
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
 

@@ -68,12 +68,11 @@ import json
 import logging
 import os
 import tempfile
-import time
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from imednet.errors import ExportBatchError, ExportConfigurationError
 from imednet.integrations.sink_base import (

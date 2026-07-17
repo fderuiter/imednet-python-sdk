@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import datetime
-from typing import List  # noqa: UP035
-
 from pydantic import Field, computed_field
 
 from imednet.models.base import ImednetBaseModel

@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import logging
 from types import TracebackType
-from typing import Any, Dict, Optional  # noqa: UP035
+from typing import Any
 
 import httpx
 

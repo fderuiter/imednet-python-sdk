@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Any, List, Optional  # noqa: UP035
+from typing import Any
 
 from pydantic import Field
 
 from imednet.models.base import ImednetBaseModel
-from imednet.models.engine import ModelEngine
 
 class QueryComment(ImednetBaseModel):
     """A comment or response within a data query thread."""

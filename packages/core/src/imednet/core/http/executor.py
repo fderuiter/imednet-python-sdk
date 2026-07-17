@@ -8,22 +8,19 @@ from collections.abc import Awaitable, Callable, Iterator
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 import httpx
 from tenacity import (
-    AsyncRetrying,
     RetryCallState,
     RetryError,
-    Retrying,
-    stop_after_attempt,
     wait_random_exponential,
 )
 
 from imednet.core.http.handlers import handle_response
 from imednet.core.http.monitor import RequestMonitor
-from imednet.core.operations.circuit_breaker import CircuitBreakerError, get_global_circuit_breaker
-from imednet.core.retry import DefaultRetryPolicy, RetryConfig, RetryPolicy, RetryState
+from imednet.core.operations.circuit_breaker import get_global_circuit_breaker
+from imednet.core.retry import RetryConfig, RetryState
 
 _SUPPRESSED_LOG_LEVEL = logging.CRITICAL + 1
 

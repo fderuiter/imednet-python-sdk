@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Generic, Optional, Type, TypeVar  # noqa: UP035
+from typing import Any, Generic, TypeVar
 
 from imednet.core.protocols import ClientProvider
 from imednet.models.base import ImednetBaseModel

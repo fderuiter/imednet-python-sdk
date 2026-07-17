@@ -7,7 +7,7 @@ import json
 import sys
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Dict, Protocol  # noqa: UP035
+from typing import Any, Protocol
 
 from imednet.utils import sanitize_csv_formula
 

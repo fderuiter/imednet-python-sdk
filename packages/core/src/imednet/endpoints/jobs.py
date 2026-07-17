@@ -1,7 +1,5 @@
 """Endpoint for checking job status in a study."""
 
-from typing import Optional
-
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.core.endpoint.operations.get import PathGetOperation
 from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
