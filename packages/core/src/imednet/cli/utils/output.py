@@ -45,12 +45,12 @@ _STATUS_COLOR_MAP = {
 
 
 class _DummyConsole:
-    def status(self, msg, spinner=None):
+    def status(self, msg: str, spinner: str | None = None) -> Any:
         class DummyStatus:
-            def __enter__(self):
+            def __enter__(self) -> None:
                 print(msg)
 
-            def __exit__(self, *args):
+            def __exit__(self, *args: Any) -> None:
                 pass
 
         return DummyStatus()

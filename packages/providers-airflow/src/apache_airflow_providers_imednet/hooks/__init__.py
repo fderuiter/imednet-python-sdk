@@ -131,7 +131,7 @@ class ImednetHook(BaseHook):
             base_url=config.base_url,
         )
 
-    def get_conn(self) -> ImednetSDK:  # type: ignore[override]
+    def get_conn(self) -> ImednetSDK:
         """Backward compatible alias for :meth:`get_sdk_client`."""
         import warnings
         warnings.warn(

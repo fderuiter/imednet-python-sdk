@@ -19,7 +19,7 @@ from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality
 try:
     import pandas as pd
 except ImportError:
-    pd = None  # type: ignore
+    pd = None
 from imednet.constants import MAX_SQLITE_COLUMNS
 from imednet.utils import sanitize_csv_formula
 from imednet.utils.security import global_sensitivity_registry, mask_clinical_phi
@@ -87,12 +87,12 @@ def _to_sql_with_chunking(
             chunk.to_sql(
                 f"{table}_part{i}",
                 engine,
-                if_exists=if_exists,  # type: ignore[arg-type]
+                if_exists=if_exists,
                 index=False,
                 **kwargs,
             )
     else:
-        df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
+        df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)
 
 
 def _records_df(
@@ -180,7 +180,7 @@ def _sanitize_df(df: pd.DataFrame) -> pd.DataFrame:
         cols = df.select_dtypes(include=[object])
 
     for col in cols:
-        df[col] = df[col].apply(sanitize_csv_formula)  # type: ignore[call-overload]
+        df[col] = df[col].apply(sanitize_csv_formula)
     return df
 
 
@@ -193,7 +193,7 @@ class TabularSinkConfig(SinkConfig):
     sanitize: bool = False
     variable_whitelist: list[str] | None = None
     form_whitelist: list[int] | None = None
-    pandas_kwargs: dict = field(default_factory=dict)
+    pandas_kwargs: dict[str, Any] = field(default_factory=dict)
 
 
 class TabularCSVSink(ExportSink):
@@ -379,7 +379,8 @@ def _tabular_export(
 
     import itertools
 
-    def _chunk_iterator(iterator, size):
+    from typing import Iterator
+    def _chunk_iterator(iterator: Iterator[Any], size: int) -> Iterator[list[Any]]:
         while True:
             chunk = list(itertools.islice(iterator, size))
             if not chunk:
@@ -504,7 +505,7 @@ def export_to_json(
         import pandas as pd
 
         # Explicitly handle missing values when converting to dict
-        data = df.where(pd.notnull(df), None).to_dict(orient="records")  # type: ignore[call-overload]
+        data = df.where(pd.notnull(df), None).to_dict(orient="records")
 
     try:
         from importlib.metadata import entry_points
@@ -776,7 +777,7 @@ def export_to_sql_by_form(
             engine,
             if_exists=if_exists,
             **kwargs,
-        )  # type: ignore[arg-type]
+        )
 
 
 def export_to_long_sql(

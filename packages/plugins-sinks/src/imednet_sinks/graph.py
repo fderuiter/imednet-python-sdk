@@ -87,9 +87,9 @@ class Neo4jSinkConfig(SinkConfig):
     auth: tuple[str, str] = ("", "")
     database: str = "neo4j"
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Validate Neo4j config properties after initialization."""
-        super().__post_init__()
+        super().__post_init__()  # type: ignore[no-untyped-call]
         if not self.uri or not isinstance(self.uri, str) or not self.uri.strip():
             raise ValueError("uri must be a non-empty string")
         if not self.auth or not isinstance(self.auth, tuple) or len(self.auth) != 2:

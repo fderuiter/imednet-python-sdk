@@ -85,7 +85,7 @@ class RegisterSubjectsWorkflow:
 
         return cast(
             Job,
-            (cast(ImednetFacade, self._sdk)).poll_job(
+            (cast(ImednetFacade, self._sdk)).poll_job(  # type: ignore[redundant-cast]
                 study_key, job.batch_id, timeout=timeout, interval=poll_interval
             ),
         )

@@ -120,7 +120,7 @@ class SinkConfig:
     min_schema_readiness_score: float = 100.0
     tracer: Any | None = field(default=None, repr=False)
 
-    def __post_init__(self):
+    def __post_init__(self):  # type: ignore[no-untyped-def]
         """Validate config properties after initialization."""
         if not self.study_key or not isinstance(self.study_key, str) or not self.study_key.strip():
             raise ValueError("study_key must be a non-empty string")

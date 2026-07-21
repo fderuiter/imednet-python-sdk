@@ -25,7 +25,8 @@ _LAZY_ATTRS: dict[str, tuple[str, str]] = {
 }
 
 
-def __getattr__(name: str):
+from typing import Any
+def __getattr__(name: str) -> Any:
     """Lazy load utility functions from their respective modules."""
     try:
         module_path, obj_name = _LAZY_ATTRS[name]

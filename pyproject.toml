@@ -66,7 +66,7 @@ convention = "google"
 
 [tool.mypy]
 python_version = "3.12"
-strict = false
+strict = true
 ignore_missing_imports = true
 plugins = []
 exclude = '^(examples/.*|tests/.*|packages/.*/tests/.*)$'
@@ -204,3 +204,14 @@ apache-airflow-providers-imednet = { workspace = true }
 
 
 
+
+
+# Explicit exceptions for unmigrated legacy packages [cite:source_relaxed_packages]
+[[tool.mypy.overrides]]
+module = [
+    "imednet.form_designer.*",
+    "imednet.compat.*",
+    "apache_airflow_providers_imednet.*"
+]
+strict = false
+ignore_errors = true

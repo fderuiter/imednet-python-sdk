@@ -13,7 +13,7 @@ try:
     load_dotenv()
 except ImportError:
 
-    def load_dotenv(*args: Any, **kwargs: Any) -> Any:  # type: ignore
+    def load_dotenv(*args: Any, **kwargs: Any) -> Any:
         pass
 
     print(
@@ -53,7 +53,7 @@ __all__ = [
 ]
 
 
-def _setup_standalone_scripts(subparsers):
+def _setup_standalone_scripts(subparsers: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
     import glob
 
     script_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "..", "scripts")
@@ -69,7 +69,7 @@ def _setup_standalone_scripts(subparsers):
             "args", nargs=argparse.REMAINDER, help="Arguments passed to the script."
         )
 
-        def run_script(args, script_path=script_path):
+        def run_script(args: argparse.Namespace, script_path: str = script_path) -> None:
             import subprocess
 
             res = subprocess.run([sys.executable, script_path] + args.args)  # noqa: RUF005, S603
@@ -129,7 +129,7 @@ def get_parser() -> argparse.ArgumentParser:
         )
         workflows_parser.add_argument("args", nargs=argparse.REMAINDER)
 
-        def workflows_stub(args):
+        def workflows_stub(args: argparse.Namespace) -> None:
             print("The workflows plugin is not installed.", file=sys.stderr)
             sys.exit(1)
 
@@ -141,7 +141,7 @@ def get_parser() -> argparse.ArgumentParser:
         )
         dashboard_parser.add_argument("args", nargs=argparse.REMAINDER)
 
-        def dashboard_stub(args):
+        def dashboard_stub(args: argparse.Namespace) -> None:
             print(
                 "The dashboard plugin is not installed. Please pip install imednet-streamlit.",
                 file=sys.stderr,
@@ -153,7 +153,7 @@ def get_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def app(args=None):
+def app(args: list[str] | None = None) -> None:
     """Main entrypoint for the CLI."""
     if args is None:
         args = sys.argv[1:]

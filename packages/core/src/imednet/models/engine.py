@@ -95,7 +95,7 @@ class ModelEngine:
         """Internal implementation for dynamic model creation."""
         contract = get_contract()
         if model_name not in contract.models:
-            return create_model(model_name, __base__=base_cls)  # type: ignore[no-any-return]
+            return create_model(model_name, __base__=base_cls)
 
         model_def = contract.models[model_name]
         fields: dict[str, Any] = {}
@@ -119,7 +119,7 @@ class ModelEngine:
             fields[snake_key] = (py_type, new_field)
 
         model = create_model(model_name, __base__=base_cls, **fields)
-        return model  # type: ignore[no-any-return]  # noqa: RET504
+        return model  # noqa: RET504
 
     @classmethod
     def generate_stubs(cls, output_dir: str) -> None:

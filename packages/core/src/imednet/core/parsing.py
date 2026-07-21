@@ -38,10 +38,11 @@ def get_model_parser(model: type[T]) -> Callable[[Any], T]:
     """
     # Check for custom from_json method
     if hasattr(model, "from_json") and callable(getattr(model, "from_json")):  # noqa: B009
-        return getattr(model, "from_json")  # type: ignore[return-value] # noqa: B009
+        return cast(Callable[[Any], T], getattr(model, "from_json"))
 
     # Fall back to Pydantic's model_validate
-    return model.model_validate
+    from typing import cast, Callable, Any
+    return cast(Callable[[Any], T], model.model_validate)
 
 
 class ModelParser:

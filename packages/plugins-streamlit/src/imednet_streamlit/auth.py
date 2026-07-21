@@ -148,7 +148,7 @@ def render_auth_sidebar() -> bool:
     with st.sidebar:
         st.header("🔐 Enterprise SSO")
 
-        def on_env_change():
+        def on_env_change() -> None:
             clear_credentials()
             _mark_disconnected()
 
@@ -253,7 +253,8 @@ def get_sdk() -> ImednetFacade:
         raise RuntimeError(
             "SDK is not connected. Ensure credentials are entered and Connect is clicked."
         )
-    return sdk
+    from typing import cast
+    return cast('ImednetFacade', sdk)
 
 
 def get_study_key() -> str:

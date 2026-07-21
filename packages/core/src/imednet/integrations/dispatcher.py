@@ -28,14 +28,14 @@ class ExportRegistry:
         "snowflake": "imednet_sinks.warehouse:SnowflakeSinkConfig",
     }
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize an empty ExportRegistry."""
-        self._tabular_targets: dict[str, Callable] = {}
+        self._tabular_targets: dict[str, Callable[..., Any]] = {}
         self._sink_targets: dict[str, type[ExportSink]] = {}
         self._config_targets: dict[str, type[SinkConfig]] = {}
         self._lock = threading.RLock()
 
-    def register_tabular(self, target_type: str, func: Callable) -> None:
+    def register_tabular(self, target_type: str, func: Callable[..., Any]) -> None:
         """Register a tabular procedural function for a target type."""
         with self._lock:
             self._tabular_targets[target_type] = func
@@ -45,7 +45,7 @@ class ExportRegistry:
         with self._lock:
             self._sink_targets[target_type] = sink_class
 
-    def get_tabular(self, target_type: str) -> Callable | None:
+    def get_tabular(self, target_type: str) -> Callable[..., Any] | None:
         """Retrieve a registered tabular function, or None if not found."""
         with self._lock:
             return self._tabular_targets.get(target_type)
@@ -98,7 +98,7 @@ class ExportRegistry:
 _registry = ExportRegistry()
 
 
-def register_tabular_target(target_type: str, func: Callable) -> None:
+def register_tabular_target(target_type: str, func: Callable[..., Any]) -> None:
     """Register a tabular procedural function for a target type."""
     _registry.register_tabular(target_type, func)
 
