@@ -62,9 +62,6 @@ logs/
 # mypy
 .mypy_cache/
 
-# poetry
-# (keep lockfile under version control)
-
 # jupyter
 .ipynb_checkpoints/
 

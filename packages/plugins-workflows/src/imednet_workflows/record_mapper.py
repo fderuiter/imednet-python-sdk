@@ -17,7 +17,7 @@ except ImportError:
     pd = None  # type: ignore
 from pydantic import BaseModel, Field, ValidationError, create_model
 
-from imednet.models.records import Record as RecordModel  # type: ignore[attr-defined]
+from imednet.spi.endpoints import Record as RecordModel  # type: ignore[attr-defined]
 from imednet.spi.endpoints import Variable as VariableModel  # type: ignore[attr-defined]
 
 from .cached_loader import CachedRecordsLoader

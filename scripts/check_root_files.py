@@ -20,7 +20,6 @@ def main():
         "imednet.postman_collection.json",
         ".gitignore",
         "pyproject.toml",
-        "poetry.lock",
         "uv.lock",
         ".env.example",
         ".secrets.baseline",

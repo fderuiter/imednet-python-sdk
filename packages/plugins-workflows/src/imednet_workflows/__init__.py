@@ -1,6 +1,6 @@
 """Workflow helpers built on top of the iMednet SDK."""
 
-from imednet.utils.job_poller import (
+from imednet.spi.utils import (
     AsyncJobPoller,
     JobPoller,
     JobPollSummary,
