@@ -274,12 +274,11 @@ def _is_date_value(value: Any) -> bool:
     normalised = value.strip()
     if not normalised:
         return False
+
+    from imednet.spi.utils import parse_iso_datetime
+
     try:
-        datetime.fromisoformat(normalised.replace("Z", "+00:00"))
+        parse_iso_datetime(normalised)
         return True
     except ValueError:
-        try:
-            date.fromisoformat(normalised)
-        except ValueError:
-            return False
-        return True
+        return False

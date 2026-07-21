@@ -272,7 +272,7 @@ def _require_optional_dep(package: str, extras_key: str) -> Any:
     try:
         return import_module(package)  # nosem
     except ModuleNotFoundError as error:
-        if error.name and error.name.startswith(package.split(".")[0]):
+        if error.name and error.name.startswith(package.split(".", maxsplit=1)[0]):
             raise ImportError(
                 f"This export sink requires the optional '{package}' package. "
                 f"Install with `pip install 'imednet[{extras_key}]'`."

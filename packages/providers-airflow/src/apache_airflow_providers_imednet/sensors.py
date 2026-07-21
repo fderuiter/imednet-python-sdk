@@ -16,7 +16,6 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fal
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:  # pragma: no cover
             """Initialize fallback BaseSensorOperator."""
-            pass
 
 
 from imednet import ImednetSDK

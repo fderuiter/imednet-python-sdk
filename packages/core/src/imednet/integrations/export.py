@@ -339,11 +339,9 @@ class TabularSQLSink(ExportSink):
 
     def flush(self) -> None:
         """Flush the sink."""
-        pass
 
     def close(self) -> None:
         """Close the sink."""
-        pass
 
 
 def _tabular_export(

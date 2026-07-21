@@ -30,9 +30,8 @@ def toggle_high_contrast():
     st.session_state["high_contrast"] = not st.session_state["high_contrast"]
     if st.session_state["high_contrast"]:
         st.query_params["high_contrast"] = "true"
-    else:
-        if "high_contrast" in st.query_params:
-            del st.query_params["high_contrast"]
+    elif "high_contrast" in st.query_params:
+        del st.query_params["high_contrast"]
 
 
 st.sidebar.toggle(
