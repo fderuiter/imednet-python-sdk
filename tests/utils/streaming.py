@@ -1,7 +1,7 @@
 """Unit tests for streaming."""
 
-import asyncio
-from typing import Any, AsyncIterator, Generic, Iterable, Iterator, List, TypeVar, Union, overload
+from collections.abc import AsyncIterator, Iterable, Iterator
+from typing import Any, Generic, TypeVar
 
 T = TypeVar('T')
 
@@ -12,7 +12,7 @@ class StreamingMockWrapper(Generic[T]):
     def __init__(self, data: Iterable[T], max_buffer_size: int = 10000):
         """Initialize the test object."""
         self._max_buffer_size = max_buffer_size
-        self._buffer: List[T] = []
+        self._buffer: list[T] = []
         self._fully_buffered = False
 
         if isinstance(data, list):
@@ -22,7 +22,7 @@ class StreamingMockWrapper(Generic[T]):
         else:
             self._sync_iter = iter(data)
 
-    def _fill_buffer(self, target_index: Union[int, slice, None] = None) -> None:
+    def _fill_buffer(self, target_index: int | slice | None = None) -> None:
         """Helper function to  fill buffer."""
         if self._fully_buffered:
             return
@@ -38,7 +38,7 @@ class StreamingMockWrapper(Generic[T]):
         except StopIteration:
             self._fully_buffered = True
 
-    def __getitem__(self, index: Union[int, slice]) -> Union[T, List[T]]:
+    def __getitem__(self, index: int | slice) -> T | list[T]:
         """Helper function to   getitem  ."""
         if isinstance(index, slice):
             if index.stop is None or index.stop < 0:

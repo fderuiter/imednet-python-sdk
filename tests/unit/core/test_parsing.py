@@ -1,6 +1,6 @@
 """Unit tests for parsing."""
 
-from typing import Any, Dict
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -21,7 +21,7 @@ class CustomModel(BaseModel):
     name: str
 
     @classmethod
-    def from_json(cls, data: Dict[str, Any]) -> "CustomModel":
+    def from_json(cls, data: dict[str, Any]) -> "CustomModel":
         """Helper function to from json."""
         return cls(id=data["id"], name=data["name"] + " (parsed)")
 

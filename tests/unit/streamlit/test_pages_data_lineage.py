@@ -22,7 +22,7 @@ MODULE_NAME = "imednet_streamlit.pages.data_lineage"
 class _FakeContextManager:
     """Test suite for  FakeContextManager."""
 
-    def __enter__(self) -> "_FakeContextManager":
+    def __enter__(self) -> _FakeContextManager:
         """Helper function to   enter  ."""
         return self
 

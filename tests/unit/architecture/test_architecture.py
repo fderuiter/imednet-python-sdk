@@ -22,7 +22,7 @@ def get_all_python_files(package_path: Path) -> list[Path]:
 
 def get_imports_from_file(file_path: Path) -> set[str]:
     """Helper function to get imports from file."""
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         # We want SyntaxError to be raised if a file cannot be parsed, rather than silently ignored.
         tree = ast.parse(f.read(), filename=str(file_path))
 
@@ -176,5 +176,8 @@ def test_plugin_discovery_failure(monkeypatch):
     monkeypatch.setattr("imednet.sdk.entry_points", lambda *, group, name=None: [])
 
     sdk = ImednetSDK(api_key="1", security_key="2", base_url="http://x")
-    with pytest.raises(ImportError, match="Workflow 'some_workflow' not found. Please install the required package."):
+    with pytest.raises(
+        ImportError,
+        match="Workflow 'some_workflow' not found. Please install the required package.",
+    ):
         sdk.workflows.some_workflow

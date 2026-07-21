@@ -4,7 +4,7 @@ These protocols define the expected interface for the iMednet SDK clients,
 allowing for easier mocking and decoupling in dependent packages.
 """
 
-from typing import Any, List, Optional, Protocol, Union  # noqa: UP035
+from typing import Any, Protocol
 
 from imednet.models.codings import Coding
 from imednet.models.forms import Form

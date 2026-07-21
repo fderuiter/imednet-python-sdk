@@ -19,7 +19,7 @@ def main():
     has_malformed = False
 
     for rf in report_files:
-        with open(rf, "r") as f:
+        with open(rf) as f:
             try:
                 data = json.load(f)
                 all_reports.append(VerificationReport.model_validate(data))

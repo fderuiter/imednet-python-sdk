@@ -9,7 +9,6 @@ import pytest
 from faker import Faker
 from pydantic import ValidationError
 
-import imednet_workflows.uat.models as uat_models
 from imednet_workflows.uat import (
     RecordTestType,
     UATFormSpec,

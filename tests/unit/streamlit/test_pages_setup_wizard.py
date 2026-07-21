@@ -17,7 +17,7 @@ PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_s
 class _FakeColumn:
     """Test suite for  FakeColumn."""
 
-    def __init__(self, parent: "_FakeStreamlit") -> None:
+    def __init__(self, parent: _FakeStreamlit) -> None:
         """Initialize the test object."""
         self._parent = parent
 
@@ -41,13 +41,13 @@ class _FakeColumn:
 class _FakeContextManager:
     """Test suite for  FakeContextManager."""
 
-    def __enter__(self) -> "_FakeContextManager":
+    def __enter__(self) -> _FakeContextManager:
         """Helper function to   enter  ."""
         return self
 
     def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
         """Helper function to   exit  ."""
-        return None
+        return
 
 
 class _FakeStreamlit:
@@ -93,7 +93,7 @@ class _FakeStreamlit:
 
     def caption(self, value: str) -> None:
         """Helper function to caption."""
-        return None
+        return
 
     def expander(self, label: str, *, expanded: bool = False) -> _FakeContextManager:
         """Helper function to expander."""
@@ -106,7 +106,7 @@ class _FakeStreamlit:
 
     def progress(self, value: float) -> None:
         """Helper function to progress."""
-        return None
+        return
 
     def success(self, value: str) -> None:
         """Helper function to success."""
@@ -170,7 +170,7 @@ class _FakeStreamlit:
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
         """Helper function to dataframe."""
-        return None
+        return
 
     def metric(self, label: str, value: Any, **kwargs: Any) -> None:
         """Helper function to metric."""
@@ -178,7 +178,7 @@ class _FakeStreamlit:
 
     def json(self, value: Any) -> None:
         """Helper function to json."""
-        return None
+        return
 
     def download_button(self, **kwargs: Any) -> None:
         """Helper function to download button."""
@@ -386,7 +386,7 @@ def test_setup_wizard_renders_design_specification_sections() -> None:
     fake_st = _FakeStreamlit()
     _run_setup_wizard(fake_st)
 
-    joined_markdown = "\n".join(fake_st.markdown_calls)
+    "\n".join(fake_st.markdown_calls)
     joined_subheaders = "\n".join(fake_st.subheader_calls)
     assert ("UX Design Specification", False) in fake_st.expander_calls
     assert any("Step 1: Scan & Profile" in body for body in fake_st.code_calls)

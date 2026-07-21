@@ -1,5 +1,4 @@
 # isort: skip_file
-# ruff: noqa: E402, I001
 # mypy: ignore-errors
 """Create minimal records via the live API for smoke testing.
 
@@ -23,9 +22,8 @@ Exit codes:
 
 import argparse
 import logging
-import os
 import sys
-from typing import Any, Dict, Tuple
+from typing import Any
 
 from imednet.discovery import (
     discover_form_key,
@@ -53,7 +51,7 @@ def authenticate() -> ImednetSDK:
     return ImednetSDK(api_key=cfg.api_key, security_key=cfg.security_key, base_url=cfg.base_url)
 
 
-def discover_keys(sdk: ImednetSDK) -> Tuple[str, str]:
+def discover_keys(sdk: ImednetSDK) -> tuple[str, str]:
     """Return the first available study and form keys."""
     study_key = discover_study_key(sdk)
     form_key = discover_form_key(sdk, study_key)
@@ -62,7 +60,7 @@ def discover_keys(sdk: ImednetSDK) -> Tuple[str, str]:
 
 def discover_identifiers(
     sdk: ImednetSDK, study_key: str
-) -> Tuple[str | None, str | None, str | None]:
+) -> tuple[str | None, str | None, str | None]:
     """Return first site, subject, and interval identifiers if available."""
     site_name: str | None = None
     subject_key: str | None = None
@@ -86,9 +84,9 @@ def discover_identifiers(
     return site_name, subject_key, interval_name
 
 
-def _select_variables(variables: list[Variable]) -> Dict[str, Variable]:
+def _select_variables(variables: list[Variable]) -> dict[str, Variable]:
     """Return one variable per supported type."""
-    selected: Dict[str, Variable] = {}
+    selected: dict[str, Variable] = {}
     for var in variables:
         var_type = canonical_type(var.variable_type)
         if var_type and var_type not in selected:
@@ -96,12 +94,12 @@ def _select_variables(variables: list[Variable]) -> Dict[str, Variable]:
     return selected
 
 
-def _build_data(variables: Dict[str, Variable]) -> Dict[str, Any]:
+def _build_data(variables: dict[str, Variable]) -> dict[str, Any]:
     """Map variables to deterministic example values."""
     return {var.variable_name: value_for(var.variable_type) for var in variables.values()}
 
 
-def _redact(record: Dict[str, Any]) -> Dict[str, Any]:
+def _redact(record: dict[str, Any]) -> dict[str, Any]:
     """Return ``record`` with sensitive fields redacted."""
     redacted = record.copy()
     if "data" in redacted:
@@ -117,7 +115,7 @@ def build_record(
     site_name: str | None = None,
     subject_key: str | None = None,
     interval_name: str | None = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Construct a record payload for ``form_key``.
 
     Populates one variable per supported type and includes optional identifiers for
@@ -125,7 +123,7 @@ def build_record(
     """
     variables = list(sdk.variables.list(study_key=study_key, formKey=form_key))
     data = _build_data(_select_variables(variables))
-    record: Dict[str, Any] = {"formKey": form_key, "data": data}
+    record: dict[str, Any] = {"formKey": form_key, "data": data}
     if site_name is not None:
         record["siteName"] = site_name
     if subject_key is not None:
@@ -144,7 +142,7 @@ def _extract_error(sdk: ImednetSDK, status: Any) -> str:
     return status.state
 
 
-def submit_record(sdk: ImednetSDK, study_key: str, record: Dict[str, Any], *, timeout: int) -> str:
+def submit_record(sdk: ImednetSDK, study_key: str, record: dict[str, Any], *, timeout: int) -> str:
     """Create ``record`` and return the resulting batch ID."""
     job = sdk.records.create(study_key, [record])
     if not job.batch_id:

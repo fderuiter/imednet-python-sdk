@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from imednet.integrations.dispatcher import export, register_sink_target, register_tabular_target
-from imednet.integrations.sink_base import ExportSink, SinkConfig
+from imednet.integrations.sink_base import ExportSink
 
 
 class DummySink(ExportSink):

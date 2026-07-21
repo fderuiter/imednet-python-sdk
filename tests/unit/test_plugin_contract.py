@@ -27,7 +27,7 @@ class _ValidNamespace:
     subject_data: Any = None
 
 
-def _valid_factory(sdk_instance: Any) -> _ValidNamespace:  # noqa: ANN401
+def _valid_factory(sdk_instance: Any) -> _ValidNamespace:
     """Helper function to  valid factory."""
     return _ValidNamespace()
 
@@ -106,7 +106,10 @@ def test_init_workflows_returns_missing_workflows_when_no_plugin() -> None:
         ns = sdk._init_workflows()
 
     # Accessing any attribute should raise ImportError (not PluginLoadError)
-    with pytest.raises(ImportError, match="Workflow 'data_extraction' not found. Please install the required package."):
+    with pytest.raises(
+        ImportError,
+        match="Workflow 'data_extraction' not found. Please install the required package.",
+    ):
         _ = ns.data_extraction
 
 

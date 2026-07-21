@@ -1,5 +1,3 @@
-import sys
-
 from imednet import ImednetSDK, load_config
 from imednet_workflows.uat import UATWorkflow
 
@@ -19,7 +17,7 @@ def main():
             security_key=cfg.security_key,
             base_url=cfg.base_url,
         ) as sdk:
-            workflow = UATWorkflow(sdk)
+            UATWorkflow(sdk)
             # Inspects study, builds spec, generates synthetic data, submits, and monitors.
             # Replace "MY_STUDY" with a real study key.
             # result = workflow.run("MY_STUDY")

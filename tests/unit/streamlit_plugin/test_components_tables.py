@@ -17,7 +17,7 @@ class _FakeColumn:
 
     def caption(self, *_: object, **__: object) -> None:
         """Helper function to caption."""
-        return None
+        return
 
 
 class _FakeTableStreamlit:

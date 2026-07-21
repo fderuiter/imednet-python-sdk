@@ -1,6 +1,6 @@
 """Unit tests for core paginator."""
 
-from typing import Any, Dict, List
+from typing import Any
 
 import pytest
 
@@ -15,12 +15,12 @@ from imednet.core.paginator import (
 class DummyClient:
     """Test suite for DummyClient."""
 
-    def __init__(self, responses: List[Dict[str, Any]]):
+    def __init__(self, responses: list[dict[str, Any]]):
         """Initialize the test object."""
         self.responses = responses
-        self.calls: List[Dict[str, Any]] = []
+        self.calls: list[dict[str, Any]] = []
 
-    def get(self, path: str, params: Dict[str, Any] | None = None):
+    def get(self, path: str, params: dict[str, Any] | None = None):
         """Helper function to get."""
         self.calls.append({"path": path, "params": params})
         data = self.responses.pop(0)
@@ -30,12 +30,12 @@ class DummyClient:
 class AsyncDummyClient:
     """Test suite for AsyncDummyClient."""
 
-    def __init__(self, responses: List[Dict[str, Any]]):
+    def __init__(self, responses: list[dict[str, Any]]):
         """Initialize the test object."""
         self.responses = responses
-        self.calls: List[Dict[str, Any]] = []
+        self.calls: list[dict[str, Any]] = []
 
-    async def get(self, path: str, params: Dict[str, Any] | None = None):
+    async def get(self, path: str, params: dict[str, Any] | None = None):
         """Helper function to get."""
         self.calls.append({"path": path, "params": params})
         data = self.responses.pop(0)
