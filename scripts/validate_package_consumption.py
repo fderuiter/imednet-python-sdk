@@ -176,11 +176,6 @@ def main():
                 ],
             },
             {
-                "name": "workflows-uat",
-                "install": ["imednet-workflows[uat]"],
-                "smoke": [{"cmd": "import faker"}],
-            },
-            {
                 "name": "airflow-provider",
                 "install": ["apache-airflow", "apache-airflow-providers-imednet"],
                 "smoke": [
