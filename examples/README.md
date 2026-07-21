@@ -23,7 +23,7 @@ export IMEDNET_SECURITY_KEY="your_security_key_here"
 You can run any example directly using Python once your environment variables are set:
 
 ```bash
-poetry run python examples/basic/get_studies.py
+uv run --with "imednet[cli]" python examples/basic/get_studies.py
 ```
 
 ## Structure

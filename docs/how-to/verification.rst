@@ -9,12 +9,12 @@ Before proposing any solution, execute and pass all CI quality gates locally.
 
    .. code-block:: bash
 
-      poetry run ruff format --check .
-      poetry run ruff check .
-      poetry run mypy packages/core/src/imednet
-      poetry run mypy packages/plugins-workflows/src/imednet_workflows
-      poetry run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
-      poetry run pytest -q \
+      hatch run ruff format --check .
+      hatch run ruff check .
+      hatch run mypy packages/core/src/imednet
+      hatch run mypy packages/plugins-workflows/src/imednet_workflows
+      hatch run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+      hatch run pytest -q \
         --cov=imednet \
         --cov=imednet_workflows \
         --cov=apache_airflow_providers_imednet \

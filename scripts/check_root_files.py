@@ -11,7 +11,7 @@ def main():
         "CONTRIBUTING.md", ".pre-commit-config.yaml", ".release-please-manifest.json",
         "release-please-config.json", "docker-compose.yml", "a11y_exemptions.json",
         "imednet.postman_collection.json", ".gitignore", "pyproject.toml",
-        "poetry.lock", "uv.lock", ".env.example", ".secrets.baseline",
+        "uv.lock", ".env.example", ".secrets.baseline",
         "LICENSE", "pytest.ini", "typos.toml"
     }
 

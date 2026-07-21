@@ -18,7 +18,7 @@ A plugin package must:
 
 Example ``pyproject.toml`` snippet::
 
-    [tool.poetry.plugins."imednet.plugins"]
+    [project.entry-points."imednet.plugins"]
     workflows = "myplugin.namespace:create_workflows"
 
 Example factory::

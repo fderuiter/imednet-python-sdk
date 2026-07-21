@@ -24,7 +24,7 @@ Example:
 
     export IMEDNET_API_KEY="dummy"
     export IMEDNET_SECURITY_KEY="dummy"
-    poetry run python examples/custom_retry.py
+    uv run --with "imednet[cli]" python examples/custom_retry.py
 """
 
 
