@@ -16,12 +16,12 @@ if TYPE_CHECKING:
 class DuckDBIngestionWorkflow:
     """Incremental eCRF centralization pipeline using a bronze/silver DuckDB layout."""
 
-    def __init__(self, sdk: ImednetFacade, db_path: str) -> None:
+    def __init__(self, sdk: ImednetFacade, db_path: str = "imednet_central.duckdb") -> None:
         """Initialize the DuckDB ingestion workflow.
 
         Args:
             sdk: An instance of the iMednet SDK facade.
-            db_path: Path to the DuckDB database file.
+            db_path: Path to the DuckDB database file. Defaults to "imednet_central.duckdb".
         """
         try:
             import duckdb

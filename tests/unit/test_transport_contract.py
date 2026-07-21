@@ -92,7 +92,6 @@ async def test_transport_clients_use_base_url_for_relative_paths() -> None:
 @respx.mock(base_url="https://example.com")
 def test_retry_after_header_is_respected(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test that retry after header is respected."""
-    import imednet.core.http.executor as executor_module
     import imednet.core.retry as retry_module
 
     sleeps: list[float] = []

@@ -26,7 +26,7 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
     if not os.path.exists(collection_path):
         pytest.skip("Postman collection not found")
 
-    with open(collection_path, 'r') as f:
+    with open(collection_path) as f:
         data = json.load(f)
 
     # Ensure dynamic contract is built

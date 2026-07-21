@@ -1,7 +1,7 @@
 """Unit tests for cli export."""
 
 import importlib.util
-from unittest.mock import ANY, MagicMock
+from unittest.mock import MagicMock
 
 import pytest
 from imednet_sinks import MongoDbSinkConfig, Neo4jSinkConfig, SnowflakeSinkConfig
@@ -18,7 +18,6 @@ class Result:
 class CliRunner:
     def invoke(self, app, args):
         import io
-        import sys
         from contextlib import redirect_stderr, redirect_stdout
 
         out = io.StringIO()
@@ -31,7 +30,7 @@ class CliRunner:
                 app(args)
         except SystemExit as e:
             exit_code = e.code or 0
-        except Exception as e:
+        except Exception:
             import traceback
 
             err.write(traceback.format_exc())
@@ -42,8 +41,6 @@ class CliRunner:
 
 
 import imednet.cli as cli
-import imednet.integrations as integrations_mod
-from imednet.integrations import SinkConfig
 from imednet.integrations import export as export_mod
 
 
@@ -54,13 +51,13 @@ def env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "secret")
 
 
-@pytest.fixture()
+@pytest.fixture
 def runner() -> CliRunner:
     """Helper function to runner."""
     return CliRunner()
 
 
-@pytest.fixture()
+@pytest.fixture
 def sdk(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     """Helper function to sdk."""
     mock_sdk = MagicMock()

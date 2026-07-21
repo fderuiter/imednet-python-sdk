@@ -28,14 +28,14 @@ def test_lazy_load_arrow_function() -> None:
 def test_schema_objects_not_in_utils() -> None:
     """Test that schema objects not in utils."""
     with pytest.raises(AttributeError):
-        getattr(utils, "SchemaCache")
+        utils.SchemaCache
     with pytest.raises(AttributeError):
-        getattr(utils, "SchemaValidator")
+        utils.SchemaValidator
     with pytest.raises(AttributeError):
-        getattr(utils, "validate_record_data")
+        utils.validate_record_data
 
 
 def test_getattr_unknown() -> None:
     """Test that getattr unknown."""
     with pytest.raises(AttributeError):
-        getattr(utils, "does_not_exist")
+        utils.does_not_exist

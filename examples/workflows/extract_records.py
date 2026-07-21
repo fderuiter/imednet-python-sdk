@@ -1,6 +1,6 @@
 """TODO: Add docstring."""
 
-from typing import Any, Dict
+from typing import Any
 
 from imednet import ImednetSDK
 from imednet_workflows.data_extraction import DataExtractionWorkflow
@@ -21,8 +21,8 @@ try:
     sdk = ImednetSDK(api_key=api_key, security_key=security_key, base_url=base_url)
     workflow = DataExtractionWorkflow(sdk)
 
-    subject_filter: Dict[str, Any] = {"subjectStatus": "Active"}
-    visit_filter: Dict[str, Any] = {"intervalName": "Baseline"}
+    subject_filter: dict[str, Any] = {"subjectStatus": "Active"}
+    visit_filter: dict[str, Any] = {"intervalName": "Baseline"}
 
     records = workflow.extract_records_by_criteria(
         study_key=study_key,

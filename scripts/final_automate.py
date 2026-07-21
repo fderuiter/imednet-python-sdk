@@ -4,6 +4,7 @@ import os
 
 PLACEHOLDER = '"""TODO: Add docstring."""'
 
+
 def get_meaningful_docstring(node, filepath):
     if isinstance(node, ast.Module):
         if os.path.basename(filepath) == '__init__.py':
@@ -26,6 +27,7 @@ def get_meaningful_docstring(node, filepath):
         return f'"""Test suite for {name}."""'
 
     return PLACEHOLDER
+
 
 def process_file(filepath):
     with open(filepath) as f:
@@ -77,11 +79,17 @@ def process_file(filepath):
     with open(filepath, 'w') as f:
         f.write(new_content)
 
+
 def main():
     parser = argparse.ArgumentParser(description="Generate and patch missing docstrings using AST.")
-    parser.add_argument("targets", nargs="*", default=["tests"], help="Target directories or files to patch (defaults to 'tests').")
+    parser.add_argument(
+        "targets",
+        nargs="*",
+        default=["tests"],
+        help="Target directories or files to patch (defaults to 'tests').",
+    )
     args = parser.parse_args()
-    
+
     for target in args.targets:
         if os.path.isfile(target):
             if target.endswith(".py"):
@@ -93,6 +101,7 @@ def main():
                         process_file(os.path.join(root, file))
         else:
             print(f"Warning: Target '{target}' not found or is invalid.")
+
 
 if __name__ == '__main__':
     main()

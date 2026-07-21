@@ -43,7 +43,7 @@ try:
     sdk = ImednetSDK(api_key=api_key, security_key=security_key, base_url=base_url)
     workflow = RegisterSubjectsWorkflow(sdk)
 
-    with open(input_path, "r", encoding="utf-8") as f:
+    with open(input_path, encoding="utf-8") as f:
         raw_subjects = json.load(f)
 
     subjects = [RegisterSubjectRequest(**s) for s in raw_subjects]

@@ -45,6 +45,7 @@ def process_file_export(filepath):
     with open(filepath, "w") as f:
         f.write(content)
 
+
 def process_file_job_poller(filepath):
     if not os.path.isfile(filepath):
         print(f"Warning: File {filepath} not found.")
@@ -60,9 +61,14 @@ def process_file_job_poller(filepath):
     with open(filepath, "w") as f:
         f.write(content)
 
+
 def main():
     parser = argparse.ArgumentParser(description="Fix hardcoded docstrings in specific files.")
-    parser.add_argument("targets", nargs="*", help="Target directories or files. Defaults to specific internal files.")
+    parser.add_argument(
+        "targets",
+        nargs="*",
+        help="Target directories or files. Defaults to specific internal files.",
+    )
     args = parser.parse_args()
 
     default_export = "packages/core/src/imednet/integrations/export.py"
@@ -88,6 +94,7 @@ def main():
                     process_file_job_poller(target)
             else:
                 print(f"Warning: Target '{target}' not found or is invalid.")
+
 
 if __name__ == '__main__':
     main()

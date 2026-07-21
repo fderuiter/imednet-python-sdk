@@ -30,7 +30,7 @@ class CliRunner:
                     app(args)
                 except SystemExit as e:
                     exit_code = e.code or 0
-        except Exception as e:
+        except Exception:
             import traceback
 
             err.write(traceback.format_exc())

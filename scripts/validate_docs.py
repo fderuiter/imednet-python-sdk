@@ -1,7 +1,6 @@
 """Validation script for documentation."""
 
 import ast
-import subprocess
 import sys
 from pathlib import Path
 
@@ -40,7 +39,6 @@ def check_todos_in_init() -> bool:
 def check_packages_registered() -> bool:
     """Validate that all packages in /packages are registered in docs/conf.py and Makefile."""
     print("Checking if all packages are registered in build configuration...")
-    import re
 
     packages_dir = Path("packages")
     if not packages_dir.exists():
@@ -86,7 +84,9 @@ def check_packages_registered() -> bool:
 
 def check_package_docs() -> bool:
     """Validate that all packages have README.md, CHANGELOG.md, and are mentioned in root CHANGELOG.md."""
-    print("Checking if all packages have local documentation and are mentioned in root CHANGELOG.md...")
+    print(
+        "Checking if all packages have local documentation and are mentioned in root CHANGELOG.md..."
+    )
     packages_dir = Path("packages")
     if not packages_dir.exists():
         print(f"Warning: Path {packages_dir} not found.")
@@ -96,7 +96,7 @@ def check_package_docs() -> bool:
     if not root_changelog.exists():
         print("Error: Root CHANGELOG.md not found.")
         return True
-    
+
     root_changelog_content = root_changelog.read_text()
 
     has_errors = False

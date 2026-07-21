@@ -21,7 +21,7 @@ class NamedPolicy(RetryPolicy):
         return False
 
 
-@pytest.fixture()
+@pytest.fixture
 def async_sdk() -> AsyncImednetSDK:
     """Helper function to async sdk."""
     return AsyncImednetSDK(

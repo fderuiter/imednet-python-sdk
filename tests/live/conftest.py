@@ -3,7 +3,8 @@
 import asyncio
 import logging
 import os
-from typing import Any, AsyncIterator, Callable, Generator, Iterator
+from collections.abc import AsyncIterator, Callable, Generator, Iterator
+from typing import Any
 
 import pytest
 

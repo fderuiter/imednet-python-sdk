@@ -23,7 +23,6 @@ class Result:
 class CliRunner:
     def invoke(self, app, args):
         import io
-        import sys
         from contextlib import redirect_stderr, redirect_stdout
 
         out = io.StringIO()
@@ -36,7 +35,7 @@ class CliRunner:
                 app(args)
         except SystemExit as e:
             exit_code = e.code or 0
-        except Exception as e:
+        except Exception:
             import traceback
 
             err.write(traceback.format_exc())
@@ -66,13 +65,13 @@ def env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("IMEDNET_SECURITY_KEY", "secret")
 
 
-@pytest.fixture()
+@pytest.fixture
 def runner() -> CliRunner:
     """Helper function to runner."""
     return CliRunner()
 
 
-@pytest.fixture()
+@pytest.fixture
 def sdk(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     """Provide a mocked SDK and patch get_sdk."""
     mock_sdk = MagicMock()
@@ -838,7 +837,7 @@ def test_plugin_load_exception(monkeypatch, capsys):
     monkeypatch.setattr("importlib.metadata.entry_points", lambda **kwargs: [BrokenEntryPoint()])
     from imednet.cli import get_parser
 
-    parser = get_parser()
+    get_parser()
 
     out, err = capsys.readouterr()
     assert "Warning: Failed to load CLI plugin 'broken': Test error loading plugin" in err
