@@ -18,7 +18,7 @@ from threading import RLock
 from typing import Any
 
 from imednet.spi.models import StudyConfiguration
-from imednet.spi.utils import flatten
+from imednet.utils.serialization import flatten
 
 _DEFAULT_DB_PATH = Path(
     os.environ.get("IMEDNET_CONFIG_DB_PATH", Path.home() / ".imednet" / "config_versions.sqlite3")
