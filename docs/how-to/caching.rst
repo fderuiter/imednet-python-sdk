@@ -7,7 +7,7 @@ Endpoint Caching
 ----------------
 
 The SDK no longer maintains any stateful in-memory cache on endpoint instances.
-Every call to ``list()`` or ``async_list()`` performs a fresh API request,
+Every call to ``list()`` performs a fresh API request,
 ensuring that concurrent requests from different application contexts cannot
 contaminate each other's data.
 

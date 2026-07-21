@@ -25,7 +25,7 @@ submitting records::
     async with AsyncImednetSDK() as sdk:
         validator = SchemaValidator(sdk)
         await validator.validate_batch(study_key, records)
-        await sdk.records.async_create(study_key, records, schema=validator.schema)
+        await sdk.records.create(study_key, records, schema=validator.schema)
 
 Offline Example
 ---------------

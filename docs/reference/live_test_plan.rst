@@ -29,7 +29,7 @@ For every endpoint the ``list`` and ``get`` operations should be verified:
   ``JobsEndpoint.get`` retrieves the resulting job status.
 
 Every synchronous test should have an asynchronous counterpart using
-``AsyncImednetSDK``. For example, ``AsyncImednetSDK.studies.async_list()`` mirrors
+``AsyncImednetSDK``. For example, ``AsyncImednetSDK.studies.list()`` mirrors
 ``ImednetSDK.studies.list()`` and should verify the same behaviors.
 
 SDK Utilities
