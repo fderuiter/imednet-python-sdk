@@ -7,7 +7,6 @@ cross-study system health monitoring.
 from __future__ import annotations
 
 import os
-import sqlite3
 
 import streamlit as st
 
