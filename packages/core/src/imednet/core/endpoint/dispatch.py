@@ -34,15 +34,15 @@ class Operation(Generic[T]):
     """Protocol for an Operation that can be executed both ways."""
 
     def execute_sync(self, client: Any, parse_func: Any = None) -> T:
-        """Execute synchronously."""
+        """Execute sync."""
         raise NotImplementedError
 
     async def execute_async(self, client: Any, parse_func: Any = None) -> T:
-        """Execute asynchronously."""
+        """Execute async."""
         raise NotImplementedError
 
 
-class ExecuteOperation(Generic[P, T]):
+class execute_operation(Generic[P, T]):  # noqa: N801
     """Descriptor that dispatches an operation-returning method to sync/async execution."""
 
     def __init__(self, func: Callable[Concatenate[Any, P], Operation[T]]):
@@ -58,10 +58,10 @@ class ExecuteOperation(Generic[P, T]):
     ) -> Callable[P, Coroutine[Any, Any, T]]: ...
 
     @overload
-    def __get__(self, instance: None, owner: Any) -> ExecuteOperation[P, T]: ...
+    def __get__(self, instance: None, owner: Any) -> execute_operation[P, T]: ...
 
     def __get__(self, instance: Any, owner: Any) -> Any:
-        """Get descriptor."""
+        """Get."""
         if instance is None:
             return self
 
@@ -83,7 +83,7 @@ class ExecuteOperation(Generic[P, T]):
         return sync_wrapper
 
 
-class ExecuteList(Generic[P, T]):
+class execute_list(Generic[P, T]):  # noqa: N801
     """Descriptor that dispatches a list operation."""
 
     def __init__(self, func: Callable[Concatenate[Any, P], ListOperation[T]]):
@@ -99,10 +99,10 @@ class ExecuteList(Generic[P, T]):
     ) -> Callable[P, AsyncIterator[T]]: ...
 
     @overload
-    def __get__(self, instance: None, owner: Any) -> ExecuteList[P, T]: ...
+    def __get__(self, instance: None, owner: Any) -> execute_list[P, T]: ...
 
     def __get__(self, instance: Any, owner: Any) -> Any:
-        """Get descriptor."""
+        """Get."""
         if instance is None:
             return self
 
@@ -126,7 +126,7 @@ class ExecuteList(Generic[P, T]):
         return sync_wrapper
 
 
-class ExecuteGet(Generic[P, T]):
+class execute_get(Generic[P, T]):  # noqa: N801
     """Descriptor that dispatches a get operation."""
 
     def __init__(self, func: Callable[Concatenate[Any, P], FilterGetOperation[T]]):
@@ -142,10 +142,10 @@ class ExecuteGet(Generic[P, T]):
     ) -> Callable[P, Coroutine[Any, Any, T]]: ...
 
     @overload
-    def __get__(self, instance: None, owner: Any) -> ExecuteGet[P, T]: ...
+    def __get__(self, instance: None, owner: Any) -> execute_get[P, T]: ...
 
     def __get__(self, instance: Any, owner: Any) -> Any:
-        """Get descriptor."""
+        """Get."""
         if instance is None:
             return self
 

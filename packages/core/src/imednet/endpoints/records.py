@@ -1,6 +1,6 @@
 """Endpoint for managing records (eCRF instances) in a study."""
 
-from imednet.core.endpoint.dispatch import ExecuteOperation
+from imednet.core.endpoint.dispatch import execute_operation
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.core.endpoint.operations.record_create import RecordCreateOperation
 from imednet.core.endpoint.strategies import MappingParamProcessor
@@ -18,7 +18,7 @@ class RecordsOperationDef:
     _id_param = "recordId"
     PARAM_PROCESSOR = MappingParamProcessor({"record_data_filter": "recordDataFilter"})
 
-    @ExecuteOperation  # type: ignore
+    @execute_operation  # type: ignore
     def create(
         self,
         study_key: str,

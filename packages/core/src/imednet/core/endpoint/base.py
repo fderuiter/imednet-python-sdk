@@ -10,9 +10,9 @@ from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
 from imednet.core.endpoint.dispatch import (
     AsyncEndpointContext,
-    ExecuteGet,
-    ExecuteList,
     SyncEndpointContext,
+    execute_get,
+    execute_list,
 )
 from imednet.core.endpoint.operations import FilterGetOperation, ListOperation
 from imednet.core.endpoint.strategies import (
@@ -226,7 +226,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         if item_id is None:
             raise TypeError("Missing required argument: item_id")
 
-    @ExecuteList  # type: ignore
+    @execute_list  # type: ignore
     def list(self, study_key: str | None = None, **filters: FilterValue) -> ListOperation[T]:
         """List resources matching the given filters.
 
@@ -248,7 +248,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
             parse_func=self._resolve_parse_func(),
         )
 
-    @ExecuteGet  # type: ignore
+    @execute_get  # type: ignore
     def get(self, study_key: str | None, item_id: ItemId) -> FilterGetOperation[T]:
         """Retrieve a single resource by its ID.
 

@@ -2,13 +2,13 @@
 
 from typing import Any
 
-from imednet.core.endpoint.dispatch import ExecuteOperation
+from imednet.core.endpoint.dispatch import execute_operation
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.models.subjects import Subject
 
 
 class ListBySiteOperation:
-    """List subjects by site ID operation."""
+    """List by site operation."""
 
     def __init__(self, endpoint: Any, study_key: str, site_id: str | int):
         """Initialize."""
@@ -17,7 +17,7 @@ class ListBySiteOperation:
         self.site_id = site_id
 
     def execute_sync(self, client: Any, parse_func: Any = None) -> list[Subject]:
-        """Execute synchronously."""
+        """Execute sync."""
         return list(
             self.endpoint._list_sync(
                 client, self.endpoint.PAGINATOR_CLS, study_key=self.study_key, site_id=self.site_id
@@ -25,7 +25,7 @@ class ListBySiteOperation:
         )
 
     async def execute_async(self, client: Any, parse_func: Any = None) -> list[Subject]:
-        """Execute asynchronously."""
+        """Execute async."""
         res = []
         async for item in self.endpoint._list_async(
             client,
@@ -44,7 +44,7 @@ class SubjectsOperationDef:
     MODEL = Subject
     _id_param = "subjectKey"
 
-    @ExecuteOperation  # type: ignore
+    @execute_operation  # type: ignore
     def list_by_site(self, study_key: str, site_id: str | int) -> ListBySiteOperation:
         """List subjects by site ID."""
         return ListBySiteOperation(self, study_key, site_id)
