@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from typing import Any
 
-import pandas as pd
 import streamlit as st
 
 from imednet.spi.models import AdverseEvent, DeviceDeficiency, ProtocolDeviation, StudyConfiguration

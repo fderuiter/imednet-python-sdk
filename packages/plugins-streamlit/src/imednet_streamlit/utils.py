@@ -1,12 +1,19 @@
-from typing import Any, Sequence
+"""Utility functions for Streamlit components."""
+
+from collections.abc import Sequence
+from typing import Any
+
 import pandas as pd
+
 
 def models_to_frame(models: Sequence[Any], *, date_column: str | None = None) -> pd.DataFrame:
     """Convert a sequence of models into a pandas DataFrame."""
     if not models:
         return pd.DataFrame()
     rows = [
-        model.model_dump(mode="python", by_alias=False) if hasattr(model, "model_dump") else dict(vars(model))
+        model.model_dump(mode="python", by_alias=False)
+        if hasattr(model, "model_dump")
+        else dict(vars(model))
         for model in models
     ]
     df = pd.DataFrame(rows)
