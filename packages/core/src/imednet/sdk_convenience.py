@@ -97,9 +97,9 @@ class _ListOperation(Generic[T]):
                 """Execute the asynchronous list operation and return a list of items."""
                 _filters: dict[str, Any] = dict(filters)
                 if self.endpoint_name == "studies":
-                    res = endpoint.async_list(**_filters)
+                    res = endpoint.list(**_filters)
                 else:
-                    res = endpoint.async_list(study_key, **_filters)
+                    res = endpoint.list(study_key, **_filters)
                 return [item async for item in res] if hasattr(res, "__aiter__") else await res
 
             wrapper.__doc__ = f"Asynchronously list {self.endpoint_name}."
@@ -208,7 +208,7 @@ class AsyncSDKConvenienceMixin:
     @_async_trace_method
     async def async_get_job(self, study_key: str, batch_id: str) -> JobStatus:
         """Asynchronously get job status."""
-        return await self.jobs.async_get(study_key, batch_id)  # type: ignore
+        return await self.jobs.get(study_key, batch_id)  # type: ignore
 
     @_async_trace_method
     async def async_create_record(
@@ -220,7 +220,7 @@ class AsyncSDKConvenienceMixin:
         schema: Any = None,
     ) -> Job:
         """Asynchronously create records in the specified study."""
-        return await self.records.async_create(
+        return await self.records.create(
             study_key, records_data, email_notify=email_notify, schema=schema
         )  # type: ignore
 
@@ -239,7 +239,7 @@ class AsyncSDKConvenienceMixin:
         fetch_result = getattr(self, "_async_client", None) and getattr(
             self._async_client, "get", None
         )  # type: ignore[attr-defined]
-        return await AsyncJobPoller(self.jobs.async_get, fetch_result=fetch_result).run(
+        return await AsyncJobPoller(self.jobs.get, fetch_result=fetch_result).run(
             study_key, batch_id, interval, timeout
         )  # type: ignore
 
