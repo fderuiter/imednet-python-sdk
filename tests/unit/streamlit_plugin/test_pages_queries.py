@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import runpy
 import sys
 from pathlib import Path
 from types import ModuleType
@@ -16,7 +15,7 @@ PACKAGE_ROOT = REPO_ROOT / "packages" / "plugins-streamlit" / "src" / "imednet_s
 class _FakeContextManager:
     """Test suite for  FakeContextManager."""
 
-    def __enter__(self) -> "_FakeContextManager":
+    def __enter__(self) -> _FakeContextManager:
         """Helper function to   enter  ."""
         return self
 

@@ -320,7 +320,7 @@ def test_job_poller_fetch_result(monkeypatch: pytest.MonkeyPatch) -> None:
     # Success path
     poller = JobPoller(get_job, fetch_result=fetch_res)
     st = poller.run("ST", "1", interval=0)
-    assert getattr(st, "results") == {"data": "ok"}
+    assert st.results == {"data": "ok"}
 
     # Failure path
     def get_job_fail(study_key, batch_id):
@@ -330,7 +330,7 @@ def test_job_poller_fetch_result(monkeypatch: pytest.MonkeyPatch) -> None:
 
     poller_fail = JobPoller(get_job_fail, fetch_result=fetch_res)
     st2 = poller_fail.run("ST", "1", interval=0)
-    assert getattr(st2, "results") is None
+    assert st2.results is None
 
     # Text fallback
     class MockTextResponse:
@@ -343,12 +343,12 @@ def test_job_poller_fetch_result(monkeypatch: pytest.MonkeyPatch) -> None:
 
     poller_text = JobPoller(get_job, fetch_result=lambda url: MockTextResponse())
     st3 = poller_text.run("ST", "1", interval=0)
-    assert getattr(st3, "results") == "text data"
+    assert st3.results == "text data"
 
     # Raw string
     poller_str = JobPoller(get_job, fetch_result=lambda url: "raw string")
     st4 = poller_str.run("ST", "1", interval=0)
-    assert getattr(st4, "results") == "raw string"
+    assert st4.results == "raw string"
 
 
 @pytest.mark.asyncio
@@ -372,7 +372,7 @@ async def test_async_job_poller_fetch_result() -> None:
     # Success path
     poller = AsyncJobPoller(get_job, fetch_result=fetch_res)
     st = await poller.run("ST", "1", interval=0)
-    assert getattr(st, "results") == {"data": "ok"}
+    assert st.results == {"data": "ok"}
 
     # Failure path
     async def get_job_fail(study_key, batch_id):
@@ -382,7 +382,7 @@ async def test_async_job_poller_fetch_result() -> None:
 
     poller_fail = AsyncJobPoller(get_job_fail, fetch_result=fetch_res)
     st2 = await poller_fail.run("ST", "1", interval=0)
-    assert getattr(st2, "results") is None
+    assert st2.results is None
 
 
 @pytest.mark.asyncio

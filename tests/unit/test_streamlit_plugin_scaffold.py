@@ -155,7 +155,7 @@ class _FakePageStreamlit:
 class _FakeContextManager:
     """A no-op context manager (used for st.sidebar and column objects)."""
 
-    def __enter__(self) -> "_FakeContextManager":
+    def __enter__(self) -> _FakeContextManager:
         """Helper function to   enter  ."""
         return self
 

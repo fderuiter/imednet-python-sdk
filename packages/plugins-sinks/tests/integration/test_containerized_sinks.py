@@ -2,16 +2,12 @@
 
 import logging
 import os
-from typing import List  # noqa: UP035
 
 import pytest
 from imednet_sinks import (
     MongoDbExportSink,
-    MongoDbSinkConfig,
     Neo4jExportSink,
     Neo4jSinkConfig,
-    export_to_mongodb,
-    export_to_neo4j,
 )
 
 pytestmark = pytest.mark.skipif(
@@ -91,8 +87,6 @@ def fake_records() -> list[FakeRecord]:
 @pytest.fixture
 def mock_record_mapper(monkeypatch, fake_records):
     """TODO: Add docstring."""
-    from unittest.mock import MagicMock
-
     from imednet.integrations import export as export_mod
 
     class FakeMapper:

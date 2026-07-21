@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from imednet_workflows.uat.generator import GeneratedRecordSet, SyntheticRecordGenerator
+from imednet_workflows.uat.generator import SyntheticRecordGenerator
 from imednet_workflows.uat.inspector import StudySnapshot
 from imednet_workflows.uat.models import (
     RecordTestType,

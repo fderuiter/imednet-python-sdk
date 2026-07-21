@@ -1,7 +1,7 @@
 """Unit tests for json model normalization."""
 
 from datetime import datetime, timezone
-from typing import Any, Optional, Union
+from typing import Any
 
 from imednet.models.base import ImednetBaseModel
 
@@ -36,10 +36,10 @@ def test_json_model_normalization() -> None:
 class SampleOptionalModel(ImednetBaseModel):
     """Test suite for SampleOptionalModel."""
 
-    opt_str: Optional[str] = None
-    opt_int: Optional[int] = None
-    opt_bool: Optional[bool] = None
-    opt_datetime: Optional[datetime] = None
+    opt_str: str | None = None
+    opt_int: int | None = None
+    opt_bool: bool | None = None
+    opt_datetime: datetime | None = None
 
 
 def test_json_model_normalization_optional_fields() -> None:
@@ -67,7 +67,7 @@ def test_json_model_normalization_union_field() -> None:
     class SampleUnionModel(ImednetBaseModel):
         """Test suite for SampleUnionModel."""
 
-        union_field: Union[int, str]
+        union_field: int | str
 
     model_int = SampleUnionModel(union_field="5")
     assert model_int.union_field == "5"  # No normalization for complex Union
@@ -91,7 +91,7 @@ def test_json_model_normalization_missing_field() -> None:
     class SampleModelMissing(ImednetBaseModel):
         """Test suite for SampleModelMissing."""
 
-        opt_str: Optional[str] = None
+        opt_str: str | None = None
 
     model = SampleModelMissing.from_json({})
     assert model.opt_str is None

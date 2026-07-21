@@ -1,5 +1,3 @@
-import sys
-
 from imednet import ImednetSDK, load_config
 from imednet_workflows.uat import BulkRecordSubmissionWorkflow, GeneratedRecordSet, RecordTestType
 
@@ -18,12 +16,12 @@ def main():
             security_key=cfg.security_key,
             base_url=cfg.base_url,
         ) as sdk:
-            workflow = BulkRecordSubmissionWorkflow(
+            BulkRecordSubmissionWorkflow(
                 sdk, batch_size=500, skip_existing_subjects=True, await_registration=True
             )
 
             # Example record sets (normally produced by a generator or mapped from source data)
-            registration_set = GeneratedRecordSet(
+            GeneratedRecordSet(
                 form_key="REG",
                 form_name="Registration Form",
                 test_type=RecordTestType.REGISTER_SUBJECT,
@@ -31,7 +29,7 @@ def main():
                 subject_keys=["SUBJ_1"],
             )
 
-            data_set = GeneratedRecordSet(
+            GeneratedRecordSet(
                 form_key="VITALS",
                 form_name="Vitals Form",
                 test_type=RecordTestType.CREATE_NEW_RECORD,

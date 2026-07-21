@@ -1,10 +1,5 @@
-import json
-import os
 import sys
-import tempfile
 from pathlib import Path
-
-import pytest
 
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent / "scripts"))
 import tighten_dependencies as td

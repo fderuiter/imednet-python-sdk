@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 import sys
-from datetime import datetime, timezone
-from types import ModuleType, SimpleNamespace
+from types import ModuleType
 from unittest.mock import MagicMock
 
 import pytest
@@ -164,9 +163,8 @@ class TestExportSinkContextManager:
     def test_close_called_on_exception(self):
         """Test that close called on exception."""
         sink = _StubSink()
-        with pytest.raises(ValueError):
-            with sink:
-                raise ValueError("oops")
+        with pytest.raises(ValueError), sink:
+            raise ValueError("oops")
         # flush is NOT called on exception; close IS
         assert not sink.flushed
         assert sink.closed

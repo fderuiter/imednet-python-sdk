@@ -1,9 +1,8 @@
 """Unit tests for Airflow state provider."""
 
-import os
 import sys
 from datetime import datetime, timezone
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -93,7 +92,7 @@ def test_airflow_get_last_timestamp_db(mock_airflow):
     mock_airflow["session"].provide_session = provide_session_decorator
 
     # Needs to mock session query
-    xcom_model = mock_airflow["xcom"].XCom
+    mock_airflow["xcom"].XCom
     # Well, it's easier to mock the provide_session decorator such that it runs the func and the func works. But wait, it's defined inside the method!
     # If provide_session is mocked, it will be used as a decorator.
 
@@ -182,9 +181,8 @@ def test_airflow_transaction_error(mock_airflow):
 
     ti_mock.xcom_pull.return_value = {"last_timestamp": "2026-05-22T12:00:00+00:00"}
 
-    with pytest.raises(ValueError):
-        with provider.transaction("ST1", "recs") as tx:
-            raise ValueError("boom")
+    with pytest.raises(ValueError), provider.transaction("ST1", "recs"):
+        raise ValueError("boom")
 
     # Push should have been called with failed
     args = ti_mock.xcom_push.call_args[1]

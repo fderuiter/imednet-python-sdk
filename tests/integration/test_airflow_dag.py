@@ -11,10 +11,9 @@ def test_dag_runs(monkeypatch, tmp_path):
     """Test that dag runs."""
     pytest.importorskip("airflow")
     out_csv = tmp_path / "out.csv"
-    from airflow.models import DAG, TaskInstance  # noqa: E402, I001
-    from airflow.utils.state import State  # noqa: E402, I001
+    from airflow.models import DAG  # noqa: I001
 
-    from apache_airflow_providers_imednet import ImednetJobSensor, ImednetExportOperator  # noqa: E402, I001
+    from apache_airflow_providers_imednet import ImednetJobSensor, ImednetExportOperator
 
     sdk = MagicMock()
 
@@ -38,7 +37,7 @@ def test_dag_runs(monkeypatch, tmp_path):
     monkeypatch.setattr(ImednetExportOperator, "_get_sdk", lambda self: sdk)
     monkeypatch.setattr(ImednetJobSensor, "_get_sdk", lambda self: sdk)
 
-    with DAG("d", start_date=datetime(2024, 1, 1)) as dag:
+    with DAG("d", start_date=datetime(2024, 1, 1)):
         export = ImednetExportOperator(
             task_id="export",
             study_key="S",
@@ -50,7 +49,7 @@ def test_dag_runs(monkeypatch, tmp_path):
 
     export.execute(context={})
     wait.execute(context={})
-    with open(str(out_csv), 'r') as f:
+    with open(str(out_csv)) as f:
         body = f.read()
     assert "id" in body
     assert "id" in body

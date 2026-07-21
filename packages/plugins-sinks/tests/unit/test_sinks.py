@@ -1,25 +1,15 @@
 """TODO: Add docstring."""
 
 from datetime import datetime, timezone
-from pathlib import Path
 from types import ModuleType, SimpleNamespace
-from typing import Any, Dict  # noqa: UP035
 from unittest.mock import ANY, MagicMock
 
 import pytest
 from imednet_sinks import (
-    MongoDbExportSink,
-    Neo4jExportSink,
     Neo4jSinkConfig,
-    SnowflakeExportSink,
-    SnowflakeSinkConfig,
-    export_to_mongodb,
-    export_to_neo4j,
-    export_to_snowflake,
 )
 
 from imednet.errors import ExportBatchError, ExportConfigurationError
-from imednet.integrations import SinkConfig
 
 
 def _fake_neo4j_module(fail_connect: bool = False) -> ModuleType:

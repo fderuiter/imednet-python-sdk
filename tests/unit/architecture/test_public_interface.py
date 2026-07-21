@@ -89,15 +89,16 @@ def _is_any(tp: object) -> bool:
 
     return tp is Any
 
-
     if hasattr(method, "func"):
         return get_type_hints(method.func)  # type: ignore[arg-type]
     return get_type_hints(method)  # type: ignore[arg-type]
+
 
 def _get_type_hints_safe(method: object) -> dict[str, object]:
     if hasattr(method, "func"):
         return get_type_hints(method.func)  # type: ignore[arg-type]
     return get_type_hints(method)  # type: ignore[arg-type]
+
 
 def test_jobs_endpoint_get_no_any() -> None:
     """JobsEndpoint.get must use ItemId for item_id, not Any."""

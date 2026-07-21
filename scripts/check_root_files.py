@@ -5,17 +5,31 @@ import sys
 
 def main():
     root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    
+
     approved_files = {
-        "README.md", "AGENTS.md", "CHANGELOG.md", "CODE_OF_CONDUCT.md",
-        "CONTRIBUTING.md", ".pre-commit-config.yaml", ".release-please-manifest.json",
-        "release-please-config.json", "docker-compose.yml", "a11y_exemptions.json",
-        "imednet.postman_collection.json", ".gitignore", "pyproject.toml",
-        "poetry.lock", "uv.lock", ".env.example", ".secrets.baseline",
-        "LICENSE", "pytest.ini", "typos.toml"
+        "README.md",
+        "AGENTS.md",
+        "CHANGELOG.md",
+        "CODE_OF_CONDUCT.md",
+        "CONTRIBUTING.md",
+        ".pre-commit-config.yaml",
+        ".release-please-manifest.json",
+        "release-please-config.json",
+        "docker-compose.yml",
+        "a11y_exemptions.json",
+        "imednet.postman_collection.json",
+        ".gitignore",
+        "pyproject.toml",
+        "poetry.lock",
+        "uv.lock",
+        ".env.example",
+        ".secrets.baseline",
+        "LICENSE",
+        "pytest.ini",
+        "typos.toml",
     }
 
-    # Files that might actually be there like .env etc might trigger this, so we should be careful. 
+    # Files that might actually be there like .env etc might trigger this, so we should be careful.
     # Let's list what is there right now:
     # .env.example, .gitignore, .pre-commit-config.yaml, .release-please-manifest.json
     # .secrets.baseline, AGENTS.md, CHANGELOG.md, CODE_OF_CONDUCT.md, CONTRIBUTING.md
@@ -23,17 +37,20 @@ def main():
     # imednet.postman_collection.json, pyproject.toml, pytest.ini, release-please-config.json, typos.toml, uv.lock
 
     unapproved_found = False
-    
+
     for item in os.listdir(root_dir):
         item_path = os.path.join(root_dir, item)
         if os.path.isfile(item_path) and item not in approved_files:
-                print(f"Error: Unapproved file found in repository root: {item}")
-                unapproved_found = True
+            print(f"Error: Unapproved file found in repository root: {item}")
+            unapproved_found = True
 
     if unapproved_found:
         print("\nPlease clean up or safely relocate these outputs before committing.")
-        print("Root directory should be kept clean of transient output logs, test results, or unapproved scripts.")
+        print(
+            "Root directory should be kept clean of transient output logs, test results, or unapproved scripts."
+        )
         sys.exit(1)
+
 
 if __name__ == '__main__':
     main()

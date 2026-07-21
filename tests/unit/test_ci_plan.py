@@ -1,4 +1,3 @@
-import pytest
 from scripts.ci_plan import parse_dependency_name
 
 

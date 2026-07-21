@@ -18,7 +18,6 @@ class Result:
 class CliRunner:
     def invoke(self, app, args):
         import io
-        import sys
         from contextlib import redirect_stderr, redirect_stdout
 
         out = io.StringIO()
@@ -31,7 +30,7 @@ class CliRunner:
                 app(args)
         except SystemExit as e:
             exit_code = e.code or 0
-        except Exception as e:
+        except Exception:
             import traceback
 
             err.write(traceback.format_exc())

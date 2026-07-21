@@ -58,7 +58,7 @@ def _make_config(
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def store(tmp_path: Path) -> ConfigVersionStore:
     """Helper function to store."""
     return ConfigVersionStore(db_path=tmp_path / "test_versions.sqlite3")

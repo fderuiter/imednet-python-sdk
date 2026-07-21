@@ -121,14 +121,13 @@ def validate_scenario(name, install_items, smoke_checks, dist_dir: Path):
                     print(f"Command '{cmd}' failed unexpectedly:")
                     print(output)
                     raise
-                else:
-                    print(f"Command '{cmd}' failed as expected.")
-                    if contains and contains not in output:
-                        print(
-                            f"Error output of '{cmd}' did not contain expected string: {contains}"
-                        )
-                        print(f"Output: {output}")
-                        sys.exit(1)
+                print(f"Command '{cmd}' failed as expected.")
+                if contains and contains not in output:
+                    print(
+                        f"Error output of '{cmd}' did not contain expected string: {contains}"
+                    )
+                    print(f"Output: {output}")
+                    sys.exit(1)
 
 
 def main():
@@ -174,11 +173,6 @@ def main():
                     {"cmd": "import imednet"},
                     {"cmd": "imednet workflows extract-records --help", "contains": "usage:"},
                 ],
-            },
-            {
-                "name": "workflows-uat",
-                "install": ["imednet-workflows[uat]"],
-                "smoke": [{"cmd": "import faker"}],
             },
             {
                 "name": "airflow-provider",

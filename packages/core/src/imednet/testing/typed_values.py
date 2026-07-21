@@ -5,7 +5,7 @@ Used in tests and smoke scripts to exercise typed fields.
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional  # noqa: UP035
+from typing import Any
 
 # Maps variable type synonyms to example values.
 _TYPED_VALUES: dict[str, Any] = {

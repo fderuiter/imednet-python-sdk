@@ -1,7 +1,6 @@
 import json
 import os
 import re
-import shutil
 import time
 from datetime import datetime, timezone
 
@@ -46,7 +45,7 @@ def test_accessibility_audit(dashboard_server, page):
 
     exemptions = []
     if os.path.exists("a11y_exemptions.json"):
-        with open("a11y_exemptions.json", "r") as f:
+        with open("a11y_exemptions.json") as f:
             exemptions = json.load(f)
 
     now = datetime.now(timezone.utc)
@@ -113,7 +112,7 @@ def test_accessibility_audit(dashboard_server, page):
     if not unexempted_violations:
         vpat_path = config.vpat_path if config else "docs/VPAT.md"
         if os.path.exists(vpat_path):
-            with open(vpat_path, "r") as f:
+            with open(vpat_path) as f:
                 vpat_content = f.read()
 
             commit_hash = os.environ.get('GITHUB_SHA', 'local-audit-hash')

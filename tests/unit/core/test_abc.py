@@ -1,6 +1,6 @@
 """Unit tests for abc."""
 
-from typing import Any, Dict, Type
+from typing import Any
 
 import pytest
 
@@ -18,12 +18,12 @@ class ConcreteEndpoint(EndpointABC[MockModel]):
     """Test suite for ConcreteEndpoint."""
 
     @property
-    def PATH(self) -> str:  # noqa: N802
+    def PATH(self) -> str:
         """Helper function to PATH."""
         return "mock"
 
     @property
-    def MODEL(self) -> Type[MockModel]:  # noqa: N802
+    def MODEL(self) -> type[MockModel]:
         """Helper function to MODEL."""
         return MockModel
 
@@ -31,7 +31,7 @@ class ConcreteEndpoint(EndpointABC[MockModel]):
         """Helper function to  build path."""
         return "/".join(["mock", *(str(s) for s in segments)])
 
-    def _auto_filter(self, filters: Dict[str, Any]) -> Dict[str, Any]:
+    def _auto_filter(self, filters: dict[str, Any]) -> dict[str, Any]:
         """Helper function to  auto filter."""
         return {"auto": True, **filters}
 
@@ -46,7 +46,7 @@ def test_endpoint_abc_properties():
     """Test that endpoint abc properties."""
     endpoint = ConcreteEndpoint()
     assert endpoint.PATH == "mock"
-    assert endpoint.MODEL == MockModel
+    assert MockModel == endpoint.MODEL
     assert endpoint.requires_study_key is True
     assert endpoint._id_param == "id"
 
