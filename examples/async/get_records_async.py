@@ -26,14 +26,14 @@ async def main() -> None:
             security_key=cfg.security_key,
             base_url=cfg.base_url,
         ) as sdk:
-            studies = [s async for s in sdk.studies.async_list()]
+            studies = [s async for s in sdk.studies.list()]
             if not studies:
                 print("No studies returned from API.")
                 return
 
             for study in studies[:1]:
                 study_key = study.study_key
-                records = [r async for r in sdk.records.async_list(study_key=study_key)]
+                records = [r async for r in sdk.records.list(study_key=study_key)]
                 print(f"Records for study '{study_key}': {len(records)}")
                 for record in records[:5]:
                     print(f"- Record ID: {record.record_id}, Subject Key: {record.subject_key}")

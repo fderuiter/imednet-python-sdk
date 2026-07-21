@@ -94,7 +94,7 @@ in downstream code:
 - ``ItemId`` – ``str | int``: an endpoint item identifier.
 - ``FilterScalar`` – ``str | int | float | bool | None``: a single filter value.
 - ``FilterValue`` – union of ``FilterScalar``, operator tuples, and lists: the full
-  filter value accepted by ``list()``/``async_list()`` endpoint methods.
+  filter value accepted by ``list()`` endpoint methods.
 
 Issue reporting and triage
 --------------------------
