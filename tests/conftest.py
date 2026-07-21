@@ -1,4 +1,3 @@
-
 """Global test configuration and shared fixtures for the iMedNet SDK test suite.
 
 This module provides common fixtures for mocking network requests, managing study context,
@@ -31,6 +30,12 @@ def pytest_addoption(parser):
     parser.addoption("--run-fuzzing", action="store_true", default=False, help="run fuzzing tests")
     parser.addoption(
         "--run-performance", action="store_true", default=False, help="run performance tests"
+    )
+    parser.addoption(
+        "--update-visual-baselines",
+        action="store_true",
+        default=False,
+        help="Update visual baseline images",
     )
 
 
