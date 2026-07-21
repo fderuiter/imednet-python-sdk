@@ -3,12 +3,17 @@
 from __future__ import annotations
 
 import warnings
-from collections.abc import AsyncIterator, Callable, Iterator
+from collections.abc import Callable
 from typing import Any, TypeVar
 
 from imednet.constants import DEFAULT_PAGE_SIZE
 from imednet.core.endpoint.abc import EndpointABC
-from imednet.core.endpoint.dispatch import SyncEndpointContext, AsyncEndpointContext, execute_list, execute_get, execute_operation
+from imednet.core.endpoint.dispatch import (
+    AsyncEndpointContext,
+    ExecuteGet,
+    ExecuteList,
+    SyncEndpointContext,
+)
 from imednet.core.endpoint.operations import FilterGetOperation, ListOperation
 from imednet.core.endpoint.strategies import (
     DefaultParamProcessor,
@@ -221,11 +226,8 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         if item_id is None:
             raise TypeError("Missing required argument: item_id")
 
-
-    @execute_list  # type: ignore
-    def list(
-        self, study_key: str | None = None, **filters: FilterValue
-    ) -> ListOperation[T]:
+    @ExecuteList  # type: ignore
+    def list(self, study_key: str | None = None, **filters: FilterValue) -> ListOperation[T]:
         """List resources matching the given filters.
 
         Args:
@@ -238,6 +240,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         _filters: dict[str, Any] = dict(filters)
         state = self._prepare_list_request(study_key, None, _filters)
         from imednet.core.endpoint.operations.list import ListOperation
+
         return ListOperation[T](
             path=state.path,
             params=state.params,
@@ -245,7 +248,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
             parse_func=self._resolve_parse_func(),
         )
 
-    @execute_get  # type: ignore
+    @ExecuteGet  # type: ignore
     def get(self, study_key: str | None, item_id: ItemId) -> FilterGetOperation[T]:
         """Retrieve a single resource by its ID.
 
@@ -258,9 +261,10 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         """
         self._require_item_id(item_id)
         filters: dict[str, Any] = {self._id_param: item_id}
-        
+
         def _list_sync(*a: Any, **k: Any) -> list[T]:
             from imednet.core.endpoint.operations.list import ListOperation
+
             state = self._prepare_list_request(k.get("study_key"), None, k)
             op = ListOperation[T](
                 path=state.path,
@@ -272,6 +276,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
 
         async def _list_async(*a: Any, **k: Any) -> list[T]:
             from imednet.core.endpoint.operations.list import ListOperation
+
             state = self._prepare_list_request(k.get("study_key"), None, k)
             op = ListOperation[T](
                 path=state.path,
@@ -280,11 +285,14 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
                 parse_func=self._resolve_parse_func(),
             )
             res = []
-            async for item in op.execute_async(self._require_async_client(), self.ASYNC_PAGINATOR_CLS):
+            async for item in op.execute_async(
+                self._require_async_client(), self.ASYNC_PAGINATOR_CLS
+            ):
                 res.append(item)
             return res
 
         from imednet.core.endpoint.operations.filter_get import FilterGetOperation
+
         return FilterGetOperation[T](
             study_key=study_key,
             item_id=item_id,

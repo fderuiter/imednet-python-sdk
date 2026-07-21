@@ -77,6 +77,7 @@ class RecordCreateOperation(Generic[T]):
     def _process_response(self, response: Any, parse_func: Callable[[Any], T] | None = None) -> T:
         """Process the raw HTTP response."""
         from imednet.models.jobs import Job
+
         return (parse_func or Job.from_json)(response.json())  # type: ignore
 
     def execute_sync(
