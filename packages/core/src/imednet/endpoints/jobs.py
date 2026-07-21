@@ -1,6 +1,6 @@
 """Endpoint for checking job status in a study."""
 
-from imednet.core.endpoint.dispatch import ExecuteOperation
+from imednet.core.endpoint.dispatch import execute_operation
 from imednet.core.endpoint.edc_mixin import EdcAsyncListGetEndpoint, EdcSyncListGetEndpoint
 from imednet.core.endpoint.operations.get import PathGetOperation
 from imednet.core.paginator import AsyncJsonListPaginator, JsonListPaginator
@@ -16,7 +16,7 @@ class JobsOperationDef:
     PAGINATOR_CLS = JsonListPaginator
     ASYNC_PAGINATOR_CLS = AsyncJsonListPaginator
 
-    @ExecuteOperation  # type: ignore
+    @execute_operation  # type: ignore
     def get(self, study_key: str | None, item_id: ItemId) -> PathGetOperation[JobStatus]:
         """Get a single Job by ID."""
         self._require_item_id(item_id)  # type: ignore

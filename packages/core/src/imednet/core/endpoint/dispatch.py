@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import functools
+
 from collections.abc import AsyncIterator, Callable, Coroutine, Iterator
 from typing import Any, Concatenate, Generic, TypeVar, overload
 
@@ -70,12 +72,14 @@ class execute_operation(Generic[P, T]):  # noqa: N801
 
         if is_async:
 
+            @functools.wraps(func)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
                 op = func(instance, *args, **kwargs)
                 return await op.execute_async(instance._require_async_client())  # type: ignore
 
             return async_wrapper
 
+        @functools.wraps(func)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
             op = func(instance, *args, **kwargs)
             return op.execute_sync(instance._require_sync_client())  # type: ignore
@@ -111,6 +115,7 @@ class execute_list(Generic[P, T]):  # noqa: N801
 
         if is_async:
 
+            @functools.wraps(func)
             def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> AsyncIterator[T]:
                 op = func(instance, *args, **kwargs)
                 return op.execute_async(
@@ -119,6 +124,7 @@ class execute_list(Generic[P, T]):  # noqa: N801
 
             return async_wrapper
 
+        @functools.wraps(func)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Iterator[T]:
             op = func(instance, *args, **kwargs)
             return op.execute_sync(instance._require_sync_client(), instance.PAGINATOR_CLS)  # type: ignore
@@ -154,6 +160,7 @@ class execute_get(Generic[P, T]):  # noqa: N801
 
         if is_async:
 
+            @functools.wraps(func)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
                 op = func(instance, *args, **kwargs)
                 return await op.execute_async(
@@ -162,6 +169,7 @@ class execute_get(Generic[P, T]):  # noqa: N801
 
             return async_wrapper
 
+        @functools.wraps(func)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
             op = func(instance, *args, **kwargs)
             return op.execute_sync(instance._require_sync_client(), instance.PAGINATOR_CLS)  # type: ignore

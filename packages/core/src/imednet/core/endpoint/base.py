@@ -248,6 +248,38 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
             parse_func=self._resolve_parse_func(),
         )
 
+
+    def _list_sync(self, *a: Any, **k: Any) -> list[T]:
+        from imednet.core.endpoint.operations.list import ListOperation
+
+        study_key = k.pop("study_key", None)
+        state = self._prepare_list_request(study_key, None, k)
+        op = ListOperation[T](
+            path=state.path,
+            params=state.params,
+            page_size=self.PAGE_SIZE,
+            parse_func=self._resolve_parse_func(),
+        )
+        return list(op.execute_sync(self._require_sync_client(), self.PAGINATOR_CLS))
+
+    async def _list_async(self, *a: Any, **k: Any) -> list[T]:
+        from imednet.core.endpoint.operations.list import ListOperation
+
+        study_key = k.pop("study_key", None)
+        state = self._prepare_list_request(study_key, None, k)
+        op = ListOperation[T](
+            path=state.path,
+            params=state.params,
+            page_size=self.PAGE_SIZE,
+            parse_func=self._resolve_parse_func(),
+        )
+        res = []
+        async for item in op.execute_async(
+            self._require_async_client(), self.ASYNC_PAGINATOR_CLS
+        ):
+            res.append(item)
+        return res
+
     @execute_get  # type: ignore
     def get(self, study_key: str | None, item_id: ItemId) -> FilterGetOperation[T]:
         """Retrieve a single resource by its ID.
@@ -262,34 +294,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         self._require_item_id(item_id)
         filters: dict[str, Any] = {self._id_param: item_id}
 
-        def _list_sync(*a: Any, **k: Any) -> list[T]:
-            from imednet.core.endpoint.operations.list import ListOperation
 
-            state = self._prepare_list_request(k.get("study_key"), None, k)
-            op = ListOperation[T](
-                path=state.path,
-                params=state.params,
-                page_size=self.PAGE_SIZE,
-                parse_func=self._resolve_parse_func(),
-            )
-            return list(op.execute_sync(self._require_sync_client(), self.PAGINATOR_CLS))
-
-        async def _list_async(*a: Any, **k: Any) -> list[T]:
-            from imednet.core.endpoint.operations.list import ListOperation
-
-            state = self._prepare_list_request(k.get("study_key"), None, k)
-            op = ListOperation[T](
-                path=state.path,
-                params=state.params,
-                page_size=self.PAGE_SIZE,
-                parse_func=self._resolve_parse_func(),
-            )
-            res = []
-            async for item in op.execute_async(
-                self._require_async_client(), self.ASYNC_PAGINATOR_CLS
-            ):
-                res.append(item)
-            return res
 
         from imednet.core.endpoint.operations.filter_get import FilterGetOperation
 
@@ -298,8 +303,8 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
             item_id=item_id,
             filters=filters,
             validate_func=self._validate_get_result,
-            list_sync_func=_list_sync,
-            list_async_func=_list_async,
+            list_sync_func=self._list_sync,
+            list_async_func=self._list_async,
         )
 
 

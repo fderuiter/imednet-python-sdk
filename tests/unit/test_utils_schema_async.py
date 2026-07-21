@@ -27,7 +27,7 @@ async def test_async_schema_cache_refresh() -> None:
         """Helper function to mock async list."""
         yield var
 
-    variables.async_list = MagicMock(side_effect=mock_async_list)
+    variables.list = MagicMock(side_effect=mock_async_list)
 
     sdk = MagicMock()
     sdk.forms = forms
@@ -38,7 +38,7 @@ async def test_async_schema_cache_refresh() -> None:
 
     assert validator.schema.form_key_from_id(1) == "F1"
     assert validator.schema.variables_for_form("F1")["age"] is var
-    variables.async_list.assert_called_once_with(study_key="ST")
+    variables.list.assert_called_once_with(study_key="ST")
 
 
 @pytest.mark.asyncio

@@ -90,27 +90,36 @@ def _is_any(tp: object) -> bool:
     return tp is Any
 
 
+    if hasattr(method, "func"):
+        return get_type_hints(method.func)  # type: ignore[arg-type]
+    return get_type_hints(method)  # type: ignore[arg-type]
+
+def _get_type_hints_safe(method: object) -> dict[str, object]:
+    if hasattr(method, "func"):
+        return get_type_hints(method.func)  # type: ignore[arg-type]
+    return get_type_hints(method)  # type: ignore[arg-type]
+
 def test_jobs_endpoint_get_no_any() -> None:
     """JobsEndpoint.get must use ItemId for item_id, not Any."""
     from imednet.endpoints.jobs import JobsEndpoint
 
-    hints = get_type_hints(JobsEndpoint.get)
+    hints = _get_type_hints_safe(JobsEndpoint.get)
     assert not _is_any(hints.get("item_id")), "JobsEndpoint.get: item_id must not be typed as Any"
 
 
 def test_async_jobs_endpoint_get_no_any() -> None:
-    """AsyncJobsEndpoint.async_get must use ItemId for item_id, not Any."""
+    """AsyncJobsEndpoint.get must use ItemId for item_id, not Any."""
     from imednet.endpoints.jobs import AsyncJobsEndpoint
 
-    hints = get_type_hints(AsyncJobsEndpoint.async_get)
+    hints = _get_type_hints_safe(AsyncJobsEndpoint.get)
     assert not _is_any(hints.get("item_id")), (
-        "AsyncJobsEndpoint.async_get: item_id must not be typed as Any"
+        "AsyncJobsEndpoint.get: item_id must not be typed as Any"
     )
 
 
 def _get_kwargs_type(method: object, param_name: str = "filters") -> object:
     """Return the **kwargs type hint for *param_name*, or None if absent."""
-    hints = get_type_hints(method)  # type: ignore[arg-type]
+    hints = _get_type_hints_safe(method)  # type: ignore[arg-type]
     # get_type_hints stores **kwargs under the parameter's actual name
     return hints.get(param_name)
 
@@ -125,19 +134,19 @@ def test_sync_list_get_endpoint_list_uses_filter_value() -> None:
 
 
 def test_async_list_get_endpoint_async_list_uses_filter_value() -> None:
-    """AsyncListGetEndpoint.async_list must use FilterValue for **filters, not Any."""
+    """AsyncListGetEndpoint.list must use FilterValue for **filters, not Any."""
     from imednet.core.endpoint.base import AsyncListGetEndpoint
 
-    tp = _get_kwargs_type(AsyncListGetEndpoint.async_list, "filters")
-    assert tp is not None, "AsyncListGetEndpoint.async_list must annotate **filters"
-    assert not _is_any(tp), "AsyncListGetEndpoint.async_list: **filters must not be typed as Any"
+    tp = _get_kwargs_type(AsyncListGetEndpoint.list, "filters")
+    assert tp is not None, "AsyncListGetEndpoint.list must annotate **filters"
+    assert not _is_any(tp), "AsyncListGetEndpoint.list: **filters must not be typed as Any"
 
 
 def test_records_endpoint_create_no_bare_dict_any() -> None:
     """RecordsEndpoint.create must annotate records_data with JsonDict, not Dict[str, Any]."""
     from imednet.endpoints.records import RecordsEndpoint
 
-    hints = get_type_hints(RecordsEndpoint.create)
+    hints = _get_type_hints_safe(RecordsEndpoint.create)
     records_data_type = hints.get("records_data")
     assert records_data_type is not None, "RecordsEndpoint.create must annotate records_data"
     assert not _is_any(records_data_type), (

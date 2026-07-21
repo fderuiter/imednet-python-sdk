@@ -355,8 +355,8 @@ async def test_base_schema_cache_async_refresh() -> None:
         """Helper function to mock async list."""
         yield var
 
-    variables.async_list = MagicMock(side_effect=mock_async_list)
+    variables.list = MagicMock(side_effect=mock_async_list)
 
     await cache.refresh(forms, variables, "STUDY")
-    variables.async_list.assert_called_once_with(study_key="STUDY")
+    variables.list.assert_called_once_with(study_key="STUDY")
     assert "F1" in cache.forms

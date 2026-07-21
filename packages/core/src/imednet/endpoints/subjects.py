@@ -26,15 +26,12 @@ class ListBySiteOperation:
 
     async def execute_async(self, client: Any, parse_func: Any = None) -> list[Subject]:
         """Execute async."""
-        res = []
-        async for item in self.endpoint._list_async(
+        return await self.endpoint._list_async(
             client,
             self.endpoint.ASYNC_PAGINATOR_CLS,
             study_key=self.study_key,
             site_id=self.site_id,
-        ):
-            res.append(item)
-        return res
+        )
 
 
 class SubjectsOperationDef:

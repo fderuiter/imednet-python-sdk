@@ -80,7 +80,7 @@ class TestBaseEndpoint:
         ep = MockListGetEndpoint(client, context)
         signature = inspect.signature(ep.get)
 
-        assert list(signature.parameters.keys()) == ["study_key", "item_id"]
+        assert list(signature.parameters.keys()) == ["self", "study_key", "item_id"]
 
     def test_get_requires_item_id(self, client, context):
         """Test that get requires item id."""
