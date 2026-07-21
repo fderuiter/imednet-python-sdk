@@ -1,6 +1,7 @@
 """Unit tests for sdk entrypoint."""
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import pytest
 
@@ -34,7 +35,10 @@ class _FakeEntryPoint:
     """Minimal importlib.metadata.EntryPoint stand-in for plugin loader tests."""
 
     def __init__(
-        self, loader: Callable[[], Any], value: str = "tests.fake_plugin:Workflows", name: str = "fake_workflow"
+        self,
+        loader: Callable[[], Any],
+        value: str = "tests.fake_plugin:Workflows",
+        name: str = "fake_workflow",
     ) -> None:
         """Initialize the test object."""
         self._loader = loader
@@ -143,13 +147,18 @@ def test_sdk_workflows_multiple_plugins_raises_import_error(monkeypatch) -> None
         sdk_mod,
         "entry_points",
         lambda *, group, name=None: (
-            [_FakeEntryPoint(lambda: object(), name="my_workflow"), _FakeEntryPoint(lambda: object(), name="my_workflow")]
+            [
+                _FakeEntryPoint(lambda: object(), name="my_workflow"),
+                _FakeEntryPoint(lambda: object(), name="my_workflow"),
+            ]
             if group == "imednet.workflows"
             else []
         ),
     )
 
-    with pytest.raises(PluginLoadError, match="Multiple workflows registered under the name 'my_workflow'"):
+    with pytest.raises(
+        PluginLoadError, match="Multiple workflows registered under the name 'my_workflow'"
+    ):
         _create_sdk()
 
 
@@ -382,8 +391,6 @@ def test_poll_job_convenience_sync(monkeypatch) -> None:
             """Helper function to run."""
             calls["run"] = (study_key, batch_id, interval, timeout)
             return "JOBOBJ"
-
-    import imednet.sdk_convenience
 
     monkeypatch.setattr("imednet.utils.job_poller.JobPoller", FakePoller)
 

@@ -1,10 +1,8 @@
 import fcntl
 import json
 import logging
-import os
 import time
 from pathlib import Path
-from typing import Dict
 
 import pyarrow as pa
 import pytest
@@ -45,7 +43,7 @@ def generate_records(count: int, cache: SchemaCache) -> list:
     return records
 
 
-def run_benchmarks(record_count: int = 10000) -> Dict[str, float]:
+def run_benchmarks(record_count: int = 10000) -> dict[str, float]:
     results = {}
     cache = SchemaCache()
 
@@ -66,7 +64,7 @@ def run_benchmarks(record_count: int = 10000) -> Dict[str, float]:
     print(f"Mongo conversion (serialization) for {record_count} records in {elapsed:.4f}s")
 
     start = time.time()
-    table = _records_to_arrow_table(records)
+    _records_to_arrow_table(records)
     elapsed = time.time() - start
     results["snowflake_arrow_conversion_latency"] = elapsed
     print(f"Snowflake Arrow conversion for {record_count} records in {elapsed:.4f}s")

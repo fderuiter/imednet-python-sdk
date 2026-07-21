@@ -133,10 +133,8 @@ def test_workflow_run_with_custom_spec(mock_sdk, snapshot):
 
     with patch.object(workflow, "build_spec") as mock_build_spec:
         with patch.object(workflow, "generate", return_value=[]) as mock_generate:
-            with patch.object(
-                workflow, "submit", return_value=MagicMock(spec=SubmissionResult)
-            ) as mock_submit:
-                with patch.object(workflow, "monitor", return_value=MagicMock()) as mock_monitor:
+            with patch.object(workflow, "submit", return_value=MagicMock(spec=SubmissionResult)):
+                with patch.object(workflow, "monitor", return_value=MagicMock()):
                     workflow.run("TEST_STUDY", spec=custom_spec)
                     mock_build_spec.assert_not_called()
                     mock_generate.assert_called_once()

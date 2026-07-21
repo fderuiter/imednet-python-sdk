@@ -12,11 +12,11 @@ class _ColumnContext:
 
     def __enter__(self) -> None:
         """Helper function to   enter  ."""
-        return None
+        return
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         """Helper function to   exit  ."""
-        return None
+        return
 
 
 class _FakeMetricStreamlit:

@@ -17,7 +17,6 @@ class Result:
 class CliRunner:
     def invoke(self, app, args):
         import io
-        import sys
         from contextlib import redirect_stderr, redirect_stdout
 
         out = io.StringIO()
@@ -30,7 +29,7 @@ class CliRunner:
                 app(args)
         except SystemExit as e:
             exit_code = e.code or 0
-        except Exception as e:
+        except Exception:
             import traceback
 
             err.write(traceback.format_exc())
@@ -43,13 +42,13 @@ class CliRunner:
 import imednet.cli as cli
 
 
-@pytest.fixture()
+@pytest.fixture
 def runner() -> CliRunner:
     """Helper function to runner."""
     return CliRunner()
 
 
-@pytest.fixture()
+@pytest.fixture
 def sdk(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     """Helper function to sdk."""
     mock_sdk = MagicMock()
@@ -70,7 +69,7 @@ def test_records_list_output_csv_injection_prevention(
     result = runner.invoke(cli.app, ["records", "list", "STUDY", "--output", "csv"])
     assert result.exit_code == 0
 
-    with open("records.csv", "r", encoding="utf-8") as f:
+    with open("records.csv", encoding="utf-8") as f:
         content = f.read()
         print(f"CSV Content: {content}")
 

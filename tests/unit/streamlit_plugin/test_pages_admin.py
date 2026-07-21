@@ -1,5 +1,3 @@
-import imednet_streamlit.auth as auth
-
 """Unit tests for pages admin."""
 
 import importlib.util

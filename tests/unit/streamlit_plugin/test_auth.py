@@ -14,11 +14,11 @@ class _SidebarContext:
 
     def __enter__(self) -> None:
         """Helper function to   enter  ."""
-        return None
+        return
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         """Helper function to   exit  ."""
-        return None
+        return
 
 
 class _FakeCacheData:
@@ -238,7 +238,6 @@ def test_get_study_key_raises_when_missing(monkeypatch: pytest.MonkeyPatch) -> N
         auth.get_study_key()
 
 
-import os
 import sqlite3
 
 

@@ -52,7 +52,7 @@ class _FakeDatasetModule:
         self.format = _FakeParquetFormat()
         self.should_fail = False
 
-    def ParquetFileFormat(self) -> _FakeParquetFormat:  # noqa: N802
+    def ParquetFileFormat(self) -> _FakeParquetFormat:
         """Helper function to ParquetFileFormat."""
         return self.format
 

@@ -126,9 +126,6 @@ module = [
 ignore_missing_imports = true
 
 [tool.ruff.lint.per-file-ignores]
-"**/spi/**/*.py" = ["F401", "F841"]
-"**/tests/**/*.py" = ["F401", "F841"]
-"**/testing/**/*.py" = ["F401", "F841"]
 "packages/core/**/*.py" = ["SLF001"]
 "packages/core/src/imednet/integrations/export.py" = ["D101", "D102", "D107", "S608"]
 "packages/core/src/imednet/integrations/parquet.py" = ["S608"]
@@ -136,7 +133,7 @@ ignore_missing_imports = true
 "packages/core/src/imednet/utils/job_poller.py" = ["D107"]
 "packages/plugins-workflows/src/imednet_workflows/duckdb_centralizer.py" = ["S608"]
 "packages/plugins-workflows/src/imednet_workflows/extraction_engine.py" = ["S307"]
-"tests/**/*.py" = ["SLF001", "S", "D", "F401", "F841"]
+"tests/**/*.py" = ["SLF001", "S", "D"]
 "scripts/**/*.py" = ["SLF001", "S", "D"]
 "examples/**/*.py" = ["SLF001", "S", "D"]
 "final_automate.py" = ["D"]

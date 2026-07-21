@@ -14,7 +14,7 @@ def get_code_symbols(search_dirs):
         for root, _, files in os.walk(directory):
             for file in files:
                 if file.endswith(".py"):
-                    with open(os.path.join(root, file), "r", encoding="utf-8") as f:
+                    with open(os.path.join(root, file), encoding="utf-8") as f:
                         try:
                             tree = ast.parse(f.read())
                             for node in ast.walk(tree):
@@ -59,7 +59,7 @@ def main():
     docs_dir = os.path.join(base_dir, "docs", "diagrams")
     registry_path = os.path.join(docs_dir, "registry.json")
 
-    with open(registry_path, "r") as f:
+    with open(registry_path) as f:
         registry = json.load(f) or {}
 
     search_dirs = [
@@ -86,7 +86,7 @@ def main():
         # Pass 1: Extract all explicit labels
         # node_id -> label
         nodes = {}
-        with open(filepath, "r") as f:
+        with open(filepath) as f:
             for line in f:
                 line = line.strip()
                 if line.startswith("participant"):
