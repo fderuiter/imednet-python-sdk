@@ -54,7 +54,7 @@ class ImednetJobSensor(BaseSensorOperator):
 
     def _get_sdk(self) -> ImednetSDK:
         """Get the Imednet SDK client."""
-        return ImednetHook(self.imednet_conn_id).get_conn()
+        return ImednetHook(self.imednet_conn_id).get_sdk_client()
 
     def poke(self, context: Context) -> bool:
         """Check the status of the job."""

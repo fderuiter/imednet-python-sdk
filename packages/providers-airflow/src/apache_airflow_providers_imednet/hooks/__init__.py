@@ -133,6 +133,13 @@ class ImednetHook(BaseHook):
 
     def get_conn(self) -> ImednetSDK:  # type: ignore[override]
         """Backward compatible alias for :meth:`get_sdk_client`."""
+        import warnings
+        warnings.warn(
+            "ImednetHook.get_conn is deprecated and will be removed in a future release. "
+            "Please use ImednetHook.get_sdk_client() instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
         return self.get_sdk_client()
 
     def describe_connection(self) -> dict[str, PrimitiveContainer]:

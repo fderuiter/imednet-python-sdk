@@ -137,14 +137,14 @@ def test_job_sensor(monkeypatch):
     sdk = MagicMock()
     job = MagicMock(state="COMPLETED", is_failed=False, is_terminal=True, is_successful=True)
     sdk.jobs.get.return_value = job
-    hook_inst = MagicMock(get_conn=MagicMock(return_value=sdk))
+    hook_inst = MagicMock(get_sdk_client=MagicMock(return_value=sdk))
     monkeypatch.setattr(sensors, "ImednetHook", MagicMock(return_value=hook_inst))
 
     sensor = sensors.ImednetJobSensor(task_id="t", study_key="S", batch_id="B")
     assert sensor.poke({}) is True
     sdk.jobs.get.assert_called_once_with("S", "B")
     sensors.ImednetHook.assert_called_once_with("imednet_default")
-    hook_inst.get_conn.assert_called_once_with()
+    hook_inst.get_sdk_client.assert_called_once_with()
 
     job.state = "FAILED"
     job.is_failed = True
