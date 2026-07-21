@@ -77,7 +77,7 @@ if st.session_state["high_contrast"]:
         unsafe_allow_html=True,
     )
 
-from imednet.spi.utils import redact_sensitive_text
+from imednet.utils.url import redact_sensitive_text
 
 original_st_error = st.error
 original_st_exception = st.exception
