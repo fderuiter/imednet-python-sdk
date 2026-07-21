@@ -35,6 +35,13 @@ class SinksNamespace:
         return export_to_mongodb
 
     @property
+    def MongoDbSinkConfig(self) -> Any:
+        """Configuration class for MongoDB sinks."""
+        from .document import MongoDbSinkConfig
+
+        return MongoDbSinkConfig
+
+    @property
     def MongoDbExportSink(self) -> Any:
         """Sink class for exporting records to MongoDB."""
         from .document import MongoDbExportSink
