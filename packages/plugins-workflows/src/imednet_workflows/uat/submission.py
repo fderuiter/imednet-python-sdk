@@ -11,7 +11,7 @@ from pydantic import Field
 
 from imednet.spi.facade import ImednetFacade
 from imednet.spi.models import ImednetBaseModel, Job
-from imednet.spi.utils import JobPoller
+from imednet.utils.job_poller import JobPoller
 
 from .generator import GeneratedRecordSet
 from .models import RecordTestType
@@ -214,7 +214,7 @@ class BulkRecordSubmissionWorkflow:
             if not batch.job.batch_id:
                 continue
 
-            from imednet.spi.utils import JobFailedError, JobTimeoutError
+            from imednet.utils.job_poller import JobFailedError, JobTimeoutError
 
             try:
                 status = poller.run(
