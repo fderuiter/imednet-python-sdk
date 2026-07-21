@@ -14,6 +14,7 @@ from threading import RLock
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from imednet.spi.models import TriageAnnotation, TriageHistoryEntry, TriageItem, TriageStatus
+from imednet.spi.utils import sqlite_connection
 
 _SAFE_SQL_IDENTIFIER = re.compile(r"^[A-Za-z0-9._:-]+$")
 _SENSITIVE_QUERY_KEYS = {"api_key", "password", "secret", "security_key", "token"}
@@ -57,21 +58,18 @@ class TriageStore:
     def _connection(self) -> Iterator[sqlite3.Connection]:
         """Context manager for a configured SQLite connection."""
         try:
-            conn = sqlite3.connect(self.db_path, timeout=self._timeout)
+            with sqlite_connection(
+                self.db_path,
+                timeout=self._timeout,
+                busy_timeout_ms=_SQLITE_BUSY_TIMEOUT_MS,
+                foreign_keys=True,
+            ) as conn:
+                yield conn
         except sqlite3.Error as exc:
             raise sqlite3.OperationalError(
                 f"Unable to open triage store at {self._redact_sqlite_target(str(self.db_path))}: "
                 f"{self._redact_error_text(str(exc))}"
             ) from exc
-        conn.row_factory = sqlite3.Row
-        conn.execute(f"PRAGMA busy_timeout = {_SQLITE_BUSY_TIMEOUT_MS};")  # nosem
-        conn.execute("PRAGMA journal_mode=WAL;")
-        conn.execute("PRAGMA synchronous=NORMAL;")
-        conn.execute("PRAGMA foreign_keys=ON;")
-        try:
-            yield conn
-        finally:
-            conn.close()
 
     def _initialize_schema(self) -> None:
         """Create database tables and indexes if they do not exist."""

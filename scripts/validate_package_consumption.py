@@ -123,9 +123,7 @@ def validate_scenario(name, install_items, smoke_checks, dist_dir: Path):
                     raise
                 print(f"Command '{cmd}' failed as expected.")
                 if contains and contains not in output:
-                    print(
-                        f"Error output of '{cmd}' did not contain expected string: {contains}"
-                    )
+                    print(f"Error output of '{cmd}' did not contain expected string: {contains}")
                     print(f"Output: {output}")
                     sys.exit(1)
 
