@@ -167,6 +167,7 @@ dependencies = [
     "types-requests",
     "pydantic",
     "click>=8.3.3",
+    "pylint>=3.0.0",
     "imednet @ {root:uri}/packages/core",
     "imednet-workflows @ {root:uri}/packages/plugins-workflows",
     "imednet-streamlit @ {root:uri}/packages/plugins-streamlit",
@@ -182,6 +183,7 @@ typos-check = "typos {args:packages}"
 semgrep-check = "semgrep scan --config p/security-audit --error {args:packages}"
 audit = "pip-audit -s osv --timeout 60"
 secrets = "detect-secrets-hook --baseline .secrets.baseline {args:packages}"
+pylint-sim = "pylint --disable=all --enable=similarities --min-similarity-lines=20 --ignore-paths='.*/tests/.*,.*/docs/.*,.*/scripts/.*,.*/models/.*,tests/.*,docs/.*,scripts/.*,.*\\.json$' --ignore-patterns='.*monitor.*,.*integrations.*,.*sinks.*,.*testing.*' {args:packages}"
 all = [
     "fmt",
     "ruff-check",
@@ -189,7 +191,8 @@ all = [
     "typos-check",
     "semgrep-check",
     "audit",
-    "secrets"
+    "secrets",
+    "pylint-sim"
 ]
 
 [tool.uv.workspace]

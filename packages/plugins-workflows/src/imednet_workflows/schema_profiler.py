@@ -240,12 +240,15 @@ def _render_value(value: Any) -> str:
     return str(value)
 
 
+from imednet.spi.utils import is_boolean_token
+
+
 def _is_boolean_value(value: Any) -> bool:
     """Return True if the value can be interpreted as a boolean."""
     if isinstance(value, bool):
         return True
     if isinstance(value, str):
-        return value.strip().lower() in {"true", "false", "yes", "no"}
+        return is_boolean_token(value)
     return False
 
 

@@ -11,6 +11,7 @@ from imednet.utils.job_poller import (
     JobTimeoutError,
     evaluate_job_state,
 )
+from imednet.utils.secrets import redact_sensitive_payload
 from imednet.utils.serialization import flatten
 from imednet.utils.url import redact_sensitive_text
 from imednet.utils.validators import is_boolean_token, is_missing_value, parse_bool
@@ -29,5 +30,6 @@ __all__ = [
     "is_boolean_token",
     "is_missing_value",
     "parse_bool",
+    "redact_sensitive_payload",
     "redact_sensitive_text",
 ]

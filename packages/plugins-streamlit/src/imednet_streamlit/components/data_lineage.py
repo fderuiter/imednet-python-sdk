@@ -10,44 +10,7 @@ from typing import Any
 
 import pandas as pd
 
-_SENSITIVE_PATTERNS = frozenset(
-    {
-        "password",
-        "token",
-        "secret",
-        "credential",
-        "api_key",
-        "apikey",
-        "auth_key",
-        "access_key",
-        "security_key",
-        "private_key",
-        "client_secret",
-    }
-)
-_REDACTION_MARKER = "***REDACTED***"
-
-
-def redact_sensitive_payload(data: Any) -> Any:
-    """Return *data* with sensitive key values redacted."""
-    if isinstance(data, dict):
-        redacted: dict[str, Any] = {}
-        for key, value in data.items():
-            key_str = str(key)
-            key_lower = key_str.lower()
-            if any(pattern in key_lower for pattern in _SENSITIVE_PATTERNS):
-                redacted[key_str] = _REDACTION_MARKER
-            else:
-                redacted[key_str] = redact_sensitive_payload(value)
-        return redacted
-
-    if isinstance(data, list):
-        return [redact_sensitive_payload(item) for item in data]
-
-    if isinstance(data, tuple):
-        return tuple(redact_sensitive_payload(item) for item in data)
-
-    return data
+_REDACTION_MARKER = "***"
 
 
 def render_lineage_panes(
