@@ -74,14 +74,15 @@ class RecordCreateOperation(Generic[T]):
                 headers[HEADER_EMAIL_NOTIFY] = str(self.email_notify).lower()
         return headers
 
-    def _process_response(self, response: Any, parse_func: Callable[[Any], T]) -> T:
+    def _process_response(self, response: Any, parse_func: Callable[[Any], T] | None = None) -> T:
         """Process the raw HTTP response."""
-        return parse_func(response.json())
+        from imednet.models.jobs import Job
+        return (parse_func or Job.from_json)(response.json())  # type: ignore
 
     def execute_sync(
         self,
         client: RequesterProtocol,
-        parse_func: Callable[[Any], T],
+        parse_func: Callable[[Any], T] | None = None,
     ) -> T:
         """Execute synchronous creation request.
 
@@ -102,7 +103,7 @@ class RecordCreateOperation(Generic[T]):
     async def execute_async(
         self,
         client: AsyncRequesterProtocol,
-        parse_func: Callable[[Any], T],
+        parse_func: Callable[[Any], T] | None = None,
     ) -> T:
         """Execute asynchronous creation request.
 

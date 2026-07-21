@@ -60,7 +60,7 @@ class BaseSchemaCache(Generic[_TClient]):
             variables: The asynchronous variables endpoint.
             study_key: The study key to refresh variables for.
         """
-        vars_list = [v async for v in variables.async_list(study_key=study_key)]
+        vars_list = [v async for v in variables.list(study_key=study_key)]
         self.populate(vars_list)
 
     def _refresh_sync(
