@@ -78,19 +78,19 @@ async def test_async_convenience_methods_delegate_to_endpoints(monkeypatch) -> N
         calls["job"] = (study_key, batch_id)
         return "JOBOBJ"
 
-    monkeypatch.setattr(sdk.studies, "async_list", fake_studies_async_list)
-    monkeypatch.setattr(sdk.records, "async_list", fake_records_async_list)
-    monkeypatch.setattr(sdk.sites, "async_list", fake_sites_async_list)
-    monkeypatch.setattr(sdk.subjects, "async_list", fake_subjects_async_list)
-    monkeypatch.setattr(sdk.forms, "async_list", fake_forms_async_list)
-    monkeypatch.setattr(sdk.intervals, "async_list", fake_intervals_async_list)
-    monkeypatch.setattr(sdk.variables, "async_list", fake_variables_async_list)
-    monkeypatch.setattr(sdk.visits, "async_list", fake_visits_async_list)
-    monkeypatch.setattr(sdk.codings, "async_list", fake_codings_async_list)
-    monkeypatch.setattr(sdk.queries, "async_list", fake_queries_async_list)
-    monkeypatch.setattr(sdk.record_revisions, "async_list", fake_record_revisions_async_list)
-    monkeypatch.setattr(sdk.users, "async_list", fake_users_async_list)
-    monkeypatch.setattr(sdk.jobs, "async_get", fake_async_get_job)
+    monkeypatch.setattr(sdk.studies, "list", fake_studies_async_list)
+    monkeypatch.setattr(sdk.records, "list", fake_records_async_list)
+    monkeypatch.setattr(sdk.sites, "list", fake_sites_async_list)
+    monkeypatch.setattr(sdk.subjects, "list", fake_subjects_async_list)
+    monkeypatch.setattr(sdk.forms, "list", fake_forms_async_list)
+    monkeypatch.setattr(sdk.intervals, "list", fake_intervals_async_list)
+    monkeypatch.setattr(sdk.variables, "list", fake_variables_async_list)
+    monkeypatch.setattr(sdk.visits, "list", fake_visits_async_list)
+    monkeypatch.setattr(sdk.codings, "list", fake_codings_async_list)
+    monkeypatch.setattr(sdk.queries, "list", fake_queries_async_list)
+    monkeypatch.setattr(sdk.record_revisions, "list", fake_record_revisions_async_list)
+    monkeypatch.setattr(sdk.users, "list", fake_users_async_list)
+    monkeypatch.setattr(sdk.jobs, "get", fake_async_get_job)
 
     assert await sdk.async_get_studies(status="active") == ["STUDY"]
     assert await sdk.async_get_records("S1", record_data_filter="x") == ["REC"]

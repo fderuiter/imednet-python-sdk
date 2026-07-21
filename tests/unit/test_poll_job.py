@@ -27,7 +27,7 @@ def test_poll_job_success(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> 
     if async_mode:
         monkeypatch.setattr(
             sdk.jobs,
-            "async_get",
+            "get",
             AsyncMock(side_effect=lambda s, b: states.pop(0)),
         )
         monkeypatch.setattr(asyncio, "sleep", AsyncMock())
@@ -47,7 +47,7 @@ def test_poll_job_timeout(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> 
     if async_mode:
         monkeypatch.setattr(
             sdk.jobs,
-            "async_get",
+            "get",
             AsyncMock(return_value=job),
         )
         monkeypatch.setattr(asyncio, "sleep", AsyncMock())
@@ -80,7 +80,7 @@ def test_poll_job_failed(async_mode: bool, monkeypatch: pytest.MonkeyPatch) -> N
     if async_mode:
         monkeypatch.setattr(
             sdk.jobs,
-            "async_get",
+            "get",
             AsyncMock(side_effect=lambda s, b: states.pop(0)),
         )
         monkeypatch.setattr(asyncio, "sleep", AsyncMock())

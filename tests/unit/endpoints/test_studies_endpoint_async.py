@@ -19,7 +19,7 @@ async def test_async_list_builds_path_and_filters(
     captured = async_paginator_factory(studies, [{"studyKey": "S1"}])
     filter_capture = patch_build_filter(studies)
 
-    result = await ep.async_list(status="active")
+    result = await ep.list(status="active")
 
     assert captured["path"] == "/api/v1/edc/studies"
     assert captured["params"] == {"filter": "FILTERED"}

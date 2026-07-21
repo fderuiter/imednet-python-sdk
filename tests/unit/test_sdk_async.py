@@ -38,12 +38,14 @@ def test_sync_and_async_endpoints_expose_strict_method_surfaces() -> None:
     assert hasattr(sync_sdk.sites, "list")
     assert hasattr(sync_sdk.sites, "get")
     assert not hasattr(sync_sdk.sites, "async_list")
+    assert hasattr(async_sdk.sites, "list")
+    assert hasattr(async_sdk.sites, "get")
+    assert hasattr(async_sdk.sites, "list")
+    assert hasattr(async_sdk.sites, "get")
     assert not hasattr(sync_sdk.sites, "async_get")
 
-    assert hasattr(async_sdk.sites, "async_list")
-    assert hasattr(async_sdk.sites, "async_get")
-    assert not hasattr(async_sdk.sites, "list")
-    assert not hasattr(async_sdk.sites, "get")
+    assert not hasattr(async_sdk.sites, "async_list")
+    assert not hasattr(async_sdk.sites, "async_get")
 
 
 @pytest.mark.asyncio
@@ -69,12 +71,12 @@ async def test_convenience_methods_delegate_to_endpoints_async(monkeypatch) -> N
     sdk = _create_async_sdk()
     calls = {}
 
-    async def fake_async_studies_list(**kw):
+    async def fake_studies_list(**kw):
         """Helper function to fake async studies list."""
         calls["studies"] = kw
         return ["STUDY"]
 
-    monkeypatch.setattr(sdk.studies, "async_list", fake_async_studies_list)
+    monkeypatch.setattr(sdk.studies, "list", fake_studies_list)
 
     assert await sdk.async_get_studies(status="active") == ["STUDY"]
     assert calls["studies"] == {"status": "active"}

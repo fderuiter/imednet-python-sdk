@@ -18,7 +18,7 @@ async def test_async_get_success(dummy_client, context, response_factory):
 
     ep = jobs.AsyncJobsEndpoint(async_client, context)
 
-    result = await ep.async_get("S1", "B1")
+    result = await ep.get("S1", "B1")
 
     async_client.get.assert_called_once_with("/api/v1/edc/studies/S1/jobs/B1")
     assert isinstance(result, JobStatus)
@@ -33,4 +33,4 @@ async def test_async_get_not_found(dummy_client, context, response_factory):
     ep = jobs.AsyncJobsEndpoint(async_client, context)
 
     with pytest.raises(NotFoundError):
-        await ep.async_get("S1", "B1")
+        await ep.get("S1", "B1")

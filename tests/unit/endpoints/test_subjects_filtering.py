@@ -13,13 +13,13 @@ def test_list_by_site_filtering():
     mock_ctx = Mock()
 
     endpoint = SubjectsEndpoint(mock_client, mock_ctx)
-    endpoint.list = Mock(return_value=[])
+    endpoint._list_sync = Mock(return_value=[])
 
     endpoint.list_by_site("sk", 101)
-    endpoint.list.assert_called_with(study_key="sk", site_id=101)
+    endpoint._list_sync.assert_called_with(mock_client, endpoint.PAGINATOR_CLS, study_key="sk", site_id=101)
 
     endpoint.list_by_site("sk", "101")
-    endpoint.list.assert_called_with(study_key="sk", site_id="101")
+    endpoint._list_sync.assert_called_with(mock_client, endpoint.PAGINATOR_CLS, study_key="sk", site_id="101")
 
 
 @pytest.mark.asyncio
@@ -32,13 +32,12 @@ async def test_async_list_by_site_filtering():
 
     async def fake_async_list(*args, **kwargs):
         """Helper function to fake async list."""
-        if False:
-            yield
+        return []
 
-    endpoint.async_list = Mock(side_effect=fake_async_list)
+    endpoint._list_async = Mock(side_effect=fake_async_list)
 
-    await endpoint.async_list_by_site("sk", 101)
-    endpoint.async_list.assert_called_with(study_key="sk", site_id=101)
+    await endpoint.list_by_site("sk", 101)
+    endpoint._list_async.assert_called_with(mock_client, endpoint.ASYNC_PAGINATOR_CLS, study_key="sk", site_id=101)
 
-    await endpoint.async_list_by_site("sk", "101")
-    endpoint.async_list.assert_called_with(study_key="sk", site_id="101")
+    await endpoint.list_by_site("sk", "101")
+    endpoint._list_async.assert_called_with(mock_client, endpoint.ASYNC_PAGINATOR_CLS, study_key="sk", site_id="101")
