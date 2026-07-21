@@ -72,7 +72,7 @@ from collections.abc import Sequence
 from datetime import datetime, timezone
 from typing import Any
 
-from imednet.errors import ExportBatchError, ExportConfigurationError
+from imednet.errors import ExportConfigurationError
 from imednet.integrations.sink_base import (
     ExportSink,
     SinkConfig,
@@ -191,8 +191,6 @@ class MongoDbExportSink(ExportSink):
         if not docs:
             return 0
 
-        from imednet.core.operations.executor import UniversalExecutor
-
         def execute_export() -> int:
             """Perform the actual write or upsert operation to MongoDB."""
             if self.config.idempotent:
@@ -214,21 +212,7 @@ class MongoDbExportSink(ExportSink):
             logger.debug("Wrote batch %s (%d records)", batch_id, written)
             return written
 
-        executor = UniversalExecutor(
-            retries=self.config.max_retries,
-            backoff_factor=self.config.retry_backoff,
-            tracer=self.config.tracer,
-            operation_name="export_mongodb",
-            batch_id=batch_id,
-        )
-
-        try:
-            return executor.execute(execute_export)
-        except Exception as exc:
-            raise ExportBatchError(
-                f"Batch {batch_id!r} failed after {self.config.max_retries + 1} attempts: {exc}",
-                batch_id=batch_id,
-            ) from exc
+        return self._execute_with_retry("export_mongodb", batch_id, execute_export)
 
     def flush(self) -> None:
         """No-op: MongoDB writes are committed per bulk operation."""

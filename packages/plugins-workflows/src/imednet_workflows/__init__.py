@@ -10,7 +10,7 @@ from imednet.spi.utils import (
     JobTimeoutError,
 )
 
-from .cached_loader import CachedRecordsLoader, get_cache_connection
+from .cached_loader import CachedRecordsLoader
 from .chunked_pipeline import ChunkedRecordPipeline, iter_chunks
 from .config_version_control import ConfigVersionStore
 from .duckdb_centralizer import DuckDBIngestionWorkflow
@@ -66,7 +66,6 @@ __all__ = [
     "UATSpecification",
     "async_get_study_structure",
     "extract_canonical_records",
-    "get_cache_connection",
     "get_study_structure",
     "iter_chunks",
 ]
