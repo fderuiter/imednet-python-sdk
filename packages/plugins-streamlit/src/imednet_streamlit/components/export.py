@@ -11,7 +11,7 @@ import io
 import pandas as pd
 import streamlit as st
 
-from imednet.utils import sanitize_csv_formula
+from imednet.spi.utils import sanitize_csv_formula
 
 
 def csv_download_button(df: pd.DataFrame, filename: str, label: str = "⬇ Download CSV") -> None:
