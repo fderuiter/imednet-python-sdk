@@ -73,14 +73,22 @@ def test_airflow_provider_exports_public_api(monkeypatch):
 def test_imednethook_get_conn_deprecation(monkeypatch):
     """Test that calling get_conn() raises a DeprecationWarning."""
     _setup_airflow(monkeypatch)
-    
+
     from apache_airflow_providers_imednet.hooks import ImednetHook
     from imednet import Config
-    
+
     hook = ImednetHook()
-    monkeypatch.setattr(hook, "_resolved_config", lambda: Config(api_key="test", security_key="test", base_url="test"))
-    
+    monkeypatch.setattr(
+        hook,
+        "_resolved_config",
+        lambda: Config(api_key="test", security_key="test", base_url="test"),
+    )
+
     import pytest
-    with pytest.warns(DeprecationWarning, match="ImednetHook.get_conn is deprecated and will be removed in a future release. Please use ImednetHook.get_sdk_client\\(\\) instead."):
+
+    with pytest.warns(
+        DeprecationWarning,
+        match="ImednetHook.get_conn is deprecated and will be removed in a future release. Please use ImednetHook.get_sdk_client\\(\\) instead.",
+    ):
         client = hook.get_conn()
         assert client is not None

@@ -14,7 +14,7 @@ Set ``IMEDNET_API_KEY`` and ``IMEDNET_SECURITY_KEY`` before running this script.
 Optionally set ``IMEDNET_BASE_URL`` for non-default instances.
 
 Usage:
-    uv run --with "imednet[export]" python examples/export_long_sql.py STUDY_KEY TABLE_NAME OUTPUT_DB
+    uv run --with 'imednet[export]' python examples/export_long_sql.py STUDY_KEY TABLE_NAME OUTPUT_DB
 
 The ``OUTPUT_DB`` path is used to build the SQLite connection string.
 """
@@ -24,7 +24,7 @@ def main() -> None:
     """Export a study's records in long format to SQLite."""
     if len(sys.argv) != 4:
         print(
-            "Usage: uv run --with "imednet[export]" python examples/export_long_sql.py STUDY_KEY TABLE_NAME OUTPUT_DB",
+            "Usage: uv run --with 'imednet[export]' python examples/export_long_sql.py STUDY_KEY TABLE_NAME OUTPUT_DB",
             file=sys.stderr,
         )
         sys.exit(1)
