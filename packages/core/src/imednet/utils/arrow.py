@@ -5,6 +5,8 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Protocol
 
+from imednet.utils.validators import parse_bool
+
 try:
     import pyarrow as pa
 except ImportError:  # pragma: no cover - exercised when optional dependency is absent
@@ -15,10 +17,6 @@ class _ModelDumpable(Protocol):
     """Protocol for objects that can be dumped to a dictionary (e.g., Pydantic models)."""
 
     def model_dump(self) -> dict[str, Any]: ...
-
-
-_TRUE_STRINGS = {"true", "1", "yes", "y", "t"}
-_FALSE_STRINGS = {"false", "0", "no", "n", "f"}
 
 
 def _normalize_datetime(value: datetime) -> datetime:
@@ -80,14 +78,7 @@ def _coerce_value(value: Any, target_type: pa.DataType) -> Any:
     if pa.types.is_timestamp(target_type):
         return value if isinstance(value, datetime) else None
     if pa.types.is_boolean(target_type):
-        if isinstance(value, str):
-            lowered = value.strip().lower()
-            if lowered in _TRUE_STRINGS:
-                return True
-            if lowered in _FALSE_STRINGS:
-                return False
-            return None
-        return bool(value)
+        return parse_bool(value)
     if pa.types.is_floating(target_type):
         try:
             return float(value)

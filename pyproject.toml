@@ -157,6 +157,7 @@ docs = "python scripts/build_docs.py"
 [tool.hatch.envs.lint]
 detached = true
 dependencies = [
+    "vulture>=2.11",
     "ruff>=0.11.6,<0.16.0",
     "mypy>=1.15.0,<1.16.0",
     "typos",
@@ -182,6 +183,7 @@ typos-check = "typos {args:packages}"
 semgrep-check = "semgrep scan --config p/security-audit --error {args:packages}"
 audit = "pip-audit -s osv --timeout 60"
 secrets = "detect-secrets-hook --baseline .secrets.baseline {args:packages}"
+dead-code = "vulture {args:packages} vulture_whitelist.py --min-confidence 80 --exclude **/tests/**,**/docs/**,**/scripts/**"
 all = [
     "fmt",
     "ruff-check",
@@ -189,7 +191,8 @@ all = [
     "typos-check",
     "semgrep-check",
     "audit",
-    "secrets"
+    "secrets",
+    "dead-code"
 ]
 
 [tool.uv.workspace]
