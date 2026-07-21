@@ -129,7 +129,6 @@ ignore_missing_imports = true
 "tests/**/*.py" = ["SLF001", "S", "D"]
 "scripts/**/*.py" = ["SLF001", "S", "D"]
 "examples/**/*.py" = ["SLF001", "S", "D"]
-"final_automate.py" = ["D"]
 "packages/plugins-sinks/tests/**/*.py" = ["SLF001"]
 
 [tool.ruff.format]
@@ -168,6 +167,7 @@ dependencies = [
     "pydantic",
     "pylint",
     "click>=8.3.3",
+    "vulture",
     "imednet @ {root:uri}/packages/core",
     "imednet-workflows @ {root:uri}/packages/plugins-workflows",
     "imednet-streamlit @ {root:uri}/packages/plugins-streamlit",
@@ -184,6 +184,7 @@ semgrep-check = "semgrep scan --config p/security-audit --error {args:packages}"
 audit = "pip-audit -s osv --timeout 60"
 secrets = "detect-secrets-hook --baseline .secrets.baseline {args:packages}"
 symilar-check = "pylint --disable=all --enable=duplicate-code {args:packages}"
+vulture-check = "vulture packages vulture_whitelist.py"
 all = [
     "fmt",
     "ruff-check",
@@ -192,7 +193,8 @@ all = [
     "semgrep-check",
     "audit",
     "secrets",
-    "symilar-check"
+    "symilar-check",
+    "vulture-check"
 ]
 
 [tool.uv.workspace]
