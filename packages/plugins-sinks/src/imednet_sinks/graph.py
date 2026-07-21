@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Neo4j graph export sink.
 
 This module implements the **structure-preserving export path** for a Neo4j

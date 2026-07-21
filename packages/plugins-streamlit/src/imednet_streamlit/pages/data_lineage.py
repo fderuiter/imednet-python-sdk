@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Data Lineage Explorer — drill-down from aggregated metrics to raw source records.
 
 Provides an interactive drill-down path from dashboard metric values to the

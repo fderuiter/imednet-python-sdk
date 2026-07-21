@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Authentication and multi-tenant session management for Streamlit.
 
 This module provides integration with corporate SSO, study-based credential

@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Query status and management dashboard.
 
 Provides visibility into open and resolved queries across the study,

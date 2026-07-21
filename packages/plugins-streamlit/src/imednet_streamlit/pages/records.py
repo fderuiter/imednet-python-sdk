@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Resolve the human-readable name for a form object."""
 
 from __future__ import annotations

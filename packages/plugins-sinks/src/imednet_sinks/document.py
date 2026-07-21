@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """MongoDB document-envelope export sink.
 
 This module implements the **structure-preserving export path** for a MongoDB

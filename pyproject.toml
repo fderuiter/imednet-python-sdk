@@ -49,6 +49,7 @@ build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 100
+exclude = ["sandbox"]
 src = ["packages/core/src", "packages/plugins-workflows/src", "packages/providers-airflow/src", "packages/plugins-streamlit/src", "tests"]
 
 [tool.ruff.lint.isort]
@@ -69,7 +70,7 @@ python_version = "3.12"
 strict = false
 ignore_missing_imports = true
 plugins = []
-exclude = '^(examples/.*|tests/.*|packages/.*/tests/.*)$'
+exclude = '^(examples/.*|tests/.*|packages/.*/tests/.*|sandbox/.*)$'
 
 [[tool.mypy.overrides]]
 module = [

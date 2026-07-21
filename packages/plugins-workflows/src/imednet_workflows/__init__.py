@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Workflow helpers built on top of the iMednet SDK."""
 
 from imednet.spi.utils import (

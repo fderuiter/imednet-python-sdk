@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """SPI for utility functions."""
 
 from imednet.utils.filters import build_filter_string

@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Integrated safety reporting dashboard.
 
 Consolidates adverse events, protocol deviations, device deficiencies,
