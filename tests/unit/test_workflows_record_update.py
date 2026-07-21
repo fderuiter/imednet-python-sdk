@@ -1,11 +1,9 @@
 """Unit tests for workflows record update."""
 
-import sys
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from imednet import AsyncImednetSDK, ImednetSDK
 from imednet.errors import ValidationError
 from imednet.models.jobs import Job
 from imednet.models.variables import Variable

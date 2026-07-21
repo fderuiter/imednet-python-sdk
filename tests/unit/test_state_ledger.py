@@ -253,10 +253,6 @@ def test_corrupted_ledger_recovery(tmp_path) -> None:
     assert len(state.studies) == 0
 
 
-import sys
-from unittest.mock import MagicMock, patch
-
-
 def test_get_state_provider_airflow(monkeypatch):
     """Test get_state_provider returns AirflowStateProvider when USE_AIRFLOW_STATE_PROVIDER=1."""
     monkeypatch.setenv("USE_AIRFLOW_STATE_PROVIDER", "1")
@@ -329,5 +325,5 @@ def test_airflow_state_provider_transaction_error():
         provider = AirflowStateProvider()
         fallback_ts = datetime(2026, 5, 22, 10, 0, 0, tzinfo=timezone.utc)
         with pytest.raises(ValueError):
-            with provider.transaction("STUDY-01", "records", fallback_timestamp=fallback_ts) as tx:
+            with provider.transaction("STUDY-01", "records", fallback_timestamp=fallback_ts):
                 raise ValueError("Test error")

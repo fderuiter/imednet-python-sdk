@@ -341,7 +341,7 @@ def test_base_schema_cache_refresh() -> None:
 @pytest.mark.asyncio
 async def test_base_schema_cache_async_refresh() -> None:
     """Test that base schema cache async refresh asynchronously."""
-    from unittest.mock import AsyncMock, MagicMock
+    from unittest.mock import MagicMock
 
     from imednet.validation.cache import AsyncSchemaCache
 

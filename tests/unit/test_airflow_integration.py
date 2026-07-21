@@ -753,7 +753,7 @@ def test_export_operator_resolves_snowflake_sink(monkeypatch):
         destination="snowflake",
     )
 
-    result = op.execute({})
+    op.execute({})
 
     mock_snowflake_sink_cls.assert_called()
     sink_instance = mock_snowflake_sink_cls.return_value

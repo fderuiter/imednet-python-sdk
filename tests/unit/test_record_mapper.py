@@ -246,7 +246,7 @@ def test_parse_records_counts_errors() -> None:
     class Dummy(BaseModel):
         """Test suite for Dummy."""
 
-        def __init__(self, **_: Any) -> None:  # noqa: D401 - simple
+        def __init__(self, **_: Any) -> None:
             """Always fail."""
             raise ValidationError([], Dummy)
 

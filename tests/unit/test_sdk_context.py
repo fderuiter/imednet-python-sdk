@@ -141,9 +141,8 @@ def test_study_context_manager_resets_on_exception():
     client_mock = MagicMock(spec=Client)
     sdk = ImednetSDK(client=client_mock)
 
-    with pytest.raises(ValueError):
-        with sdk.study_context("study-key-123"):
-            raise ValueError("boom")
+    with pytest.raises(ValueError), sdk.study_context("study-key-123"):
+        raise ValueError("boom")
 
     with pytest.raises(ConfigurationError):
         get_current_study()

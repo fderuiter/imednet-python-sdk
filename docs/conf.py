@@ -40,10 +40,16 @@ sys.modules["streamlit.testing.v1"] = MagicMock()
 
 # Mock get_sdk and get_study_key to prevent autodoc from failing
 import imednet_streamlit.auth
+
+
 def mock_get_sdk():
     return MagicMock()
+
+
 def mock_get_study_key():
     return "MOCK_STUDY"
+
+
 imednet_streamlit.auth.get_sdk = mock_get_sdk
 imednet_streamlit.auth.get_study_key = mock_get_study_key
 
@@ -79,7 +85,7 @@ if "pandas" not in sys.modules:
     pandas_stub.json_normalize = json_normalize
     sys.modules["pandas"] = pandas_stub
 
-from imednet import __version__ as imednet_version  # noqa: E402
+from imednet import __version__ as imednet_version
 
 project = "imednet"
 author = "Frederick de Ruiter"

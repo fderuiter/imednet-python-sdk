@@ -3,7 +3,6 @@
 import json
 import os
 
-from imednet.models.contract import APIContract
 from imednet.models.engine import ModelEngine
 
 

@@ -1,4 +1,3 @@
-# ruff: noqa: E402
 
 """Global test configuration and shared fixtures for the iMedNet SDK test suite.
 

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import functools
-
 from collections.abc import AsyncIterator, Callable, Coroutine, Iterator
 from typing import Any, Concatenate, Generic, TypeVar, overload
 

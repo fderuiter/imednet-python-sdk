@@ -1,7 +1,6 @@
 """Unit tests for parse filters."""
 
 import pytest
-import typer
 
 from imednet.cli import parse_filter_args
 

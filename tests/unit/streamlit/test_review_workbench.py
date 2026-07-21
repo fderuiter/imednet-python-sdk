@@ -36,11 +36,11 @@ DRAWER_PATH = (
 class _FakeContextManager:
     """Test suite for  FakeContextManager."""
 
-    def __init__(self, streamlit_client: "_FakeStreamlit | None" = None) -> None:
+    def __init__(self, streamlit_client: _FakeStreamlit | None = None) -> None:
         """Initialize the test object."""
         self._streamlit_client = streamlit_client
 
-    def __enter__(self) -> "_FakeContextManager":
+    def __enter__(self) -> _FakeContextManager:
         """Helper function to   enter  ."""
         return self
 

@@ -1,8 +1,6 @@
-import csv
 import json
 import logging
 import os
-import zipfile
 from io import BytesIO
 from multiprocessing import Process
 
@@ -20,14 +18,11 @@ def run_fuzzer():
     import atheris
 
     with atheris.instrument_imports():
-        import imednet_sinks
-        import pyarrow as pa
         from imednet_sinks.warehouse import _records_to_arrow_table
 
         import imednet
         import imednet.models.engine
         from imednet.models.engine import get_contract
-        from imednet.sdk import ImednetSDK
         from imednet.validation.data_dictionary import DataDictionaryLoader
 
     def fuzz_dynamic_model(data: bytes):

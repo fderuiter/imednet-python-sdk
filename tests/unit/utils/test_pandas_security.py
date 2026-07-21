@@ -31,7 +31,7 @@ def test_export_records_csv_sanitization(mock_sdk, tmp_path):
 
     export_records_csv(mock_sdk, "study_key", str(output_file), flatten=True)
 
-    with open(output_file, "r", encoding="utf-8") as f:
+    with open(output_file, encoding="utf-8") as f:
         content = f.read()
 
     # Check that the malicious value is prefixed with a single quote
