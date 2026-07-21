@@ -248,7 +248,6 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
             parse_func=self._resolve_parse_func(),
         )
 
-
     def _list_sync(self, *a: Any, **k: Any) -> list[T]:
         from imednet.core.endpoint.operations.list import ListOperation
 
@@ -274,9 +273,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
             parse_func=self._resolve_parse_func(),
         )
         res = []
-        async for item in op.execute_async(
-            self._require_async_client(), self.ASYNC_PAGINATOR_CLS
-        ):
+        async for item in op.execute_async(self._require_async_client(), self.ASYNC_PAGINATOR_CLS):
             res.append(item)
         return res
 
@@ -293,8 +290,6 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         """
         self._require_item_id(item_id)
         filters: dict[str, Any] = {self._id_param: item_id}
-
-
 
         from imednet.core.endpoint.operations.filter_get import FilterGetOperation
 
