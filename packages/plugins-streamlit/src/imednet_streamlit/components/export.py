@@ -11,6 +11,8 @@ import io
 import pandas as pd
 import streamlit as st
 
+from imednet.utils import sanitize_csv_formula
+
 
 def csv_download_button(df: pd.DataFrame, filename: str, label: str = "⬇ Download CSV") -> None:
     """Render a CSV download button for a DataFrame.
@@ -20,7 +22,8 @@ def csv_download_button(df: pd.DataFrame, filename: str, label: str = "⬇ Downl
         filename: Output filename displayed in the browser download prompt.
         label: Button label text.
     """
-    csv = df.to_csv(index=False).encode("utf-8")
+    safe_df = df.map(sanitize_csv_formula) if hasattr(df, "map") else df.applymap(sanitize_csv_formula)
+    csv = safe_df.to_csv(index=False).encode("utf-8")
     st.download_button(label=label, data=csv, file_name=filename, mime="text/csv")
 
 
@@ -33,8 +36,9 @@ def excel_download_button(df: pd.DataFrame, filename: str, label: str = "⬇ Dow
         label: Button label text.
     """
     buffer = io.BytesIO()
+    safe_df = df.map(sanitize_csv_formula) if hasattr(df, "map") else df.applymap(sanitize_csv_formula)
     with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
-        df.to_excel(writer, index=False)
+        safe_df.to_excel(writer, index=False)
     st.download_button(
         label=label,
         data=buffer.getvalue(),

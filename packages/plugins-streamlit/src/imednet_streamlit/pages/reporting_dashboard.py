@@ -23,6 +23,7 @@ from imednet.spi.models import (
 )
 from imednet_streamlit import components
 from imednet_streamlit.auth import get_sdk, get_study_key
+from imednet_streamlit.utils import models_to_frame
 from imednet_streamlit.components.charts import render_accessible_chart
 
 _HIGH_QUERY_RATE_THRESHOLD = 20.0
@@ -140,20 +141,6 @@ def _fallback_direct_models(
     return aes, pds, dds
 
 
-def _models_to_frame(models: Sequence[object], *, date_column: str | None = None) -> pd.DataFrame:
-    """Convert a sequence of models into a pandas DataFrame."""
-    if not models:
-        return pd.DataFrame()
-    rows = [
-        model.model_dump(by_alias=False) if hasattr(model, "model_dump") else dict(vars(model))
-        for model in models
-    ]
-    df = pd.DataFrame(rows)
-    if date_column and date_column in df:
-        df[date_column] = pd.to_datetime(df[date_column], utc=True, errors="coerce")
-    return df
-
-
 def _extract_domain_frames(
     records: list[Record], configuration: StudyConfiguration
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -167,9 +154,9 @@ def _extract_domain_frames(
     if not adverse_events and not protocol_deviations and not device_deficiencies:
         adverse_events, protocol_deviations, device_deficiencies = _fallback_direct_models(records)
     return (
-        _models_to_frame(adverse_events, date_column="ae_start_date"),
-        _models_to_frame(protocol_deviations, date_column="dv_date"),
-        _models_to_frame(device_deficiencies, date_column="dd_date"),
+        models_to_frame(adverse_events, date_column="ae_start_date"),
+        models_to_frame(protocol_deviations, date_column="dv_date"),
+        models_to_frame(device_deficiencies, date_column="dd_date"),
     )
 
 

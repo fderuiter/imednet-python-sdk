@@ -166,6 +166,7 @@ dependencies = [
     "pandas-stubs",
     "types-requests",
     "pydantic",
+    "pylint",
     "click>=8.3.3",
     "imednet @ {root:uri}/packages/core",
     "imednet-workflows @ {root:uri}/packages/plugins-workflows",
@@ -182,6 +183,7 @@ typos-check = "typos {args:packages}"
 semgrep-check = "semgrep scan --config p/security-audit --error {args:packages}"
 audit = "pip-audit -s osv --timeout 60"
 secrets = "detect-secrets-hook --baseline .secrets.baseline {args:packages}"
+symilar-check = "pylint --disable=all --enable=duplicate-code {args:packages}"
 all = [
     "fmt",
     "ruff-check",
@@ -189,7 +191,8 @@ all = [
     "typos-check",
     "semgrep-check",
     "audit",
-    "secrets"
+    "secrets",
+    "symilar-check"
 ]
 
 [tool.uv.workspace]
