@@ -248,7 +248,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
             parse_func=self._resolve_parse_func(),
         )
 
-    def _list_sync(self, *a: Any, **k: Any) -> list[T]:
+    def _list_sync(self, *a: Any, **k: Any) -> __builtins__.list[T]:
         from imednet.core.endpoint.operations.list import ListOperation
 
         study_key = k.pop("study_key", None)
@@ -261,7 +261,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         )
         return list(op.execute_sync(self._require_sync_client(), self.PAGINATOR_CLS))
 
-    async def _list_async(self, *a: Any, **k: Any) -> list[T]:
+    async def _list_async(self, *a: Any, **k: Any) -> __builtins__.list[T]:
         from imednet.core.endpoint.operations.list import ListOperation
 
         study_key = k.pop("study_key", None)
