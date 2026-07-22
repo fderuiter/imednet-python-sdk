@@ -23,7 +23,7 @@ def csv_download_button(df: pd.DataFrame, filename: str, label: str = "⬇ Downl
         label: Button label text.
     """
     safe_df = (
-        df.map(sanitize_csv_formula) if hasattr(df, "map") else df.applymap(sanitize_csv_formula)
+        df.map(sanitize_csv_formula) if hasattr(df, "map") else df.applymap(sanitize_csv_formula)  # type: ignore[operator, unused-ignore]
     )
     csv = safe_df.to_csv(index=False).encode("utf-8")
     st.download_button(label=label, data=csv, file_name=filename, mime="text/csv")
@@ -39,7 +39,7 @@ def excel_download_button(df: pd.DataFrame, filename: str, label: str = "⬇ Dow
     """
     buffer = io.BytesIO()
     safe_df = (
-        df.map(sanitize_csv_formula) if hasattr(df, "map") else df.applymap(sanitize_csv_formula)
+        df.map(sanitize_csv_formula) if hasattr(df, "map") else df.applymap(sanitize_csv_formula)  # type: ignore[operator, unused-ignore]
     )
     with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
         safe_df.to_excel(writer, index=False)
