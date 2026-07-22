@@ -56,7 +56,8 @@ def _mark_disconnected() -> None:
 
 
 import os
-import sqlite3
+
+from .credentials import CredentialRepository
 
 
 def get_db_path() -> str:
@@ -76,17 +77,7 @@ def get_db_path() -> str:
     else:
         resolved_path = base_path
 
-    if not os.path.exists(resolved_path):
-        os.makedirs(os.path.dirname(resolved_path), exist_ok=True)
-        with sqlite3.connect(resolved_path) as conn:
-            conn.execute(
-                "CREATE TABLE IF NOT EXISTS tenants (study_key TEXT PRIMARY KEY, api_key TEXT, security_key TEXT)"
-            )
-            cursor = conn.execute("PRAGMA table_info(tenants)")
-            columns = [row[1] for row in cursor.fetchall()]
-            if "env_url" not in columns:
-                conn.execute("ALTER TABLE tenants ADD COLUMN env_url TEXT")
-
+    # DB initialization logic has been moved to CredentialRepository
     return resolved_path
 
 
@@ -100,42 +91,15 @@ def get_tenant_credentials(study_key: str) -> tuple[str | None, str | None, str 
         A tuple of (api_key, security_key, env_url), or (None, None, None) if not found.
     """
     db_path = get_db_path()
-    if not os.path.exists(db_path):
-        return None, None, None
-    try:
-        with sqlite3.connect(db_path) as conn:
-            # Check for env_url column dynamically
-            cursor = conn.execute("PRAGMA table_info(tenants)")
-            columns = [row[1] for row in cursor.fetchall()]
-            if "env_url" not in columns:
-                conn.execute("ALTER TABLE tenants ADD COLUMN env_url TEXT")
-
-            # HEAD branch might have added environment_url, gracefully migrate or just ignore if both exist
-            if "environment_url" in columns and "env_url" not in columns:
-                # Copy data from environment_url to env_url if we want, or just fallback
-                pass  # SQLite doesn't make renaming columns trivial in older versions, but ALTER TABLE ADD COLUMN was just done.
-
-            row = conn.execute(
-                "SELECT api_key, security_key, env_url FROM tenants WHERE study_key=?",
-                (study_key,),
-            ).fetchone()
-            if row:
-                return row[0], row[1], row[2]
-    except Exception:  # noqa: S110
-        pass
-    return None, None, None
+    repo = CredentialRepository(db_path)
+    return repo.get_credentials(study_key)
 
 
 def get_provisioned_studies() -> list[str]:
     """Return a list of all study keys available in the tenant database."""
     db_path = get_db_path()
-    if not os.path.exists(db_path):
-        return []
-    try:
-        with sqlite3.connect(db_path) as conn:
-            return [row[0] for row in conn.execute("SELECT study_key FROM tenants")]
-    except sqlite3.OperationalError:
-        return []
+    repo = CredentialRepository(db_path)
+    return repo.get_provisioned_studies()
 
 
 def render_auth_sidebar() -> bool:

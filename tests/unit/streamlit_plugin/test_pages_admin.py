@@ -86,6 +86,7 @@ class FakeStMockAdmin:
     def __init__(self, logged_in=True):
         self.success_messages = []
         self.error_messages = []
+        self.session_state = {}
 
     def title(self, msg):
         pass
@@ -121,6 +122,7 @@ def test_admin_page_provision_success(monkeypatch: pytest.MonkeyPatch, tmp_path)
 
     fake_st = FakeSt(logged_in=True)
     _run_admin(fake_st)
+    print("ERRORS:", fake_st.error_messages)
     assert len(fake_st.success_messages) > 0
 
     _run_admin(fake_st)
@@ -149,12 +151,13 @@ def test_admin_page_provision_exception(monkeypatch: pytest.MonkeyPatch) -> None
             return True
 
     fake_st = FakeSt(logged_in=True)
-    import os
 
     def raise_boom(*args, **kwargs):
         raise RuntimeError("boom")
 
-    monkeypatch.setattr(os, "makedirs", raise_boom)
+    from imednet_streamlit.credentials import CredentialRepository
+
+    monkeypatch.setattr(CredentialRepository, "provision_tenant", raise_boom)
 
     _run_admin(fake_st)
     assert len(fake_st.error_messages) > 0

@@ -17,22 +17,30 @@ from imednet_streamlit.components.charts import render_accessible_chart
 
 
 @st.cache_data(ttl=600, show_spinner=False)
-def _fetch_subjects(_sdk: object, study_key: str) -> pd.DataFrame:
-    """Fetches all subjects and returns a normalized DataFrame (deleted excluded)."""
+def _fetch_subjects(_sdk: object, study_key: str, limit: int = 1000) -> pd.DataFrame:
+    """Fetches subjects with a server-side limit and returns a normalized DataFrame."""
     from imednet.spi.models import Subject
 
-    subjects = _sdk.get_subjects(study_key=study_key)  # type: ignore[attr-defined]
-    fields = list(Subject.model_fields.keys())
+    try:
+        subjects = _sdk.get_subjects(study_key=study_key, limit=limit)  # type: ignore[attr-defined]
+        fields = list(Subject.model_fields.keys())
 
-    rows = []
-    for s in subjects:
-        row = {f: getattr(s, f, None) for f in fields}
-        rows.append(row)
+        rows = []
+        for s in subjects:
+            row = {f: getattr(s, f, None) for f in fields}
+            rows.append(row)
 
-    if not rows:
-        return pd.DataFrame(columns=fields)
-    df = pd.DataFrame(rows)
-    return df[~df["deleted"]]
+        if not rows:
+            return pd.DataFrame(columns=fields)
+        df = pd.DataFrame(rows)
+        return df[~df["deleted"]]
+    except Exception as e:
+        import streamlit as st
+
+        st.error(
+            f"Failed to load enrollment data. The server-side chunked data request failed: {e}"
+        )
+        return pd.DataFrame()
 
 
 @st.cache_data(ttl=600, show_spinner=False)

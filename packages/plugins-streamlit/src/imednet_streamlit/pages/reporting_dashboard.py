@@ -78,26 +78,34 @@ def _get_date_range_defaults(frames: Sequence[pd.DataFrame]) -> tuple[date, date
 
 
 @st.cache_data(ttl=600, show_spinner=False)
-def _fetch_subjects_df(_sdk: object, study_key: str) -> pd.DataFrame:
+def _fetch_subjects_df(_sdk: object, study_key: str, limit: int = 1000) -> pd.DataFrame:
     """Fetch subject metadata and return as a DataFrame."""
-    rows = [
-        {
-            "subject_key": str(subject.subject_key),
-            "site_name": str(subject.site_name or ""),
-            "deleted": bool(subject.deleted),
-        }
-        for subject in _sdk.get_subjects(study_key=study_key)  # type: ignore[attr-defined]
-    ]
-    if not rows:
-        return pd.DataFrame(columns=["subject_key", "site_name", "deleted"])
-    df = pd.DataFrame(rows)
-    return df.loc[~df["deleted"]].reset_index(drop=True)
+    try:
+        rows = [
+            {
+                "subject_key": str(subject.subject_key),
+                "site_name": str(subject.site_name or ""),
+                "deleted": bool(subject.deleted),
+            }
+            for subject in _sdk.get_subjects(study_key=study_key, limit=limit)  # type: ignore[attr-defined]
+        ]
+        if not rows:
+            return pd.DataFrame(columns=["subject_key", "site_name", "deleted"])
+        df = pd.DataFrame(rows)
+        return df.loc[~df["deleted"]].reset_index(drop=True)
+    except Exception as e:
+        st.error(f"Failed to load subjects. The server-side chunked data request failed: {e}")
+        return pd.DataFrame()
 
 
 @st.cache_data(ttl=600, show_spinner=False)
-def _fetch_records(_sdk: object, study_key: str) -> list[Record]:
+def _fetch_records(_sdk: object, study_key: str, limit: int = 1000) -> list[Record]:
     """Fetch all records for a study."""
-    return list(_sdk.get_records(study_key=study_key))  # type: ignore[attr-defined]
+    try:
+        return list(_sdk.get_records(study_key=study_key, limit=limit))  # type: ignore[attr-defined]
+    except Exception as e:
+        st.error(f"Failed to load records. The server-side chunked data request failed: {e}")
+        return []
 
 
 @st.cache_data(ttl=600, show_spinner=False)

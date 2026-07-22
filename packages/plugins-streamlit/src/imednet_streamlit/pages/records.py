@@ -47,23 +47,29 @@ def _resolve_form_name(form: object) -> str:
 
 
 @st.cache_data(ttl=600, show_spinner=False)
-def _fetch_records(_sdk: object, study_key: str) -> pd.DataFrame:
-    """Resolve the human-readable name for a form object."""
+def _fetch_records(_sdk: object, study_key: str, limit: int = 1000) -> pd.DataFrame:
+    """Fetch records with server-side pagination and error handling."""
     from imednet.spi.models import Record
 
-    records = _sdk.get_records(study_key=study_key)  # type: ignore[attr-defined]
-    fields = list(Record.model_fields.keys())
+    try:
+        records = _sdk.get_records(study_key=study_key, limit=limit)  # type: ignore[attr-defined]
+        fields = list(Record.model_fields.keys())
 
-    rows = []
-    for r in records:
-        rows.append({f: getattr(r, f, None) for f in fields})
+        rows = []
+        for r in records:
+            rows.append({f: getattr(r, f, None) for f in fields})
 
-    if not rows:
-        return pd.DataFrame(columns=fields)
+        if not rows:
+            return pd.DataFrame(columns=fields)
 
-    df = pd.DataFrame(rows, columns=fields)
-    deleted_mask = df.get("deleted", pd.Series(False, index=df.index)).fillna(False).astype(bool)
-    return df.loc[~deleted_mask].reset_index(drop=True)
+        df = pd.DataFrame(rows, columns=fields)
+        deleted_mask = (
+            df.get("deleted", pd.Series(False, index=df.index)).fillna(False).astype(bool)
+        )
+        return df.loc[~deleted_mask].reset_index(drop=True)
+    except Exception as e:
+        st.error(f"Failed to load records. The server-side chunked data request failed: {e}")
+        return pd.DataFrame()
 
 
 @st.cache_data(ttl=600, show_spinner=False)
