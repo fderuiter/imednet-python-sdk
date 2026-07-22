@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any, Optional
 try:
     import pandas as pd
 except ImportError:
-    pd = None
+    pd: Any = None  # type: ignore[no-redef]
 from pydantic import BaseModel, Field, ValidationError, create_model
 
 from imednet.spi.endpoints import Record as RecordModel

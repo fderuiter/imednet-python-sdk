@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from importlib import import_module
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from imednet.core.operations.executor import UniversalExecutor
 from imednet.errors import ExportBatchError
@@ -20,7 +20,7 @@ from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality
 try:
     import pandas as pd
 except ImportError:
-    pd = None
+    pd: Any = None  # type: ignore[no-redef]
 from imednet.constants import MAX_SQLITE_COLUMNS
 from imednet.utils import sanitize_csv_formula
 from imednet.utils.security import global_sensitivity_registry, mask_clinical_phi
@@ -73,7 +73,7 @@ def _to_sql_with_chunking(
     table: str,
     engine: Any,
     *,
-    if_exists: str,
+    if_exists: Literal["fail", "replace", "append"],
     **kwargs: Any,
 ) -> None:
     """Write ``df`` to ``table`` splitting columns when using SQLite.
@@ -294,7 +294,12 @@ class TabularSQLSink(ExportSink):
             df = pd.DataFrame(records)
 
         def execute_export() -> int:
-            if_exists = self._initial_if_exists if self._is_first_batch else "append"
+            from typing import cast
+
+            if_exists = cast(
+                Literal["fail", "replace", "append"],
+                self._initial_if_exists if self._is_first_batch else "append",
+            )
 
             df_str = df.to_csv(index=False)
             checksum = hashlib.sha256(df_str.encode('utf-8')).hexdigest()
@@ -770,11 +775,13 @@ def export_to_sql_by_form(
             dup_mask = df.columns.str.lower().duplicated()
             df = df.loc[:, ~dup_mask]
             df = _mask_df(df)
+        from typing import cast
+
         _to_sql_with_chunking(
             df,
             form.form_key or "",
             engine,
-            if_exists=if_exists,
+            if_exists=cast(Literal["fail", "replace", "append"], if_exists),
             **kwargs,
         )
 

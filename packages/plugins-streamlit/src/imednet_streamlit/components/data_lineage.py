@@ -42,7 +42,7 @@ def render_lineage_panes(
 def _redact_sensitive_keys(data: dict[str, Any]) -> dict[str, Any]:
     """Redact standard sensitive keys from payloads for secure display."""
     sensitive_keys = {"patient_name", "ssn", "dob", "mrn"}
-    redacted = {}
+    redacted: dict[str, Any] = {}
     for k, v in data.items():
         if k.lower() in sensitive_keys:
             redacted[k] = "***MASKED***"
