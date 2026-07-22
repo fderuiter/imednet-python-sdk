@@ -15,10 +15,6 @@ class VisitsOperationDef:
 class VisitsEndpoint(VisitsOperationDef, EdcSyncListGetEndpoint[Visit]):  # type: ignore[misc]
     """Synchronous endpoint for managing Visits."""
 
-    pass
-
 
 class AsyncVisitsEndpoint(VisitsOperationDef, EdcAsyncListGetEndpoint[Visit]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Visits."""
-
-    pass

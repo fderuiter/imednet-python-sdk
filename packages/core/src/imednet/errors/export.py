@@ -6,13 +6,9 @@ from .base import ImednetError
 class ExportError(ImednetError):
     """Raised when an export sink cannot write a batch or finalize a destination."""
 
-    pass
-
 
 class ExportConfigurationError(ExportError):
     """Raised when a sink is misconfigured (missing credentials, invalid parameters)."""
-
-    pass
 
 
 class ExportBatchError(ExportError):

@@ -2,7 +2,7 @@
 
 import pytest
 
-import imednet.endpoints.codings as codings
+from imednet.endpoints import codings
 from imednet.errors import NotFoundError
 from imednet.errors.validation import ConfigurationError
 from imednet.models.codings import Coding

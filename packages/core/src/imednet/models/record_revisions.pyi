@@ -9,8 +9,6 @@ from imednet.models.base import ImednetBaseModel
 class RecordRevision(ImednetBaseModel):
     """Historical version of a record including change reason and user."""
 
-    pass
-
     study_key: str | None
     record_revision_id: int | None
     record_id: int | None

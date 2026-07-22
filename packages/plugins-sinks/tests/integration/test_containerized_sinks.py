@@ -18,8 +18,6 @@ pytestmark = pytest.mark.skipif(
 class DriftError(Exception):
     """TODO: Add docstring."""
 
-    pass
-
 
 class DriftFailingHandler(logging.Handler):
     """TODO: Add docstring."""
@@ -94,7 +92,6 @@ def mock_record_mapper(monkeypatch, fake_records):
 
         def __init__(self, *args, **kwargs):
             """TODO: Add docstring."""
-            pass
 
         def __iter__(self):
             """TODO: Add docstring."""
