@@ -215,7 +215,7 @@ class CachedRecordsLoader:
             retry=retry_if_exception_type(Exception),
             reraise=True,
         )
-        return cast(list[Record], retryer(self._sdk.get_records, **filters))  # type: ignore
+        return retryer(self._sdk.get_records, **filters)
 
     def _list_records_with_filter_override(
         self, *, study_key: str, filter_string: str

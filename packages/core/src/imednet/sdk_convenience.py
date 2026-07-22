@@ -172,7 +172,7 @@ class SyncSDKConvenienceMixin:
         """Poll a job until it reaches a terminal state."""
         from imednet.utils.job_poller import JobPoller
 
-        fetch_result = getattr(self, "_client", None) and getattr(self._client, "get", None)  # type: ignore[attr-defined]
+        fetch_result = getattr(self, "_client", None) and getattr(self._client, "get", None)
         return JobPoller(self.jobs.get, fetch_result=fetch_result).run(
             study_key, batch_id, interval, timeout
         )

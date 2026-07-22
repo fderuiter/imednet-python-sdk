@@ -19,7 +19,7 @@ class CredentialRepository:
             db_path: The filesystem path to the SQLite database.
         """
         self.db_path = db_path
-        self._initialize_db()  # type: ignore
+        self._initialize_db()
 
     def _initialize_db(self) -> None:
         """Ensure the database and tables exist with the correct schema."""
@@ -74,7 +74,7 @@ class CredentialRepository:
             except sqlite3.OperationalError:
                 return []
 
-    def provision_tenant(  # type: ignore
+    def provision_tenant(
         self, study_key: str, api_key: str, security_key: str, env_url: str | None = None
     ) -> None:
         """Provision or update credentials for a tenant.

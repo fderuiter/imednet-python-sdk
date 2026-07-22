@@ -1,7 +1,5 @@
 """Engine module."""
 
-import typing
-
 """Dynamic model generation engine based on unified contract schemas."""
 
 import os
@@ -92,7 +90,7 @@ class ModelEngine:
         """
         cache_key = (model_name, base_cls)
         if cache_key in cls._model_cache:
-            return cls._model_cache[cache_key]  # type: ignore[no-any-return]
+            return cls._model_cache[cache_key]
 
         if tracer:
             with tracer.start_as_current_span("ModelEngine.get_model") as span:

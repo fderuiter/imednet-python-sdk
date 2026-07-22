@@ -10,7 +10,7 @@ from imednet.utils.validators import is_boolean_token, parse_bool
 try:
     import pyarrow as pa
 except ImportError:  # pragma: no cover - exercised when optional dependency is absent
-    pa = None
+    pa: Any = None  # type: ignore[no-redef]
 
 
 class _ModelDumpable(Protocol):
