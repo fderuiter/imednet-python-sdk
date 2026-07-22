@@ -24,7 +24,7 @@ class Role(ImednetBaseModel):
 class User(ImednetBaseModel):
     """A user account in the system."""
 
-    @computed_field  # type: ignore[untyped-decorator]
+    @computed_field
     def name(self) -> str:
         """A convenience full-name property so you can do `user.name`.
 

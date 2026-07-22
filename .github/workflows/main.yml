@@ -58,9 +58,11 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install dependencies
-        run: pip install ruff
+        run: pip install ruff pylint
       - name: Run Ruff Linter
         run: ruff check . --select F401,F841
+      - name: Run Similarity Check
+        run: pylint --disable=all --enable=similarities --min-similarity-lines=4 $(git ls-files 'packages/**/*.py')
 
   # ------------------------------------------------------------------
   # JOB 0.5: DETECT CHANGES & PLAN

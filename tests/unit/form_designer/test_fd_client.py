@@ -80,7 +80,7 @@ def test_save_form_invalid_json_fallback(mock_layout, respx_mock):
 
 
 @pytest.mark.parametrize(
-    "csrf,form_id,comm_id,rev,expected_error",
+    ("csrf", "form_id", "comm_id", "rev", "expected_error"),
     [
         ("", 1, 1, 1, "CSRF Key cannot be empty."),
         ("   ", 1, 1, 1, "CSRF Key cannot be empty."),

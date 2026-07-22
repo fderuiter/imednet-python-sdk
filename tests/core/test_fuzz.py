@@ -1,3 +1,4 @@
+import contextlib
 import json
 import logging
 import os
@@ -34,16 +35,12 @@ def run_fuzzer():
 
         imednet.models.engine._CONTRACT_CACHE = None
 
-        try:
+        with contextlib.suppress(Exception):
             get_contract()
-        except Exception:
-            pass
 
     def fuzz_data_dictionary(data: bytes):
-        try:
+        with contextlib.suppress(Exception):
             DataDictionaryLoader.from_zip(BytesIO(data))
-        except Exception:
-            pass
 
     def fuzz_warehouse_transformation(data: bytes):
         try:

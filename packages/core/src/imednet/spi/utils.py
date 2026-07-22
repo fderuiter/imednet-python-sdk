@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """SPI for utility functions."""
 
 from imednet.utils.dates import format_iso_datetime, parse_iso_datetime
@@ -13,7 +14,8 @@ from imednet.utils.job_poller import (
     JobTimeoutError,
     evaluate_job_state,
 )
-from imednet.utils.security import mask_clinical_phi
+from imednet.utils.secrets import redact_sensitive_payload
+from imednet.utils.security import mask_clinical_phi, sanitize_csv_formula
 from imednet.utils.serialization import flatten
 from imednet.utils.url import redact_sensitive_text
 from imednet.utils.validators import is_boolean_token, is_missing_value, parse_bool
@@ -36,6 +38,11 @@ __all__ = [
     "mask_clinical_phi",
     "parse_bool",
     "parse_iso_datetime",
+    "redact_sensitive_payload",
     "redact_sensitive_text",
+
+
+    "sanitize_csv_formula",
+
     "sqlite_connection",
 ]

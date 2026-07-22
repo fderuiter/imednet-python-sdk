@@ -157,25 +157,27 @@ class CachedRecordsLoader:
 
     def _initialise_cache(self) -> None:
         """Ensure the cache database and tables are created."""
-        conn = get_sqlite_connection(self.db_path)
-        try:
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS record_cache (
-                    study_key TEXT NOT NULL,
-                    record_id INTEGER NOT NULL,
-                    form_key TEXT NOT NULL,
-                    date_modified TEXT NOT NULL,
-                    payload TEXT NOT NULL,
-                    PRIMARY KEY (study_key, record_id)
-                )
-                """)
-            conn.execute("""
-                CREATE INDEX IF NOT EXISTS idx_record_cache_study_modified
-                ON record_cache (study_key, date_modified)
-                """)
-            conn.commit()
-        finally:
-            conn.close()
+        resolved = Path(self.db_path).expanduser().resolve()
+        with _get_db_init_lock(resolved):
+            conn = get_sqlite_connection(self.db_path)
+            try:
+                conn.execute("""
+                    CREATE TABLE IF NOT EXISTS record_cache (
+                        study_key TEXT NOT NULL,
+                        record_id INTEGER NOT NULL,
+                        form_key TEXT NOT NULL,
+                        date_modified TEXT NOT NULL,
+                        payload TEXT NOT NULL,
+                        PRIMARY KEY (study_key, record_id)
+                    )
+                    """)
+                conn.execute("""
+                    CREATE INDEX IF NOT EXISTS idx_record_cache_study_modified
+                    ON record_cache (study_key, date_modified)
+                    """)
+                conn.commit()
+            finally:
+                conn.close()
 
     def _get_high_water_mark(self, conn: sqlite3.Connection, study_key: str) -> str | None:
         """Get the latest modification timestamp from the local cache for a study."""
@@ -203,7 +205,7 @@ class CachedRecordsLoader:
     def _fetch_active_record_ids(self, study_key: str) -> set[int]:
         """Fetch the set of all non-deleted record IDs for a study from the API."""
         records = self._list_records(study_key=study_key, record_data_filter=None, deleted=False)
-        return {record.record_id for record in records}  # type: ignore
+        return {record.record_id for record in records if record.record_id is not None}
 
     def _list_records(self, **filters: Any) -> list[Record]:
         """Call the SDK records list endpoint with retry logic."""
@@ -229,7 +231,7 @@ class CachedRecordsLoader:
             retry=retry_if_exception_type(Exception),
             reraise=True,
         )
-        endpoint = self._sdk.records  # type: ignore
+        endpoint = self._sdk.records
 
         return cast(
             list[Record],
@@ -249,9 +251,9 @@ class CachedRecordsLoader:
                 record.record_id,
                 record.form_key,
                 (
-                    record.date_modified.isoformat()  # type: ignore[union-attr]
+                    record.date_modified.isoformat()
                     if hasattr(record.date_modified, "isoformat")
-                    else str(record.date_modified)
+                    else (str(record.date_modified) if record.date_modified is not None else "")
                 ),
                 json.dumps(record.model_dump(mode="json", by_alias=True), sort_keys=True),
             )

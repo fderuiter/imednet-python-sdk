@@ -278,7 +278,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
             res.append(item)
         return res
 
-    @execute_get  # type: ignore
+    @execute_get
     def get(self, study_key: str | None, item_id: ItemId) -> FilterGetOperation[T]:
         """Retrieve a single resource by its ID.
 

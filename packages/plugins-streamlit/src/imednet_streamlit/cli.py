@@ -1,3 +1,5 @@
+import argparse
+from typing import Any
 """CLI commands for iMednet Streamlit dashboard."""
 
 import subprocess
@@ -35,7 +37,7 @@ def run_dashboard(port: int = 8501, no_browser: bool = False) -> None:
         sys.exit(result.returncode)
 
 
-def setup_parser(subparsers):
+def setup_parser(subparsers: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
     """Set up the dashboard argparse subparsers."""
     dash_parser = subparsers.add_parser(
         "dashboard", help="Launch the iMednet Streamlit reporting dashboard."

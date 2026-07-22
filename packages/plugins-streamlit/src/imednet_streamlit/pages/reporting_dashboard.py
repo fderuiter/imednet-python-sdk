@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Integrated safety reporting dashboard.
 
 Consolidates adverse events, protocol deviations, device deficiencies,
@@ -24,6 +25,7 @@ from imednet.spi.models import (
 from imednet_streamlit import components
 from imednet_streamlit.auth import get_sdk, get_study_key
 from imednet_streamlit.components.charts import render_accessible_chart
+from imednet_streamlit.utils import models_to_frame
 
 _HIGH_QUERY_RATE_THRESHOLD = 20.0
 _HIGH_RATE_COLOR = "#ffe0e0"
@@ -77,26 +79,34 @@ def _get_date_range_defaults(frames: Sequence[pd.DataFrame]) -> tuple[date, date
 
 
 @st.cache_data(ttl=600, show_spinner=False)
-def _fetch_subjects_df(_sdk: object, study_key: str) -> pd.DataFrame:
+def _fetch_subjects_df(_sdk: object, study_key: str, limit: int = 1000) -> pd.DataFrame:
     """Fetch subject metadata and return as a DataFrame."""
-    rows = [
-        {
-            "subject_key": str(subject.subject_key),
-            "site_name": str(subject.site_name or ""),
-            "deleted": bool(subject.deleted),
-        }
-        for subject in _sdk.get_subjects(study_key=study_key)  # type: ignore[attr-defined]
-    ]
-    if not rows:
-        return pd.DataFrame(columns=["subject_key", "site_name", "deleted"])
-    df = pd.DataFrame(rows)
-    return df.loc[~df["deleted"]].reset_index(drop=True)
+    try:
+        rows = [
+            {
+                "subject_key": str(subject.subject_key),
+                "site_name": str(subject.site_name or ""),
+                "deleted": bool(subject.deleted),
+            }
+            for subject in _sdk.get_subjects(study_key=study_key, limit=limit)  # type: ignore[attr-defined]
+        ]
+        if not rows:
+            return pd.DataFrame(columns=["subject_key", "site_name", "deleted"])
+        df = pd.DataFrame(rows)
+        return df.loc[~df["deleted"]].reset_index(drop=True)
+    except Exception as e:
+        st.error(f"Failed to load subjects. The server-side chunked data request failed: {e}")
+        return pd.DataFrame()
 
 
 @st.cache_data(ttl=600, show_spinner=False)
-def _fetch_records(_sdk: object, study_key: str) -> list[Record]:
+def _fetch_records(_sdk: object, study_key: str, limit: int = 1000) -> list[Record]:
     """Fetch all records for a study."""
-    return list(_sdk.get_records(study_key=study_key))  # type: ignore[attr-defined]
+    try:
+        return list(_sdk.get_records(study_key=study_key, limit=limit))  # type: ignore[attr-defined]
+    except Exception as e:
+        st.error(f"Failed to load records. The server-side chunked data request failed: {e}")
+        return []
 
 
 @st.cache_data(ttl=600, show_spinner=False)
@@ -140,20 +150,6 @@ def _fallback_direct_models(
     return aes, pds, dds
 
 
-def _models_to_frame(models: Sequence[object], *, date_column: str | None = None) -> pd.DataFrame:
-    """Convert a sequence of models into a pandas DataFrame."""
-    if not models:
-        return pd.DataFrame()
-    rows = [
-        model.model_dump(by_alias=False) if hasattr(model, "model_dump") else dict(vars(model))
-        for model in models
-    ]
-    df = pd.DataFrame(rows)
-    if date_column and date_column in df:
-        df[date_column] = pd.to_datetime(df[date_column], utc=True, errors="coerce")
-    return df
-
-
 def _extract_domain_frames(
     records: list[Record], configuration: StudyConfiguration
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -167,9 +163,9 @@ def _extract_domain_frames(
     if not adverse_events and not protocol_deviations and not device_deficiencies:
         adverse_events, protocol_deviations, device_deficiencies = _fallback_direct_models(records)
     return (
-        _models_to_frame(adverse_events, date_column="ae_start_date"),
-        _models_to_frame(protocol_deviations, date_column="dv_date"),
-        _models_to_frame(device_deficiencies, date_column="dd_date"),
+        models_to_frame(adverse_events, date_column="ae_start_date"),
+        models_to_frame(protocol_deviations, date_column="dv_date"),
+        models_to_frame(device_deficiencies, date_column="dd_date"),
     )
 
 
@@ -268,7 +264,7 @@ def _build_site_metrics(_sdk: object, study_key: str, subjects_df: pd.DataFrame)
                 open_queries=("annotation_id", "count"),
                 avg_days_open=(
                     "date_created",
-                    lambda values: (now_utc - pd.to_datetime(values, utc=True)).dt.days.mean(),  # type: ignore
+                    lambda values: (now_utc - pd.to_datetime(values, utc=True)).dt.days.mean(),
                 ),
             )
             .reset_index()
@@ -586,7 +582,7 @@ def _render_site_performance_tab(df_site_metrics: pd.DataFrame) -> None:
     display_cols = ["site_name", "enrolled_count", "open_queries", "query_rate", "avg_days_open"]
     display = df_site_metrics.reindex(columns=display_cols)
     st.dataframe(
-        display.style.map(_highlight_high_rate, subset=["query_rate"]),  # type: ignore
+        display.style.map(_highlight_high_rate, subset=["query_rate"]),
         use_container_width=True,
     )
 

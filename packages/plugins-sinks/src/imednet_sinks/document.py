@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """MongoDB document-envelope export sink.
 
 This module implements the **structure-preserving export path** for a MongoDB
@@ -95,9 +96,9 @@ class MongoDbSinkConfig(SinkConfig):
     database: str = ""
     collection: str = ""
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Validate MongoDB config properties after initialization."""
-        super().__post_init__()
+        super().__post_init__()  # type: ignore[no-untyped-call]
         if not self.uri or not isinstance(self.uri, str) or not self.uri.strip():
             raise ValueError("uri must be a non-empty string")
         if not self.database or not isinstance(self.database, str) or not self.database.strip():

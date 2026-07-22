@@ -41,15 +41,15 @@ class SubjectsOperationDef:
     MODEL = Subject
     _id_param = "subjectKey"
 
-    @execute_operation  # type: ignore
+    @execute_operation
     def list_by_site(self, study_key: str, site_id: str | int) -> ListBySiteOperation:
         """List subjects by site ID."""
         return ListBySiteOperation(self, study_key, site_id)
 
 
-class SubjectsEndpoint(SubjectsOperationDef, EdcSyncListGetEndpoint[Subject]):  # type: ignore[misc]
+class SubjectsEndpoint(SubjectsOperationDef, EdcSyncListGetEndpoint[Subject]):
     """Synchronous endpoint for managing Subjects."""
 
 
-class AsyncSubjectsEndpoint(SubjectsOperationDef, EdcAsyncListGetEndpoint[Subject]):  # type: ignore[misc]
+class AsyncSubjectsEndpoint(SubjectsOperationDef, EdcAsyncListGetEndpoint[Subject]):
     """Asynchronous endpoint for managing Subjects."""

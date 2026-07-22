@@ -13,7 +13,7 @@ from .output import display_list
 
 
 def register_list_command(
-    parser,
+    parser: argparse.ArgumentParser,
     attr: str,
     name: str,
     *,

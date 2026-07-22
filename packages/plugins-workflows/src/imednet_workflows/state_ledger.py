@@ -120,10 +120,10 @@ class FileStateProvider(BaseStateProvider):
 
         with open(self._lock_path, "w") as lock_file:
             try:
-                fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)  # type: ignore[attr-defined]
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
                 yield
             finally:
-                fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)  # type: ignore[attr-defined]
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
 
     def read_state(self) -> LedgerState:
         """Reads and validates the current ledger state."""
@@ -315,8 +315,8 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
             from airflow.models.xcom import XCom
             from airflow.utils.session import provide_session
 
-            @provide_session
-            def _get_xcom(session=None):
+            @provide_session  # type: ignore[misc]
+            def _get_xcom(session: Any = None) -> Any:
                 # Query the latest XCom for this key
                 return (
                     session.query(XCom)
@@ -439,8 +439,8 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
             from airflow.models.xcom import XCom
             from airflow.utils.session import provide_session
 
-            @provide_session
-            def _delete_xcom(session=None):
+            @provide_session  # type: ignore[misc]
+            def _delete_xcom(session: Any = None) -> bool:
                 query = session.query(XCom)
                 if stream_name:
                     query = query.filter(XCom.key == self._get_xcom_key(study_key, stream_name))
@@ -448,9 +448,9 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
                     query = query.filter(XCom.key.like(f"state_{study_key}_%"))
 
                 deleted = query.delete(synchronize_session=False)
-                return deleted > 0
+                return deleted > 0  # type: ignore[no-any-return]
 
-            return _delete_xcom()
+            return bool(_delete_xcom())
         except ImportError:
             return False
 
@@ -461,8 +461,8 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
             from airflow.models.xcom import XCom
             from airflow.utils.session import provide_session
 
-            @provide_session
-            def _get_all_xcoms(session=None):
+            @provide_session  # type: ignore[misc]
+            def _get_all_xcoms(session: Any = None) -> Any:
                 return (
                     session.query(XCom)
                     .filter(XCom.key.like("state_%"))

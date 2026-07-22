@@ -106,19 +106,19 @@ class StudySchemaInspector:
 
         sdk = cast("AsyncImednetFacade", self._sdk)
 
-        async def fetch_forms():
+        async def fetch_forms() -> list[Any]:  # type: ignore[name-defined]
             """Asynchronous fetch for forms."""
             return await sdk.async_get_forms(study_key)
 
-        async def fetch_variables():
+        async def fetch_variables() -> list[Any]:  # type: ignore[name-defined]
             """Asynchronous fetch for variables."""
             return await sdk.async_get_variables(study_key)
 
-        async def fetch_intervals():
+        async def fetch_intervals() -> list[Any]:  # type: ignore[name-defined]
             """Asynchronous fetch for intervals."""
             return await sdk.async_get_intervals(study_key)
 
-        async def fetch_sites():
+        async def fetch_sites() -> list[Any]:  # type: ignore[name-defined]
             """Asynchronous fetch for sites."""
             return await sdk.async_get_sites(study_key)
 

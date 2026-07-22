@@ -273,7 +273,8 @@ def _run_data_lineage(
         sys.modules["imednet_workflows"] = fake_workflows_module
         sys.modules["imednet_workflows.extraction_engine"] = fake_engine_module
         module_spec = importlib.util.spec_from_file_location(MODULE_NAME, PAGE_PATH)
-        assert module_spec is not None and module_spec.loader is not None
+        assert module_spec is not None
+        assert module_spec.loader is not None
         module = importlib.util.module_from_spec(module_spec)
         sys.modules[MODULE_NAME] = module
         module_spec.loader.exec_module(module)
@@ -396,12 +397,15 @@ def test_data_lineage_redact_sensitive_keys() -> None:
 
     data = {
         "ae_term": "headache",
-        "api_key": "supersecret",
-        "token": "mytoken",
+        "patient_name": "John Doe",
+        "dob": "1990-01-01",
         "subject_key": "SUBJ-001",
+        "api_key": "secret_api",
+        "token": "secret_token",
         "nested": {
-            "password": "abc123",
-            "details": [{"security_key": "xyz"}, {"label": "ok"}],
+            "ssn": "123-45-678",
+            "password": "secret_password",
+            "details": [{"security_key": "secret_key"}, {"phone": "555-1234"}, {"label": "ok"}],
         },
         "severity": "MILD",
     }
@@ -409,8 +413,12 @@ def test_data_lineage_redact_sensitive_keys() -> None:
     assert redacted["ae_term"] == "headache"
     assert redacted["severity"] == "MILD"
     assert redacted["subject_key"] == "SUBJ-001"
-    assert redacted["api_key"] == "***REDACTED***"
-    assert redacted["token"] == "***REDACTED***"
-    assert redacted["nested"]["password"] == "***REDACTED***"
-    assert redacted["nested"]["details"][0]["security_key"] == "***REDACTED***"
-    assert redacted["nested"]["details"][1]["label"] == "ok"
+    assert redacted["api_key"] == "***"
+    assert redacted["token"] == "***"
+    assert redacted["nested"]["password"] == "***"
+    assert redacted["nested"]["details"][0]["security_key"] == "***"
+    assert redacted["patient_name"] == "***MASKED***"
+    assert redacted["dob"] == "***MASKED***"
+    assert redacted["nested"]["ssn"] == "***MASKED***"
+    assert redacted["nested"]["details"][1]["phone"] == "***MASKED***"
+    assert redacted["nested"]["details"][2]["label"] == "ok"

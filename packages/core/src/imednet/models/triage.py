@@ -37,7 +37,7 @@ class TriageHistoryEntry(ImednetBaseModel):
     comment: str | None = None
     timestamp: datetime
 
-    @field_validator("comment", check_fields=False, mode="before")  # type: ignore[untyped-decorator]
+    @field_validator("comment", check_fields=False, mode="before")
     @classmethod
     def _normalise_comment(cls, value: object) -> object:
         """Normalize comment string, returning None if empty or whitespace."""

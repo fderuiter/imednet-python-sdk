@@ -58,7 +58,7 @@ ASYNC_CASES = [
 ]
 
 
-@pytest.mark.parametrize("cls,module,model,item_id", CASES)
+@pytest.mark.parametrize(("cls", "module", "model", "item_id"), CASES)
 def test_list_and_get(dummy_client, context, paginator_factory, cls, module, model, item_id):
     """Test that list and get."""
     ep = cls(dummy_client, context)
@@ -81,7 +81,7 @@ def test_list_and_get(dummy_client, context, paginator_factory, cls, module, mod
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("cls,module,model,item_id", ASYNC_CASES)
+@pytest.mark.parametrize(("cls", "module", "model", "item_id"), ASYNC_CASES)
 async def test_async_list_and_get(
     dummy_client,
     context,
