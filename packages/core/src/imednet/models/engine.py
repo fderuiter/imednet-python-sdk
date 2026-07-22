@@ -73,6 +73,8 @@ except Exception:
 class ModelEngine:
     """Engine for dynamically creating Pydantic models from schemas."""
 
+    _model_cache = {}
+
     @classmethod
     def get_model(cls, model_name: str, base_cls: type[Any] = ImednetBaseModel) -> type[Any]:
         """Get or create a dynamic Pydantic model for the given name.
@@ -84,11 +86,19 @@ class ModelEngine:
         Returns:
             A Pydantic model class.
         """
+        cache_key = (model_name, base_cls)
+        if cache_key in cls._model_cache:
+            return cls._model_cache[cache_key]
+
         if tracer:
             with tracer.start_as_current_span("ModelEngine.get_model") as span:
                 span.set_attribute("model_name", model_name)
-                return cls._get_model(model_name, base_cls)
-        return cls._get_model(model_name, base_cls)
+                model = cls._get_model(model_name, base_cls)
+        else:
+            model = cls._get_model(model_name, base_cls)
+
+        cls._model_cache[cache_key] = model
+        return model
 
     @classmethod
     def _get_model(cls, model_name: str, base_cls: type[Any] = ImednetBaseModel) -> type[Any]:
