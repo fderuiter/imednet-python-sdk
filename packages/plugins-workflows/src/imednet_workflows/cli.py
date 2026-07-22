@@ -12,6 +12,7 @@ import sys
 from datetime import datetime, timezone
 from typing import Any
 
+from imednet.sdk import ImednetSDK
 from imednet.spi.cli import STUDY_KEY_ARG, parse_filter_args, with_sdk
 
 from .data_extraction import DataExtractionWorkflow
@@ -48,13 +49,13 @@ def setup_parser(subparsers: argparse._SubParsersAction[Any]) -> None:
 
     @with_sdk
     def extract_records(
-        sdk: ImednetSDK,  # type: ignore[name-defined]
+        sdk: ImednetSDK,
         study_key: str,
         record_filter: list[str] | None = None,
         subject_filter: list[str] | None = None,
         visit_filter: list[str] | None = None,
     ) -> None:
-        workflow = DataExtractionWorkflow(sdk)
+        workflow = DataExtractionWorkflow(sdk)  # type: ignore[arg-type]
         parsed_record_filter = parse_filter_args(record_filter)
         parsed_subject_filter = parse_filter_args(subject_filter)
         parsed_visit_filter = parse_filter_args(visit_filter)
@@ -95,12 +96,15 @@ def setup_parser(subparsers: argparse._SubParsersAction[Any]) -> None:
 
     @with_sdk
     def sync_worker(
-        sdk: ImednetSDK, study_key: str, interval: int = 900, once: bool = False  # type: ignore[name-defined]
+        sdk: ImednetSDK,
+        study_key: str,
+        interval: int = 900,
+        once: bool = False,
     ) -> None:
         from .cached_loader import CachedRecordsLoader
 
         worker = SyncWorker(
-            CachedRecordsLoader(sdk),
+            CachedRecordsLoader(sdk),  # type: ignore[arg-type]
             config=SyncWorkerConfig(study_key=study_key, interval_seconds=interval),
         )
 
@@ -281,8 +285,8 @@ def setup_subject_parser(subparsers: argparse._SubParsersAction[Any]) -> None:
     subj_parser.add_argument("subject_key", help="The key identifying the subject.")
 
     @with_sdk
-    def subject_data(sdk: ImednetSDK, study_key: str, subject_key: str) -> None:  # type: ignore[name-defined]
-        workflow = SubjectDataWorkflow(sdk)
+    def subject_data(sdk: ImednetSDK, study_key: str, subject_key: str) -> None:
+        workflow = SubjectDataWorkflow(sdk)  # type: ignore[arg-type]
         data = workflow.get_all_subject_data(study_key, subject_key)
         print(data.model_dump())
 

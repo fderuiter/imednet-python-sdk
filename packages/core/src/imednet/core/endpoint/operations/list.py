@@ -89,7 +89,7 @@ class ListOperation(Generic[T]):
             page_size=self.page_size,
         )
 
-        async def _generator():
+        async def _generator() -> AsyncIterator[T]:
             """Async generator to yield processed items from the paginator."""
             async for item in paginator:
                 yield self._process_item(item)

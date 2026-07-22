@@ -26,7 +26,7 @@ class ListBySiteOperation:
 
     async def execute_async(self, client: Any, parse_func: Any = None) -> list[Subject]:
         """Execute async."""
-        return await self.endpoint._list_async(
+        return await self.endpoint._list_async(  # type: ignore[no-any-return]
             client,
             self.endpoint.ASYNC_PAGINATOR_CLS,
             study_key=self.study_key,
@@ -41,15 +41,15 @@ class SubjectsOperationDef:
     MODEL = Subject
     _id_param = "subjectKey"
 
-    @execute_operation
+    @execute_operation  # type: ignore[arg-type]
     def list_by_site(self, study_key: str, site_id: str | int) -> ListBySiteOperation:
         """List subjects by site ID."""
         return ListBySiteOperation(self, study_key, site_id)
 
 
-class SubjectsEndpoint(SubjectsOperationDef, EdcSyncListGetEndpoint[Subject]):
+class SubjectsEndpoint(SubjectsOperationDef, EdcSyncListGetEndpoint[Subject]):  # type: ignore[misc]
     """Synchronous endpoint for managing Subjects."""
 
 
-class AsyncSubjectsEndpoint(SubjectsOperationDef, EdcAsyncListGetEndpoint[Subject]):
+class AsyncSubjectsEndpoint(SubjectsOperationDef, EdcAsyncListGetEndpoint[Subject]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Subjects."""

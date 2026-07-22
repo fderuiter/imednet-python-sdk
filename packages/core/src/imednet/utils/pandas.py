@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 try:
     import pandas as pd
 except ImportError:
-    pd = None
+    pd: Any = None  # type: ignore[no-redef]
 from ..models.records import Record
 from .security import sanitize_csv_formula
 

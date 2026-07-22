@@ -196,6 +196,22 @@ all = [
     "vulture-check"
 ]
 
+[tool.hatch.envs.duplication]
+detached = true
+dependencies = ["pylint>=3.0.0"]
+
+[tool.hatch.envs.duplication.scripts]
+check = "pylint --disable=all --enable=duplicate-code {args:packages}"
+
+[tool.hatch.envs.quality]
+detached = true
+
+[tool.hatch.envs.quality.scripts]
+all = [
+    "hatch run lint:all {args:packages}",
+    "hatch run duplication:check {args:packages}"
+]
+
 [tool.uv.workspace]
 members = ["packages/*"]
 
@@ -220,8 +236,11 @@ strict = false
 ignore_errors = true
 
 [tool.pylint.SIMILARITIES]
+min-similarity-lines = 15
 ignore-comments = true
 ignore-docstrings = true
 ignore-imports = true
 ignore-signatures = true
-min-similarity-lines = 15
+
+[tool.pylint.MASTER]
+ignore-paths = ["^tests/.*", "^.*/tests/.*", "^examples/.*", "^scripts/.*"]

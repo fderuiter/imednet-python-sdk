@@ -40,7 +40,6 @@ class UnimplementedEndpoint(EndpointABC[MockModel]):
     """Test suite for UnimplementedEndpoint."""
 
 
-
 def test_endpoint_abc_properties():
     """Test that endpoint abc properties."""
     endpoint = ConcreteEndpoint()

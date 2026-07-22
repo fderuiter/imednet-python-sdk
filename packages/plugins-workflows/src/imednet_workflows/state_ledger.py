@@ -310,7 +310,7 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
             from airflow.models.xcom import XCom
             from airflow.utils.session import provide_session
 
-            @provide_session  # type: ignore[misc]
+            @provide_session
             def _get_xcom(session: Any = None) -> Any:
                 # Query the latest XCom for this key
                 return (
@@ -434,7 +434,7 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
             from airflow.models.xcom import XCom
             from airflow.utils.session import provide_session
 
-            @provide_session  # type: ignore[misc]
+            @provide_session
             def _delete_xcom(session: Any = None) -> bool:
                 query = session.query(XCom)
                 if stream_name:
@@ -456,7 +456,7 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
             from airflow.models.xcom import XCom
             from airflow.utils.session import provide_session
 
-            @provide_session  # type: ignore[misc]
+            @provide_session
             def _get_all_xcoms(session: Any = None) -> Any:
                 return (
                     session.query(XCom)

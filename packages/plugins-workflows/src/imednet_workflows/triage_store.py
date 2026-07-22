@@ -533,4 +533,4 @@ class TriageStore:
 
     def _redact_error_text(self, message: str) -> str:
         """Redact sensitive information from an error message."""
-        return redact_sensitive_payload(message)
+        return str(redact_sensitive_payload(message))

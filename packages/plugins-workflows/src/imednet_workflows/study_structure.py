@@ -40,13 +40,13 @@ def _build_study_structure(
         for form_summary in getattr(interval, 'forms', []):
             if form_summary.form_id is not None:
                 full_form = forms_by_id.get(form_summary.form_id)
-            if full_form:
-                form_vars = variables_by_form_id.get(full_form.form_id, [])  # type: ignore
+            if full_form and full_form.form_id is not None:
+                form_vars = variables_by_form_id.get(full_form.form_id, [])
                 form_structures.append(FormStructure.from_form(full_form, form_vars))
 
         interval_structures.append(IntervalStructure.from_interval(interval, form_structures))
 
-    return StudyStructure(study_key=study_key, intervals=interval_structures)  # type: ignore[call-arg]
+    return StudyStructure(studyKey=study_key, intervals=interval_structures)
 
 
 def get_study_structure(sdk: "ImednetFacade", study_key: str) -> StudyStructure:
@@ -81,15 +81,15 @@ async def async_get_study_structure(sdk: "AsyncImednetFacade", study_key: str) -
     """Asynchronous variant of :func:`get_study_structure`."""
     try:
 
-        async def fetch_intervals() -> list[Any]:  # type: ignore[name-defined]
+        async def fetch_intervals() -> list[Any]:
             """Asynchronously fetch visit intervals."""
             return await sdk.async_get_intervals(study_key)
 
-        async def fetch_forms() -> list[Any]:  # type: ignore[name-defined]
+        async def fetch_forms() -> list[Any]:
             """Asynchronously fetch form definitions."""
             return await sdk.async_get_forms(study_key)
 
-        async def fetch_variables() -> list[Any]:  # type: ignore[name-defined]
+        async def fetch_variables() -> list[Any]:
             """Asynchronously fetch variable definitions."""
             return await sdk.async_get_variables(study_key)
 

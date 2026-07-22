@@ -52,7 +52,7 @@ class DefaultOperationRetryPolicy(OperationRetryPolicy):
         """
         # Default fallback: retry on any exception?
         # Usually we only retry on specific ones, but for universal wrapper, we can allow everything or leave it configurable
-        return True  # type: ignore[no-any-return]
+        return True
 
 
 class UniversalExecutor:
@@ -102,7 +102,7 @@ class UniversalExecutor:
             if isinstance(exc, Exception):  # noqa: SIM102
                 if hasattr(self.retry_config.retry_policy, "should_retry"):
                     return self.retry_config.retry_policy.should_retry(exc)  # type: ignore[no-any-return]
-        return False  # type: ignore[no-any-return]
+        return False
 
     def execute(self, func: Callable[[], T]) -> T:
         """Synchronous execution."""

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, TypedDict, cast
+from typing import TYPE_CHECKING, Any, TypedDict, cast
 
 from pydantic import Field
 
@@ -36,11 +36,18 @@ class StudySnapshot(ImednetBaseModel):
 
     def model_post_init(self, __context: object) -> None:
         """Initialize derived lookup dictionaries after model initialization."""
-        self.forms_by_key = {form.form_key: form for form in self.forms}  # type: ignore
+        self.forms_by_key = {
+            form.form_key: form for form in self.forms if form.form_key is not None
+        }
         self.variables_by_form = {}
         for variable in self.variables:
-            self.variables_by_form.setdefault(variable.form_key, []).append(variable)  # type: ignore
-        self.intervals_by_name = {interval.interval_name: interval for interval in self.intervals}  # type: ignore
+            if variable.form_key is not None:
+                self.variables_by_form.setdefault(variable.form_key, []).append(variable)
+        self.intervals_by_name = {
+            interval.interval_name: interval
+            for interval in self.intervals
+            if interval.interval_name is not None
+        }
 
     def enrollment_forms(self) -> list[Form]:
         """Return forms with form_type indicating subject registration."""
@@ -106,19 +113,19 @@ class StudySchemaInspector:
 
         sdk = cast("AsyncImednetFacade", self._sdk)
 
-        async def fetch_forms() -> list[Any]:  # type: ignore[name-defined]
+        async def fetch_forms() -> list[Any]:
             """Asynchronous fetch for forms."""
             return await sdk.async_get_forms(study_key)
 
-        async def fetch_variables() -> list[Any]:  # type: ignore[name-defined]
+        async def fetch_variables() -> list[Any]:
             """Asynchronous fetch for variables."""
             return await sdk.async_get_variables(study_key)
 
-        async def fetch_intervals() -> list[Any]:  # type: ignore[name-defined]
+        async def fetch_intervals() -> list[Any]:
             """Asynchronous fetch for intervals."""
             return await sdk.async_get_intervals(study_key)
 
-        async def fetch_sites() -> list[Any]:  # type: ignore[name-defined]
+        async def fetch_sites() -> list[Any]:
             """Asynchronous fetch for sites."""
             return await sdk.async_get_sites(study_key)
 
