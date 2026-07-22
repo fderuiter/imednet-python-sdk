@@ -1,7 +1,9 @@
 """Base endpoint mix-in for all API resource endpoints."""
 
 from __future__ import annotations
+import builtins
 
+import builtins
 import warnings
 from collections.abc import Callable
 from typing import Any, TypeVar
@@ -248,7 +250,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
             parse_func=self._resolve_parse_func(),
         )
 
-    def _list_sync(self, *a: Any, **k: Any) -> 'builtins.list[T]':  # type: ignore[name-defined]
+    def _list_sync(self, *a: Any, **k: Any) -> builtins.list[T]:
         from imednet.core.endpoint.operations.list import ListOperation
 
         study_key = k.pop("study_key", None)
@@ -261,7 +263,7 @@ class _ListGetEndpointBase(GenericEndpoint[T]):
         )
         return list(op.execute_sync(self._require_sync_client(), self.PAGINATOR_CLS))
 
-    async def _list_async(self, *a: Any, **k: Any) -> 'builtins.list[T]':  # type: ignore[name-defined]
+    async def _list_async(self, *a: Any, **k: Any) -> builtins.list[T]:
         from imednet.core.endpoint.operations.list import ListOperation
 
         study_key = k.pop("study_key", None)

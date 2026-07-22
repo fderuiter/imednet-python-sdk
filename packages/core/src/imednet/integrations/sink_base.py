@@ -73,7 +73,7 @@ from __future__ import annotations
 import logging
 import re
 from abc import ABC, abstractmethod
-from collections.abc import Iterable, Iterator, Sequence
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from dataclasses import dataclass, field
 from importlib import import_module
 from types import TracebackType
@@ -204,6 +204,41 @@ class ExportSink(ABC):
         closed sink must not raise.
         """
         ...
+
+    def _execute_with_retry(
+        self,
+        operation_name: str,
+        batch_id: str,
+        execute_fn: Callable[[], int],
+    ) -> int:
+        """Execute a batch operation with configured retries and telemetry.
+
+        Parameters
+        ----------
+        operation_name:
+            Telemetry span name.
+        batch_id:
+            Idempotency key for error reporting and spans.
+        execute_fn:
+            Callable that performs the export and returns the record count.
+        """
+        from imednet.core.operations.executor import UniversalExecutor
+        from imednet.errors import ExportBatchError
+
+        executor = UniversalExecutor(
+            retries=self.config.max_retries,
+            backoff_factor=self.config.retry_backoff,
+            tracer=self.config.tracer,
+            operation_name=operation_name,
+            batch_id=batch_id,
+        )
+        try:
+            return executor.execute(execute_fn)
+        except Exception as exc:
+            raise ExportBatchError(
+                f"Batch {batch_id!r} failed after {self.config.max_retries + 1} attempts: {exc}",
+                batch_id=batch_id,
+            ) from exc
 
     # ------------------------------------------------------------------
     # Context-manager support

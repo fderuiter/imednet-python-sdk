@@ -134,6 +134,7 @@ class ImednetHook(BaseHook):
     def get_conn(self) -> ImednetSDK:
         """Backward compatible alias for :meth:`get_sdk_client`."""
         import warnings
+
         warnings.warn(
             "ImednetHook.get_conn is deprecated and will be removed in a future release. "
             "Please use ImednetHook.get_sdk_client() instead.",

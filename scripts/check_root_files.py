@@ -26,6 +26,7 @@ def main():
         "LICENSE",
         "pytest.ini",
         "typos.toml",
+        "vulture_whitelist.py",
     }
 
     # Files that might actually be there like .env etc might trigger this, so we should be careful.

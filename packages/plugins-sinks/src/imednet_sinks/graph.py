@@ -60,7 +60,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from imednet.errors import ExportBatchError, ExportConfigurationError
+from imednet.errors import ExportConfigurationError
 from imednet.integrations.sink_base import (
     ExportSink,
     SinkConfig,
@@ -192,8 +192,6 @@ class Neo4jExportSink(ExportSink):
         cypher = _MERGE_RECORD_CYPHER if self.config.idempotent else _CREATE_RECORD_CYPHER
         cfg = self.config if isinstance(self.config, Neo4jSinkConfig) else Neo4jSinkConfig()
 
-        from imednet.core.operations.executor import UniversalExecutor
-
         def execute_export() -> int:
             """Execute Cypher transaction to write or merge records in Neo4j."""
             with self._driver.session(database=cfg.database) as session:
@@ -201,21 +199,7 @@ class Neo4jExportSink(ExportSink):
             logger.debug("Wrote batch %s (%d records)", batch_id, len(rows))
             return len(rows)
 
-        executor = UniversalExecutor(
-            retries=self.config.max_retries,
-            backoff_factor=self.config.retry_backoff,
-            tracer=self.config.tracer,
-            operation_name="export_graph",
-            batch_id=batch_id,
-        )
-
-        try:
-            return executor.execute(execute_export)
-        except Exception as exc:
-            raise ExportBatchError(
-                f"Batch {batch_id!r} failed after {self.config.max_retries + 1} attempts: {exc}",
-                batch_id=batch_id,
-            ) from exc
+        return self._execute_with_retry("export_graph", batch_id, execute_export)
 
     def flush(self) -> None:
         """No-op: Neo4j writes are committed per transaction."""
