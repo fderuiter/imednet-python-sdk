@@ -6,23 +6,24 @@ high-level study statistics.
 
 from __future__ import annotations
 
+from typing import TypedDict
+
 import streamlit as st
 
-from typing import TypedDict
 try:
     from typing import NotRequired
 except ImportError:
     from typing_extensions import NotRequired
 
 
-
-
-
 class MetricConfig(TypedDict):
+    """Configuration for a KPI metric."""
+
     label: str
     value: int | float | str
     delta: NotRequired[str | None]
     help: NotRequired[str | None]
+
 
 def kpi_card(
     label: str,

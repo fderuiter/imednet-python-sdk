@@ -2,7 +2,7 @@
 
 import os
 import re
-from typing import Any, Optional
+from typing import Any, ClassVar, Optional
 
 from pydantic import Field, create_model
 
@@ -73,7 +73,7 @@ except Exception:
 class ModelEngine:
     """Engine for dynamically creating Pydantic models from schemas."""
 
-    _model_cache = {}
+    _model_cache: ClassVar[dict[tuple[str, type[Any]], type[Any]]] = {}
 
     @classmethod
     def get_model(cls, model_name: str, base_cls: type[Any] = ImednetBaseModel) -> type[Any]:

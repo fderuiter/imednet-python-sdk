@@ -1,8 +1,8 @@
-from typing import Any
 """OIDC authentication strategy."""
 
 import base64
 import json
+from typing import Any
 
 
 class OIDCAuth:
@@ -46,7 +46,8 @@ class OIDCAuth:
         Returns:
             The user ID (sub or preferred_username) if found, otherwise None.
         """
-        return self._decoded_claims.get("sub") or self._decoded_claims.get("preferred_username")
+        user_id = self._decoded_claims.get("sub") or self._decoded_claims.get("preferred_username")
+        return str(user_id) if user_id is not None else None
 
     def get_user_roles(self) -> list[str]:
         """Extract and map user roles from the token claims.

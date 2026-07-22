@@ -6,7 +6,6 @@ They are architecturally linked to the core execution engine.
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -125,6 +124,7 @@ class SyncSDKConvenienceMixin:
     if TYPE_CHECKING:
         records: RecordsEndpoint
         jobs: JobsEndpoint
+        _client: Any
 
     get_codings = _ListOperation[Coding]("codings", "get_codings")
     get_forms = _ListOperation[Form]("forms", "get_forms")
