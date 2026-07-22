@@ -74,7 +74,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from imednet.errors import ExportBatchError, ExportConfigurationError
+from imednet.errors import ExportConfigurationError
 from imednet.integrations.sink_base import (
     ExportSink,
     SinkConfig,
@@ -237,8 +237,6 @@ class SnowflakeExportSink(ExportSink):
         cfg = self._cfg
         stage_path = f"@{cfg.stage}/{cfg.stage_prefix}/{safe_batch}.parquet"
 
-        from imednet.core.operations.executor import UniversalExecutor
-
         def execute_export() -> int:
             """Execute PUT and COPY INTO commands to load data into Snowflake."""
             cur = self._conn.cursor()
@@ -264,21 +262,7 @@ class SnowflakeExportSink(ExportSink):
             finally:
                 cur.close()
 
-        executor = UniversalExecutor(
-            retries=self.config.max_retries,
-            backoff_factor=self.config.retry_backoff,
-            tracer=self.config.tracer,
-            operation_name="export_warehouse",
-            batch_id=batch_id,
-        )
-
-        try:
-            return executor.execute(execute_export)
-        except Exception as exc:
-            raise ExportBatchError(
-                f"Batch {batch_id!r} failed after {self.config.max_retries + 1} attempts: {exc}",
-                batch_id=batch_id,
-            ) from exc
+        return self._execute_with_retry("export_warehouse", batch_id, execute_export)
 
     def flush(self) -> None:
         """No-op: each batch is committed individually."""

@@ -1,6 +1,7 @@
 """SPI for utility functions."""
 
 from imednet.utils.dates import format_iso_datetime, parse_iso_datetime
+from imednet.utils.db import get_sqlite_connection, sqlite_connection
 from imednet.utils.filters import build_filter_string
 from imednet.utils.job_poller import (
     AsyncJobPoller,
@@ -36,4 +37,6 @@ __all__ = [
     "parse_iso_datetime",
     "redact_sensitive_text",
     "sanitize_csv_formula",
+    "get_sqlite_connection",
+    "sqlite_connection",
 ]
