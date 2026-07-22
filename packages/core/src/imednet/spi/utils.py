@@ -13,7 +13,7 @@ from imednet.utils.job_poller import (
     JobTimeoutError,
     evaluate_job_state,
 )
-from imednet.utils.security import mask_clinical_phi
+from imednet.utils.security import mask_clinical_phi, sanitize_csv_formula
 from imednet.utils.serialization import flatten
 from imednet.utils.url import redact_sensitive_text
 from imednet.utils.validators import is_boolean_token, is_missing_value, parse_bool
@@ -37,6 +37,7 @@ __all__ = [
     "parse_bool",
     "parse_iso_datetime",
     "redact_sensitive_text",
+    "sanitize_csv_formula",
     "get_sqlite_connection",
     "sqlite_connection",
 ]
