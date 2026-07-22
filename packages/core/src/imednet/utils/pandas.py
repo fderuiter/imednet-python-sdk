@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 try:
     import pandas as pd
 except ImportError:
-    pd = None
+    pd = None  # type: ignore[assignment]
 from ..models.records import Record
 from .security import sanitize_csv_formula
 

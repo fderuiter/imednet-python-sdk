@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from types import MappingProxyType
+from typing import Any
 
 from imednet.core.endpoint.base import GenericEndpoint
 from imednet.endpoints.codings import AsyncCodingsEndpoint, CodingsEndpoint
@@ -24,7 +25,7 @@ from imednet.endpoints.users import AsyncUsersEndpoint, UsersEndpoint
 from imednet.endpoints.variables import AsyncVariablesEndpoint, VariablesEndpoint
 from imednet.endpoints.visits import AsyncVisitsEndpoint, VisitsEndpoint
 
-ENDPOINT_REGISTRY: Mapping[str, type[GenericEndpoint[Any]]] = MappingProxyType(  # type: ignore[name-defined]
+ENDPOINT_REGISTRY: Mapping[str, type[GenericEndpoint[Any]]] = MappingProxyType(
     {
         "codings": CodingsEndpoint,
         "forms": FormsEndpoint,
@@ -42,7 +43,7 @@ ENDPOINT_REGISTRY: Mapping[str, type[GenericEndpoint[Any]]] = MappingProxyType( 
     }
 )
 
-ASYNC_ENDPOINT_REGISTRY: Mapping[str, type[GenericEndpoint[Any]]] = MappingProxyType(  # type: ignore[name-defined]
+ASYNC_ENDPOINT_REGISTRY: Mapping[str, type[GenericEndpoint[Any]]] = MappingProxyType(
     {
         "codings": AsyncCodingsEndpoint,
         "forms": AsyncFormsEndpoint,

@@ -13,7 +13,7 @@ try:
     load_dotenv()
 except ImportError:
 
-    def load_dotenv(*args: Any, **kwargs: Any) -> Any:
+    def load_dotenv(*args: Any, **kwargs: Any) -> Any:  # type: ignore[misc]
         pass
 
     print(

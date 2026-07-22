@@ -30,7 +30,9 @@ def redact_sensitive_text(text: Any) -> str:
         """Redact query parameters in the matched URL string."""
         return redact_url_query(match.group(0))
 
-    text_str = re.sub(r'''[a-zA-Z][a-zA-Z0-9+.-]*://[^\s"'>]*[^\s"'>.,;:!?\)\]]''', replace_url, text_str)
+    text_str = re.sub(
+        r'''[a-zA-Z][a-zA-Z0-9+.-]*://[^\s"'>]*[^\s"'>.,;:!?\)\]]''', replace_url, text_str
+    )
 
     return str(text_str)
 
