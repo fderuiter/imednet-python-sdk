@@ -24,7 +24,7 @@ def main() -> None:
     """Export a study's records in long format to SQLite."""
     if len(sys.argv) != 4:
         print(
-            "Usage: uv run --with "imednet[export]" python examples/export_long_sql.py STUDY_KEY TABLE_NAME OUTPUT_DB",
+            'Usage: uv run --with "imednet[export]" python examples/export_long_sql.py STUDY_KEY TABLE_NAME OUTPUT_DB',
             file=sys.stderr,
         )
         sys.exit(1)
