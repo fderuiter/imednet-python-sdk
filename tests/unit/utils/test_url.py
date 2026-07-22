@@ -44,7 +44,7 @@ def test_redact_url_query() -> None:
         ("/api/v1", ("records", 123), "api/v1/records/123"),
         ("/api//v1//", ("records//", "/123/"), "api/v1/records/123"),
         ("api", ("a%2Fb",), "api/a/b"),
-        ("/", tuple(), ""),
+        ("/", (), ""),
     ],
 )
 def test_build_safe_path(base_path: str, segments: tuple[object, ...], expected: str) -> None:

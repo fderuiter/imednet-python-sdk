@@ -6,7 +6,6 @@ They are architecturally linked to the core execution engine.
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -84,10 +83,10 @@ class _ListOperation(Generic[T]):
         self.name = name
         self.is_async = is_async
 
-    def __get__(self, instance: Any, owner: Any) -> Callable[..., Any]:
+    def __get__(self, instance: Any, owner: Any) -> Any:
         """Return a wrapped list method bound to the SDK instance."""
         if instance is None:
-            return self  # type: ignore
+            return self
         endpoint = getattr(instance, self.endpoint_name)
 
         if self.is_async:
@@ -144,7 +143,7 @@ class SyncSDKConvenienceMixin:
     @_trace_method
     def get_job(self, study_key: str, batch_id: str) -> JobStatus:
         """Get job status."""
-        return self.jobs.get(study_key, batch_id)  # type: ignore
+        return self.jobs.get(study_key, batch_id)
 
     @_trace_method
     def create_record(
@@ -158,7 +157,7 @@ class SyncSDKConvenienceMixin:
         """Create records in the specified study."""
         return self.records.create(
             study_key, records_data, email_notify=email_notify, schema=schema
-        )  # type: ignore
+        )
 
     @_trace_method
     def poll_job(
@@ -172,10 +171,10 @@ class SyncSDKConvenienceMixin:
         """Poll a job until it reaches a terminal state."""
         from imednet.utils.job_poller import JobPoller
 
-        fetch_result = getattr(self, "_client", None) and getattr(self._client, "get", None)  # type: ignore[attr-defined]
+        fetch_result = getattr(self, "_client", None) and getattr(self._client, "get", None)
         return JobPoller(self.jobs.get, fetch_result=fetch_result).run(
             study_key, batch_id, interval, timeout
-        )  # type: ignore
+        )
 
 
 class AsyncSDKConvenienceMixin:
@@ -208,7 +207,7 @@ class AsyncSDKConvenienceMixin:
     @_async_trace_method
     async def async_get_job(self, study_key: str, batch_id: str) -> JobStatus:
         """Asynchronously get job status."""
-        return await self.jobs.get(study_key, batch_id)  # type: ignore
+        return await self.jobs.get(study_key, batch_id)
 
     @_async_trace_method
     async def async_create_record(
@@ -222,7 +221,7 @@ class AsyncSDKConvenienceMixin:
         """Asynchronously create records in the specified study."""
         return await self.records.create(
             study_key, records_data, email_notify=email_notify, schema=schema
-        )  # type: ignore
+        )
 
     @_async_trace_method
     async def async_poll_job(
@@ -238,10 +237,10 @@ class AsyncSDKConvenienceMixin:
 
         fetch_result = getattr(self, "_async_client", None) and getattr(
             self._async_client, "get", None
-        )  # type: ignore[attr-defined]
+        )
         return await AsyncJobPoller(self.jobs.get, fetch_result=fetch_result).run(
             study_key, batch_id, interval, timeout
-        )  # type: ignore
+        )
 
 
 SDKConvenienceMixin = SyncSDKConvenienceMixin

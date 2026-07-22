@@ -1,3 +1,5 @@
+from typing import Any
+
 """OIDC authentication strategy."""
 
 import base64
@@ -16,14 +18,14 @@ class OIDCAuth:
         self.token = token
         self._decoded_claims = self._decode_token_claims(token)
 
-    def _decode_token_claims(self, token: str) -> dict:
+    def _decode_token_claims(self, token: str) -> Any:
         """Extract and decode the claims from the JWT token.
 
         Args:
             token: The JWT token string.
 
         Returns:
-            A dictionary containing the decoded token claims.
+            A Anyionary containing the decoded token claims.
         """
         parts = token.split(".")
         if len(parts) != 3:

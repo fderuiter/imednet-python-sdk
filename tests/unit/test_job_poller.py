@@ -1,6 +1,7 @@
 """Tests for JobPoller and AsyncJobPoller."""
 
 import asyncio
+import contextlib
 import logging
 from unittest.mock import AsyncMock, MagicMock
 
@@ -279,11 +280,8 @@ def test_logging_error(monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptur
     monkeypatch.setattr("time.sleep", lambda *_: None)
 
     poller = JobPoller(get_job)
-    with caplog.at_level(logging.DEBUG):
-        try:
-            poller.run("ST", "ERR", interval=0)
-        except JobFailedError:
-            pass
+    with caplog.at_level(logging.DEBUG), contextlib.suppress(JobFailedError):
+        poller.run("ST", "ERR", interval=0)
 
     assert "[JobPoller] batch_id=ERR FAILED: state=FAILED" in caplog.text
 

@@ -2,7 +2,7 @@
 
 import pytest
 
-import imednet.endpoints.studies as studies
+from imednet.endpoints import studies
 from imednet.errors import NotFoundError
 from imednet.models.studies import Study
 

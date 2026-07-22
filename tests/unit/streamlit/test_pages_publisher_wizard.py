@@ -49,7 +49,6 @@ class _FakeContextManager:
 
     def __exit__(self, *args: Any) -> None:
         """Helper function to   exit  ."""
-        pass
 
 
 class _FakeStreamlit:
@@ -68,18 +67,15 @@ class _FakeStreamlit:
 
     def title(self, value: str) -> None:
         """Helper function to title."""
-        pass
 
     def header(self, value: str) -> None:
         pass
 
     def subheader(self, value: str) -> None:
         """Helper function to subheader."""
-        pass
 
     def markdown(self, value: str, **kwargs: Any) -> None:
         """Helper function to markdown."""
-        pass
 
     def info(self, value: str) -> None:
         """Helper function to info."""
@@ -99,15 +95,12 @@ class _FakeStreamlit:
 
     def divider(self) -> None:
         """Helper function to divider."""
-        pass
 
     def json(self, value: Any) -> None:
         """Helper function to json."""
-        pass
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
         """Helper function to dataframe."""
-        pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
         """Helper function to button."""
@@ -152,15 +145,12 @@ class _FakeStreamlit:
 
     def metric(self, label: str, value: Any, **kwargs: Any) -> None:
         """Helper function to metric."""
-        pass
 
     def caption(self, value: str) -> None:
         """Helper function to caption."""
-        pass
 
     def progress(self, value: float) -> None:
         """Helper function to progress."""
-        pass
 
 
 def _run_publisher_wizard(
@@ -236,7 +226,8 @@ def _run_publisher_wizard(
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_workflows.config_version_control"] = fake_vcm
         module_spec = importlib.util.spec_from_file_location(MODULE_NAME, PAGE_PATH)
-        assert module_spec is not None and module_spec.loader is not None
+        assert module_spec is not None
+        assert module_spec.loader is not None
         module = importlib.util.module_from_spec(module_spec)
         sys.modules[MODULE_NAME] = module
         module_spec.loader.exec_module(module)

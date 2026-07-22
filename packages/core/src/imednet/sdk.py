@@ -279,7 +279,7 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         """Support for context manager protocol."""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Cleanup resources when exiting context."""
         self.close()
 
@@ -291,7 +291,7 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
             "If you require async execution, use AsyncImednetSDK."
         )
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+    async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Prevent direct or indirect invocation of the async exit on the sync client."""
         raise TypeError(
             "ImednetSDK is a synchronous client. "
@@ -407,7 +407,8 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
     @property
     def retry_policy(self) -> RetryPolicy:
         """Return the current retry policy of the async client."""
-        return self._async_client.retry_policy
+        from typing import cast
+        return cast('RetryPolicy', self._async_client.retry_policy)
 
     @retry_policy.setter
     def retry_policy(self, policy: RetryPolicy) -> None:
@@ -417,7 +418,7 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
     def _init_endpoints(self) -> None:
         """Initialize all asynchronous endpoint instances."""
         for attr, endpoint_cls in ASYNC_ENDPOINT_REGISTRY.items():
-            setattr(self, attr, endpoint_cls(self._async_client))  # type: ignore[arg-type]
+            setattr(self, attr, endpoint_cls(self._async_client))
 
     def close(self) -> None:
         """Raise TypeError as sync close is not supported."""
@@ -433,7 +434,7 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
             "Use `async with AsyncImednetSDK(...)` instead."
         )
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Synchronous context manager is not supported."""
         raise TypeError(
             "AsyncImednetSDK does not support the synchronous context manager protocol. "
@@ -444,7 +445,7 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
         """Enter the asynchronous context manager."""
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+    async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Exit the asynchronous context manager and close the client."""
         await self.aclose()
 

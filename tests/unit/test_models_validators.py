@@ -8,7 +8,7 @@ from imednet.utils import validators
 
 
 @pytest.mark.parametrize(
-    "input_val, expected",
+    ("input_val", "expected"),
     [
         # Boolean inputs
         (True, True),

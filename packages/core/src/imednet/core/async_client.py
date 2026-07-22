@@ -36,7 +36,7 @@ class AsyncClient(HTTPClientBase[httpx.AsyncClient, AsyncRequestExecutor]):
         """Enter the asynchronous context manager."""
         return self
 
-    async def __aexit__(self, exc_type, exc, tb) -> None:
+    async def __aexit__(self, exc_type, exc, tb) -> None:  # type: ignore[no-untyped-def]
         """Exit the asynchronous context manager and close the client."""
         await self.aclose()
 

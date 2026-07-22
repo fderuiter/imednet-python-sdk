@@ -36,7 +36,7 @@ sdk = ImednetSDK(
 config = SnowflakeSinkConfig(
     account=os.environ.get("SNOWFLAKE_ACCOUNT", "myorg-myaccount"),
     user=os.environ.get("SNOWFLAKE_USER", "loader"),
-    **{"password": os.environ["SNOWFLAKE_PASSWORD"]},
+    password=os.environ["SNOWFLAKE_PASSWORD"],
     database=os.environ.get("SNOWFLAKE_DATABASE", "IMEDNET_DB"),
     schema=os.environ.get("SNOWFLAKE_SCHEMA", "PUBLIC"),
     warehouse=os.environ.get("SNOWFLAKE_WAREHOUSE", "COMPUTE_WH"),

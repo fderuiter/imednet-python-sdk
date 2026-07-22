@@ -16,8 +16,8 @@ from unittest.mock import MagicMock
 import pytest
 
 from imednet.models.records import Record
-from imednet_workflows.cached_loader import CachedRecordsLoader
 from imednet.spi.utils import get_sqlite_connection
+from imednet_workflows.cached_loader import CachedRecordsLoader
 from imednet_workflows.sync_worker import SyncWorker, SyncWorkerConfig
 
 
@@ -207,7 +207,7 @@ def test_sync_worker_config_defaults() -> None:
     assert cfg.lock_timeout_seconds == 30
 
 
-@pytest.mark.parametrize("n_readers,n_cycles", [(2, 10), (6, 5)])
+@pytest.mark.parametrize(("n_readers", "n_cycles"), [(2, 10), (6, 5)])
 def test_high_concurrency_no_exceptions(tmp_path: Path, n_readers: int, n_cycles: int) -> None:
     """High reader/writer concurrency must not produce any exceptions."""
     records = [_make_record(i) for i in range(1, 21)]

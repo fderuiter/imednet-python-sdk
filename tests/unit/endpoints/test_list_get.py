@@ -2,18 +2,20 @@
 
 import pytest
 
-import imednet.endpoints.codings as codings
-import imednet.endpoints.forms as forms
-import imednet.endpoints.intervals as intervals
-import imednet.endpoints.queries as queries
-import imednet.endpoints.record_revisions as record_revisions
-import imednet.endpoints.records as records
-import imednet.endpoints.sites as sites
-import imednet.endpoints.studies as studies
-import imednet.endpoints.subjects as subjects
-import imednet.endpoints.users as users
-import imednet.endpoints.variables as variables
-import imednet.endpoints.visits as visits
+from imednet.endpoints import (
+    codings,
+    forms,
+    intervals,
+    queries,
+    record_revisions,
+    records,
+    sites,
+    studies,
+    subjects,
+    users,
+    variables,
+    visits,
+)
 from imednet.models.codings import Coding
 from imednet.models.forms import Form
 from imednet.models.intervals import Interval
@@ -58,7 +60,7 @@ ASYNC_CASES = [
 ]
 
 
-@pytest.mark.parametrize("cls,module,model,item_id", CASES)
+@pytest.mark.parametrize(("cls", "module", "model", "item_id"), CASES)
 def test_list_and_get(dummy_client, context, paginator_factory, cls, module, model, item_id):
     """Test that list and get."""
     ep = cls(dummy_client, context)
@@ -81,7 +83,7 @@ def test_list_and_get(dummy_client, context, paginator_factory, cls, module, mod
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("cls,module,model,item_id", ASYNC_CASES)
+@pytest.mark.parametrize(("cls", "module", "model", "item_id"), ASYNC_CASES)
 async def test_async_list_and_get(
     dummy_client,
     context,

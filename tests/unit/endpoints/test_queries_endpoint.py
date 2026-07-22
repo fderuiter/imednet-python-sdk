@@ -2,7 +2,7 @@
 
 import pytest
 
-import imednet.endpoints.queries as queries
+from imednet.endpoints import queries
 from imednet.errors import NotFoundError
 from imednet.models.queries import Query
 

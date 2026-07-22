@@ -15,7 +15,6 @@ from imednet.models.base import ImednetBaseModel
 class MockModel(ImednetBaseModel):
     """Test suite for MockModel."""
 
-    pass
 
 
 class MockEndpointImpl(EdcEndpointMixin, GenericEndpoint[MockModel]):

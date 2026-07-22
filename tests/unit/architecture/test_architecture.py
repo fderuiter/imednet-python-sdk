@@ -31,11 +31,10 @@ def get_imports_from_file(file_path: Path) -> set[str]:
         if isinstance(node, ast.Import):
             for name in node.names:
                 imports.add(name.name)
-        elif isinstance(node, ast.ImportFrom):
-            if node.module:
-                imports.add(node.module)
-                for name in node.names:
-                    imports.add(f"{node.module}.{name.name}")
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            imports.add(node.module)
+            for name in node.names:
+                imports.add(f"{node.module}.{name.name}")
     return imports
 
 
@@ -210,3 +209,22 @@ def test_plugin_discovery_failure(monkeypatch):
         match="Workflow 'some_workflow' not found. Please install the required package.",
     ):
         sdk.workflows.some_workflow
+
+
+def test_dashboard_no_direct_db_access():
+    """Ensure that clinical dashboards do not use raw database queries or import sqlite3 directly."""
+    app_dir = Path(imednet.__file__).parent.parent.parent.parent.parent
+    dashboard_dir = (
+        app_dir / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit" / "pages"
+    )
+
+    if not dashboard_dir.exists():
+        pytest.skip("Streamlit pages directory not found")
+
+    for file in get_all_python_files(dashboard_dir):
+        imports = get_imports_from_file(file)
+        for imp in imports:
+            assert imp != "sqlite3", (
+                f"Architectural violation: {file} imports 'sqlite3'. "
+                "Dashboard UI files must route database interactions through the centralized CredentialRepository."
+            )

@@ -14,7 +14,7 @@ from .._airflow_compat import AirflowException, Context
 from ..hooks import ImednetHook
 
 try:  # pragma: no cover - optional Airflow dependency
-    from airflow.models import BaseOperator  # type: ignore
+    from airflow.models import BaseOperator
 except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fallback
 
     class BaseOperator:  # type: ignore
@@ -102,7 +102,7 @@ class ImednetExportOperator(BaseOperator):
             dest = self.export_func.replace("export_to_", "")
 
         if dest == "snowflake":
-            from imednet_sinks import SnowflakeExportSink, SnowflakeSinkConfig  # type: ignore
+            from imednet_sinks import SnowflakeExportSink, SnowflakeSinkConfig
 
             snowflake_config = SnowflakeSinkConfig(
                 study_key=config.study_key,
@@ -119,9 +119,9 @@ class ImednetExportOperator(BaseOperator):
                 stage=self.export_kwargs.get("stage", ""),
                 table=self.export_kwargs.get("table", ""),
             )
-            return SnowflakeExportSink(config=snowflake_config)  # type: ignore
+            return SnowflakeExportSink(config=snowflake_config)
         if dest == "neo4j":
-            from imednet_sinks import Neo4jExportSink, Neo4jSinkConfig  # type: ignore
+            from imednet_sinks import Neo4jExportSink, Neo4jSinkConfig
 
             neo4j_config = Neo4jSinkConfig(
                 study_key=config.study_key,
@@ -132,9 +132,9 @@ class ImednetExportOperator(BaseOperator):
                 uri=self.export_kwargs.get("uri", ""),
                 auth=self.export_kwargs.get("auth", ("", "")),
             )
-            return Neo4jExportSink(config=neo4j_config)  # type: ignore
+            return Neo4jExportSink(config=neo4j_config)
         if dest == "mongodb":
-            from imednet_sinks import MongoDbExportSink, MongoDbSinkConfig  # type: ignore
+            from imednet_sinks import MongoDbExportSink, MongoDbSinkConfig
 
             mongo_config = MongoDbSinkConfig(
                 study_key=config.study_key,
@@ -146,7 +146,7 @@ class ImednetExportOperator(BaseOperator):
                 database=self.export_kwargs.get("database", ""),
                 collection=self.export_kwargs.get("collection", ""),
             )
-            return MongoDbExportSink(config=mongo_config)  # type: ignore
+            return MongoDbExportSink(config=mongo_config)
         return None
 
     def execute(self, context: Context) -> str | None:

@@ -61,7 +61,7 @@ class ImednetJobSensor(BaseSensorOperator):
         from imednet.spi.utils import JobFailedError, evaluate_job_state
 
         sdk = self._get_sdk()
-        job: JobStatus = sdk.jobs.get(self.study_key, self.batch_id)  # type: ignore[assignment]
+        job: JobStatus = sdk.jobs.get(self.study_key, self.batch_id)
 
         try:
             return evaluate_job_state(job)

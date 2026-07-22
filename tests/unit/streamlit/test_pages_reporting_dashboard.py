@@ -32,7 +32,6 @@ class _FakeContextManager:
 
     def __exit__(self, *args: Any) -> None:
         """Helper function to   exit  ."""
-        pass
 
 
 class _FakeCacheDataDecorator:
@@ -46,7 +45,6 @@ class _FakeCacheDataDecorator:
 
     def clear(self) -> None:
         """Helper function to clear."""
-        pass
 
 
 class _FakeStreamlit:
@@ -67,14 +65,12 @@ class _FakeStreamlit:
 
     def title(self, value: str) -> None:
         """Helper function to title."""
-        pass
 
     def header(self, value: str) -> None:
         pass
 
     def subheader(self, value: str) -> None:
         """Helper function to subheader."""
-        pass
 
     def info(self, value: str) -> None:
         """Helper function to info."""
@@ -86,11 +82,9 @@ class _FakeStreamlit:
 
     def warning(self, value: str) -> None:
         """Helper function to warning."""
-        pass
 
     def markdown(self, value: str) -> None:
         """Helper function to markdown."""
-        pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
         """Helper function to button."""
@@ -133,11 +127,9 @@ class _FakeStreamlit:
 
     def altair_chart(self, chart: Any, **kwargs: Any) -> None:
         """Helper function to altair chart."""
-        pass
 
     def rerun(self) -> None:
         """Helper function to rerun."""
-        pass
 
 
 def _make_fake_components_module(fake_st: _FakeStreamlit) -> ModuleType:
@@ -332,7 +324,8 @@ def _run_page(*, multiselect_values: dict[str, list[Any]] | None = None) -> _Fak
         sys.modules["imednet_workflows.query_management"] = fake_query_workflow_module
         module_name = "imednet_streamlit.pages.reporting_dashboard"
         module_spec = importlib.util.spec_from_file_location(module_name, PAGE_PATH)
-        assert module_spec is not None and module_spec.loader is not None
+        assert module_spec is not None
+        assert module_spec.loader is not None
         module = importlib.util.module_from_spec(module_spec)
         sys.modules[module_name] = module
         module_spec.loader.exec_module(module)
@@ -613,7 +606,8 @@ def _run_page_extended(
         sys.modules["imednet_workflows.query_management"] = fake_query_workflow_module
         module_name = "imednet_streamlit.pages.reporting_dashboard"
         module_spec = importlib.util.spec_from_file_location(module_name, PAGE_PATH)
-        assert module_spec is not None and module_spec.loader is not None
+        assert module_spec is not None
+        assert module_spec.loader is not None
         module = importlib.util.module_from_spec(module_spec)
         sys.modules[module_name] = module
         module_spec.loader.exec_module(module)

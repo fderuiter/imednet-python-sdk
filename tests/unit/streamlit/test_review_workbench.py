@@ -46,7 +46,6 @@ class _FakeContextManager:
 
     def __exit__(self, *args: Any) -> None:
         """Helper function to   exit  ."""
-        pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
         """Helper function to button."""
@@ -70,15 +69,12 @@ class _FakeStreamlit:
 
     def title(self, value: str) -> None:
         """Helper function to title."""
-        pass
 
     def markdown(self, value: str, **kwargs: Any) -> None:
         """Helper function to markdown."""
-        pass
 
     def info(self, value: str) -> None:
         """Helper function to info."""
-        pass
 
     def columns(self, spec: int | list[Any], **kwargs: Any) -> list[_FakeContextManager]:
         """Helper function to columns."""
@@ -110,15 +106,12 @@ class _FakeStreamlit:
 
     def subheader(self, value: str) -> None:
         """Helper function to subheader."""
-        pass
 
     def caption(self, value: str) -> None:
         """Helper function to caption."""
-        pass
 
     def write(self, value: str) -> None:
         """Helper function to write."""
-        pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
         """Helper function to button."""
@@ -131,11 +124,9 @@ class _FakeStreamlit:
 
     def success(self, value: str) -> None:
         """Helper function to success."""
-        pass
 
     def warning(self, value: str) -> None:
         """Helper function to warning."""
-        pass
 
 
 def _sample_items() -> list[TriageItem]:
@@ -249,7 +240,8 @@ def test_review_workbench_renders_kpis_and_filters_queue() -> None:
 
         module_name = "imednet_streamlit.pages.review_workbench"
         spec = importlib.util.spec_from_file_location(module_name, WORKBENCH_PATH)
-        assert spec is not None and spec.loader is not None
+        assert spec is not None
+        assert spec.loader is not None
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
         spec.loader.exec_module(module)
@@ -311,7 +303,8 @@ def test_triage_drawer_submits_assignment_annotation_and_status() -> None:
 
         module_name = "imednet_streamlit.components.triage_drawer"
         spec = importlib.util.spec_from_file_location(module_name, DRAWER_PATH)
-        assert spec is not None and spec.loader is not None
+        assert spec is not None
+        assert spec.loader is not None
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
         spec.loader.exec_module(module)

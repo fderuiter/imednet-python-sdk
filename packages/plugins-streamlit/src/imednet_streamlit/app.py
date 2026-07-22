@@ -7,6 +7,8 @@ structure.
 
 from __future__ import annotations
 
+from typing import Any
+
 import streamlit as st
 
 from imednet_streamlit.auth import render_auth_sidebar
@@ -25,7 +27,7 @@ if "high_contrast" not in st.session_state:
     )
 
 
-def toggle_high_contrast():
+def toggle_high_contrast() -> None:
     """Toggle the high contrast accessibility mode in session state and URL params."""
     st.session_state["high_contrast"] = not st.session_state["high_contrast"]
     if st.session_state["high_contrast"]:
@@ -84,7 +86,7 @@ original_st_warning = st.warning
 original_st_info = st.info
 
 
-def _sanitize_body(body):
+def _sanitize_body(body: Any) -> Any:
     """Redact sensitive information from Streamlit message bodies before rendering."""
     if isinstance(body, Exception):
         try:
@@ -105,22 +107,22 @@ def _sanitize_body(body):
     return body
 
 
-def secure_st_error(body, *args, **kwargs):
+def secure_st_error(body: Any, *args: Any, **kwargs: Any) -> Any:
     """Render a sanitized error message."""
     return original_st_error(_sanitize_body(body), *args, **kwargs)
 
 
-def secure_st_exception(exception, *args, **kwargs):
+def secure_st_exception(exception: Any, *args: Any, **kwargs: Any) -> Any:
     """Render a sanitized exception trace."""
     return original_st_exception(_sanitize_body(exception), *args, **kwargs)
 
 
-def secure_st_warning(body, *args, **kwargs):
+def secure_st_warning(body: Any, *args: Any, **kwargs: Any) -> Any:
     """Render a sanitized warning message."""
     return original_st_warning(_sanitize_body(body), *args, **kwargs)
 
 
-def secure_st_info(body, *args, **kwargs):
+def secure_st_info(body: Any, *args: Any, **kwargs: Any) -> Any:
     """Render a sanitized info message."""
     return original_st_info(_sanitize_body(body), *args, **kwargs)
 

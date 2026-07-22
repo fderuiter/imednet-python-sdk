@@ -16,27 +16,29 @@ def redact_sensitive_text(text: Any) -> str:
     """Scan and redact sensitive URIs, connection strings, and query parameters in text."""
     if not isinstance(text, str):
         try:
-            text = str(text)
+            text_str = str(text)
         except Exception:
             return "<unprintable object>"
+    else:
+        text_str = text
 
     # Redact passwords in connection strings: e.g., mongodb://user:password@host  # pragma: allowlist secret
-    text = re.sub(r"(://[^:]+:)[^@]+(@)", r"\g<1>***\g<2>", text)
+    text_str = re.sub(r"(://[^:]+:)[^@]+(@)", r"\g<1>***\g<2>", text_str)
 
     # Redact query parameters in any URLs
-    def replace_url(match: re.Match) -> str:
+    def replace_url(match: re.Match[str]) -> str:
         """Redact query parameters in the matched URL string."""
         return redact_url_query(match.group(0))
 
-    text = re.sub(r"[a-zA-Z][a-zA-Z0-9+.-]*://[^\s\"'>]*[^\s\"'>.,;:!?\)\]]", replace_url, text)
+    text_str = re.sub(r'''[a-zA-Z][a-zA-Z0-9+.-]*://[^\s"'>]*[^\s"'>.,;:!?\)\]]''', replace_url, text_str)
 
-    return text  # noqa: RET504
+    return str(text_str)
 
 
 def sanitize_base_url(url: str) -> str:
     """Return base URL without trailing slashes or ``/api`` suffix."""
     url = url.rstrip("/")
-    return re.sub(r"/api\Z", "", url)
+    return str(re.sub(r"/api$", "", url))
 
 
 def redact_url_query(url: str, sensitive_params: set[str] | None = None) -> str:
@@ -79,4 +81,4 @@ def build_safe_path(base_path: str, *segments: Any) -> str:
         return ""
 
     normalized = "/".join(parts)
-    return httpx.URL(_DUMMY_BASE_URL).join(normalized).path.strip("/")
+    return str(httpx.URL(_DUMMY_BASE_URL).join(normalized).path.strip("/"))

@@ -2,16 +2,18 @@
 
 from __future__ import annotations
 
+import argparse
 import importlib.util
 import sys
 from pathlib import Path
+from typing import Any
 
 from ...sdk import ImednetSDK
 from ..decorators import with_sdk
 from ..utils import STUDY_KEY_ARG, fetching_status
 
 
-def setup_parser(subparsers):
+def setup_parser(subparsers: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
     """Setup the parser for this module."""
     parser = subparsers.add_parser("export", help="Export study data to various formats.")
     sub = parser.add_subparsers(dest="command")

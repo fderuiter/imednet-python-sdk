@@ -1,65 +1,10 @@
 """API-level errors."""
 
-import re
 from typing import Any
 
+from imednet.utils.secrets import redact_sensitive_payload as _redact_sensitive_value
+
 from .base import ImednetError
-
-_SENSITIVE_KEYS = {
-    "api_key",
-    "security_key",
-    "token",
-    "authorization",
-    "x-api-key",
-    "x-imn-security-key",
-}
-_SENSITIVE_PATTERN_KEYS = (
-    "x-imn-security-key",
-    "x-api-key",
-    "api[_-]?key",
-    "security[_-]?key",
-    "authorization",
-    "token",
-)
-# Groups: (1) sensitive key, (2) key/value separator, (3) optional quote, (4) raw value.
-_SENSITIVE_PATTERN = re.compile(
-    rf"(?i)\b({'|'.join(_SENSITIVE_PATTERN_KEYS)})\b(\s*[:=]\s*)([\"']?)([^,;\r\n]*?)\3(?=,|;|$)"
-)
-
-
-def _replace_sensitive_match(match: re.Match[str]) -> str:
-    """Replace sensitive part of a regex match with asterisks.
-
-    Args:
-        match: The regex match object.
-
-    Returns:
-        str: The redacted string.
-    """
-    return f"{match.group(1)}{match.group(2)}{match.group(3)}***{match.group(3)}"
-
-
-def _redact_sensitive_value(value: Any) -> Any:
-    """Recursively redact sensitive information from a value.
-
-    Args:
-        value: The value to redact (dict, list, str, etc.).
-
-    Returns:
-        Any: The redacted value.
-    """
-    if isinstance(value, dict):
-        return {
-            key: ("***" if str(key).lower() in _SENSITIVE_KEYS else _redact_sensitive_value(val))
-            for key, val in value.items()
-        }
-    if isinstance(value, list):
-        return [_redact_sensitive_value(item) for item in value]
-    if isinstance(value, tuple):
-        return tuple(_redact_sensitive_value(item) for item in value)
-    if isinstance(value, str):
-        return _SENSITIVE_PATTERN.sub(_replace_sensitive_match, value)
-    return value
 
 
 class ApiError(ImednetError):

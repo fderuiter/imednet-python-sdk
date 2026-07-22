@@ -26,7 +26,6 @@ class _FakeCacheData:
 
     def clear(self) -> None:
         """Helper function to clear."""
-        pass
 
 
 class _FakeStreamlit:
@@ -56,7 +55,6 @@ class _FakeStreamlit:
 
     def header(self, _: str) -> None:
         """Helper function to header."""
-        pass
 
     def text_input(self, label: str, **kwargs: object) -> str:
         """Helper function to text input."""
@@ -75,7 +73,6 @@ class _FakeStreamlit:
 
     def rerun(self) -> None:
         """Helper function to rerun."""
-        pass
 
     def markdown(self, message: str) -> None:
         self.markdown_messages.append(message)
@@ -355,7 +352,7 @@ def test_render_auth_sidebar_connect_disconnect(
 def test_render_auth_sidebar_no_studies(monkeypatch: pytest.MonkeyPatch) -> None:
     fake_st = _FakeStreamlit(logged_in=True, connect_clicked=False)
     monkeypatch.setattr(auth, "st", fake_st)
-    monkeypatch.setattr(auth, "get_provisioned_studies", lambda: [])
+    monkeypatch.setattr(auth, "get_provisioned_studies", list)
     assert auth.render_auth_sidebar() is False
     assert len(fake_st.warning_messages) > 0
 

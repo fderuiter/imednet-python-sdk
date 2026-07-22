@@ -6,8 +6,25 @@ high-level study statistics.
 
 from __future__ import annotations
 
+from typing import TypedDict
+
 import streamlit as st
 
+try:
+    from typing import NotRequired
+except ImportError:
+    from typing_extensions import NotRequired
+
+
+
+
+
+class MetricConfig(TypedDict):
+    """Configuration definition for a single metric tile."""
+    label: str
+    value: int | float | str
+    delta: NotRequired[str | None]
+    help: NotRequired[str | None]
 
 def kpi_card(
     label: str,
@@ -26,7 +43,7 @@ def kpi_card(
     st.metric(label=label, value=value, delta=delta, help=help)
 
 
-def kpi_row(metrics: list[dict]) -> None:
+def kpi_row(metrics: list[MetricConfig]) -> None:
     """Render a horizontal row of KPI metric cards.
 
     Args:

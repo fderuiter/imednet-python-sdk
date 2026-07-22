@@ -257,7 +257,7 @@ def _selected_forms(schema: dict[str, Any]) -> list[str]:
         st.session_state.get("wizard_target_form_pd"),
         st.session_state.get("wizard_target_form_dd"),
     ]
-    selected_forms = [cast(str, value) for value in selected if isinstance(value, str) and value]
+    selected_forms = [cast(str, value) for value in selected if isinstance(value, str) and value]  # type: ignore[redundant-cast]
     if selected_forms:
         return sorted(set(selected_forms))
     return [cast(str, form["form_key"]) for form in schema.get("forms", [])]

@@ -242,7 +242,7 @@ class UATWorkflow:
 
             self._submitter = BulkRecordSubmissionWorkflow(
                 self._sdk,
-                batch_size=self._batch_size,  # type: ignore
+                batch_size=self._batch_size,
             )
         return self._submitter
 
@@ -250,7 +250,7 @@ class UATWorkflow:
         if self._poller is None:
             from imednet.spi.utils import JobPoller
 
-            self._poller = JobPoller(get_job=self._sdk.get_job)  # type: ignore
+            self._poller = JobPoller(get_job=self._sdk.get_job)
 
         return self._poller
 
@@ -329,7 +329,7 @@ class UATWorkflow:
         email_notify: bool | str | None = None,
     ) -> SubmissionResult:
         """Execute the two-phase bulk submission."""
-        return self._get_submitter().submit(study_key, record_sets, email_notify=email_notify)
+        return self._get_submitter().submit(study_key, record_sets, email_notify=email_notify)  # type: ignore[no-any-return]
 
     def monitor(self, study_key: str, submission_result: SubmissionResult) -> Any:
         """Poll all resulting jobs to completion via JobPoller."""

@@ -84,31 +84,24 @@ class _FakeStreamlit:
 
     def markdown(self, body: str, **kwargs: Any) -> None:
         """Helper function to markdown."""
-        pass
 
     def header(self, body: str, **kwargs: Any) -> None:
         """Helper function to header."""
-        pass
 
     def altair_chart(self, chart: Any, **kwargs: Any) -> None:
         """Helper function to altair chart."""
-        pass
 
     def error(self, body: Any, *args: Any, **kwargs: Any) -> None:
         """Helper function to error."""
-        pass
 
     def exception(self, exception: Any, *args: Any, **kwargs: Any) -> None:
         """Helper function to exception."""
-        pass
 
     def warning(self, body: Any, *args: Any, **kwargs: Any) -> None:
         """Helper function to warning."""
-        pass
 
     def info(self, body: Any, *args: Any, **kwargs: Any) -> None:
         """Helper function to info."""
-        pass
 
     def expander(self, label: str, **kwargs: Any) -> _FakeContextManager:
         """Helper function to expander."""
@@ -116,7 +109,6 @@ class _FakeStreamlit:
 
     def dataframe(self, data: Any, **kwargs: Any) -> None:
         """Helper function to dataframe."""
-        pass
 
 
 class _FakePageStreamlit:
@@ -161,7 +153,6 @@ class _FakeContextManager:
 
     def __exit__(self, *args: Any) -> None:
         """Helper function to   exit  ."""
-        pass
 
 
 class _FakeCacheDataDecorator:
@@ -175,7 +166,6 @@ class _FakeCacheDataDecorator:
 
     def clear(self) -> None:
         """Helper function to clear."""
-        pass
 
 
 class _FakeDashboardStreamlit(_FakePageStreamlit):
@@ -229,7 +219,6 @@ class _FakeDashboardStreamlit(_FakePageStreamlit):
 
     def rerun(self) -> None:
         """Helper function to rerun."""
-        pass
 
     def text_input(self, label: str, **kwargs: Any) -> str:
         """Helper function to text input."""
@@ -656,7 +645,8 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
         app_spec = importlib.util.spec_from_file_location(
             f"imednet_streamlit.app_test_{int(is_connected)}", app_path
         )
-        assert app_spec is not None and app_spec.loader is not None
+        assert app_spec is not None
+        assert app_spec.loader is not None
         app_module = importlib.util.module_from_spec(app_spec)
         app_spec.loader.exec_module(app_module)
         assert app_module.__file__ is not None
@@ -722,7 +712,8 @@ def test_streamlit_plugin_version() -> None:
     package_spec = importlib.util.spec_from_file_location(
         "imednet_streamlit", init_path, submodule_search_locations=[str(PACKAGE_ROOT)]
     )
-    assert package_spec is not None and package_spec.loader is not None
+    assert package_spec is not None
+    assert package_spec.loader is not None
     package_module = importlib.util.module_from_spec(package_spec)
     package_spec.loader.exec_module(package_module)
 

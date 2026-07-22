@@ -28,12 +28,10 @@ class _FakeContextManager:
 
     def __exit__(self, *args: Any) -> None:
         """Helper function to   exit  ."""
-        pass
 
     # Make it usable as a column mock with common widget methods
     def metric(self, label: str, value: Any, **kwargs: Any) -> None:
         """Helper function to metric."""
-        pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
         """Helper function to button."""
@@ -49,7 +47,6 @@ class _FakeContextManager:
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
         """Helper function to dataframe."""
-        pass
 
 
 class _FakeStreamlit:
@@ -70,18 +67,15 @@ class _FakeStreamlit:
 
     def title(self, value: str) -> None:
         """Helper function to title."""
-        pass
 
     def header(self, value: str) -> None:
         pass
 
     def subheader(self, value: str) -> None:
         """Helper function to subheader."""
-        pass
 
     def markdown(self, value: str, **kwargs: Any) -> None:
         """Helper function to markdown."""
-        pass
 
     def info(self, value: str) -> None:
         """Helper function to info."""
@@ -101,7 +95,6 @@ class _FakeStreamlit:
 
     def divider(self) -> None:
         """Helper function to divider."""
-        pass
 
     def json(self, value: Any) -> None:
         """Helper function to json."""
@@ -157,11 +150,9 @@ class _FakeStreamlit:
 
     def caption(self, value: str) -> None:
         """Helper function to caption."""
-        pass
 
     def progress(self, value: float) -> None:
         """Helper function to progress."""
-        pass
 
 
 def _make_fake_records() -> list[Any]:
@@ -242,7 +233,6 @@ def _run_data_lineage(
 
         def __init__(self, sdk: object) -> None:
             """Initialize the test object."""
-            pass
 
         def load_records(self, sk: str) -> list[Any]:
             """Helper function to load records."""
@@ -273,7 +263,8 @@ def _run_data_lineage(
         sys.modules["imednet_workflows"] = fake_workflows_module
         sys.modules["imednet_workflows.extraction_engine"] = fake_engine_module
         module_spec = importlib.util.spec_from_file_location(MODULE_NAME, PAGE_PATH)
-        assert module_spec is not None and module_spec.loader is not None
+        assert module_spec is not None
+        assert module_spec.loader is not None
         module = importlib.util.module_from_spec(module_spec)
         sys.modules[MODULE_NAME] = module
         module_spec.loader.exec_module(module)
@@ -399,9 +390,12 @@ def test_data_lineage_redact_sensitive_keys() -> None:
         "patient_name": "John Doe",
         "dob": "1990-01-01",
         "subject_key": "SUBJ-001",
+        "api_key": "secret_api",
+        "token": "secret_token",
         "nested": {
             "ssn": "123-45-678",
-            "details": [{"phone": "555-1234"}, {"label": "ok"}],
+            "password": "secret_password",
+            "details": [{"security_key": "secret_key"}, {"phone": "555-1234"}, {"label": "ok"}],
         },
         "severity": "MILD",
     }
@@ -409,8 +403,12 @@ def test_data_lineage_redact_sensitive_keys() -> None:
     assert redacted["ae_term"] == "headache"
     assert redacted["severity"] == "MILD"
     assert redacted["subject_key"] == "SUBJ-001"
+    assert redacted["api_key"] == "***"
+    assert redacted["token"] == "***"
+    assert redacted["nested"]["password"] == "***"
+    assert redacted["nested"]["details"][0]["security_key"] == "***"
     assert redacted["patient_name"] == "***MASKED***"
     assert redacted["dob"] == "***MASKED***"
     assert redacted["nested"]["ssn"] == "***MASKED***"
-    assert redacted["nested"]["details"][0]["phone"] == "***MASKED***"
-    assert redacted["nested"]["details"][1]["label"] == "ok"
+    assert redacted["nested"]["details"][1]["phone"] == "***MASKED***"
+    assert redacted["nested"]["details"][2]["label"] == "ok"

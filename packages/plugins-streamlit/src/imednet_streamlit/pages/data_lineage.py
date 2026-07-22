@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Data Lineage Explorer — drill-down from aggregated metrics to raw source records.
 
 Provides an interactive drill-down path from dashboard metric values to the
@@ -12,7 +13,7 @@ from typing import Any
 import streamlit as st
 
 from imednet.spi.models import AdverseEvent, DeviceDeficiency, ProtocolDeviation, StudyConfiguration
-from imednet.spi.utils import mask_clinical_phi
+from imednet.spi.utils import mask_clinical_phi, redact_sensitive_payload
 from imednet_streamlit.auth import get_sdk, get_study_key
 from imednet_streamlit.components import render_lineage_panes
 from imednet_streamlit.utils import models_to_frame
@@ -181,21 +182,9 @@ def _find_mapping_rules(domain: str) -> list[dict[str, Any]]:
     ]
 
 
-def _redact_sensitive(data: dict[str, Any]) -> dict[str, Any]:
+def _redact_sensitive(data: dict[str, Any] | list[Any] | Any) -> Any:
     """Return a copy of *data* with common sensitive keys redacted."""
-    sensitive_keys = {"api_key", "security_key", "password", "token"}
-    result: dict[str, Any] = {}
-    for k, v in data.items():
-        if k in sensitive_keys:
-            result[k] = "***REDACTED***"
-        elif isinstance(v, dict):
-            result[k] = _redact_sensitive(v)
-        elif isinstance(v, list):
-            result[k] = [_redact_sensitive(item) if isinstance(item, dict) else item for item in v]
-        else:
-            result[k] = v
-    # Also apply clinical PHI masking
-    return mask_clinical_phi(result)
+    return mask_clinical_phi(redact_sensitive_payload(data))
 
 
 def _render_lineage_trace(
