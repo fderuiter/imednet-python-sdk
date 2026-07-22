@@ -1,7 +1,6 @@
 """Base endpoint mix-in for all API resource endpoints."""
 
 from __future__ import annotations
-import builtins
 
 import builtins
 import warnings
