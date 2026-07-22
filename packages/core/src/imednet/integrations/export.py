@@ -778,7 +778,7 @@ def export_to_sql_by_form(
             df,
             form.form_key or "",
             engine,
-            if_exists=cast(Literal["fail", "replace", "append", "delete_rows"], if_exists),
+            if_exists=if_exists,
             **kwargs,
         )
 
