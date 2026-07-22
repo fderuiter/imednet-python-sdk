@@ -364,9 +364,7 @@ def test_reporting_dashboard_renders_expected_kpis_and_site_aggregation() -> Non
     assert pd_kpis["Major Deviations"] == 1
 
     site_styler = next(
-        df
-        for df in fake_st.dataframes
-        if hasattr(df, "data") and "query_rate" in df.data.columns
+        df for df in fake_st.dataframes if hasattr(df, "data") and "query_rate" in df.data.columns
     )
     site_df = site_styler.data  # type: ignore[assignment]
     assert int(site_df.loc[site_df["site_name"] == "Site A", "open_queries"].iloc[0]) == 1
@@ -680,9 +678,7 @@ def test_no_open_queries_site_metrics_shows_zero() -> None:
     assert site_kpis["Total Open Queries"] == 0
 
     site_styler = next(
-        df
-        for df in fake_st.dataframes
-        if hasattr(df, "data") and "query_rate" in df.data.columns
+        df for df in fake_st.dataframes if hasattr(df, "data") and "query_rate" in df.data.columns
     )
     assert float(site_styler.data["open_queries"].sum()) == 0.0  # type: ignore[union-attr]
 

@@ -129,7 +129,6 @@ ignore_missing_imports = true
 "tests/**/*.py" = ["SLF001", "S", "D"]
 "scripts/**/*.py" = ["SLF001", "S", "D"]
 "examples/**/*.py" = ["SLF001", "S", "D"]
-"final_automate.py" = ["D"]
 "packages/plugins-sinks/tests/**/*.py" = ["SLF001"]
 
 [tool.ruff.format]
@@ -167,7 +166,9 @@ dependencies = [
     "pandas-stubs",
     "types-requests",
     "pydantic",
+    "pylint",
     "click>=8.3.3",
+    "vulture",
     "imednet @ {root:uri}/packages/core",
     "imednet-workflows @ {root:uri}/packages/plugins-workflows",
     "imednet-streamlit @ {root:uri}/packages/plugins-streamlit",
@@ -184,6 +185,7 @@ semgrep-check = "semgrep scan --config p/security-audit --error {args:packages}"
 audit = "pip-audit -s osv --timeout 60"
 secrets = "detect-secrets-hook --baseline .secrets.baseline {args:packages}"
 dead-code = "vulture {args:packages} vulture_whitelist.py --min-confidence 80 --exclude **/tests/**,**/docs/**,**/scripts/**"
+symilar-check = "pylint --disable=all --enable=duplicate-code --fail-under=9.0 {args:packages}"
 all = [
     "fmt",
     "ruff-check",
@@ -192,7 +194,8 @@ all = [
     "semgrep-check",
     "audit",
     "secrets",
-    "dead-code"
+    "dead-code",
+    "symilar-check"
 ]
 
 [tool.uv.workspace]
@@ -207,3 +210,10 @@ apache-airflow-providers-imednet = { workspace = true }
 
 
 
+
+[tool.pylint.SIMILARITIES]
+ignore-comments = true
+ignore-docstrings = true
+ignore-imports = true
+ignore-signatures = true
+min-similarity-lines = 15

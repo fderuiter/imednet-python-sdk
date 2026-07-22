@@ -16,7 +16,8 @@ from unittest.mock import MagicMock
 import pytest
 
 from imednet.models.records import Record
-from imednet_workflows.cached_loader import CachedRecordsLoader, get_cache_connection
+from imednet_workflows.cached_loader import CachedRecordsLoader
+from imednet.spi.utils import get_sqlite_connection
 from imednet_workflows.sync_worker import SyncWorker, SyncWorkerConfig
 
 
@@ -151,13 +152,13 @@ def test_wal_mode_reader_does_not_block_on_writer(tmp_path: Path) -> None:
     loader = CachedRecordsLoader(sdk, cache_dir=tmp_path, database_name="records.sqlite3")
     loader.sync_records("PROT-01")
 
-    writer_conn = get_cache_connection(db_path)
+    writer_conn = get_sqlite_connection(db_path)
     try:
         writer_conn.execute("BEGIN IMMEDIATE")
 
         # A reader should be able to open a new connection and read even while
         # the writer holds a write-lock, because WAL mode allows concurrent reads.
-        reader_conn = get_cache_connection(db_path)
+        reader_conn = get_sqlite_connection(db_path)
         try:
             rows = reader_conn.execute(
                 "SELECT COUNT(*) FROM record_cache WHERE study_key = ?", ("PROT-01",)
