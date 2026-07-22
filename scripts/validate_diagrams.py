@@ -49,8 +49,7 @@ def get_facade_signatures():
 def clean_label(label):
     """Clean the label by removing parentheses."""
     c = re.sub(r'\(.*?\)', '', label).strip()
-    c = c.replace('?', '').strip()
-    return c
+    return c.replace('?', '').strip()
 
 
 def main():

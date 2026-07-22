@@ -11,6 +11,7 @@ from typing import Any
 import pandas as pd
 
 
+
 def render_lineage_panes(
     *,
     raw_record: dict[str, Any] | None,

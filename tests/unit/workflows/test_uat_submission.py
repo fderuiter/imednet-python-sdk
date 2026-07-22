@@ -19,8 +19,7 @@ from imednet_workflows.uat import (
 @pytest.fixture
 def mock_sdk():
     """Fixture to provide a mocked SDK facade."""
-    sdk = MagicMock()
-    return sdk
+    return MagicMock()
 
 
 def test_submission_result_properties():

@@ -259,7 +259,7 @@ def extract_canonical_records(
                 except ValidationError as exc:
                     result.validation_errors.append(
                         {
-                            "recordId": cast(str, record.record_id),  # type: ignore
+                            "recordId": cast(str, record.record_id),
                             "formKey": record.form_key,
                             "domain": domain,
                             "payload": payload,

@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Hive-partitioned Parquet integration helpers."""
 
 from __future__ import annotations

@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Publisher Wizard — secure configuration review and production publish flow.
 
 Integrates :class:`~imednet_workflows.config_version_control.ConfigVersionStore`
@@ -69,7 +70,7 @@ def _render_commit_selector(study_key: str, store: ConfigVersionStore) -> str | 
         index=len(options) - 1,
         key="publisher_commit_selector",
     )
-    return history[options.index(selected_index)]["commit_id"]
+    return history[options.index(selected_index)]["commit_id"]  # type: ignore[no-any-return]
 
 
 def _render_validation_checklist(

@@ -102,10 +102,7 @@ def test_performance_suite():
         try:
             f.seek(0)
             content = f.read()
-            if content:
-                history = json.loads(content)
-            else:
-                history = {}
+            history = json.loads(content) if content else {}
         except Exception:
             history = {}
 

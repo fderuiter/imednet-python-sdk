@@ -6,7 +6,7 @@ from imednet.utils.validators import parse_bool
 
 
 @pytest.mark.parametrize(
-    "input_val, expected",
+    ("input_val", "expected"),
     [
         ("1.0", True),
         ("0.0", False),

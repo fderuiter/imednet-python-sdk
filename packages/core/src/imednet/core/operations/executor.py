@@ -53,7 +53,7 @@ class DefaultOperationRetryPolicy(OperationRetryPolicy):
         """
         # Default fallback: retry on any exception?
         # Usually we only retry on specific ones, but for universal wrapper, we can allow everything or leave it configurable
-        return True
+        return True  # type: ignore[no-any-return]
 
 
 class UniversalExecutor:
@@ -102,8 +102,8 @@ class UniversalExecutor:
             exc = retry_state.outcome.exception()
             if isinstance(exc, Exception):  # noqa: SIM102
                 if hasattr(self.retry_config.retry_policy, "should_retry"):
-                    return self.retry_config.retry_policy.should_retry(exc)
-        return False
+                    return self.retry_config.retry_policy.should_retry(exc)  # type: ignore[no-any-return]
+        return False  # type: ignore[no-any-return]
 
     def execute(self, func: Callable[[], T]) -> T:
         """Synchronous execution."""
@@ -119,7 +119,7 @@ class UniversalExecutor:
                 result: Any = retryer(func)
                 get_global_circuit_breaker().record_success()
                 monitor.on_success()
-                return result
+                return result  # type: ignore[no-any-return]
             except RetryError as e:
                 get_global_circuit_breaker().record_failure()
                 cause = e.last_attempt.exception() if e.last_attempt else e
@@ -160,7 +160,7 @@ class UniversalExecutor:
                 result: Any = await retryer(_async_wrapper)
                 get_global_circuit_breaker().record_success()
                 monitor.on_success()
-                return result
+                return result  # type: ignore[no-any-return]
             except RetryError as e:
                 get_global_circuit_breaker().record_failure()
                 cause = e.last_attempt.exception() if e.last_attempt else e

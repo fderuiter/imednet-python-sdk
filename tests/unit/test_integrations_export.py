@@ -53,7 +53,7 @@ def _setup_real_mapper(monkeypatch):
 
 def test_export_to_csv(monkeypatch):
     """Test that export to csv."""
-    df, mapper_cls, mapper_inst = _setup_mapper(monkeypatch)
+    _df, mapper_cls, mapper_inst = _setup_mapper(monkeypatch)
     sdk = MagicMock()
 
     m_open = MagicMock()
@@ -72,7 +72,7 @@ def test_export_to_csv(monkeypatch):
 
 def test_export_to_excel(monkeypatch):
     """Test that export to excel."""
-    df, mapper_cls, mapper_inst = _setup_mapper(monkeypatch)
+    _df, mapper_cls, mapper_inst = _setup_mapper(monkeypatch)
     sdk = MagicMock()
 
     export_mod.export_to_excel(sdk, "STUDY", "out.xlsx")
@@ -106,7 +106,7 @@ def test_export_to_json(monkeypatch):
 
 def test_export_to_parquet(monkeypatch):
     """Test that export to parquet."""
-    df, mapper_cls, mapper_inst = _setup_mapper(monkeypatch)
+    _df, mapper_cls, mapper_inst = _setup_mapper(monkeypatch)
     sdk = MagicMock()
 
     export_mod.export_to_parquet(sdk, "STUDY", "out.parquet", compression="snappy")

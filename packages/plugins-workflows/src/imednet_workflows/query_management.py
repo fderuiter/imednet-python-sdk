@@ -35,7 +35,7 @@ class QueryManagementWorkflow:
             getattr(query, 'model_extra', {}).get('query_comments', [])
             if getattr(query, 'model_extra', None) is not None
             else [],
-        ):  # type: ignore
+        ):
             return None
 
         # Find the comment with the highest sequence number
@@ -48,7 +48,7 @@ class QueryManagementWorkflow:
                 else [],
             ),
             key=lambda c: c.sequence,
-        )  # type: ignore
+        )
 
         # Check if the latest comment indicates the query is open (closed=False)
         return not latest_comment.closed

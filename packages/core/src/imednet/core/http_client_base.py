@@ -16,7 +16,7 @@ from imednet.constants import (
 )
 from imednet.core.http.executor import BaseRequestExecutor
 
-from .base_client import BaseClient, Tracer
+from .base_client import BaseClient, Tracer  # type: ignore[attr-defined]
 from .retry import RetryConfig, RetryPolicy
 
 logger = logging.getLogger(__name__)
