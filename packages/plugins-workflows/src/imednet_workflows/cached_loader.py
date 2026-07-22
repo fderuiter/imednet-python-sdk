@@ -231,7 +231,7 @@ class CachedRecordsLoader:
             retry=retry_if_exception_type(Exception),
             reraise=True,
         )
-        endpoint = getattr(self._sdk, "records")
+        endpoint = self._sdk.records
 
         return cast(
             list[Record],
