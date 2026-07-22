@@ -236,7 +236,8 @@ def _run_publisher_wizard(
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_workflows.config_version_control"] = fake_vcm
         module_spec = importlib.util.spec_from_file_location(MODULE_NAME, PAGE_PATH)
-        assert module_spec is not None and module_spec.loader is not None
+        assert module_spec is not None
+        assert module_spec.loader is not None
         module = importlib.util.module_from_spec(module_spec)
         sys.modules[MODULE_NAME] = module
         module_spec.loader.exec_module(module)

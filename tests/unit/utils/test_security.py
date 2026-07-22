@@ -11,7 +11,7 @@ from imednet.utils.security import (
 
 
 @pytest.mark.parametrize(
-    "input_val, expected",
+    ("input_val", "expected"),
     [
         # Unsafe inputs (direct)
         ("=SUM(A1:A2)", "'=SUM(A1:A2)"),
@@ -75,7 +75,7 @@ def test_validate_header_value_invalid(input_val):
 
 
 @pytest.mark.parametrize(
-    "input_val, expected",
+    ("input_val", "expected"),
     [
         (["=cmd", "safe"], ["'=cmd", "safe"]),
         (("unsafe", "+1"), ("unsafe", "'+1")),

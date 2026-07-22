@@ -46,7 +46,7 @@ def test_retry_logic_retries_request_errors() -> None:
 
 
 @pytest.mark.parametrize(
-    "status,exc",
+    ("status", "exc"),
     [
         (400, errors.BadRequestError),
         (401, errors.UnauthorizedError),

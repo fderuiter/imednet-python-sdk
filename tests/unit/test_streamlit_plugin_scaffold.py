@@ -656,7 +656,8 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
         app_spec = importlib.util.spec_from_file_location(
             f"imednet_streamlit.app_test_{int(is_connected)}", app_path
         )
-        assert app_spec is not None and app_spec.loader is not None
+        assert app_spec is not None
+        assert app_spec.loader is not None
         app_module = importlib.util.module_from_spec(app_spec)
         app_spec.loader.exec_module(app_module)
         assert app_module.__file__ is not None
@@ -722,7 +723,8 @@ def test_streamlit_plugin_version() -> None:
     package_spec = importlib.util.spec_from_file_location(
         "imednet_streamlit", init_path, submodule_search_locations=[str(PACKAGE_ROOT)]
     )
-    assert package_spec is not None and package_spec.loader is not None
+    assert package_spec is not None
+    assert package_spec.loader is not None
     package_module = importlib.util.module_from_spec(package_spec)
     package_spec.loader.exec_module(package_module)
 

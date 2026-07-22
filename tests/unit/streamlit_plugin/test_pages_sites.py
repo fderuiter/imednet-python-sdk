@@ -258,9 +258,7 @@ def test_sites_page_populated_and_refresh() -> None:
     # Stub button to return True for refresh
     def _button(label: str, **kwargs: Any) -> bool:
         """Helper function to  button."""
-        if label == "🔄 Refresh Data":
-            return True
-        return False
+        return label == "🔄 Refresh Data"
 
     fake_st.button = _button  # type: ignore[assignment]
 

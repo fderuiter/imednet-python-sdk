@@ -249,7 +249,8 @@ def test_review_workbench_renders_kpis_and_filters_queue() -> None:
 
         module_name = "imednet_streamlit.pages.review_workbench"
         spec = importlib.util.spec_from_file_location(module_name, WORKBENCH_PATH)
-        assert spec is not None and spec.loader is not None
+        assert spec is not None
+        assert spec.loader is not None
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
         spec.loader.exec_module(module)
@@ -311,7 +312,8 @@ def test_triage_drawer_submits_assignment_annotation_and_status() -> None:
 
         module_name = "imednet_streamlit.components.triage_drawer"
         spec = importlib.util.spec_from_file_location(module_name, DRAWER_PATH)
-        assert spec is not None and spec.loader is not None
+        assert spec is not None
+        assert spec.loader is not None
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
         spec.loader.exec_module(module)

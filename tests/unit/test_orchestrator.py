@@ -23,8 +23,7 @@ def _mock_monotonic(monkeypatch: pytest.MonkeyPatch, values: list[float]) -> Non
 
     def infinite_clock():
         """Helper function to infinite clock."""
-        for v in values:
-            yield v
+        yield from values
         last_v = values[-1] if values else 0.0
         while True:
             last_v += 0.01

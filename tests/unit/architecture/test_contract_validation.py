@@ -4,8 +4,8 @@ import inspect
 from unittest.mock import MagicMock
 
 import pytest
-
 from imednet_sinks.plugin import SinksNamespace
+
 from imednet_workflows.namespace import Workflows
 
 
