@@ -22,13 +22,11 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
     @abstractmethod
     def PATH(self) -> str:
         """The relative path for the endpoint."""
-        pass
 
     @property
     @abstractmethod
     def MODEL(self) -> type[T]:
         """The model class associated with this endpoint."""
-        pass
 
     requires_study_key: bool = True
     """
@@ -48,7 +46,6 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
 
         Must be implemented by the base endpoint logic.
         """
-        pass
 
     @abstractmethod
     def _auto_filter(self, filters: dict[str, Any]) -> dict[str, Any]:
@@ -56,7 +53,6 @@ class EndpointABC(ABC, ClientProvider, Generic[T]):
 
         Must be implemented by the base endpoint logic.
         """
-        pass
 
     def _validate_study_key(self, study_key: str | None) -> None:
         """Validate that a study key is provided if required."""

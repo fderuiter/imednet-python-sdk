@@ -36,7 +36,6 @@ class OperationRetryPolicy(ABC):
     @abstractmethod
     def should_retry(self, exception: Exception) -> bool:
         """Return True if the exception should trigger a retry."""
-        pass
 
 
 class DefaultOperationRetryPolicy(OperationRetryPolicy):

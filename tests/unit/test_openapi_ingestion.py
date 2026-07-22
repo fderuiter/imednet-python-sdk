@@ -71,7 +71,7 @@ def test_openapi_ingestion(tmp_path):
     os.environ["IMEDNET_OPENAPI_PATH"] = str(openapi_file)
 
     # We need to clear the engine cache
-    import imednet.models.engine as engine
+    from imednet.models import engine
 
     engine._CONTRACT_CACHE = None
 

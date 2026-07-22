@@ -21,7 +21,6 @@ class _FakeContextManager:
 
     def __exit__(self, *args: Any) -> None:
         """Helper function to   exit  ."""
-        pass
 
 
 class _FakeCacheDataDecorator:
@@ -35,7 +34,6 @@ class _FakeCacheDataDecorator:
 
     def clear(self) -> None:
         """Helper function to clear."""
-        pass
 
 
 class _FakeSitesStreamlit:
@@ -73,11 +71,9 @@ class _FakeSitesStreamlit:
 
     def subheader(self, value: str, **kwargs: Any) -> None:
         """Helper function to subheader."""
-        pass
 
     def altair_chart(self, chart: Any, **kwargs: Any) -> None:
         """Helper function to altair chart."""
-        pass
 
     def columns(self, spec: Any) -> list[Any]:
         """Helper function to columns."""
@@ -95,7 +91,6 @@ class _FakeSitesStreamlit:
 
     def rerun(self) -> None:
         """Helper function to rerun."""
-        pass
 
     def text_input(self, label: str, **kwargs: Any) -> str:
         """Helper function to text input."""
@@ -103,15 +98,12 @@ class _FakeSitesStreamlit:
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
         """Helper function to dataframe."""
-        pass
 
     def download_button(self, **kwargs: Any) -> None:
         """Helper function to download button."""
-        pass
 
     def metric(self, **kwargs: Any) -> None:
         """Helper function to metric."""
-        pass
 
 
 def _make_fake_components_module() -> ModuleType:
@@ -125,7 +117,6 @@ def _make_fake_components_module() -> ModuleType:
 
     def _noop_kpi_row(metrics: list[dict[str, Any]]) -> None:
         """Helper function to  noop kpi row."""
-        pass
 
     def _noop_bar_chart(df: pd.DataFrame, **kwargs: Any) -> MagicMock:
         """Helper function to  noop bar chart."""
@@ -137,15 +128,12 @@ def _make_fake_components_module() -> ModuleType:
 
     def _noop_filterable_dataframe(df: pd.DataFrame, **kwargs: Any) -> None:
         """Helper function to  noop filterable dataframe."""
-        pass
 
     def _noop_csv_download_button(df: pd.DataFrame, **kwargs: Any) -> None:
         """Helper function to  noop csv download button."""
-        pass
 
     def _noop_excel_download_button(df: pd.DataFrame, **kwargs: Any) -> None:
         """Helper function to  noop excel download button."""
-        pass
 
     def _noop_paginated_slice(df: pd.DataFrame, **kwargs: Any) -> pd.DataFrame:
         """Helper function to  noop paginated slice."""

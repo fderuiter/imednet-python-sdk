@@ -17,7 +17,7 @@ except ImportError:
 
 
 class MetricConfig(TypedDict):
-    """MetricConfig class."""
+    """Configuration definition for a single metric tile."""
 
     label: str
     value: int | float | str

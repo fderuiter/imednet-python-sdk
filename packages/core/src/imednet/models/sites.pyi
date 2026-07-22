@@ -7,8 +7,6 @@ from imednet.models.base import ImednetBaseModel
 class Site(ImednetBaseModel):
     """A site participating in a study."""
 
-    pass
-
     study_key: str | None
     site_id: int | None
     site_name: str | None

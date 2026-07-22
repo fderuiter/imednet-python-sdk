@@ -90,7 +90,6 @@ def test_export_to_excel_sanitization(tmp_path, mock_record_mapper, monkeypatch)
         # for speed/dependency. Just creating an empty file to satisfy existence
         # checks if any. However, export_mod doesn't check existence after.
         # But we need to ensure the method signature matches.
-        pass
 
     monkeypatch.setattr(pd.DataFrame, "to_excel", mock_to_excel)
 

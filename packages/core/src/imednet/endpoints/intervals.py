@@ -18,10 +18,6 @@ class IntervalsOperationDef:
 class IntervalsEndpoint(IntervalsOperationDef, EdcSyncListGetEndpoint[Interval]):  # type: ignore[misc]
     """Synchronous endpoint for managing Intervals."""
 
-    pass
-
 
 class AsyncIntervalsEndpoint(IntervalsOperationDef, EdcAsyncListGetEndpoint[Interval]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Intervals."""
-
-    pass
