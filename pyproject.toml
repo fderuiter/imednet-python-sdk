@@ -167,6 +167,7 @@ dependencies = [
     "pydantic",
     "pylint",
     "click>=8.3.3",
+    "pylint>=3.0.0",
     "vulture",
     "imednet @ {root:uri}/packages/core",
     "imednet-workflows @ {root:uri}/packages/plugins-workflows",
@@ -183,6 +184,7 @@ typos-check = "typos {args:packages}"
 semgrep-check = "semgrep scan --config p/security-audit --error {args:packages}"
 audit = "pip-audit -s osv --timeout 60"
 secrets = "detect-secrets-hook --baseline .secrets.baseline {args:packages}"
+pylint-sim = "pylint --disable=all --enable=similarities --min-similarity-lines=20 --ignore-paths='.*/tests/.*,.*/docs/.*,.*/scripts/.*,.*/models/.*,tests/.*,docs/.*,scripts/.*,.*\\.json$' --ignore-patterns='.*monitor.*,.*integrations.*,.*sinks.*,.*testing.*' {args:packages}"
 symilar-check = "pylint --disable=all --enable=duplicate-code --fail-under=9.0 {args:packages}"
 vulture-check = "vulture packages vulture_whitelist.py"
 all = [
@@ -193,6 +195,7 @@ all = [
     "semgrep-check",
     "audit",
     "secrets",
+    "pylint-sim",
     "symilar-check",
     "vulture-check"
 ]

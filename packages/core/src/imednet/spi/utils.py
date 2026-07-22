@@ -12,6 +12,7 @@ from imednet.utils.job_poller import (
     JobTimeoutError,
     evaluate_job_state,
 )
+from imednet.utils.secrets import redact_sensitive_payload
 from imednet.utils.security import mask_clinical_phi, sanitize_csv_formula
 from imednet.utils.serialization import flatten
 from imednet.utils.url import redact_sensitive_text
@@ -35,6 +36,7 @@ __all__ = [
     "mask_clinical_phi",
     "parse_bool",
     "parse_iso_datetime",
+    "redact_sensitive_payload",
     "redact_sensitive_text",
     "sanitize_csv_formula",
     "get_sqlite_connection",
