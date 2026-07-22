@@ -23,6 +23,4 @@ else:  # pragma: no cover - typing fallback for optional Airflow dependency
         class _FallbackAirflowError(Exception):
             """Fallback exception used when ``airflow.exceptions.AirflowException`` is unavailable."""
 
-            pass
-
         AirflowException = _FallbackAirflowError

@@ -8,12 +8,11 @@ ledger management.
 from __future__ import annotations
 
 import argparse
-from typing import Any
 import sys
 from datetime import datetime, timezone
+from typing import Any
 
 from imednet.spi.cli import STUDY_KEY_ARG, parse_filter_args, with_sdk
-from imednet.spi.facade import ImednetFacade
 
 from .data_extraction import DataExtractionWorkflow
 from .state_ledger import get_state_provider

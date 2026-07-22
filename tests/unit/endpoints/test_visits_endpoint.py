@@ -2,7 +2,7 @@
 
 import pytest
 
-import imednet.endpoints.visits as visits
+from imednet.endpoints import visits
 from imednet.errors import NotFoundError
 from imednet.models.visits import Visit
 

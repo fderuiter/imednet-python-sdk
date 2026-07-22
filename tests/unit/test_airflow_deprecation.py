@@ -30,7 +30,6 @@ def _setup_airflow(monkeypatch):
 
         def __init__(self, **kwargs):  # pragma: no cover
             """Initialize the test object."""
-            pass
 
     hooks_mod.BaseHook = DummyBaseHook
     models_mod.BaseOperator = DummyBaseOperator

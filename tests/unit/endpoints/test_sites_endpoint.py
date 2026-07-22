@@ -2,7 +2,7 @@
 
 import pytest
 
-import imednet.endpoints.sites as sites
+from imednet.endpoints import sites
 from imednet.errors import NotFoundError
 from imednet.errors.validation import ConfigurationError
 from imednet.models.sites import Site
