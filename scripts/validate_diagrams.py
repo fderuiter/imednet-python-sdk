@@ -99,7 +99,18 @@ def main():
                     continue
 
                 if (
-                    line_strip.startswith(("%%", "graph ", "subgraph ", "Note ", "activate ", "deactivate ", "sequenceDiagram")) or line_strip == "end"
+                    line_strip.startswith(
+                        (
+                            "%%",
+                            "graph ",
+                            "subgraph ",
+                            "Note ",
+                            "activate ",
+                            "deactivate ",
+                            "sequenceDiagram",
+                        )
+                    )
+                    or line_strip == "end"
                 ):
                     continue
 
