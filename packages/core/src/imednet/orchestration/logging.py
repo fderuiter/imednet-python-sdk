@@ -33,11 +33,16 @@ Usage::
 from __future__ import annotations
 
 import logging
+import sys
 from collections.abc import MutableMapping
 from typing import Any
 
+if sys.version_info >= (3, 11):
+    _LoggerAdapter = logging.LoggerAdapter[logging.Logger]
+else:
+    _LoggerAdapter = logging.LoggerAdapter
 
-class StudyContextLogAdapter(logging.LoggerAdapter):  # type: ignore[type-arg]
+class StudyContextLogAdapter(_LoggerAdapter):
     """A logger adapter that enriches records with a bound study key."""
 
     def __init__(self, logger: logging.Logger, study_key: str) -> None:

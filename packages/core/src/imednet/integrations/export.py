@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from importlib import import_module
 from pathlib import Path
-from typing import Any
+from typing import Any, cast, Literal
 
 from imednet.core.operations.executor import UniversalExecutor
 from imednet.errors import ExportBatchError
@@ -88,12 +88,18 @@ def _to_sql_with_chunking(
             chunk.to_sql(
                 f"{table}_part{i}",
                 engine,
-                if_exists=if_exists,  # type: ignore[arg-type]
+                if_exists=cast(Literal['fail', 'replace', 'append'], if_exists),
                 index=False,
                 **kwargs,
             )
     else:
-        df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
+        df.to_sql(
+            table,
+            engine,
+            if_exists=cast(Literal['fail', 'replace', 'append'], if_exists),
+            index=False,
+            **kwargs,
+        )
 
 
 def _records_df(
