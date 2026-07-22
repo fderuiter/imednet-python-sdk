@@ -4,6 +4,7 @@ import threading
 
 _db_lock = threading.Lock()
 
+
 class CredentialRepository:
     def __init__(self, db_path: str):
         self.db_path = db_path
@@ -48,7 +49,9 @@ class CredentialRepository:
             except sqlite3.OperationalError:
                 return []
 
-    def provision_tenant(self, study_key: str, api_key: str, security_key: str, env_url: str | None = None):
+    def provision_tenant(
+        self, study_key: str, api_key: str, security_key: str, env_url: str | None = None
+    ):
         with _db_lock:
             if not os.path.exists(self.db_path):
                 os.makedirs(os.path.dirname(self.db_path), exist_ok=True)

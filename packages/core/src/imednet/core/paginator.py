@@ -40,19 +40,19 @@ class BasePaginator(Generic[ClientT]):
         self.client: ClientT = client
         self.path = path
         self.params = params.copy() if params else {}
-        
+
         self.page_param = page_param
         self.size_param = size_param
         self.data_key = data_key
         self.metadata_key = metadata_key
-        
+
         explicit_page = self.params.pop(self.page_param, None)
         self._explicit_page = int(explicit_page) if explicit_page is not None else None
-        
+
         explicit_size = self.params.pop(self.size_param, None)
         if explicit_size is None:
             explicit_size = self.params.pop("limit", None)
-            
+
         self.page_size = int(explicit_size) if explicit_size is not None else page_size
         self._cursor: int | None = None
         self._exhausted = False
@@ -89,7 +89,7 @@ class BasePaginator(Generic[ClientT]):
         """Determine the next page index based on the response payload and metadata."""
         if self._explicit_page is not None:
             return None
-            
+
         pagination = payload.get("pagination")
         if pagination is not None and not isinstance(pagination, dict):
             raise TypeError(

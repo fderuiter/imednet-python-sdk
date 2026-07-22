@@ -182,11 +182,14 @@ def test_plugin_discovery_failure(monkeypatch):
     ):
         sdk.workflows.some_workflow
 
+
 def test_dashboard_no_direct_db_access():
     """Ensure that clinical dashboards do not use raw database queries or import sqlite3 directly."""
     app_dir = Path(imednet.__file__).parent.parent.parent.parent.parent
-    dashboard_dir = app_dir / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit" / "pages"
-    
+    dashboard_dir = (
+        app_dir / "packages" / "plugins-streamlit" / "src" / "imednet_streamlit" / "pages"
+    )
+
     if not dashboard_dir.exists():
         pytest.skip("Streamlit pages directory not found")
 

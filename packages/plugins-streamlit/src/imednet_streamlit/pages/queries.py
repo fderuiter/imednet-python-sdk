@@ -26,18 +26,19 @@ def _fetch_queries(_sdk: object, study_key: str, limit: int = 1000) -> pd.DataFr
         all_q = _sdk.get_queries(study_key=study_key, limit=limit)  # type: ignore[attr-defined]
         open_ids = {q.annotation_id for q in open_q}
         fields = list(Query.model_fields.keys())
-    
+
         rows = []
         for q in all_q:
             row = {f: getattr(q, f, None) for f in fields}
             row["status"] = "Open" if getattr(q, "annotation_id", None) in open_ids else "Closed"
             rows.append(row)
-    
+
         if not rows:
             return pd.DataFrame(columns=fields + ["status"])  # noqa: RUF005
         return pd.DataFrame(rows)
     except Exception as e:
         import streamlit as st
+
         st.error(f"Failed to load queries. The server-side chunked data request failed: {e}")
         return pd.DataFrame()
 

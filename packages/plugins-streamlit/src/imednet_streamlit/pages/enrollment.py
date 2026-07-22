@@ -24,19 +24,22 @@ def _fetch_subjects(_sdk: object, study_key: str, limit: int = 1000) -> pd.DataF
     try:
         subjects = _sdk.get_subjects(study_key=study_key, limit=limit)  # type: ignore[attr-defined]
         fields = list(Subject.model_fields.keys())
-    
+
         rows = []
         for s in subjects:
             row = {f: getattr(s, f, None) for f in fields}
             rows.append(row)
-    
+
         if not rows:
             return pd.DataFrame(columns=fields)
         df = pd.DataFrame(rows)
         return df[~df["deleted"]]
     except Exception as e:
         import streamlit as st
-        st.error(f"Failed to load enrollment data. The server-side chunked data request failed: {e}")
+
+        st.error(
+            f"Failed to load enrollment data. The server-side chunked data request failed: {e}"
+        )
         return pd.DataFrame()
 
 

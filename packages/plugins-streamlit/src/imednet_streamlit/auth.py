@@ -59,6 +59,7 @@ import os
 
 from .credentials import CredentialRepository
 
+
 def get_db_path() -> str:
     """Resolve the database file path based on the selected environment."""
     base_path = os.environ.get(

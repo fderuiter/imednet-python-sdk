@@ -156,6 +156,7 @@ def test_admin_page_provision_exception(monkeypatch: pytest.MonkeyPatch) -> None
         raise RuntimeError("boom")
 
     from imednet_streamlit.credentials import CredentialRepository
+
     monkeypatch.setattr(CredentialRepository, "provision_tenant", raise_boom)
 
     _run_admin(fake_st)
