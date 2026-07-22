@@ -188,6 +188,7 @@ class TestNeo4jExportSink:
         driver.session.return_value.__enter__.return_value.run.side_effect = RuntimeError("db down")
         monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
         import time
+
         monkeypatch.setattr(time, "sleep", lambda _: None)
 
         from imednet_sinks.graph import Neo4jExportSink, Neo4jSinkConfig
@@ -387,6 +388,7 @@ class TestMongoDbExportSink:
         collection.bulk_write.side_effect = RuntimeError("mongo down")
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
         import time
+
         monkeypatch.setattr(time, "sleep", lambda _: None)
 
         from imednet_sinks.document import MongoDbExportSink, MongoDbSinkConfig
@@ -640,6 +642,7 @@ class TestSnowflakeExportSink:
 
         monkeypatch.setattr(wh_mod, "_require_optional_dep", fake_require)
         import time
+
         monkeypatch.setattr(time, "sleep", lambda _: None)
 
         cfg = SnowflakeSinkConfig(
