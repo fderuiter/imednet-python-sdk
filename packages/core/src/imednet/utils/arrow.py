@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Protocol
 
-from imednet.utils.validators import parse_bool
+from imednet.utils.validators import is_boolean_token, parse_bool
 
 try:
     import pyarrow as pa
@@ -78,7 +78,9 @@ def _coerce_value(value: Any, target_type: pa.DataType) -> Any:
     if pa.types.is_timestamp(target_type):
         return value if isinstance(value, datetime) else None
     if pa.types.is_boolean(target_type):
-        return parse_bool(value)
+        if isinstance(value, str):
+            return parse_bool(value) if is_boolean_token(value) else None
+        return bool(value)
     if pa.types.is_floating(target_type):
         try:
             return float(value)
