@@ -79,10 +79,14 @@ st.dataframe(
 )
 
 
+import tempfile
+
 st.header("Triage Drawer")
-# Initialize a mock in-memory triage store and item
-mock_db_path = f"file:mock_triage_{uuid.uuid4().hex}?mode=memory&cache=shared"
+# Initialize a mock temporary triage store and item
+_temp_dir = tempfile.mkdtemp()
+mock_db_path = f"{_temp_dir}/mock_triage_{uuid.uuid4().hex}.sqlite"
 store = TriageStore(db_path=mock_db_path)
+store._initialize_schema()  # noqa: SLF001
 item = TriageItem(
     item_id=str(uuid.uuid4()),
     study_key="MOCK_STUDY",
