@@ -8,6 +8,7 @@ ledger management.
 from __future__ import annotations
 
 import argparse
+from typing import Any
 import sys
 from datetime import datetime, timezone
 
@@ -20,7 +21,7 @@ from .subject_data import SubjectDataWorkflow
 from .sync_worker import SyncWorker, SyncWorkerConfig
 
 
-def setup_parser(subparsers):
+def setup_parser(subparsers: argparse._SubParsersAction[Any]) -> None:
     """Set up the workflows argparse subparsers."""
     wf_parser = subparsers.add_parser("workflows", help="Execute common data workflows.")
     sub = wf_parser.add_subparsers(dest="wf_command")
@@ -48,7 +49,7 @@ def setup_parser(subparsers):
 
     @with_sdk
     def extract_records(
-        sdk: ImednetFacade,
+        sdk: ImednetSDK,  # type: ignore[name-defined]
         study_key: str,
         record_filter: list[str] | None = None,
         subject_filter: list[str] | None = None,
@@ -95,7 +96,7 @@ def setup_parser(subparsers):
 
     @with_sdk
     def sync_worker(
-        sdk: ImednetFacade, study_key: str, interval: int = 900, once: bool = False
+        sdk: ImednetSDK, study_key: str, interval: int = 900, once: bool = False  # type: ignore[name-defined]
     ) -> None:
         from .cached_loader import CachedRecordsLoader
 
@@ -272,7 +273,7 @@ def setup_parser(subparsers):
     )
 
 
-def setup_subject_parser(subparsers):
+def setup_subject_parser(subparsers: argparse._SubParsersAction[Any]) -> None:
     """Set up the subject-data argparse subparsers."""
     subj_parser = subparsers.add_parser(
         "subject-data", help="Retrieve all data for a single subject."
@@ -281,7 +282,7 @@ def setup_subject_parser(subparsers):
     subj_parser.add_argument("subject_key", help="The key identifying the subject.")
 
     @with_sdk
-    def subject_data(sdk: ImednetFacade, study_key: str, subject_key: str) -> None:
+    def subject_data(sdk: ImednetSDK, study_key: str, subject_key: str) -> None:  # type: ignore[name-defined]
         workflow = SubjectDataWorkflow(sdk)
         data = workflow.get_all_subject_data(study_key, subject_key)
         print(data.model_dump())
@@ -291,7 +292,7 @@ def setup_subject_parser(subparsers):
     )
 
 
-def state_app(args=None):
+def state_app(args: list[str] | None = None) -> None:
     """Execute the state app logic directly for tests."""
     if args is None:
         args = sys.argv[1:]

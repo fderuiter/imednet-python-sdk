@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 try:
     import pandas as pd
 except ImportError:
-    pd = None  # type: ignore
+    pd = None
 from ..models.records import Record
 from .security import sanitize_csv_formula
 
@@ -31,7 +31,7 @@ def records_to_dataframe(records: list[Record], *, flatten: bool = False) -> pd.
     rows = [r.model_dump(by_alias=False) for r in records]
     df = pd.DataFrame(rows)
     if flatten and not df.empty:
-        record_df = pd.json_normalize(df["record_data"], sep="_")  # type: ignore[arg-type]
+        record_df = pd.json_normalize(df["record_data"], sep="_")
         df = pd.concat([df.drop(columns=["record_data"]), record_df], axis=1)
     return df
 

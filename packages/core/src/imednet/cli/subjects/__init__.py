@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import argparse
+from typing import Any
+
 from ...sdk import ImednetSDK
 from ..decorators import with_sdk
 from ..utils import STUDY_KEY_ARG, display_list, fetching_status, parse_filter_args
 
 
-def setup_parser(subparsers):
+def setup_parser(subparsers: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
     """Setup the parser for this module."""
     parser = subparsers.add_parser("subjects", help="Manage subjects within a study.")
     sub = parser.add_subparsers(dest="command")

@@ -42,7 +42,7 @@ class JobStatus(Job):
 
     results: Any = Field(default=None)
 
-    @field_validator("progress", mode="before", check_fields=False)  # type: ignore[untyped-decorator]
+    @field_validator("progress", mode="before", check_fields=False)
     def _parse_progress(cls, v: Any) -> int:
         """Parse progress value as an integer.
 
