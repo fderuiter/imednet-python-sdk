@@ -20,7 +20,7 @@ from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality
 try:
     import pandas as pd
 except ImportError:
-    pd = None  # type: ignore[assignment]
+    pd = None
 from imednet.constants import MAX_SQLITE_COLUMNS
 from imednet.utils import sanitize_csv_formula
 from imednet.utils.security import global_sensitivity_registry, mask_clinical_phi
@@ -88,12 +88,12 @@ def _to_sql_with_chunking(
             chunk.to_sql(
                 f"{table}_part{i}",
                 engine,
-                if_exists=if_exists,  # type: ignore[arg-type]
+                if_exists=if_exists,
                 index=False,
                 **kwargs,
             )
     else:
-        df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
+        df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)
 
 
 def _records_df(
