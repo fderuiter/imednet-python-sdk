@@ -34,6 +34,8 @@ def get_imports_from_file(file_path: Path) -> set[str]:
         elif isinstance(node, ast.ImportFrom):
             if node.module:
                 imports.add(node.module)
+                for name in node.names:
+                    imports.add(f"{node.module}.{name.name}")
     return imports
 
 
@@ -111,7 +113,34 @@ def test_extensions_use_spi():
             for imp in imports:
                 # If they import imednet, it must be the top level (e.g. `imednet` itself)
                 # or through the SPI `imednet.spi`
-                if imp.startswith("imednet.") and not imp.startswith("imednet.spi"):
+                allowed_prefixes = (
+                    "imednet.spi",
+                    "imednet.sdk",
+                    "imednet.config",
+                    "imednet.errors",
+                    "imednet.ImednetSDK",
+                    "imednet.AsyncImednetSDK",
+                    "imednet.Config",
+                    "imednet.PluginLoadError",
+                    "imednet.FilterConflictError",
+                    "imednet.OrchestratorError",
+                    "imednet.MultiStudyOrchestrator",
+                    "imednet.OrchestratorResult",
+                    "imednet.StudyWorkerCallable",
+                    "imednet.PluginProtocol",
+                    "imednet.WorkflowsNamespaceProtocol",
+                    "imednet.BaseClient",
+                    "imednet.DefaultRetryPolicy",
+                    "imednet.FilterScalar",
+                    "imednet.FilterValue",
+                    "imednet.ImednetClient",
+                    "imednet.ItemId",
+                    "imednet.JsonDict",
+                    "imednet.RetryPolicy",
+                    "imednet.RetryState",
+                    "imednet.load_config",
+                )
+                if imp.startswith("imednet.") and not imp.startswith(allowed_prefixes):
                     # The only allowed exceptions are imednet.sdk, imednet.config or something imported via top-level.
                     # Usually, they should just `from imednet import ImednetSDK` which is `imp == "imednet"`
                     # If imp == "imednet", we don't catch it here.

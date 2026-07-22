@@ -129,7 +129,6 @@ ignore_missing_imports = true
 "tests/**/*.py" = ["SLF001", "S", "D"]
 "scripts/**/*.py" = ["SLF001", "S", "D"]
 "examples/**/*.py" = ["SLF001", "S", "D"]
-"final_automate.py" = ["D"]
 "packages/plugins-sinks/tests/**/*.py" = ["SLF001"]
 
 [tool.ruff.format]
@@ -166,8 +165,10 @@ dependencies = [
     "pandas-stubs",
     "types-requests",
     "pydantic",
+    "pylint",
     "click>=8.3.3",
     "pylint>=3.0.0",
+    "vulture",
     "imednet @ {root:uri}/packages/core",
     "imednet-workflows @ {root:uri}/packages/plugins-workflows",
     "imednet-streamlit @ {root:uri}/packages/plugins-streamlit",
@@ -184,6 +185,8 @@ semgrep-check = "semgrep scan --config p/security-audit --error {args:packages}"
 audit = "pip-audit -s osv --timeout 60"
 secrets = "detect-secrets-hook --baseline .secrets.baseline {args:packages}"
 pylint-sim = "pylint --disable=all --enable=similarities --min-similarity-lines=20 --ignore-paths='.*/tests/.*,.*/docs/.*,.*/scripts/.*,.*/models/.*,tests/.*,docs/.*,scripts/.*,.*\\.json$' --ignore-patterns='.*monitor.*,.*integrations.*,.*sinks.*,.*testing.*' {args:packages}"
+symilar-check = "pylint --disable=all --enable=duplicate-code --fail-under=9.0 {args:packages}"
+vulture-check = "vulture packages vulture_whitelist.py"
 all = [
     "fmt",
     "ruff-check",
@@ -192,7 +195,9 @@ all = [
     "semgrep-check",
     "audit",
     "secrets",
-    "pylint-sim"
+    "pylint-sim",
+    "symilar-check",
+    "vulture-check"
 ]
 
 [tool.uv.workspace]
@@ -207,3 +212,10 @@ apache-airflow-providers-imednet = { workspace = true }
 
 
 
+
+[tool.pylint.SIMILARITIES]
+ignore-comments = true
+ignore-docstrings = true
+ignore-imports = true
+ignore-signatures = true
+min-similarity-lines = 15

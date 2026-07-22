@@ -10,7 +10,6 @@ from typing import Any
 
 import pandas as pd
 
-_REDACTION_MARKER = "***"
 
 
 def render_lineage_panes(
