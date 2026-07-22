@@ -24,6 +24,7 @@ from imednet.spi.models import (
     StudyConfiguration,
     SubjectLevelAnalysis,
 )
+from imednet.spi.utils import is_missing_value
 
 logger = logging.getLogger(__name__)
 
@@ -103,14 +104,6 @@ def _extract_rule_value_from_payload(
         return record.record_data.get(source_path)
 
     return None
-
-
-def _is_missing_value(value: Any) -> bool:
-    """Determine if a value should be considered 'missing'.
-
-    A value is missing if it is None or an empty string.
-    """
-    return value is None or (isinstance(value, str) and value == "")
 
 
 def _group_mappings_by_domain_and_form(
@@ -228,7 +221,7 @@ def extract_canonical_records(
                     else:
                         value = None
 
-                    if _is_missing_value(value) and rule.fallback_value is not None:
+                    if is_missing_value(value) and rule.fallback_value is not None:
                         value = rule.fallback_value
 
                     # 2. Business Logic Execution

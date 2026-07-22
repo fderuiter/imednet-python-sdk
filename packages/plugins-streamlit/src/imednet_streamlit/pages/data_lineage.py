@@ -9,12 +9,13 @@ from __future__ import annotations
 
 from typing import Any
 
-import pandas as pd
 import streamlit as st
 
 from imednet.spi.models import AdverseEvent, DeviceDeficiency, ProtocolDeviation, StudyConfiguration
+from imednet.spi.utils import mask_clinical_phi
 from imednet_streamlit.auth import get_sdk, get_study_key
-from imednet_streamlit.components import redact_sensitive_payload, render_lineage_panes
+from imednet_streamlit.components import render_lineage_panes
+from imednet_streamlit.utils import models_to_frame
 from imednet_workflows import CachedRecordsLoader
 from imednet_workflows.extraction_engine import ExtractionResult, extract_canonical_records
 
@@ -65,16 +66,6 @@ def _get_domain_models(
     return list(extraction.device_deficiencies)
 
 
-def _models_to_frame(
-    models: list[Any],
-) -> pd.DataFrame:
-    """Convert a list of canonical models into a pandas DataFrame."""
-    if not models:
-        return pd.DataFrame()
-    rows = [m.model_dump(mode="python", by_alias=False) for m in models]
-    return pd.DataFrame(rows)
-
-
 def _render_metric_summary(extraction: ExtractionResult) -> str | None:
     """Render clickable metric tiles and return the selected domain."""
     st.subheader("📊 Metric Overview")
@@ -111,7 +102,7 @@ def _render_record_table(
         st.info(f"No {domain} records found.")
         return None
 
-    df = _models_to_frame(models)
+    df = models_to_frame(models)
     st.dataframe(df, use_container_width=True)
 
     total = len(models)
@@ -192,7 +183,7 @@ def _find_mapping_rules(domain: str) -> list[dict[str, Any]]:
 
 def _redact_sensitive(data: dict[str, Any]) -> dict[str, Any]:
     """Return a copy of *data* with common sensitive keys redacted."""
-    return redact_sensitive_payload(data)
+    return mask_clinical_phi(data)
 
 
 def _render_lineage_trace(
