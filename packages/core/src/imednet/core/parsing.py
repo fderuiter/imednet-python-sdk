@@ -7,7 +7,7 @@ Pydantic models, eliminating duplicated parsing logic across endpoints.
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from pydantic import BaseModel
 
@@ -41,7 +41,6 @@ def get_model_parser(model: type[T]) -> Callable[[Any], T]:
         return cast(Callable[[Any], T], getattr(model, "from_json"))
 
     # Fall back to Pydantic's model_validate
-    from typing import cast, Callable, Any
     return cast(Callable[[Any], T], model.model_validate)
 
 
