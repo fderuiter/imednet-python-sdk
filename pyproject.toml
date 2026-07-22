@@ -181,7 +181,7 @@ typos-check = "typos {args:packages}"
 semgrep-check = "semgrep scan --config p/security-audit --error {args:packages}"
 audit = "pip-audit -s osv --timeout 60"
 secrets = "detect-secrets-hook --baseline .secrets.baseline {args:packages}"
-dead-code = "vulture {args:packages} vulture_whitelist.py --min-confidence 80 --exclude **/tests/**,**/docs/**,**/scripts/**"
+vulture-check = "vulture {args:packages} vulture_whitelist.py --min-confidence 80 --exclude **/tests/**,**/docs/**,**/scripts/**"
 pylint-sim = "pylint --disable=all --enable=similarities --min-similarity-lines=20 --ignore-paths='.*/tests/.*,.*/docs/.*,.*/scripts/.*,.*/models/.*,tests/.*,docs/.*,scripts/.*,.*\\.json$' --ignore-patterns='.*monitor.*,.*integrations.*,.*sinks.*,.*testing.*' {args:packages}"
 symilar-check = "pylint --disable=all --enable=duplicate-code --fail-under=9.0 {args:packages}"
 all = [
@@ -192,7 +192,7 @@ all = [
     "semgrep-check",
     "audit",
     "secrets",
-    "dead-code",
+    "vulture-check",
     "pylint-sim",
     "symilar-check"
 ]
