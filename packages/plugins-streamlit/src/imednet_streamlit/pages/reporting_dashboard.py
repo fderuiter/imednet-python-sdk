@@ -264,7 +264,7 @@ def _build_site_metrics(_sdk: object, study_key: str, subjects_df: pd.DataFrame)
                 open_queries=("annotation_id", "count"),
                 avg_days_open=(
                     "date_created",
-                    lambda values: (now_utc - pd.to_datetime(values, utc=True)).dt.days.mean(),  # type: ignore[attr-defined]
+                    lambda values: (now_utc - pd.to_datetime(values, utc=True)).dt.days.mean(),
                 ),
             )
             .reset_index()
@@ -582,7 +582,7 @@ def _render_site_performance_tab(df_site_metrics: pd.DataFrame) -> None:
     display_cols = ["site_name", "enrolled_count", "open_queries", "query_rate", "avg_days_open"]
     display = df_site_metrics.reindex(columns=display_cols)
     st.dataframe(
-        display.style.map(_highlight_high_rate, subset=["query_rate"]),  # type: ignore[arg-type]
+        display.style.map(_highlight_high_rate, subset=["query_rate"]),
         use_container_width=True,
     )
 
