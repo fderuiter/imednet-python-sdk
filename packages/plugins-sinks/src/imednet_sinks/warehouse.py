@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Snowflake warehouse export sink.
 
 This module implements the **warehouse export path** for a Snowflake

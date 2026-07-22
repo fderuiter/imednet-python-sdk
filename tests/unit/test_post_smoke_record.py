@@ -78,7 +78,7 @@ def test_build_record_returns_typed_values() -> None:
 
 
 @pytest.mark.parametrize(
-    "kwargs, extra",
+    ("kwargs", "extra"),
     [
         ({"site_name": "S"}, {"siteName": "S"}),
         ({"subject_key": "SUB"}, {"subjectKey": "SUB"}),

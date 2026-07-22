@@ -172,7 +172,7 @@ def test_help_text_completeness(runner):
     ]
 
     for cmd in commands:
-        result = runner.invoke(app, cmd + ["--help"])
+        result = runner.invoke(app, [*cmd, "--help"])
         assert result.exit_code == 0
         assert "usage:" in result.stdout.lower()
         # Argparse uses "options:" or "positional arguments:"

@@ -17,8 +17,7 @@ class _ModelDumpable(Protocol):
     def model_dump(self) -> dict[str, Any]: ...
 
 
-_TRUE_STRINGS = {"true", "1", "yes", "y", "t"}
-_FALSE_STRINGS = {"false", "0", "no", "n", "f"}
+from imednet.utils.validators import _FALSE_LOWER, _TRUE_LOWER
 
 
 def _normalize_datetime(value: datetime) -> datetime:
@@ -82,9 +81,9 @@ def _coerce_value(value: Any, target_type: pa.DataType) -> Any:
     if pa.types.is_boolean(target_type):
         if isinstance(value, str):
             lowered = value.strip().lower()
-            if lowered in _TRUE_STRINGS:
+            if lowered in _TRUE_LOWER:
                 return True
-            if lowered in _FALSE_STRINGS:
+            if lowered in _FALSE_LOWER:
                 return False
             return None
         return bool(value)

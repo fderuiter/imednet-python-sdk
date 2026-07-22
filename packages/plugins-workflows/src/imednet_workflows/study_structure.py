@@ -81,15 +81,15 @@ async def async_get_study_structure(sdk: "AsyncImednetFacade", study_key: str) -
     """Asynchronous variant of :func:`get_study_structure`."""
     try:
 
-        async def fetch_intervals():
+        async def fetch_intervals() -> list[Any]:  # type: ignore[name-defined]
             """Asynchronously fetch visit intervals."""
             return await sdk.async_get_intervals(study_key)
 
-        async def fetch_forms():
+        async def fetch_forms() -> list[Any]:  # type: ignore[name-defined]
             """Asynchronously fetch form definitions."""
             return await sdk.async_get_forms(study_key)
 
-        async def fetch_variables():
+        async def fetch_variables() -> list[Any]:  # type: ignore[name-defined]
             """Asynchronously fetch variable definitions."""
             return await sdk.async_get_variables(study_key)
 

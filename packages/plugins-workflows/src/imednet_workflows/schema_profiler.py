@@ -218,7 +218,7 @@ class _FieldAccumulator:
 
         if variable is None:
             return "string"
-        return _SCHEMA_TYPE_MAP.get((variable.variable_type or "").lower(), "string")  # type: ignore
+        return _SCHEMA_TYPE_MAP.get((variable.variable_type or "").lower(), "string")
 
 
 def _is_populated(value: Any) -> bool:
@@ -239,6 +239,9 @@ def _render_value(value: Any) -> str:
     if isinstance(value, (dict, list)):
         return json.dumps(value, sort_keys=True)
     return str(value)
+
+
+from imednet.spi.utils import is_boolean_token
 
 
 def _is_boolean_value(value: Any) -> bool:

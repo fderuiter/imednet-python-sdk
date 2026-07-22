@@ -342,7 +342,8 @@ def _run_setup_wizard(
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
         sys.modules["imednet_workflows"] = fake_workflows_module
         module_spec = importlib.util.spec_from_file_location(module_name, page_path)
-        assert module_spec is not None and module_spec.loader is not None
+        assert module_spec is not None
+        assert module_spec.loader is not None
         module = importlib.util.module_from_spec(module_spec)
         sys.modules[module_name] = module
         module_spec.loader.exec_module(module)

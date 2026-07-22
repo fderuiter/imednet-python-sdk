@@ -117,7 +117,8 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
         sys.modules["imednet_streamlit.auth"] = fake_auth_module
 
         app_spec = importlib.util.spec_from_file_location(module_name, app_path)
-        assert app_spec is not None and app_spec.loader is not None
+        assert app_spec is not None
+        assert app_spec.loader is not None
         app_module = importlib.util.module_from_spec(app_spec)
         sys.modules[module_name] = app_module
         app_spec.loader.exec_module(app_module)

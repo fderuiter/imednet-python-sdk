@@ -49,6 +49,7 @@ build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 100
+exclude = ["sandbox", "vulture_whitelist.py"]
 src = ["packages/core/src", "packages/plugins-workflows/src", "packages/providers-airflow/src", "packages/plugins-streamlit/src", "tests"]
 
 [tool.ruff.lint.isort]
@@ -66,10 +67,10 @@ convention = "google"
 
 [tool.mypy]
 python_version = "3.12"
-strict = false
+strict = true
 ignore_missing_imports = true
 plugins = []
-exclude = '^(examples/.*|tests/.*|packages/.*/tests/.*)$'
+exclude = '^(examples/.*|tests/.*|packages/.*/tests/.*|sandbox/.*)$'
 
 [[tool.mypy.overrides]]
 module = [
@@ -119,6 +120,7 @@ module = [
 ignore_missing_imports = true
 
 [tool.ruff.lint.per-file-ignores]
+"docs/**/*.py" = ["D", "RUF"]
 "packages/core/**/*.py" = ["SLF001"]
 "packages/core/src/imednet/integrations/export.py" = ["D101", "D102", "D107", "S608"]
 "packages/core/src/imednet/integrations/parquet.py" = ["S608"]
@@ -126,9 +128,9 @@ ignore_missing_imports = true
 "packages/core/src/imednet/utils/job_poller.py" = ["D107"]
 "packages/plugins-workflows/src/imednet_workflows/duckdb_centralizer.py" = ["S608"]
 "packages/plugins-workflows/src/imednet_workflows/extraction_engine.py" = ["S307"]
-"tests/**/*.py" = ["SLF001", "S", "D"]
-"scripts/**/*.py" = ["SLF001", "S", "D"]
-"examples/**/*.py" = ["SLF001", "S", "D"]
+"tests/**/*.py" = ["SLF001", "S", "D", "PT", "SIM", "RUF", "B", "RET", "UP", "C", "F821"]
+"scripts/**/*.py" = ["SLF001", "S", "D", "RUF", "RET"]
+"examples/**/*.py" = ["SLF001", "S", "D", "RUF"]
 "packages/plugins-sinks/tests/**/*.py" = ["SLF001"]
 
 [tool.ruff.format]
@@ -167,6 +169,7 @@ dependencies = [
     "pydantic",
     "pylint",
     "click>=8.3.3",
+    "pylint>=3.0.0",
     "vulture",
     "imednet @ {root:uri}/packages/core",
     "imednet-workflows @ {root:uri}/packages/plugins-workflows",
@@ -183,6 +186,7 @@ typos-check = "typos {args:packages}"
 semgrep-check = "semgrep scan --config p/security-audit --error {args:packages}"
 audit = "pip-audit -s osv --timeout 60"
 secrets = "detect-secrets-hook --baseline .secrets.baseline {args:packages}"
+pylint-sim = "pylint --disable=all --enable=similarities --min-similarity-lines=20 --ignore-paths='.*/tests/.*,.*/docs/.*,.*/scripts/.*,.*/models/.*,tests/.*,docs/.*,scripts/.*,.*\\.json$' --ignore-patterns='.*monitor.*,.*integrations.*,.*sinks.*,.*testing.*' {args:packages}"
 symilar-check = "pylint --disable=all --enable=duplicate-code --fail-under=9.0 {args:packages}"
 vulture-check = "vulture packages vulture_whitelist.py"
 all = [
@@ -193,6 +197,7 @@ all = [
     "semgrep-check",
     "audit",
     "secrets",
+    "pylint-sim",
     "symilar-check",
     "vulture-check"
 ]
@@ -225,6 +230,16 @@ apache-airflow-providers-imednet = { workspace = true }
 
 
 
+
+# Explicit exceptions for unmigrated legacy packages [cite:source_relaxed_packages]
+[[tool.mypy.overrides]]
+module = [
+    "imednet.form_designer.*",
+    "imednet.compat.*",
+    "apache_airflow_providers_imednet.*"
+]
+strict = false
+ignore_errors = true
 
 [tool.pylint.SIMILARITIES]
 min-similarity-lines = 15

@@ -34,7 +34,7 @@ def test_load_config_missing(monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "api_key,security_key,expected_error",
+    ("api_key", "security_key", "expected_error"),
     [
         ("   ", "valid", "API key is required"),
         ("valid", "   ", "Security key is required"),
@@ -54,7 +54,7 @@ def test_load_config_whitespace_args(monkeypatch, api_key, security_key, expecte
 
 
 @pytest.mark.parametrize(
-    "env_api_key,env_security_key,expected_error",
+    ("env_api_key", "env_security_key", "expected_error"),
     [
         ("   ", "valid", "API key is required"),
         ("valid", "   ", "Security key is required"),

@@ -30,7 +30,7 @@ def test_fetching_status_escapes_injection() -> None:
         with fetching_status("records", "[bold]bad[/bold]"):
             pass
 
-        args, kwargs = mock_console.status.call_args
+        args, _kwargs = mock_console.status.call_args
         msg = args[0]
         # rich.markup.escape escapes brackets
         assert "[bold]bad[/bold]" in msg

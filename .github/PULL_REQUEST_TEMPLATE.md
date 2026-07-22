@@ -30,6 +30,7 @@ Describe the tests added or updated. If tests were intentionally skipped, explai
 ### Formatting & linting
 - [ ] `hatch run ruff format --check .`
 - [ ] `hatch run ruff check .`
+- [ ] Similarity gates pass locally (`hatch run lint:pylint-sim packages/`)
 
 ### Type checking (run for each affected package)
 - [ ] `hatch run mypy packages/core/src/imednet`
@@ -51,3 +52,4 @@ Describe the tests added or updated. If tests were intentionally skipped, explai
 - [ ] This PR is linked to an issue above
 - [ ] New modules align with package boundaries described in `AGENTS.md`
 - [ ] No secrets, tokens, or credentials added to source code
+- [ ] No duplicate code implementations bypassing core shared utilities were introduced

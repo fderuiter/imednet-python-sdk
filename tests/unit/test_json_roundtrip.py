@@ -21,7 +21,7 @@ from imednet.testing import fake_data
 
 
 @pytest.mark.parametrize(
-    "cls,payload_func",
+    ("cls", "payload_func"),
     [
         (Coding, fake_data.fake_coding),
         (Form, fake_data.fake_form),
