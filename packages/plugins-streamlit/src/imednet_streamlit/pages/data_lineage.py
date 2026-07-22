@@ -194,7 +194,7 @@ def _find_mapping_rules(domain: str) -> list[dict[str, Any]]:
 def _redact_sensitive(data: dict[str, Any]) -> dict[str, Any]:
     """Return a copy of *data* with common sensitive keys redacted."""
     sensitive_keys = {"api_key", "security_key", "password", "token"}
-    result = {}
+    result: dict[str, Any] = {}
     for k, v in data.items():
         if k in sensitive_keys:
             result[k] = "***REDACTED***"
