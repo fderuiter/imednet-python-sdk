@@ -34,15 +34,10 @@ from __future__ import annotations
 
 import logging
 from collections.abc import MutableMapping
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    _BaseAdapter = logging.LoggerAdapter[logging.Logger]
-else:
-    _BaseAdapter = logging.LoggerAdapter
+from typing import Any
 
 
-class StudyContextLogAdapter(_BaseAdapter):
+class StudyContextLogAdapter(logging.LoggerAdapter):  # type: ignore[type-arg]
     """A logger adapter that enriches records with a bound study key."""
 
     def __init__(self, logger: logging.Logger, study_key: str) -> None:
