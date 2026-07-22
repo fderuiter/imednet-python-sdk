@@ -14,7 +14,6 @@ import pandas as pd
 import streamlit as st
 
 from imednet.spi.models import AdverseEvent, DeviceDeficiency, ProtocolDeviation, StudyConfiguration
-from imednet.spi.utils import mask_clinical_phi
 from imednet_streamlit.auth import get_sdk, get_study_key
 from imednet_streamlit.components import render_lineage_panes
 from imednet_workflows import CachedRecordsLoader
@@ -192,9 +191,17 @@ def _find_mapping_rules(domain: str) -> list[dict[str, Any]]:
     ]
 
 
-def _redact_sensitive(data: dict[str, Any]) -> dict[str, Any]:
+def _redact_sensitive(data: dict[str, Any] | list[Any] | Any) -> Any:
     """Return a copy of *data* with common sensitive keys redacted."""
-    return mask_clinical_phi(data)
+    sensitive_keys = {"api_key", "token", "password", "security_key"}
+    if isinstance(data, dict):
+        return {
+            k: "***REDACTED***" if k in sensitive_keys else _redact_sensitive(v)
+            for k, v in data.items()
+        }
+    if isinstance(data, list):
+        return [_redact_sensitive(v) for v in data]
+    return data
 
 
 def _render_lineage_trace(
