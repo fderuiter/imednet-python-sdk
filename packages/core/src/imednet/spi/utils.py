@@ -30,6 +30,7 @@ __all__ = [
     "evaluate_job_state",
     "flatten",
     "format_iso_datetime",
+    "get_sqlite_connection",
     "is_boolean_token",
     "is_missing_value",
     "mask_clinical_phi",
@@ -37,6 +38,5 @@ __all__ = [
     "parse_iso_datetime",
     "redact_sensitive_text",
     "sanitize_csv_formula",
-    "get_sqlite_connection",
     "sqlite_connection",
 ]
