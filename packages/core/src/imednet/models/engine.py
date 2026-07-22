@@ -73,6 +73,8 @@ except Exception:
 class ModelEngine:
     """Engine for dynamically creating Pydantic models from schemas."""
 
+    _MODEL_CACHE: dict[tuple[str, type[Any]], type[Any]] = {}
+
     @classmethod
     def get_model(cls, model_name: str, base_cls: type[Any] = ImednetBaseModel) -> type[Any]:
         """Get or create a dynamic Pydantic model for the given name.
@@ -93,9 +95,15 @@ class ModelEngine:
     @classmethod
     def _get_model(cls, model_name: str, base_cls: type[Any] = ImednetBaseModel) -> type[Any]:
         """Internal implementation for dynamic model creation."""
+        cache_key = (model_name, base_cls)
+        if cache_key in cls._MODEL_CACHE:
+            return cls._MODEL_CACHE[cache_key]
+
         contract = get_contract()
         if model_name not in contract.models:
-            return create_model(model_name, __base__=base_cls)
+            model = create_model(model_name, __base__=base_cls)
+            cls._MODEL_CACHE[cache_key] = model
+            return model
 
         model_def = contract.models[model_name]
         fields: dict[str, Any] = {}
@@ -119,6 +127,7 @@ class ModelEngine:
             fields[snake_key] = (py_type, new_field)
 
         model = create_model(model_name, __base__=base_cls, **fields)
+        cls._MODEL_CACHE[cache_key] = model
         return model  # noqa: RET504
 
     @classmethod

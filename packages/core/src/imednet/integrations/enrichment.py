@@ -34,6 +34,7 @@ class CentralizedMapper:
         """
         self.mode = mode
         self.post_processor = post_processor
+        self._pipeline_cache: dict[str, 'EnrichmentPipeline'] = {}
 
     def map_record(
         self, record: Any, study_key: str | None = None
@@ -72,13 +73,16 @@ class CentralizedMapper:
 
         from imednet.models.study_config import StudyConfiguration
 
-        pipeline = EnrichmentPipeline(
-            StudyConfiguration(
-                studyKey=mapped.get('study_key') or "UNKNOWN",
-                version="1.0",
-                reportingProfile="general",
+        study_key_val = mapped.get('study_key') or "UNKNOWN"
+        if study_key_val not in self._pipeline_cache:
+            self._pipeline_cache[study_key_val] = EnrichmentPipeline(
+                StudyConfiguration(
+                    studyKey=study_key_val,
+                    version="1.0",
+                    reportingProfile="general",
+                )
             )
-        )
+        pipeline = self._pipeline_cache[study_key_val]
         mapped = pipeline.process(mapped)
 
         if self.post_processor:
