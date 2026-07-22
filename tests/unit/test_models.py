@@ -7,7 +7,7 @@ from typing import Any, Union, get_args, get_origin
 import pytest
 from pydantic import BaseModel, ValidationError
 
-import imednet.models as models
+from imednet import models
 
 
 def _build_value(annotation: Any) -> Any:

@@ -79,19 +79,16 @@ def _run_app(is_connected: bool) -> _FakeStreamlit:
 
         def toggle(self, *args, **kwargs):
             """Helper function to toggle."""
-            pass
 
     fake_streamlit_module.sidebar = FakeSidebar()
 
     def fake_markdown(*args, **kwargs):
         """Helper function to fake markdown."""
-        pass
 
     fake_streamlit_module.markdown = fake_markdown
 
     def fake_altair_chart(*args, **kwargs):
         """Helper function to fake altair chart."""
-        pass
 
     fake_streamlit_module.altair_chart = fake_altair_chart
 

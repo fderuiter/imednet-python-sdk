@@ -30,7 +30,6 @@ async def test_list_operation_async_uses_paginator():
 
         def __init__(self, *_args, **_kwargs):
             """Initialize the test object."""
-            pass
 
         async def __aiter__(self):
             """Helper function to   aiter  ."""

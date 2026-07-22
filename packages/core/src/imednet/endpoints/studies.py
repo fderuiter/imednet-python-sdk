@@ -16,10 +16,6 @@ class StudiesOperationDef:
 class StudiesEndpoint(StudiesOperationDef, EdcSyncListGetEndpoint[Study]):  # type: ignore[misc]
     """Synchronous endpoint for managing Studies."""
 
-    pass
-
 
 class AsyncStudiesEndpoint(StudiesOperationDef, EdcAsyncListGetEndpoint[Study]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Studies."""
-
-    pass

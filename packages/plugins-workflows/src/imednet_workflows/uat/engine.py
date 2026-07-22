@@ -94,25 +94,24 @@ class UATExecutionEngine:
                 data[variable] = value
             else:
                 data[variable] = "Invalid_Value"
+        elif operator == ">=":
+            try:
+                data[variable] = str(float(value or 0) - 1)
+            except (ValueError, TypeError):
+                data[variable] = "0"
+        elif operator == "<=":
+            try:
+                data[variable] = str(float(value or 0) + 1)
+            except (ValueError, TypeError):
+                data[variable] = "9999"
+        elif operator == "==":
+            data[variable] = f"NOT_{value}"
+        elif operator == "!=":
+            data[variable] = value
+        elif operator == "Required" or str(value).lower() == "required":
+            data[variable] = ""
         else:
-            if operator == ">=":
-                try:
-                    data[variable] = str(float(value or 0) - 1)
-                except (ValueError, TypeError):
-                    data[variable] = "0"
-            elif operator == "<=":
-                try:
-                    data[variable] = str(float(value or 0) + 1)
-                except (ValueError, TypeError):
-                    data[variable] = "9999"
-            elif operator == "==":
-                data[variable] = f"NOT_{value}"
-            elif operator == "!=":
-                data[variable] = value
-            elif operator == "Required" or str(value).lower() == "required":
-                data[variable] = ""
-            else:
-                data[variable] = "Invalid_Test_Value"
+            data[variable] = "Invalid_Test_Value"
 
         return data
 

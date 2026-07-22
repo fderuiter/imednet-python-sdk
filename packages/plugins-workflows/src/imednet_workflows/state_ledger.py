@@ -49,7 +49,6 @@ class BaseStateProvider(abc.ABC):
     @abc.abstractmethod
     def get_last_timestamp(self, study_key: str, stream_name: str) -> datetime | None:
         """Returns the high-water mark timestamp for a given study and stream."""
-        pass
 
     @abc.abstractmethod
     def set_last_timestamp(
@@ -63,7 +62,6 @@ class BaseStateProvider(abc.ABC):
         metadata: dict[str, Any] | None = None,
     ) -> None:
         """Sets the high-water mark timestamp atomically."""
-        pass
 
     @abc.abstractmethod
     @contextlib.contextmanager
@@ -74,7 +72,6 @@ class BaseStateProvider(abc.ABC):
         fallback_timestamp: datetime | None = None,
     ) -> Generator[dict[str, Any], None, None]:
         """Context manager for transactional state tracking."""
-        pass
 
     @abc.abstractmethod
     def delete_entry(self, study_key: str, stream_name: str | None = None) -> bool:
@@ -82,12 +79,10 @@ class BaseStateProvider(abc.ABC):
 
         Returns ``True`` if the entry existed and was removed, ``False`` otherwise.
         """
-        pass
 
     @abc.abstractmethod
     def read_state(self) -> LedgerState:
         """Reads and validates the current full state (for CLI display)."""
-        pass
 
 
 class FileStateProvider(BaseStateProvider):

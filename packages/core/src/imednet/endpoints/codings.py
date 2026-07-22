@@ -17,10 +17,6 @@ class CodingsOperationDef:
 class CodingsEndpoint(CodingsOperationDef, EdcSyncListGetEndpoint[Coding]):  # type: ignore[misc]
     """Synchronous endpoint for managing Codings."""
 
-    pass
-
 
 class AsyncCodingsEndpoint(CodingsOperationDef, EdcAsyncListGetEndpoint[Coding]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Codings."""
-
-    pass

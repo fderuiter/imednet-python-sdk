@@ -18,10 +18,6 @@ class FormsOperationDef:
 class FormsEndpoint(FormsOperationDef, EdcSyncListGetEndpoint[Form]):  # type: ignore[misc]
     """Synchronous endpoint for managing Forms."""
 
-    pass
-
 
 class AsyncFormsEndpoint(FormsOperationDef, EdcAsyncListGetEndpoint[Form]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Forms."""
-
-    pass

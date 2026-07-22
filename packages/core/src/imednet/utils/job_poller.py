@@ -280,11 +280,10 @@ class JobPoller(BaseJobPoller):
                 # If fail_fast is true, we still let the thread exit gracefully.
                 # The exception is raised in the main thread after joining.
 
-        threads = [threading.Thread(target=_poll_one, args=(bid,)) for bid in batch_ids]
-        for t in threads:
-            t.start()
-        for t in threads:
-            t.join()
+        import concurrent.futures
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            list(executor.map(_poll_one, batch_ids))
 
         if fail_fast and failures:
             raise next(iter(failures.values()))

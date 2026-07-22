@@ -15,10 +15,6 @@ class QueriesOperationDef:
 class QueriesEndpoint(QueriesOperationDef, EdcSyncListGetEndpoint[Query]):  # type: ignore[misc]
     """Synchronous endpoint for managing Queries."""
 
-    pass
-
 
 class AsyncQueriesEndpoint(QueriesOperationDef, EdcAsyncListGetEndpoint[Query]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Queries."""
-
-    pass

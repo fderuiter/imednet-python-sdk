@@ -1,4 +1,5 @@
 from typing import Any
+
 """OIDC authentication strategy."""
 
 import base64
@@ -74,7 +75,7 @@ class OIDCAuth:
                 mapped_roles.append("viewer")
 
         # If no explicit match, default mapping logic if any...
-        return mapped_roles if mapped_roles else list(roles)
+        return mapped_roles or list(roles)
 
     def __repr__(self) -> str:
         """Return a redacted string representation of the OIDC authentication."""

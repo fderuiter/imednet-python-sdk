@@ -9,7 +9,5 @@ from imednet.models.engine import ModelEngine
 class Site(ImednetBaseModel):
     """A site participating in a study."""
 
-    pass
-
 
 Site = ModelEngine.get_model('Site', Site)

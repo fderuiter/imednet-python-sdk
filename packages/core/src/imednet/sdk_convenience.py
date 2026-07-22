@@ -6,7 +6,6 @@ They are architecturally linked to the core execution engine.
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import (
     TYPE_CHECKING,
     Any,

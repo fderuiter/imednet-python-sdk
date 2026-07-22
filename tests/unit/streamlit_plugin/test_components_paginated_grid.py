@@ -7,7 +7,7 @@ from typing import Any
 import pandas as pd
 import pytest
 
-import imednet_streamlit.components.paginated_grid as paginated_grid
+from imednet_streamlit.components import paginated_grid
 from imednet_streamlit.components.paginated_grid import top_n_with_other
 
 

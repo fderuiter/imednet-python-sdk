@@ -201,7 +201,7 @@ class SnowflakeExportSink(ExportSink):
             self._conn = snowflake.connect(
                 account=cfg.account,
                 user=cfg.user,
-                **{"password": cfg.password},
+                password=cfg.password,
                 database=cfg.database,
                 schema=cfg.schema,
                 warehouse=cfg.warehouse,
