@@ -55,7 +55,7 @@ with col2:
 
 st.subheader("Pie Chart")
 st.altair_chart(
-    pie_chart(df_charts, color="Category", theta="Enrollment", title="Enrollment by Category"),
+    pie_chart(df_charts, theta="Enrollment", color="Category", title="Enrollment by Category"),
     use_container_width=True,
 )
 
@@ -71,9 +71,11 @@ df_grid = pd.DataFrame(
     }
 )
 
-page_size = st.slider("Grid Page Size", min_value=5, max_value=50, value=10, step=5)
 st.dataframe(
-    paginated_slice(df_grid, key="gallery_grid", default_page_size=page_size), use_container_width=True
+    paginated_slice(
+        df_grid, key="gallery_grid", default_page_size=10, page_size_options=(5, 10, 20, 50)
+    ),
+    use_container_width=True,
 )
 
 
