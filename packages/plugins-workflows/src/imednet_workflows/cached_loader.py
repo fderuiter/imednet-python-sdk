@@ -157,7 +157,6 @@ class CachedRecordsLoader:
 
     def _initialise_cache(self) -> None:
         """Ensure the cache database and tables are created."""
-        resolved = Path(self.db_path).expanduser().resolve()
         conn = get_sqlite_connection(self.db_path)
         try:
             conn.execute("""

@@ -10,7 +10,6 @@ from typing import Any
 
 import pandas as pd
 
-from imednet.spi.utils import mask_clinical_phi
 
 
 def render_lineage_panes(
