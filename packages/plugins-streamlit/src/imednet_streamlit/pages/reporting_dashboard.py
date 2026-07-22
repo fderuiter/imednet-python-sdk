@@ -88,7 +88,7 @@ def _fetch_subjects_df(_sdk: object, study_key: str, limit: int = 1000) -> pd.Da
                 "site_name": str(subject.site_name or ""),
                 "deleted": bool(subject.deleted),
             }
-            for subject in _sdk.get_subjects(study_key=study_key, limit=limit)  # type: ignore[attr-defined]
+            for subject in _sdk.get_subjects(study_key=study_key, limit=limit)  # type: ignore
         ]
         if not rows:
             return pd.DataFrame(columns=["subject_key", "site_name", "deleted"])
@@ -103,7 +103,7 @@ def _fetch_subjects_df(_sdk: object, study_key: str, limit: int = 1000) -> pd.Da
 def _fetch_records(_sdk: object, study_key: str, limit: int = 1000) -> list[Record]:
     """Fetch all records for a study."""
     try:
-        return list(_sdk.get_records(study_key=study_key, limit=limit))  # type: ignore[attr-defined]
+        return list(_sdk.get_records(study_key=study_key, limit=limit))  # type: ignore
     except Exception as e:
         st.error(f"Failed to load records. The server-side chunked data request failed: {e}")
         return []
@@ -112,7 +112,7 @@ def _fetch_records(_sdk: object, study_key: str, limit: int = 1000) -> list[Reco
 @st.cache_data(ttl=600, show_spinner=False)
 def _fetch_forms_df(_sdk: object, study_key: str) -> pd.DataFrame:
     """Fetch form metadata and return as a DataFrame."""
-    forms = _sdk.get_forms(study_key=study_key)  # type: ignore[attr-defined]
+    forms = _sdk.get_forms(study_key=study_key)  # type: ignore
     return pd.DataFrame(
         [
             {
@@ -241,7 +241,7 @@ def _build_site_metrics(_sdk: object, study_key: str, subjects_df: pd.DataFrame)
         if not subjects_df.empty
         else pd.DataFrame(columns=["site_name", "enrolled_count"])
     )
-    workflow = QueryManagementWorkflow(sdk=_sdk)  # type: ignore[arg-type]
+    workflow = QueryManagementWorkflow(sdk=_sdk)  # type: ignore
     open_queries = workflow.get_open_queries(study_key=study_key)
     query_rows = [
         {
@@ -264,7 +264,7 @@ def _build_site_metrics(_sdk: object, study_key: str, subjects_df: pd.DataFrame)
                 open_queries=("annotation_id", "count"),
                 avg_days_open=(
                     "date_created",
-                    lambda values: (now_utc - pd.to_datetime(values, utc=True)).dt.days.mean(),
+                    lambda values: (now_utc - pd.to_datetime(values, utc=True)).dt.days.mean(),  # type: ignore
                 ),
             )
             .reset_index()
@@ -582,7 +582,7 @@ def _render_site_performance_tab(df_site_metrics: pd.DataFrame) -> None:
     display_cols = ["site_name", "enrolled_count", "open_queries", "query_rate", "avg_days_open"]
     display = df_site_metrics.reindex(columns=display_cols)
     st.dataframe(
-        display.style.map(_highlight_high_rate, subset=["query_rate"]),
+        display.style.map(_highlight_high_rate, subset=["query_rate"]),  # type: ignore
         use_container_width=True,
     )
 

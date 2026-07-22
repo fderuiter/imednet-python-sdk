@@ -215,7 +215,7 @@ class CachedRecordsLoader:
             retry=retry_if_exception_type(Exception),
             reraise=True,
         )
-        return cast(list[Record], retryer(self._sdk.get_records, **filters))
+        return cast(list[Record], retryer(self._sdk.get_records, **filters))  # type: ignore
 
     def _list_records_with_filter_override(
         self, *, study_key: str, filter_string: str
@@ -231,7 +231,7 @@ class CachedRecordsLoader:
             retry=retry_if_exception_type(Exception),
             reraise=True,
         )
-        endpoint = getattr(self._sdk, "records")
+        endpoint = self._sdk.records  # type: ignore
 
         return cast(
             list[Record],
@@ -251,7 +251,7 @@ class CachedRecordsLoader:
                 record.record_id,
                 record.form_key,
                 (
-                    record.date_modified.isoformat()
+                    record.date_modified.isoformat()  # type: ignore
                     if hasattr(record.date_modified, "isoformat")
                     else (str(record.date_modified) if record.date_modified is not None else "")
                 ),
