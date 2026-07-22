@@ -9,7 +9,8 @@ from unittest.mock import MagicMock
 import pytest
 
 from imednet.models.records import Record
-from imednet_workflows.cached_loader import CachedRecordsLoader, get_cache_connection
+from imednet_workflows.cached_loader import CachedRecordsLoader
+from imednet.spi.utils import get_sqlite_connection
 
 
 def _record(record_id: int, modified_at: str) -> Record:
@@ -25,9 +26,9 @@ def _record(record_id: int, modified_at: str) -> Record:
     )
 
 
-def test_get_cache_connection_enables_wal_mode(tmp_path: Path) -> None:
+def test_get_sqlite_connection_enables_wal_mode(tmp_path: Path) -> None:
     """Test that get cache connection enables wal mode."""
-    conn = get_cache_connection(tmp_path / "cache" / "records.sqlite3")
+    conn = get_sqlite_connection(tmp_path / "cache" / "records.sqlite3")
     try:
         journal_mode = conn.execute("PRAGMA journal_mode").fetchone()[0]
         assert journal_mode.lower() == "wal"
@@ -123,7 +124,7 @@ def test_sync_records_updates_cache_without_loading_rows(tmp_path: Path) -> None
 
     loader.sync_records("STUDY")
 
-    with get_cache_connection(loader.db_path) as conn:
+    with get_sqlite_connection(loader.db_path) as conn:
         row = conn.execute(
             "SELECT COUNT(*) FROM record_cache WHERE study_key = ?",
             ("STUDY",),

@@ -19,6 +19,7 @@ from typing import Any
 
 from imednet.spi.models import StudyConfiguration
 from imednet.spi.utils import flatten
+from imednet.spi.utils import sqlite_connection
 
 _DEFAULT_DB_PATH = Path(
     os.environ.get("IMEDNET_CONFIG_DB_PATH", Path.home() / ".imednet" / "config_versions.sqlite3")
@@ -56,14 +57,8 @@ class ConfigVersionStore:
     @contextmanager
     def _connection(self) -> Iterator[sqlite3.Connection]:
         """Manage a SQLite connection with Write-Ahead Logging (WAL) enabled."""
-        conn = sqlite3.connect(self.db_path, timeout=30.0)
-        conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA journal_mode=WAL;")
-        conn.execute("PRAGMA synchronous=NORMAL;")
-        try:
+        with sqlite_connection(self.db_path, timeout=30.0) as conn:
             yield conn
-        finally:
-            conn.close()
 
     def _initialize_schema(self) -> None:
         """Create the database tables and triggers if they do not exist."""

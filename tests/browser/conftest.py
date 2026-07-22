@@ -89,3 +89,39 @@ def page(browser):
     page = context.new_page()
     yield page
     context.close()
+
+
+from .visual import generate_diff
+
+
+@pytest.fixture
+def assert_visual_diff(request):
+    """
+    Fixture to assert a visual difference between a Playwright page/locator
+    and a baseline image.
+    """
+
+    def _assert_diff(page_or_locator, snapshot_name, tolerance=0):
+        update_baselines = request.config.getoption("--update-visual-baselines")
+
+        baseline_dir = os.path.join(os.path.dirname(__file__), "baselines")
+        os.makedirs(baseline_dir, exist_ok=True)
+        baseline_path = os.path.join(baseline_dir, f"{snapshot_name}.png")
+
+        diff_dir = os.path.join(request.config.rootpath, "reports", "visual_diffs")
+        os.makedirs(diff_dir, exist_ok=True)
+        diff_path = os.path.join(diff_dir, f"{snapshot_name}_diff.png")
+
+        # Capture screenshot
+        actual_bytes = page_or_locator.screenshot(animations="disabled")
+
+        if update_baselines:
+            with open(baseline_path, "wb") as f:
+                f.write(actual_bytes)
+            return
+
+        match, err_msg = generate_diff(baseline_path, actual_bytes, diff_path, tolerance)
+        if not match:
+            pytest.fail(f"Visual diff failed for {snapshot_name}: {err_msg}")
+
+    return _assert_diff
