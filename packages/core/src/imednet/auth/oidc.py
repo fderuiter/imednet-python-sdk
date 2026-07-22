@@ -50,8 +50,7 @@ class OIDCAuth:
         Returns:
             The user ID (sub or preferred_username) if found, otherwise None.
         """
-        user_id = self._decoded_claims.get("sub") or self._decoded_claims.get("preferred_username")
-        return str(user_id) if user_id is not None else None
+        return self._decoded_claims.get("sub") or self._decoded_claims.get("preferred_username")
 
     def get_user_roles(self) -> list[str]:
         """Extract and map user roles from the token claims.
@@ -86,3 +85,4 @@ class OIDCAuth:
         return "OIDCAuth(token='********')"
 
     __str__ = __repr__
+\n# End of file
