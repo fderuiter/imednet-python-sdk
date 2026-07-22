@@ -378,6 +378,7 @@ def _tabular_export(
 
     import itertools
     from collections.abc import Iterator
+
     def _chunk_iterator(iterator: Iterator[Any], size: int) -> Iterator[list[Any]]:
         while True:
             chunk = list(itertools.islice(iterator, size))

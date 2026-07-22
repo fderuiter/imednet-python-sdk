@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import sys
-from typing import Any
 
 from ...sdk import ImednetSDK
 from ..decorators import with_sdk

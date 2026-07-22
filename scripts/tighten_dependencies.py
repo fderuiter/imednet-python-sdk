@@ -47,9 +47,9 @@ def rewrite_spec(current_spec: str, pkg_version: str) -> str:
     clauses = current_spec.split(',')
     new_clauses = []
     for c in clauses:
-        c = c.strip()
-        if not c.startswith('<'):
-            new_clauses.append(c)
+        c_strip = c.strip()
+        if not c_strip.startswith('<'):
+            new_clauses.append(c_strip)
 
     new_clauses.append(upper_bound)
     return ",".join(new_clauses)

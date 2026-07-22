@@ -53,7 +53,6 @@ def _setup_airflow(monkeypatch):
     class DummyAirflowError(Exception):
         """Test suite for DummyAirflowError."""
 
-
     exc_mod.AirflowException = DummyAirflowError
     s3_mod.S3Hook = MagicMock
 

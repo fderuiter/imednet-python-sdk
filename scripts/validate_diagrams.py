@@ -87,45 +87,37 @@ def main():
         nodes = {}
         with open(filepath) as f:
             for line in f:
-                line = line.strip()
-                if line.startswith("participant"):
-                    m = re.match(r'participant\s+(\w+)\s+as\s+"?(.*?)"?$', line)
+                line_strip = line.strip()
+                if line_strip.startswith("participant"):
+                    m = re.match(r'participant\s+(\w+)\s+as\s+"?(.*?)"?$', line_strip)
                     if m:
                         nodes[m.group(1)] = m.group(2)
                     else:
-                        m2 = re.match(r'participant\s+(\w+)', line)
+                        m2 = re.match(r'participant\s+(\w+)', line_strip)
                         if m2:
                             nodes[m2.group(1)] = m2.group(1)
                     continue
 
                 if (
-                    line.startswith("%%")
-                    or line.startswith("graph ")
-                    or line.startswith("subgraph ")
-                    or line == "end"
-                    or line.startswith("Note ")
-                    or line.startswith("activate ")
-                    or line.startswith("deactivate ")
-                    or line.startswith("sequenceDiagram")
+                    line_strip.startswith(("%%", "graph ", "subgraph ", "Note ", "activate ", "deactivate ", "sequenceDiagram")) or line_strip == "end"
                 ):
                     continue
 
-                parts = re.split(r'-->>|->>|--!?>|---|==>|<--!?>|<--|-.->', line)
-                if len(parts) == 1 and not re.search(r'\[|\(', line):
+                parts = re.split(r'-->>|->>|--!?>|---|==>|<--!?>|<--|-.->', line_strip)
+                if len(parts) == 1 and not re.search(r'\[|\(', line_strip):
                     # Probably not a node definition
                     continue
 
                 for part in parts:
-                    part = part.strip()
-                    if not part:
+                    part_strip = part.strip()
+                    if not part_strip:
                         continue
                     # remove edge labels
-                    part = re.sub(r'^\|[^|]+\|\s*', '', part)
-                    part = part.strip()
+                    cleaned_part = re.sub(r'^\|[^|]+\|\s*', '', part_strip).strip()
 
                     m = re.search(
                         r'^([a-zA-Z0-9_.-]+)(?:\["([^"]*)"\]|\[([^\]]*)\]|\("([^"]*)"\)|\(([^)]*)\)|\{"([^"]*)"\}|\{([^}]*)\})?',
-                        part,
+                        cleaned_part,
                     )
                     if m:
                         id_ = m.group(1)
