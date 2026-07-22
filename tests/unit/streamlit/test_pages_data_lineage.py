@@ -396,12 +396,12 @@ def test_data_lineage_redact_sensitive_keys() -> None:
 
     data = {
         "ae_term": "headache",
-        "api_key": "supersecret",
-        "token": "mytoken",
+        "patient_name": "John Doe",
+        "ssn": "000-00-0000",
         "subject_key": "SUBJ-001",
         "nested": {
-            "password": "abc123",
-            "details": [{"security_key": "xyz"}, {"label": "ok"}],
+            "dob": "1990-01-01",
+            "details": [{"phone": "555-5555"}, {"label": "ok"}],
         },
         "severity": "MILD",
     }
@@ -409,8 +409,8 @@ def test_data_lineage_redact_sensitive_keys() -> None:
     assert redacted["ae_term"] == "headache"
     assert redacted["severity"] == "MILD"
     assert redacted["subject_key"] == "SUBJ-001"
-    assert redacted["api_key"] == "***REDACTED***"
-    assert redacted["token"] == "***REDACTED***"
-    assert redacted["nested"]["password"] == "***REDACTED***"
-    assert redacted["nested"]["details"][0]["security_key"] == "***REDACTED***"
+    assert redacted["patient_name"] == "***MASKED***"
+    assert redacted["ssn"] == "***MASKED***"
+    assert redacted["nested"]["dob"] == "***MASKED***"
+    assert redacted["nested"]["details"][0]["phone"] == "***MASKED***"
     assert redacted["nested"]["details"][1]["label"] == "ok"
