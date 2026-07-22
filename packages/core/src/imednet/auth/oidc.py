@@ -85,3 +85,4 @@ class OIDCAuth:
         return "OIDCAuth(token='********')"
 
     __str__ = __repr__
+\n# End of file
