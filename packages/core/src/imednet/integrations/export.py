@@ -379,8 +379,8 @@ def _tabular_export(
     filtered_records = apply_quality_gate(sdk, study_key, raw_records, config)
 
     import itertools
+    from collections.abc import Iterator
 
-    from typing import Iterator
     def _chunk_iterator(iterator: Iterator[Any], size: int) -> Iterator[list[Any]]:
         while True:
             chunk = list(itertools.islice(iterator, size))

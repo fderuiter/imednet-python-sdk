@@ -1,7 +1,7 @@
 """Workflow for retrieving and aggregating study structural metadata."""
 
 import asyncio
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 # Import potential exceptions
 from imednet.spi.errors import ImednetError
@@ -81,15 +81,15 @@ async def async_get_study_structure(sdk: "AsyncImednetFacade", study_key: str) -
     """Asynchronous variant of :func:`get_study_structure`."""
     try:
 
-        async def fetch_intervals() -> list[Any]:  # type: ignore[name-defined]
+        async def fetch_intervals() -> list[Any]:
             """Asynchronously fetch visit intervals."""
             return await sdk.async_get_intervals(study_key)
 
-        async def fetch_forms() -> list[Any]:  # type: ignore[name-defined]
+        async def fetch_forms() -> list[Any]:
             """Asynchronously fetch form definitions."""
             return await sdk.async_get_forms(study_key)
 
-        async def fetch_variables() -> list[Any]:  # type: ignore[name-defined]
+        async def fetch_variables() -> list[Any]:
             """Asynchronously fetch variable definitions."""
             return await sdk.async_get_variables(study_key)
 

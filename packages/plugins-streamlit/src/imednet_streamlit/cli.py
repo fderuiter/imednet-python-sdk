@@ -1,5 +1,7 @@
+"""Streamlit CLI interface."""
+
 import argparse
-from typing import Any
+
 """CLI commands for iMednet Streamlit dashboard."""
 
 import subprocess

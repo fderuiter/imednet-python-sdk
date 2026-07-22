@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, TypedDict, cast
+from typing import TYPE_CHECKING, Any, TypedDict, cast
 
 from pydantic import Field
 
@@ -106,19 +106,19 @@ class StudySchemaInspector:
 
         sdk = cast("AsyncImednetFacade", self._sdk)
 
-        async def fetch_forms() -> list[Any]:  # type: ignore[name-defined]
+        async def fetch_forms() -> list[Any]:
             """Asynchronous fetch for forms."""
             return await sdk.async_get_forms(study_key)
 
-        async def fetch_variables() -> list[Any]:  # type: ignore[name-defined]
+        async def fetch_variables() -> list[Any]:
             """Asynchronous fetch for variables."""
             return await sdk.async_get_variables(study_key)
 
-        async def fetch_intervals() -> list[Any]:  # type: ignore[name-defined]
+        async def fetch_intervals() -> list[Any]:
             """Asynchronous fetch for intervals."""
             return await sdk.async_get_intervals(study_key)
 
-        async def fetch_sites() -> list[Any]:  # type: ignore[name-defined]
+        async def fetch_sites() -> list[Any]:
             """Asynchronous fetch for sites."""
             return await sdk.async_get_sites(study_key)
 

@@ -101,7 +101,7 @@ class BaseRequestExecutor(ABC):
             )
             return policy.should_retry(state)  # type: ignore[no-any-return]
 
-        return should_retry  # type: ignore[no-any-return]
+        return should_retry
 
     def _process_result(
         self, response: httpx.Response | None, monitor: RequestMonitor
@@ -124,7 +124,7 @@ class BaseRequestExecutor(ABC):
                 get_global_circuit_breaker().record_failure()
 
             monitor.on_success(response)
-            return handle_response(response)  # type: ignore[no-any-return]
+            return handle_response(response)
         raise RuntimeError("Request failed without response or exception")
 
     def _process_retry_error(self, e: RetryError, monitor: RequestMonitor) -> httpx.Response:
@@ -135,7 +135,7 @@ class BaseRequestExecutor(ABC):
         if e.last_attempt and not e.last_attempt.failed:
             response: httpx.Response = e.last_attempt.result()
             monitor.on_success(response)
-            return handle_response(response)  # type: ignore[no-any-return]
+            return handle_response(response)
         monitor.on_retry_error(e)
         raise e
 
@@ -151,7 +151,7 @@ class BaseRequestExecutor(ABC):
         """
         value = response.headers.get("Retry-After")
         if not value:
-            return None  # type: ignore[no-any-return]
+            return None
 
         try:
             delay = float(value)
@@ -166,7 +166,7 @@ class BaseRequestExecutor(ABC):
             delay = (retry_time - datetime.now(timezone.utc)).total_seconds()
             return max(delay, 0.0)
         except (TypeError, ValueError, OverflowError):
-            return None  # type: ignore[no-any-return]
+            return None
 
     def _wait_strategy(self, retry_state: RetryCallState) -> float:
         """Calculate the wait time before the next retry attempt.
@@ -182,12 +182,12 @@ class BaseRequestExecutor(ABC):
             if isinstance(result, httpx.Response):
                 retry_after_seconds = self._parse_retry_after_seconds(result)
                 if retry_after_seconds is not None:
-                    return retry_after_seconds  # type: ignore[no-any-return]
-        return float(self._jitter_wait(retry_state))  # type: ignore[no-any-return]
+                    return retry_after_seconds
+        return float(self._jitter_wait(retry_state))
 
     def _get_retryer_kwargs(self, method: str) -> dict[str, Any]:
         """Get common arguments for Retrying and AsyncRetrying."""
-        return {  # type: ignore[no-any-return]
+        return {
             "wait_strategy": self._wait_strategy,
             "retry_predicate": self._get_retry_predicate(method),
         }

@@ -408,6 +408,7 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
     def retry_policy(self) -> RetryPolicy:
         """Return the current retry policy of the async client."""
         from typing import cast
+
         return cast('RetryPolicy', self._async_client.retry_policy)
 
     @retry_policy.setter

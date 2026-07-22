@@ -13,7 +13,7 @@ from typing import Any
 import streamlit as st
 
 from imednet.spi.models import AdverseEvent, DeviceDeficiency, ProtocolDeviation, StudyConfiguration
-from imednet.spi.utils import redact_sensitive_payload, mask_clinical_phi
+from imednet.spi.utils import mask_clinical_phi, redact_sensitive_payload
 from imednet_streamlit.auth import get_sdk, get_study_key
 from imednet_streamlit.components import render_lineage_panes
 from imednet_streamlit.utils import models_to_frame
