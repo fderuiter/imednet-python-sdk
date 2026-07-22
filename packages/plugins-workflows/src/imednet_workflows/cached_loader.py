@@ -39,7 +39,7 @@ def _get_db_init_lock(resolved_path: Path) -> threading.Lock:
         return _db_init_locks.setdefault(key, threading.Lock())
 
 
-def get_cache_connection(db_path: str | Path) -> sqlite3.Connection:
+def get_sqlite_connection(db_path: str | Path) -> sqlite3.Connection:
     """Return a SQLite connection configured for concurrent cache access."""
     resolved_path = Path(db_path).expanduser()
     resolved_path.parent.mkdir(parents=True, exist_ok=True)
@@ -86,7 +86,7 @@ class CachedRecordsLoader:
 
     def sync_records(self, study_key: str, *, reconcile: bool = True) -> None:
         """Synchronise the cache for ``study_key`` without materialising cached rows."""
-        conn = get_cache_connection(self.db_path)
+        conn = get_sqlite_connection(self.db_path)
         try:
             high_water_mark = self._get_high_water_mark(conn, study_key)
             delta_records = self._fetch_delta_records(study_key, high_water_mark)
@@ -116,7 +116,7 @@ class CachedRecordsLoader:
 
         close_conn = False
         if conn is None:
-            conn = get_cache_connection(self.db_path)
+            conn = get_sqlite_connection(self.db_path)
             close_conn = True
         try:
             cursor = conn.execute(
@@ -158,26 +158,25 @@ class CachedRecordsLoader:
     def _initialise_cache(self) -> None:
         """Ensure the cache database and tables are created."""
         resolved = Path(self.db_path).expanduser().resolve()
-        with _get_db_init_lock(resolved):
-            conn = get_cache_connection(self.db_path)
-            try:
-                conn.execute("""
-                    CREATE TABLE IF NOT EXISTS record_cache (
-                        study_key TEXT NOT NULL,
-                        record_id INTEGER NOT NULL,
-                        form_key TEXT NOT NULL,
-                        date_modified TEXT NOT NULL,
-                        payload TEXT NOT NULL,
-                        PRIMARY KEY (study_key, record_id)
-                    )
-                    """)
-                conn.execute("""
-                    CREATE INDEX IF NOT EXISTS idx_record_cache_study_modified
-                    ON record_cache (study_key, date_modified)
-                    """)
-                conn.commit()
-            finally:
-                conn.close()
+        conn = get_sqlite_connection(self.db_path)
+        try:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS record_cache (
+                    study_key TEXT NOT NULL,
+                    record_id INTEGER NOT NULL,
+                    form_key TEXT NOT NULL,
+                    date_modified TEXT NOT NULL,
+                    payload TEXT NOT NULL,
+                    PRIMARY KEY (study_key, record_id)
+                )
+                """)
+            conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_record_cache_study_modified
+                ON record_cache (study_key, date_modified)
+                """)
+            conn.commit()
+        finally:
+            conn.close()
 
     def _get_high_water_mark(self, conn: sqlite3.Connection, study_key: str) -> str | None:
         """Get the latest modification timestamp from the local cache for a study."""
