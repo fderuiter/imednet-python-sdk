@@ -21,10 +21,6 @@ class UsersOperationDef:
 class UsersEndpoint(UsersOperationDef, EdcSyncListGetEndpoint[User]):  # type: ignore[misc]
     """Synchronous endpoint for managing Users."""
 
-    pass
-
 
 class AsyncUsersEndpoint(UsersOperationDef, EdcAsyncListGetEndpoint[User]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Users."""
-
-    pass

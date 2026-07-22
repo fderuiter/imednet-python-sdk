@@ -8,7 +8,7 @@ from typing import Any, Protocol
 try:
     import pyarrow as pa
 except ImportError:  # pragma: no cover - exercised when optional dependency is absent
-    pa = None
+    pa = None  # type: ignore[assignment]
 
 
 class _ModelDumpable(Protocol):

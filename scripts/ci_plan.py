@@ -56,7 +56,7 @@ def main():
     # Check if all changed files are docs/examples/md
     all_ignored = True
     for file in changed_files:
-        if not (file.startswith('docs/') or file.startswith('examples/') or file.endswith('.md')):
+        if not (file.startswith(('docs/', 'examples/')) or file.endswith('.md')):
             all_ignored = False
             break
 
@@ -80,7 +80,7 @@ def main():
                 # unknown package or something else in packages/
                 fallback()
         else:
-            if file.startswith('docs/') or file.startswith('examples/') or file.endswith('.md'):
+            if file.startswith(('docs/', 'examples/')) or file.endswith('.md'):
                 continue
             # some core file changed (like root Makefile, etc)
             fallback()

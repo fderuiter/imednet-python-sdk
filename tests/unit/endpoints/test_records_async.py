@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-import imednet.endpoints.records as records
+from imednet.endpoints import records
 from imednet.errors import ValidationError
 from imednet.models.variables import Variable
 from imednet.validation.cache import SchemaCache

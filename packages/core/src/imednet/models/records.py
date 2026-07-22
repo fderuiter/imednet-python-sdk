@@ -14,16 +14,12 @@ from imednet.models.engine import ModelEngine
 class Keyword(ImednetBaseModel):
     """A keyword or tag associated with a record."""
 
-    pass
-
 
 Keyword = ModelEngine.get_model('Keyword', Keyword)
 
 
 class Record(ImednetBaseModel):
     """A data record for a subject, form, and visit."""
-
-    pass
 
 
 Record = ModelEngine.get_model('Record', Record)
@@ -36,13 +32,9 @@ class RecordJobResponse(ImednetBaseModel):
     batch_id: str = Field("", alias="batchId")
     state: str = Field("", alias="state")
 
-    pass
-
 
 class RecordData(RootModel[dict[str, Any]]):
     """Arbitrary record data as a dictionary."""
-
-    pass
 
 
 class BaseRecordRequest(ImednetBaseModel):
@@ -50,8 +42,6 @@ class BaseRecordRequest(ImednetBaseModel):
 
     form_key: str = Field("", alias="formKey")
     data: RecordData = Field(default_factory=lambda: RecordData({}), alias="data")
-
-    pass
 
 
 class RegisterSubjectRequest(BaseRecordRequest):
@@ -67,8 +57,6 @@ class RegisterSubjectRequest(BaseRecordRequest):
         "", alias="siteName", description="Name of the site where the subject is enrolled"
     )
 
-    pass
-
 
 class UpdateScheduledRecordRequest(BaseRecordRequest):
     """Payload for updating an existing scheduled record."""
@@ -76,12 +64,8 @@ class UpdateScheduledRecordRequest(BaseRecordRequest):
     subject_key: str = Field("", alias="subjectKey")
     interval_name: str = Field("", alias="intervalName")
 
-    pass
-
 
 class CreateNewRecordRequest(BaseRecordRequest):
     """Payload for creating a new unscheduled record."""
 
     subject_key: str = Field("", alias="subjectKey")
-
-    pass

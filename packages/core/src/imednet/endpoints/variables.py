@@ -18,10 +18,6 @@ class VariablesOperationDef:
 class VariablesEndpoint(VariablesOperationDef, EdcSyncListGetEndpoint[Variable]):  # type: ignore[misc]
     """Synchronous endpoint for managing Variables."""
 
-    pass
-
 
 class AsyncVariablesEndpoint(VariablesOperationDef, EdcAsyncListGetEndpoint[Variable]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Variables."""
-
-    pass

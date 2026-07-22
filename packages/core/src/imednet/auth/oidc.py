@@ -17,14 +17,14 @@ class OIDCAuth:
         self.token = token
         self._decoded_claims = self._decode_token_claims(token)
 
-    def _decode_token_claims(self, token: str) -> Any:
+    def _decode_token_claims(self, token: str) -> dict[str, Any]:
         """Extract and decode the claims from the JWT token.
 
         Args:
             token: The JWT token string.
 
         Returns:
-            A Anyionary containing the decoded token claims.
+            A dictionary containing the decoded token claims.
         """
         parts = token.split(".")
         if len(parts) != 3:
@@ -32,7 +32,11 @@ class OIDCAuth:
         payload = parts[1]
         payload += "=" * ((4 - len(payload) % 4) % 4)
         try:
-            return json.loads(base64.urlsafe_b64decode(payload).decode("utf-8"))
+            from typing import cast
+
+            return cast(
+                dict[str, Any], json.loads(base64.urlsafe_b64decode(payload).decode("utf-8"))
+            )
         except Exception:
             return {}
 
@@ -75,7 +79,7 @@ class OIDCAuth:
                 mapped_roles.append("viewer")
 
         # If no explicit match, default mapping logic if any...
-        return mapped_roles if mapped_roles else list(roles)
+        return mapped_roles or list(roles)
 
     def __repr__(self) -> str:
         """Return a redacted string representation of the OIDC authentication."""

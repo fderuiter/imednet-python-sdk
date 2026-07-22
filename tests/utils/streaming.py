@@ -90,6 +90,9 @@ class StreamingMockWrapper(Generic[T]):
             except StopIteration:
                 self._fully_buffered = True
 
+    def __hash__(self) -> int:
+        return hash(tuple(self.items))
+
     def __eq__(self, other: Any) -> bool:
         """Helper function to   eq  ."""
         self._fill_buffer()

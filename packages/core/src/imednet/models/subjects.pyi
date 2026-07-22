@@ -17,14 +17,10 @@ class SubjectKeyword(ImednetBaseModel):
     keyword_id: int = Field(0, alias="keywordId")
     date_added: datetime = Field(default_factory=datetime.now, alias="dateAdded")
 
-    pass
-
 class Subject(ImednetBaseModel):
     """A subject (participant) in a study, with status and site info."""
 
     keywords: list[SubjectKeyword] = Field(default_factory=list, alias="keywords")
-
-    pass
 
     study_key: str | None
     subject_id: int | None

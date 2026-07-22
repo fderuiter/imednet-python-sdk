@@ -2,7 +2,7 @@
 
 import pytest
 
-import imednet.endpoints.variables as variables
+from imednet.endpoints import variables
 from imednet.errors import NotFoundError
 from imednet.errors.validation import ConfigurationError
 from imednet.models.variables import Variable

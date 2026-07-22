@@ -37,7 +37,6 @@ def _setup_airflow(monkeypatch):
 
         def __init__(self, *a, **kw):
             """Initialize the test object."""
-            pass
 
     class DummySensorOperator:
         """Test suite for DummySensorOperator."""
@@ -46,7 +45,6 @@ def _setup_airflow(monkeypatch):
 
         def __init__(self, *a, **kw):
             """Initialize the test object."""
-            pass
 
     hooks_base.BaseHook = DummyBaseHook
     models_mod.BaseOperator = DummyBaseOperator
@@ -54,8 +52,6 @@ def _setup_airflow(monkeypatch):
 
     class DummyAirflowError(Exception):
         """Test suite for DummyAirflowError."""
-
-        pass
 
     exc_mod.AirflowException = DummyAirflowError
     s3_mod.S3Hook = MagicMock
@@ -108,7 +104,7 @@ def _import_operators(monkeypatch):
 def _import_sensors(monkeypatch):
     """Helper function to  import sensors."""
     _setup_airflow(monkeypatch)
-    import apache_airflow_providers_imednet.sensors as sensors
+    from apache_airflow_providers_imednet import sensors
 
     return sensors
 
@@ -130,7 +126,7 @@ def test_job_sensor(monkeypatch):
     """Test that job sensor."""
     _setup_airflow(monkeypatch)
     import apache_airflow_providers_imednet.operators as ops
-    import apache_airflow_providers_imednet.sensors as sensors
+    from apache_airflow_providers_imednet import sensors
 
     importlib.reload(sensors)
     _patch_basehook(monkeypatch)

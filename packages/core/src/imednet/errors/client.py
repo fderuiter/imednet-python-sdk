@@ -19,5 +19,3 @@ class ClientError(ImednetError):
 
 class PaginationError(ClientError):
     """Raised when pagination metadata is malformed or inconsistent."""
-
-    pass

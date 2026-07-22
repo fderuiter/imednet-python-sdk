@@ -49,8 +49,7 @@ def main():
 
     if has_drift:
         with open("drift_report.txt", "w") as f:
-            for dv in drift_violations:
-                f.write(f"{dv}\n")
+            f.writelines(f"{dv}\n" for dv in drift_violations)
         print(f"::warning:: Detected {drift_count} verification violations.")
     else:
         print("All verifications passed.")

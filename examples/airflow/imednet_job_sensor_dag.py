@@ -9,7 +9,7 @@ from apache_airflow_providers_imednet import ImednetJobSensor
 """Example DAG demonstrating :class:`ImednetJobSensor` to monitor an iMednet job.
 
 This sensor periodically polls iMednet until the specified job reaches a
-terminal state. Configuration is similar to ``ImednetToS3Operator``:
+terminal state. Configuration is similar to ``ImednetExportOperator``:
 - Credentials are read from the Airflow connection ``imednet_default`` (or a
   custom ``imednet_conn_id``) using the login/password or ``extra`` fields.
   Environment variables ``IMEDNET_API_KEY`` and ``IMEDNET_SECURITY_KEY`` may be

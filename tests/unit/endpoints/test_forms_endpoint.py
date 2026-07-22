@@ -2,7 +2,7 @@
 
 import pytest
 
-import imednet.endpoints.forms as forms
+from imednet.endpoints import forms
 from imednet.errors import NotFoundError
 from imednet.errors.validation import ConfigurationError
 from imednet.models.forms import Form

@@ -82,7 +82,7 @@ def test_secure_st_methods(monkeypatch):
         """Helper function to mock info."""
         calls["info"] = msg
 
-    import imednet_streamlit.app as app
+    from imednet_streamlit import app
 
     monkeypatch.setattr(app, "original_st_error", mock_error)
     monkeypatch.setattr(app, "original_st_exception", mock_exception)
@@ -119,7 +119,7 @@ class _FakeChart:
 
 def test_toggle_high_contrast():
     """Test that toggle high contrast."""
-    import imednet_streamlit.app as app
+    from imednet_streamlit import app
 
     # Set up session state and query params
     st.session_state["high_contrast"] = False

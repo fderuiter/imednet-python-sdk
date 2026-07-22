@@ -2,7 +2,7 @@
 
 import pytest
 
-import imednet.endpoints.users as users
+from imednet.endpoints import users
 from imednet.errors import NotFoundError
 from imednet.errors.validation import ConfigurationError
 from imednet.models.users import User
