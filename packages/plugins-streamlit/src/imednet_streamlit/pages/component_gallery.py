@@ -1,7 +1,6 @@
 """Live preview gallery showcasing interactive UI components."""
 
 import uuid
-from datetime import datetime, timezone
 
 import numpy as np
 import pandas as pd
@@ -56,7 +55,7 @@ with col2:
 
 st.subheader("Pie Chart")
 st.altair_chart(
-    pie_chart(df_charts, names="Category", values="Enrollment", title="Enrollment by Category"),
+    pie_chart(df_charts, color="Category", theta="Enrollment", title="Enrollment by Category"),
     use_container_width=True,
 )
 
@@ -74,7 +73,8 @@ df_grid = pd.DataFrame(
 
 page_size = st.slider("Grid Page Size", min_value=5, max_value=50, value=10, step=5)
 st.dataframe(
-    paginated_slice(df_grid, key="gallery_grid", page_size=page_size), use_container_width=True
+    paginated_slice(df_grid, key="gallery_grid", default_page_size=page_size),
+    use_container_width=True,
 )
 
 
@@ -87,8 +87,6 @@ item = TriageItem(
     study_key="MOCK_STUDY",
     status=TriageStatus.NEW,
     severity="high",
-    created_at=datetime.now(timezone.utc),
-    updated_at=datetime.now(timezone.utc),
 )
 store.upsert_item(item)
 
