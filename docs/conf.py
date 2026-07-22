@@ -54,12 +54,17 @@ imednet_streamlit.auth.get_sdk = mock_get_sdk
 imednet_streamlit.auth.get_study_key = mock_get_study_key
 
 # Add package source roots so API modules can be imported for docs builds.
+from pathlib import Path
+
+DOCS_ROOT = Path(__file__).resolve().parent
+REPO_ROOT = DOCS_ROOT.parent
+
 sys.path[:0] = [
-    os.path.abspath("../packages/core/src"),
-    os.path.abspath("../packages/providers-airflow/src"),
-    os.path.abspath("../packages/plugins-workflows/src"),
-    os.path.abspath("../packages/plugins-streamlit/src"),
-    os.path.abspath("../packages/plugins-sinks/src"),
+    str(REPO_ROOT / "packages" / "core" / "src"),
+    str(REPO_ROOT / "packages" / "providers-airflow" / "src"),
+    str(REPO_ROOT / "packages" / "plugins-workflows" / "src"),
+    str(REPO_ROOT / "packages" / "plugins-streamlit" / "src"),
+    str(REPO_ROOT / "packages" / "plugins-sinks" / "src"),
 ]
 warnings.filterwarnings("ignore", message="duplicate object description*")
 warnings.filterwarnings("ignore", message="Failed guarded type import*")
