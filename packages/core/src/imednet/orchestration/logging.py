@@ -42,6 +42,7 @@ if sys.version_info >= (3, 11):
 else:
     _LoggerAdapter = logging.LoggerAdapter
 
+
 class StudyContextLogAdapter(_LoggerAdapter):
     """A logger adapter that enriches records with a bound study key."""
 
