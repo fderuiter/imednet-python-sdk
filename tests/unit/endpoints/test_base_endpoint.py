@@ -16,7 +16,6 @@ class MockModel(ImednetBaseModel):
     """Test suite for MockModel."""
 
 
-
 class MockEndpointImpl(EdcEndpointMixin, GenericEndpoint[MockModel]):
     """Test suite for MockEndpointImpl."""
 

@@ -34,7 +34,7 @@ class CentralizedMapper:
         """
         self.mode = mode
         self.post_processor = post_processor
-        self._pipeline_cache: dict[Any, Any] = {}
+        self._pipeline_cache: dict[str, Any] = {}
 
     def map_record(
         self, record: Any, study_key: str | None = None

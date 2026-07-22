@@ -231,7 +231,7 @@ class CachedRecordsLoader:
             retry=retry_if_exception_type(Exception),
             reraise=True,
         )
-        endpoint = self._sdk.records  # type: ignore
+        endpoint = getattr(self._sdk, "records")  # noqa: B009
 
         return cast(
             list[Record],
@@ -251,8 +251,9 @@ class CachedRecordsLoader:
                 record.record_id,
                 record.form_key,
                 (
-                    record.date_modified.isoformat()  # type: ignore
-                    if hasattr(record.date_modified, "isoformat")
+                    record.date_modified.isoformat()
+                    if record.date_modified is not None
+                    and hasattr(record.date_modified, "isoformat")
                     else (str(record.date_modified) if record.date_modified is not None else "")
                 ),
                 json.dumps(record.model_dump(mode="json", by_alias=True), sort_keys=True),

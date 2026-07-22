@@ -1,4 +1,4 @@
-"""Lineage tracking components for Streamlit.
+"""Data Lineage components.
 
 Provides utilities for redacting sensitive fields and rendering multi-pane
 views that trace the transformation of raw EDC records into canonical models.
@@ -21,22 +21,33 @@ def render_lineage_panes(
     # Import inside function so tests can patch `streamlit` via sys.modules.
     import streamlit as st
 
-    left_pane, mid_pane, right_pane = st.columns(3)
-
-    with left_pane:
-        st.markdown("**📥 Raw EDC Record**")
-        if raw_record is not None:
-            st.json(raw_record)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.subheader("Raw EDC Payload")
+        if raw_record:
+            st.json(_redact_sensitive_keys(raw_record))
         else:
-            st.info("Raw record not available (no matching source form configured).")
-
-    with mid_pane:
-        st.markdown("**⚙️ Applied Mapping Rules**")
+            st.info("Raw record context unavailable.")
+    with c2:
+        st.subheader("Transformation Matrix")
         if mapping_rules:
             st.dataframe(pd.DataFrame(mapping_rules), use_container_width=True)
         else:
-            st.info("No mapping rules configured for this domain.")
+            st.info("Direct passthrough (No translation required).")
+    with c3:
+        st.subheader("Canonical Target")
+        st.json(_redact_sensitive_keys(canonical_payload))
 
-    with right_pane:
-        st.markdown("**📤 Canonical Model**")
-        st.json(canonical_payload)
+
+def _redact_sensitive_keys(data: dict[str, Any]) -> dict[str, Any]:
+    """Redact standard sensitive keys from payloads for secure display."""
+    sensitive_keys = {"patient_name", "ssn", "dob", "mrn"}
+    redacted = {}
+    for k, v in data.items():
+        if k.lower() in sensitive_keys:
+            redacted[k] = "***MASKED***"
+        elif isinstance(v, dict):
+            redacted[k] = _redact_sensitive_keys(v)
+        else:
+            redacted[k] = v
+    return redacted

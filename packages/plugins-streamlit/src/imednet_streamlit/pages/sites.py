@@ -78,7 +78,7 @@ def _fetch_site_metrics(
                 open_queries=("annotation_id", "count"),
                 avg_days_open=(
                     "date_created",
-                    lambda x: (timestamp_now - pd.to_datetime(x, utc=True)).dt.days.mean(),  # type: ignore
+                    lambda x: (timestamp_now - pd.to_datetime(x, utc=True)).dt.days.mean(),  # type: ignore[attr-defined]
                 ),
             )
             .reset_index()
@@ -208,7 +208,7 @@ else:
     df_display = pd.DataFrame(columns=display_cols)
 
 page_df = components.paginated_slice(df_display, key="sites_metrics_table")
-styled = page_df.style.map(_highlight_high_rate, subset=["query_rate"])  # type: ignore
+styled = page_df.style.map(_highlight_high_rate, subset=["query_rate"])  # type: ignore[arg-type]
 st.dataframe(styled, use_container_width=True)
 
 components.csv_download_button(df_display, filename="site_metrics.csv")

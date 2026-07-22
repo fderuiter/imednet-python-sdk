@@ -7,7 +7,7 @@ supporting both tabular procedural functions and object-oriented sink classes.
 import dataclasses
 import threading
 from collections.abc import Callable
-from typing import Any
+from typing import Any, cast
 
 from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality_gate, iter_batches
 from imednet.sdk import ImednetSDK
@@ -67,7 +67,7 @@ class ExportRegistry:
                     # Use self._sink_targets directly to avoid acquiring lock again unnecessarily,
                     # or it's fine since we use RLock
                     self.register_sink(target_type, sink_class)
-                    return sink_class  # type: ignore[no-any-return]
+                    return cast(type[ExportSink], sink_class)
                 except (ImportError, AttributeError):
                     return None
 
@@ -87,7 +87,7 @@ class ExportRegistry:
                     module = importlib.import_module(module_path)  # nosem
                     config_class = getattr(module, class_name)
                     self._config_targets[target_type] = config_class
-                    return config_class  # type: ignore[no-any-return]
+                    return cast(type[SinkConfig], config_class)
                 except (ImportError, AttributeError):
                     pass
 

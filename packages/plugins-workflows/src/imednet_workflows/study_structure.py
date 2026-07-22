@@ -5,7 +5,7 @@ from typing import Any
 """Workflow for retrieving and aggregating study structural metadata."""
 
 import asyncio
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 # Import potential exceptions
 from imednet.spi.errors import ImednetError
@@ -44,13 +44,13 @@ def _build_study_structure(
         for form_summary in getattr(interval, 'forms', []):
             if form_summary.form_id is not None:
                 full_form = forms_by_id.get(form_summary.form_id)
-            if full_form:
-                form_vars = variables_by_form_id.get(full_form.form_id, [])  # type: ignore
+            if full_form and full_form.form_id is not None:
+                form_vars = variables_by_form_id.get(full_form.form_id, [])
                 form_structures.append(FormStructure.from_form(full_form, form_vars))
 
         interval_structures.append(IntervalStructure.from_interval(interval, form_structures))
 
-    return StudyStructure(study_key=study_key, intervals=interval_structures)  # type: ignore[call-arg]
+    return StudyStructure(studyKey=study_key, intervals=interval_structures)
 
 
 def get_study_structure(sdk: "ImednetFacade", study_key: str) -> StudyStructure:

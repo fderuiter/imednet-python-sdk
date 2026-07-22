@@ -69,7 +69,7 @@ Verifies helper functions and Airflow operators:
 
 - ``export_to_csv``, ``export_to_excel``, ``export_to_json``, ``export_to_parquet``, and ``export_to_sql`` create the requested file.
 - ``ImednetHook`` returns a valid SDK connection.
-- ``ImednetExportOperator`` and ``ImednetToS3Operator`` execute successfully when given minimal parameters.
+- ``ImednetExportOperator`` executes successfully when given minimal parameters.
 - ``ImednetJobSensor`` raises an exception when polling fails.
 - When Airflow is installed the suite also runs ``test_airflow_dag.py`` to execute a simple DAG using these operators.
 

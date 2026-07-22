@@ -36,11 +36,18 @@ class StudySnapshot(ImednetBaseModel):
 
     def model_post_init(self, __context: object) -> None:
         """Initialize derived lookup dictionaries after model initialization."""
-        self.forms_by_key = {form.form_key: form for form in self.forms}  # type: ignore
+        self.forms_by_key = {
+            form.form_key: form for form in self.forms if form.form_key is not None
+        }
         self.variables_by_form = {}
         for variable in self.variables:
-            self.variables_by_form.setdefault(variable.form_key, []).append(variable)  # type: ignore
-        self.intervals_by_name = {interval.interval_name: interval for interval in self.intervals}  # type: ignore
+            if variable.form_key is not None:
+                self.variables_by_form.setdefault(variable.form_key, []).append(variable)
+        self.intervals_by_name = {
+            interval.interval_name: interval
+            for interval in self.intervals
+            if interval.interval_name is not None
+        }
 
     def enrollment_forms(self) -> list[Form]:
         """Return forms with form_type indicating subject registration."""
