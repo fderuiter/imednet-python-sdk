@@ -37,7 +37,14 @@ from collections.abc import MutableMapping
 from typing import Any
 
 
-class StudyContextLogAdapter(logging.LoggerAdapter[logging.Logger]):
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    _AdapterBase = logging.LoggerAdapter[logging.Logger]
+else:
+    _AdapterBase = logging.LoggerAdapter
+
+class StudyContextLogAdapter(_AdapterBase):
     """A logger adapter that enriches records with a bound study key."""
 
     def __init__(self, logger: logging.Logger, study_key: str) -> None:
