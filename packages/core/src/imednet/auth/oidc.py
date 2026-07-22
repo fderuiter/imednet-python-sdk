@@ -33,7 +33,10 @@ class OIDCAuth:
         payload += "=" * ((4 - len(payload) % 4) % 4)
         try:
             from typing import cast
-            return cast(dict[str, Any], json.loads(base64.urlsafe_b64decode(payload).decode("utf-8")))
+
+            return cast(
+                dict[str, Any], json.loads(base64.urlsafe_b64decode(payload).decode("utf-8"))
+            )
         except Exception:
             return {}
 
