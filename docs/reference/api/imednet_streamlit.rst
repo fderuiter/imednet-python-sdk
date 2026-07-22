@@ -37,3 +37,17 @@ imednet\_streamlit.cli module
 .. automodule:: imednet_streamlit.cli
    :members:
    :show-inheritance:
+
+imednet\_streamlit.credentials module
+-------------------------------------
+
+.. automodule:: imednet_streamlit.credentials
+   :members:
+   :show-inheritance:
+
+imednet\_streamlit.utils module
+-------------------------------
+
+.. automodule:: imednet_streamlit.utils
+   :members:
+   :show-inheritance:

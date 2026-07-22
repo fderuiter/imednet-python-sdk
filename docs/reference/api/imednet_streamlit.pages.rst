@@ -15,6 +15,13 @@ imednet\_streamlit.pages.admin module
    :members:
    :show-inheritance:
 
+imednet\_streamlit.pages.component\_gallery module
+--------------------------------------------------
+
+.. automodule:: imednet_streamlit.pages.component_gallery
+   :members:
+   :show-inheritance:
+
 imednet\_streamlit.pages.conformance module
 -------------------------------------------
 
