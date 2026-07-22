@@ -1,7 +1,7 @@
 """Workflow for retrieving and aggregating study structural metadata."""
 
 import asyncio
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 # Import potential exceptions
 from imednet.spi.errors import ImednetError
