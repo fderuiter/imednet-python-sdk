@@ -16,15 +16,14 @@ except ImportError:
     from typing_extensions import NotRequired
 
 
-
-
-
 class MetricConfig(TypedDict):
     """Configuration definition for a single metric tile."""
+
     label: str
     value: int | float | str
     delta: NotRequired[str | None]
     help: NotRequired[str | None]
+
 
 def kpi_card(
     label: str,

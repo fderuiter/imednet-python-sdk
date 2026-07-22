@@ -1,9 +1,8 @@
-from typing import Any
-
 """OIDC authentication strategy."""
 
 import base64
 import json
+from typing import Any
 
 
 class OIDCAuth:
@@ -25,7 +24,7 @@ class OIDCAuth:
             token: The JWT token string.
 
         Returns:
-            A Anyionary containing the decoded token claims.
+            A dictionary containing the decoded token claims.
         """
         parts = token.split(".")
         if len(parts) != 3:

@@ -219,6 +219,7 @@ def get_sdk() -> ImednetFacade:
             "SDK is not connected. Ensure credentials are entered and Connect is clicked."
         )
     from typing import cast
+
     return cast('ImednetFacade', sdk)
 
 

@@ -10,7 +10,10 @@ from __future__ import annotations
 import argparse
 import sys
 from datetime import datetime, timezone
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from imednet.sdk import ImednetSDK
 
 from imednet.spi.cli import STUDY_KEY_ARG, parse_filter_args, with_sdk
 
@@ -95,7 +98,10 @@ def setup_parser(subparsers: argparse._SubParsersAction[Any]) -> None:
 
     @with_sdk
     def sync_worker(
-        sdk: ImednetSDK, study_key: str, interval: int = 900, once: bool = False  # type: ignore[name-defined]
+        sdk: ImednetSDK,
+        study_key: str,
+        interval: int = 900,
+        once: bool = False,  # type: ignore[name-defined]
     ) -> None:
         from .cached_loader import CachedRecordsLoader
 

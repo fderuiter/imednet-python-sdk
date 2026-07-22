@@ -2,7 +2,7 @@
 
 import os
 import re
-from typing import Any, Optional
+from typing import Any, ClassVar, Optional
 
 from pydantic import Field, create_model
 
@@ -73,7 +73,7 @@ except Exception:
 class ModelEngine:
     """Engine for dynamically creating Pydantic models from schemas."""
 
-    _model_cache = {}
+    _model_cache: ClassVar[dict[str, type[Any]]] = {}
 
     @classmethod
     def get_model(cls, model_name: str, base_cls: type[Any] = ImednetBaseModel) -> type[Any]:
@@ -171,7 +171,7 @@ class ModelEngine:
                 original_imports = imports_re.group(1)
                 new_imports = original_imports
                 if "from typing import" not in new_imports:
-                    new_imports += "\nfrom typing import Any, Optional\n"
+                    new_imports += "\nfrom typing import Any, ClassVar, Optional\n"
                 else:
                     if "Any" not in new_imports:
                         new_imports = new_imports.replace(
