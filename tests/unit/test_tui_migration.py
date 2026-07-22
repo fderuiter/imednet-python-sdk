@@ -68,13 +68,13 @@ def test_subject_filtering_logic():
 
 def test_form_designer_validation():
     """Verify validation logic migrated from TUI FormBuilderPane."""
-    client = FormDesignerClient("http://test", "sess")
     layout = Layout(pages=[])
 
-    # Test invalid form_id
-    with pytest.raises(ClientError, match="Invalid form_id"):
-        client.save_form("csrf", 0, 500, 1, layout)
+    with FormDesignerClient("http://test", "sess") as client:
+        # Test invalid form_id
+        with pytest.raises(ClientError, match="Invalid form_id"):
+            client.save_form("csrf", 0, 500, 1, layout)
 
-    # Test empty CSRF
-    with pytest.raises(ClientError, match="CSRF Key"):
-        client.save_form("", 100, 500, 1, layout)
+        # Test empty CSRF
+        with pytest.raises(ClientError, match="CSRF Key"):
+            client.save_form("", 100, 500, 1, layout)

@@ -55,13 +55,24 @@ def dashboard_server():
         "false",
     ]
 
-    proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(cmd, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     if not wait_for_port(port):
-        stdout, stderr = proc.communicate(timeout=1)
         proc.kill()
+        proc.wait()
+
+        # Run synchronously to capture and report the startup error
+        try:
+            result = subprocess.run(cmd, env=env, capture_output=True, timeout=5)
+            stdout_data, stderr_data = result.stdout.decode(), result.stderr.decode()
+        except subprocess.TimeoutExpired as e:
+            stdout_data, stderr_data = (
+                (e.stdout.decode() if e.stdout else ""),
+                (e.stderr.decode() if e.stderr else ""),
+            )
+
         raise RuntimeError(
-            f"Streamlit failed to start on port {port}. stdout: {stdout.decode()}, stderr: {stderr.decode()}"
+            f"Streamlit failed to start on port {port}. stdout: {stdout_data}, stderr: {stderr_data}"
         )
 
     yield f"http://localhost:{port}"
@@ -71,6 +82,7 @@ def dashboard_server():
         proc.wait(timeout=5)
     except subprocess.TimeoutExpired:
         proc.kill()
+        proc.wait()
 
 
 @pytest.fixture(scope="package")

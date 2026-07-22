@@ -33,21 +33,21 @@ def main():
 
     try:
         cfg = load_config()
-        client = ImednetClient(
+        with ImednetClient(
             api_key=cfg.api_key, security_key=cfg.security_key, base_url=cfg.base_url
-        )
+        ) as client:
 
-        studies = client.studies.list()
-        if not studies:
-            print("No studies returned from API.")
-            return
+            studies = client.studies.list()
+            if not studies:
+                print("No studies returned from API.")
+                return
 
-        for study in studies[:1]:
-            study_key = study.study_key
-            visits = client.visits.list(study_key=study_key)
-            print(f"Visits for study '{study_key}': {len(visits)}")
-            for visit in visits[:5]:
-                print(f"- Visit ID: {visit.visit_id}, Subject Key: {visit.subject_key}")
+            for study in studies[:1]:
+                study_key = study.study_key
+                visits = client.visits.list(study_key=study_key)
+                print(f"Visits for study '{study_key}': {len(visits)}")
+                for visit in visits[:5]:
+                    print(f"- Visit ID: {visit.visit_id}, Subject Key: {visit.subject_key}")
 
     except Exception as e:
         print(f"Error: {e}")

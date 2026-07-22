@@ -17,46 +17,43 @@ def mock_layout():
 def test_save_form_success(mock_layout, respx_mock):
     """Test that save form success."""
     base_url = "https://test.imednet.com"
-    client = FormDesignerClient(base_url, "fake_sessid")
+    with FormDesignerClient(base_url, "fake_sessid") as client:
+        respx_mock.post(
+            f"{base_url}/app/formdez/formdez_save.php",
+        ).mock(return_value=httpx.Response(200, json={"success": True}))
 
-    respx_mock.post(
-        f"{base_url}/app/formdez/formdez_save.php",
-    ).mock(return_value=httpx.Response(200, json={"success": True}))
+        resp = client.save_form("csrf", 1, 1, 1, mock_layout)
+        # response.text is returned
+        assert '{"success": true}' in resp or "success" in resp
 
-    resp = client.save_form("csrf", 1, 1, 1, mock_layout)
-    # response.text is returned
-    assert '{"success": true}' in resp or "success" in resp
-
-    assert respx_mock.calls.call_count == 1
-    req = respx_mock.calls.last.request
-    assert "PHPSESSID=fake_sessid" in req.headers["Cookie"]
-    assert req.headers["X-Requested-With"] == "XMLHttpRequest"
+        assert respx_mock.calls.call_count == 1
+        req = respx_mock.calls.last.request
+        assert "PHPSESSID=fake_sessid" in req.headers["Cookie"]
+        assert req.headers["X-Requested-With"] == "XMLHttpRequest"
 
 
 def test_save_form_server_error(mock_layout, respx_mock):
     """Test that save form server error."""
     base_url = "https://test.imednet.com"
-    client = FormDesignerClient(base_url, "fake_sessid")
+    with FormDesignerClient(base_url, "fake_sessid") as client:
+        respx_mock.post(
+            f"{base_url}/app/formdez/formdez_save.php",
+        ).mock(return_value=httpx.Response(200, json={"error": "Concurrency Error"}))
 
-    respx_mock.post(
-        f"{base_url}/app/formdez/formdez_save.php",
-    ).mock(return_value=httpx.Response(200, json={"error": "Concurrency Error"}))
-
-    with pytest.raises(ApiError, match="Server Error: Concurrency Error"):
-        client.save_form("csrf", 1, 1, 1, mock_layout)
+        with pytest.raises(ApiError, match="Server Error: Concurrency Error"):
+            client.save_form("csrf", 1, 1, 1, mock_layout)
 
 
 def test_save_form_http_error(mock_layout, respx_mock):
     """Test that save form http error."""
     base_url = "https://test.imednet.com"
-    client = FormDesignerClient(base_url, "fake_sessid")
+    with FormDesignerClient(base_url, "fake_sessid") as client:
+        respx_mock.post(f"{base_url}/app/formdez/formdez_save.php").mock(
+            return_value=httpx.Response(500)
+        )
 
-    respx_mock.post(f"{base_url}/app/formdez/formdez_save.php").mock(
-        return_value=httpx.Response(500)
-    )
-
-    with pytest.raises(httpx.HTTPStatusError):
-        client.save_form("csrf", 1, 1, 1, mock_layout)
+        with pytest.raises(httpx.HTTPStatusError):
+            client.save_form("csrf", 1, 1, 1, mock_layout)
 
 
 def test_save_form_invalid_json_fallback(mock_layout, respx_mock):
@@ -65,18 +62,17 @@ def test_save_form_invalid_json_fallback(mock_layout, respx_mock):
     The client should catch json.JSONDecodeError and raise ApiError instead of returning text.
     """
     base_url = "https://test.imednet.com"
-    client = FormDesignerClient(base_url, "fake_sessid")
+    with FormDesignerClient(base_url, "fake_sessid") as client:
+        html_response = "<html><body>Error</body></html>"
+        respx_mock.post(
+            f"{base_url}/app/formdez/formdez_save.php",
+        ).mock(return_value=httpx.Response(200, text=html_response))
 
-    html_response = "<html><body>Error</body></html>"
-    respx_mock.post(
-        f"{base_url}/app/formdez/formdez_save.php",
-    ).mock(return_value=httpx.Response(200, text=html_response))
+        with pytest.raises(ApiError) as exc_info:
+            client.save_form("csrf", 1, 1, 1, mock_layout)
 
-    with pytest.raises(ApiError) as exc_info:
-        client.save_form("csrf", 1, 1, 1, mock_layout)
-
-    assert str(exc_info.value.response) == html_response
-    assert exc_info.value.status_code == 200
+        assert str(exc_info.value.response) == html_response
+        assert exc_info.value.status_code == 200
 
 
 @pytest.mark.parametrize(
@@ -94,7 +90,6 @@ def test_save_form_invalid_json_fallback(mock_layout, respx_mock):
 def test_save_form_validation_sad_paths(mock_layout, csrf, form_id, comm_id, rev, expected_error):
     """Test that save form validation sad paths."""
     base_url = "https://test.imednet.com"
-    client = FormDesignerClient(base_url, "fake_sessid")
-
-    with pytest.raises(ClientError, match=expected_error):
-        client.save_form(csrf, form_id, comm_id, rev, mock_layout)
+    with FormDesignerClient(base_url, "fake_sessid") as client:
+        with pytest.raises(ClientError, match=expected_error):
+            client.save_form(csrf, form_id, comm_id, rev, mock_layout)

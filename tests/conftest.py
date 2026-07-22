@@ -313,7 +313,8 @@ def patch_build_filter(monkeypatch):
 @pytest.fixture
 def http_client():
     """Provide a synchronous Client instance configured for testing."""
-    return Client("key", "secret", base_url="https://api.test")
+    with Client("key", "secret", base_url="https://api.test") as client:
+        yield client
 
 
 @pytest_asyncio.fixture
@@ -322,11 +323,8 @@ async def async_http_client():
 
     This fixture ensures the client is properly closed after use.
     """
-    client = AsyncClient("key", "secret", base_url="https://api.test")
-    try:
+    async with AsyncClient("key", "secret", base_url="https://api.test") as client:
         yield client
-    finally:
-        await client.aclose()
 
 
 @pytest.fixture

@@ -45,6 +45,19 @@ class FormDesignerClient:
         else:
             self._tracer = None
 
+    def __enter__(self) -> "FormDesignerClient":
+        """Enter the context manager and return the client."""
+        return self
+
+    def __exit__(
+        self,
+        exc_type: Any,
+        exc_val: Any,
+        exc_tb: Any,
+    ) -> None:
+        """Exit the context manager and close the underlying session."""
+        self.session.close()
+
     def save_form(
         self,
         csrf_key: str,

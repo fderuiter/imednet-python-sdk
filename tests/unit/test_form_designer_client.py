@@ -13,7 +13,10 @@ from imednet.form_designer.models import Layout
 @pytest.fixture
 def form_designer_client():
     """Helper function to form designer client."""
-    return FormDesignerClient(base_url="https://test.imednet.com", phpsessid="test_session")
+    with FormDesignerClient(
+        base_url="https://test.imednet.com", phpsessid="test_session"
+    ) as client:
+        yield client
 
 
 @pytest.fixture

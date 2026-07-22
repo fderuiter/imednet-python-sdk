@@ -59,77 +59,77 @@ def main():
 
     try:
         cfg = load_config()
-        client = ImednetClient(
+        with ImednetClient(
             api_key=cfg.api_key, security_key=cfg.security_key, base_url=cfg.base_url
-        )
+        ) as client:
 
-        studies = client.studies.list()
-        print(f"Studies found: {len(studies)}")
-        if not studies:
-            print("No studies returned from API.")
-            return
+            studies = client.studies.list()
+            print(f"Studies found: {len(studies)}")
+            if not studies:
+                print("No studies returned from API.")
+                return
 
-        for study in studies[:1]:
-            print(f"- Name: {study.study_name}, Key: {study.study_key}")
-            variables = client.variables.list(study_key=study.study_key)
-            print(f"Variables for study '{study.study_key}': {len(variables)}")
-            if not variables:
-                print("No variables returned for this study.")
-            else:
-                # Save all variables to JSON (with datetime serialization)
-                output_dir = os.path.join(os.path.dirname(__file__), "variables_output")
-                os.makedirs(output_dir, exist_ok=True)
-                json_path = os.path.join(output_dir, f"variables_{study.study_key}.json")
-                with open(json_path, "w", encoding="utf-8") as f:
-                    json.dump(
-                        [v.model_dump(by_alias=True) for v in variables],
-                        f,
-                        indent=2,
-                        ensure_ascii=False,
-                        default=str,
-                    )
-                # Save as CSV (flattened)
-                csv_path = os.path.join(output_dir, f"variables_{study.study_key}.csv")
-                with open(csv_path, "w", newline="", encoding="utf-8") as csvfile:
-                    writer = csv.writer(csvfile)
-                    writer.writerow(
-                        [
-                            "variableId",
-                            "variableName",
-                            "formId",
-                            "formKey",
-                            "formName",
-                            "label",
-                            "variableType",
-                            "sequence",
-                            "revision",
-                            "disabled",
-                            "deleted",
-                            "dateCreated",
-                            "dateModified",
-                        ]
-                    )
-                    for v in variables:
+            for study in studies[:1]:
+                print(f"- Name: {study.study_name}, Key: {study.study_key}")
+                variables = client.variables.list(study_key=study.study_key)
+                print(f"Variables for study '{study.study_key}': {len(variables)}")
+                if not variables:
+                    print("No variables returned for this study.")
+                else:
+                    # Save all variables to JSON (with datetime serialization)
+                    output_dir = os.path.join(os.path.dirname(__file__), "variables_output")
+                    os.makedirs(output_dir, exist_ok=True)
+                    json_path = os.path.join(output_dir, f"variables_{study.study_key}.json")
+                    with open(json_path, "w", encoding="utf-8") as f:
+                        json.dump(
+                            [v.model_dump(by_alias=True) for v in variables],
+                            f,
+                            indent=2,
+                            ensure_ascii=False,
+                            default=str,
+                    ) as client:
+                    # Save as CSV (flattened)
+                    csv_path = os.path.join(output_dir, f"variables_{study.study_key}.csv")
+                    with open(csv_path, "w", newline="", encoding="utf-8") as csvfile:
+                        writer = csv.writer(csvfile)
                         writer.writerow(
                             [
-                                v.variable_id,
-                                v.variable_name,
-                                v.form_id,
-                                v.form_key,
-                                v.form_name,
-                                v.label,
-                                v.variable_type,
-                                v.sequence,
-                                v.revision,
-                                v.disabled,
-                                v.deleted,
-                                v.date_created,
-                                v.date_modified,
+                                "variableId",
+                                "variableName",
+                                "formId",
+                                "formKey",
+                                "formName",
+                                "label",
+                                "variableType",
+                                "sequence",
+                                "revision",
+                                "disabled",
+                                "deleted",
+                                "dateCreated",
+                                "dateModified",
                             ]
-                        )
-                print(f"Saved variables to: {json_path} and {csv_path}")
-            for variable in variables[:5]:
-                print(f"- Variable Name: {variable.variable_name}, ID: {variable.variable_id}")
+                    ) as client:
+                        for v in variables:
+                            writer.writerow(
+                                [
+                                    v.variable_id,
+                                    v.variable_name,
+                                    v.form_id,
+                                    v.form_key,
+                                    v.form_name,
+                                    v.label,
+                                    v.variable_type,
+                                    v.sequence,
+                                    v.revision,
+                                    v.disabled,
+                                    v.deleted,
+                                    v.date_created,
+                                    v.date_modified,
+                                ]
+                        ) as client:
+                    print(f"Saved variables to: {json_path} and {csv_path}")
+                for variable in variables[:5]:
+                    print(f"- Variable Name: {variable.variable_name}, ID: {variable.variable_id}")
 
     except Exception as e:
         print(f"Error: {e}")

@@ -49,12 +49,12 @@ def run_headless(
     layout = builder.build()
 
     logger.info("Submitting payload...")
-    client = FormDesignerClient(base_url, phpsessid)
 
     try:
-        resp = client.save_form(
-            csrf_key=csrf, form_id=form_id, community_id=comm_id, revision=revision, layout=layout
-        )
+        with FormDesignerClient(base_url, phpsessid) as client:
+            resp = client.save_form(
+                csrf_key=csrf, form_id=form_id, community_id=comm_id, revision=revision, layout=layout
+            )
         logger.info("Success! Server response:")
         print(resp)
     except Exception as e:
