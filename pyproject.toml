@@ -159,6 +159,7 @@ dependencies = [
     "pandas-stubs",
     "types-requests",
     "pydantic",
+    "pylint",
     "click>=8.3.3",
     "vulture",
     "imednet @ {root:uri}/packages/core",
@@ -176,6 +177,7 @@ typos-check = "typos {args:packages}"
 semgrep-check = "semgrep scan --config p/security-audit --error {args:packages}"
 audit = "pip-audit -s osv --timeout 60"
 secrets = "detect-secrets-hook --baseline .secrets.baseline {args:packages}"
+symilar-check = "pylint --disable=all --enable=duplicate-code --fail-under=9.0 {args:packages}"
 vulture-check = "vulture packages vulture_whitelist.py"
 all = [
     "fmt",
@@ -185,6 +187,7 @@ all = [
     "semgrep-check",
     "audit",
     "secrets",
+    "symilar-check",
     "vulture-check"
 ]
 
@@ -200,3 +203,10 @@ apache-airflow-providers-imednet = { workspace = true }
 
 
 
+
+[tool.pylint.SIMILARITIES]
+ignore-comments = true
+ignore-docstrings = true
+ignore-imports = true
+ignore-signatures = true
+min-similarity-lines = 15
