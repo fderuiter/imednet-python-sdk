@@ -4,18 +4,20 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-import imednet.endpoints.codings as codings
-import imednet.endpoints.forms as forms
-import imednet.endpoints.intervals as intervals
-import imednet.endpoints.jobs as jobs
-import imednet.endpoints.queries as queries
-import imednet.endpoints.record_revisions as record_revisions
-import imednet.endpoints.records as records
-import imednet.endpoints.sites as sites
-import imednet.endpoints.subjects as subjects
-import imednet.endpoints.users as users
-import imednet.endpoints.variables as variables
-import imednet.endpoints.visits as visits
+from imednet.endpoints import (
+    codings,
+    forms,
+    intervals,
+    jobs,
+    queries,
+    record_revisions,
+    records,
+    sites,
+    subjects,
+    users,
+    variables,
+    visits,
+)
 from imednet.errors import NotFoundError
 from imednet.models.codings import Coding
 from imednet.models.forms import Form

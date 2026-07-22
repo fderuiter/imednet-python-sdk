@@ -84,31 +84,24 @@ class _FakeStreamlit:
 
     def markdown(self, body: str, **kwargs: Any) -> None:
         """Helper function to markdown."""
-        pass
 
     def header(self, body: str, **kwargs: Any) -> None:
         """Helper function to header."""
-        pass
 
     def altair_chart(self, chart: Any, **kwargs: Any) -> None:
         """Helper function to altair chart."""
-        pass
 
     def error(self, body: Any, *args: Any, **kwargs: Any) -> None:
         """Helper function to error."""
-        pass
 
     def exception(self, exception: Any, *args: Any, **kwargs: Any) -> None:
         """Helper function to exception."""
-        pass
 
     def warning(self, body: Any, *args: Any, **kwargs: Any) -> None:
         """Helper function to warning."""
-        pass
 
     def info(self, body: Any, *args: Any, **kwargs: Any) -> None:
         """Helper function to info."""
-        pass
 
     def expander(self, label: str, **kwargs: Any) -> _FakeContextManager:
         """Helper function to expander."""
@@ -116,7 +109,6 @@ class _FakeStreamlit:
 
     def dataframe(self, data: Any, **kwargs: Any) -> None:
         """Helper function to dataframe."""
-        pass
 
 
 class _FakePageStreamlit:
@@ -161,7 +153,6 @@ class _FakeContextManager:
 
     def __exit__(self, *args: Any) -> None:
         """Helper function to   exit  ."""
-        pass
 
 
 class _FakeCacheDataDecorator:
@@ -175,7 +166,6 @@ class _FakeCacheDataDecorator:
 
     def clear(self) -> None:
         """Helper function to clear."""
-        pass
 
 
 class _FakeDashboardStreamlit(_FakePageStreamlit):
@@ -229,7 +219,6 @@ class _FakeDashboardStreamlit(_FakePageStreamlit):
 
     def rerun(self) -> None:
         """Helper function to rerun."""
-        pass
 
     def text_input(self, label: str, **kwargs: Any) -> str:
         """Helper function to text input."""

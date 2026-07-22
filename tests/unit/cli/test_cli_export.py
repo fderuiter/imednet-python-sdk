@@ -40,7 +40,7 @@ class CliRunner:
         return Result(exit_code, out.getvalue(), err.getvalue())
 
 
-import imednet.cli as cli
+from imednet import cli
 from imednet.integrations import export as export_mod
 
 

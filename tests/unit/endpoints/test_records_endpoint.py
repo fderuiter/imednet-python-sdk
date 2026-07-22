@@ -2,7 +2,7 @@
 
 import pytest
 
-import imednet.endpoints.records as records
+from imednet.endpoints import records
 from imednet.errors import ClientError, NotFoundError, ValidationError
 from imednet.models.records import Record
 from imednet.models.variables import Variable

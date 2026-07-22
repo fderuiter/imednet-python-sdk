@@ -15,12 +15,8 @@ class RecordRevisionsOperationDef:
 class RecordRevisionsEndpoint(RecordRevisionsOperationDef, EdcSyncListGetEndpoint[RecordRevision]):  # type: ignore[misc]
     """Synchronous endpoint for managing Record Revisions."""
 
-    pass
-
 
 class AsyncRecordRevisionsEndpoint(  # type: ignore[misc]
     RecordRevisionsOperationDef, EdcAsyncListGetEndpoint[RecordRevision]
 ):
     """Asynchronous endpoint for managing Record Revisions."""
-
-    pass

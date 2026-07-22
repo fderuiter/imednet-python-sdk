@@ -32,7 +32,6 @@ class _FakeContextManager:
 
     def __exit__(self, *args: Any) -> None:
         """Helper function to   exit  ."""
-        pass
 
 
 class _FakeCacheDataDecorator:
@@ -46,7 +45,6 @@ class _FakeCacheDataDecorator:
 
     def clear(self) -> None:
         """Helper function to clear."""
-        pass
 
 
 class _FakeStreamlit:
@@ -67,14 +65,12 @@ class _FakeStreamlit:
 
     def title(self, value: str) -> None:
         """Helper function to title."""
-        pass
 
     def header(self, value: str) -> None:
         pass
 
     def subheader(self, value: str) -> None:
         """Helper function to subheader."""
-        pass
 
     def info(self, value: str) -> None:
         """Helper function to info."""
@@ -86,11 +82,9 @@ class _FakeStreamlit:
 
     def warning(self, value: str) -> None:
         """Helper function to warning."""
-        pass
 
     def markdown(self, value: str) -> None:
         """Helper function to markdown."""
-        pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
         """Helper function to button."""
@@ -133,11 +127,9 @@ class _FakeStreamlit:
 
     def altair_chart(self, chart: Any, **kwargs: Any) -> None:
         """Helper function to altair chart."""
-        pass
 
     def rerun(self) -> None:
         """Helper function to rerun."""
-        pass
 
 
 def _make_fake_components_module(fake_st: _FakeStreamlit) -> ModuleType:

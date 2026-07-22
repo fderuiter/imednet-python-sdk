@@ -9,7 +9,5 @@ from imednet.models.engine import ModelEngine
 class RecordRevision(ImednetBaseModel):
     """Historical version of a record including change reason and user."""
 
-    pass
-
 
 RecordRevision = ModelEngine.get_model('RecordRevision', RecordRevision)

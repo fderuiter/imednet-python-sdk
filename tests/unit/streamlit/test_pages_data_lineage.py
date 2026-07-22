@@ -28,12 +28,10 @@ class _FakeContextManager:
 
     def __exit__(self, *args: Any) -> None:
         """Helper function to   exit  ."""
-        pass
 
     # Make it usable as a column mock with common widget methods
     def metric(self, label: str, value: Any, **kwargs: Any) -> None:
         """Helper function to metric."""
-        pass
 
     def button(self, label: str, **kwargs: Any) -> bool:
         """Helper function to button."""
@@ -49,7 +47,6 @@ class _FakeContextManager:
 
     def dataframe(self, df: Any, **kwargs: Any) -> None:
         """Helper function to dataframe."""
-        pass
 
 
 class _FakeStreamlit:
@@ -70,18 +67,15 @@ class _FakeStreamlit:
 
     def title(self, value: str) -> None:
         """Helper function to title."""
-        pass
 
     def header(self, value: str) -> None:
         pass
 
     def subheader(self, value: str) -> None:
         """Helper function to subheader."""
-        pass
 
     def markdown(self, value: str, **kwargs: Any) -> None:
         """Helper function to markdown."""
-        pass
 
     def info(self, value: str) -> None:
         """Helper function to info."""
@@ -101,7 +95,6 @@ class _FakeStreamlit:
 
     def divider(self) -> None:
         """Helper function to divider."""
-        pass
 
     def json(self, value: Any) -> None:
         """Helper function to json."""
@@ -157,11 +150,9 @@ class _FakeStreamlit:
 
     def caption(self, value: str) -> None:
         """Helper function to caption."""
-        pass
 
     def progress(self, value: float) -> None:
         """Helper function to progress."""
-        pass
 
 
 def _make_fake_records() -> list[Any]:
@@ -242,7 +233,6 @@ def _run_data_lineage(
 
         def __init__(self, sdk: object) -> None:
             """Initialize the test object."""
-            pass
 
         def load_records(self, sk: str) -> list[Any]:
             """Helper function to load records."""

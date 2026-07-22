@@ -56,8 +56,8 @@ src = ["packages/core/src", "packages/plugins-workflows/src", "packages/provider
 known-first-party = ["imednet", "imednet_workflows", "apache_airflow_providers_imednet", "imednet_streamlit"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "SLF", "D", "S", "B", "C4", "SIM", "UP", "PT", "RET", "RUF"]
-ignore = ["ANN", "S101", "E501", "E402", "E701", "E713", "F403", "F405", "N802", "F811"]
+select = ["PL", "PIE", "FURB", "E", "F", "I", "N", "SLF", "D", "S", "B", "C4", "SIM", "UP", "PT", "RET", "RUF"]
+ignore = ["FURB110", "PLC0105", "PLC0415", "PLE0704", "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR2004", "PLW0108", "PLW0603", "PLW1510", "S106", "ANN", "S101", "E501", "E402", "E701", "E713", "F403", "F405", "N802", "F811"]
 
 [tool.ruff.lint.pep8-naming]
 classmethod-decorators = ["field_validator", "model_validator"]

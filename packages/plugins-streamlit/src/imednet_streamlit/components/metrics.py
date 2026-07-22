@@ -17,8 +17,7 @@ except ImportError:
 
 
 class MetricConfig(TypedDict):
-    """Configuration for a KPI metric."""
-
+    """Configuration definition for a single metric tile."""
     label: str
     value: int | float | str
     delta: NotRequired[str | None]

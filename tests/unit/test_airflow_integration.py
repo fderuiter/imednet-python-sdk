@@ -38,7 +38,6 @@ def _setup_airflow(monkeypatch):
 
         def __init__(self, **kwargs):
             """Initialize the test object."""
-            pass
 
     hooks_mod.BaseHook = DummyBaseHook
     models_mod.BaseOperator = DummyBaseOperator
@@ -512,7 +511,6 @@ def _setup_airflow_for_dag(monkeypatch):
 
         def __init__(self, *args, **kwargs):
             """Initialize the test object."""
-            pass
 
         def __enter__(self):
             """Helper function to   enter  ."""
@@ -520,7 +518,6 @@ def _setup_airflow_for_dag(monkeypatch):
 
         def __exit__(self, *args):
             """Helper function to   exit  ."""
-            pass
 
     class _DummyTaskDecorator:
         """Thin shim for ``@task`` and ``@task(...)``."""
@@ -555,7 +552,6 @@ def _setup_airflow_for_dag(monkeypatch):
 
         def __init__(self, **kwargs):
             """Initialize the test object."""
-            pass
 
         @classmethod
         def partial(cls, **kwargs):
@@ -566,7 +562,6 @@ def _setup_airflow_for_dag(monkeypatch):
 
                 def expand_kwargs(self, targets):
                     """Helper function to expand kwargs."""
-                    pass
 
             return _PartialOp()
 
@@ -575,7 +570,6 @@ def _setup_airflow_for_dag(monkeypatch):
 
         def __init__(self, conn_id: str = "imednet_default") -> None:
             """Initialize the test object."""
-            pass
 
         def list_study_keys(self):
             """Helper function to list study keys."""

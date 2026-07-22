@@ -17,10 +17,6 @@ class SitesOperationDef:
 class SitesEndpoint(SitesOperationDef, EdcSyncListGetEndpoint[Site]):  # type: ignore[misc]
     """Synchronous endpoint for managing Sites."""
 
-    pass
-
 
 class AsyncSitesEndpoint(SitesOperationDef, EdcAsyncListGetEndpoint[Site]):  # type: ignore[misc]
     """Asynchronous endpoint for managing Sites."""
-
-    pass

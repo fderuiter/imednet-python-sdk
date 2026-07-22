@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any
 from pydantic import BaseModel, Field
 
 from imednet.spi.models import Record, Variable
-from imednet.spi.utils import is_boolean_token, parse_iso_datetime
+from imednet.spi.utils import is_boolean_token
 from imednet.spi.validation import SchemaCache
 
 from .cached_loader import CachedRecordsLoader
@@ -278,12 +278,11 @@ def _is_date_value(value: Any) -> bool:
     normalised = value.strip()
     if not normalised:
         return False
+
+    from imednet.spi.utils import parse_iso_datetime
+
     try:
         parse_iso_datetime(normalised)
         return True
     except ValueError:
-        try:
-            date.fromisoformat(normalised)
-        except ValueError:
-            return False
-        return True
+        return False

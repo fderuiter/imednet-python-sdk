@@ -340,11 +340,9 @@ class TabularSQLSink(ExportSink):
 
     def flush(self) -> None:
         """Flush the sink."""
-        pass
 
     def close(self) -> None:
         """Close the sink."""
-        pass
 
 
 def _tabular_export(
@@ -380,7 +378,6 @@ def _tabular_export(
 
     import itertools
     from collections.abc import Iterator
-
     def _chunk_iterator(iterator: Iterator[Any], size: int) -> Iterator[list[Any]]:
         while True:
             chunk = list(itertools.islice(iterator, size))
