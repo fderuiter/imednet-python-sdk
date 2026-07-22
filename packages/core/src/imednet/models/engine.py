@@ -1,3 +1,5 @@
+"""Engine module."""
+
 """Dynamic model generation engine based on unified contract schemas."""
 
 import os

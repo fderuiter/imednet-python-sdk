@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from importlib import import_module
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal, cast
 
 from imednet.core.operations.executor import UniversalExecutor
 from imednet.errors import ExportBatchError
@@ -20,7 +20,7 @@ from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality
 try:
     import pandas as pd
 except ImportError:
-    pd = None
+    pd = None  # type: ignore[assignment]
 from imednet.constants import MAX_SQLITE_COLUMNS
 from imednet.utils import sanitize_csv_formula
 from imednet.utils.security import global_sensitivity_registry, mask_clinical_phi
@@ -73,7 +73,7 @@ def _to_sql_with_chunking(
     table: str,
     engine: Any,
     *,
-    if_exists: str,
+    if_exists: Literal["fail", "replace", "append", "delete_rows"],
     **kwargs: Any,
 ) -> None:
     """Write ``df`` to ``table`` splitting columns when using SQLite.
@@ -300,7 +300,11 @@ class TabularSQLSink(ExportSink):
             checksum = hashlib.sha256(df_str.encode('utf-8')).hexdigest()
 
             _to_sql_with_chunking(
-                df, self.table, self.engine, if_exists=if_exists, **self._cfg.pandas_kwargs
+                df,
+                self.table,
+                self.engine,
+                if_exists=cast(Literal["fail", "replace", "append", "delete_rows"], if_exists),
+                **self._cfg.pandas_kwargs,
             )
 
             rows_loaded = len(df)
@@ -542,7 +546,7 @@ def export_to_sql(
     study_key: str,
     table: str,
     conn_str: str,
-    if_exists: str = "replace",
+    if_exists: Literal["fail", "replace", "append", "delete_rows"] = "replace",
     *,
     use_labels_as_columns: bool = False,
     variable_whitelist: list[str] | None = None,
@@ -715,7 +719,7 @@ def export_to_sql_by_form(
     sdk: ImednetSDK,
     study_key: str,
     conn_str: str,
-    if_exists: str = "replace",
+    if_exists: Literal["fail", "replace", "append", "delete_rows"] = "replace",
     *,
     use_labels_as_columns: bool = False,
     variable_whitelist: list[str] | None = None,

@@ -74,7 +74,7 @@ dynamic-mapping pattern: keep static settings (for example ``destination`` and
 .. testcode::
 
    from typing import Any
-   from airflow.decorators import task  # type: ignore[attr-defined]
+   from airflow.decorators import task
    from apache_airflow_providers_imednet import ImednetExportOperator, ImednetHook
 
    @task

@@ -6,7 +6,10 @@ from collections.abc import Sequence
 from typing import Any
 
 try:  # pragma: no cover - optional Airflow dependency
-    from airflow.sensors.base import BaseSensorOperator
+    try:
+        from airflow.sdk.bases.sensor import BaseSensorOperator
+    except ImportError:
+        from airflow.sensors.base import BaseSensorOperator
 except (ImportError, ModuleNotFoundError):  # pragma: no cover - placeholder fallback
 
     class BaseSensorOperator:  # type: ignore

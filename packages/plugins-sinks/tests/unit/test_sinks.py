@@ -187,9 +187,7 @@ class TestNeo4jExportSink:
         # Make session.run always fail
         driver.session.return_value.__enter__.return_value.run.side_effect = RuntimeError("db down")
         monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
-        import time
-
-        monkeypatch.setattr(time, "sleep", lambda _: None)
+        monkeypatch.setattr("time.sleep", lambda _: None)
 
         from imednet_sinks.graph import Neo4jExportSink, Neo4jSinkConfig
 
@@ -387,9 +385,7 @@ class TestMongoDbExportSink:
         pymongo, client, collection = _fake_pymongo_module()  # noqa: RUF059
         collection.bulk_write.side_effect = RuntimeError("mongo down")
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
-        import time
-
-        monkeypatch.setattr(time, "sleep", lambda _: None)
+        monkeypatch.setattr("time.sleep", lambda _: None)
 
         from imednet_sinks.document import MongoDbExportSink, MongoDbSinkConfig
 
@@ -641,9 +637,7 @@ class TestSnowflakeExportSink:
             return MagicMock()
 
         monkeypatch.setattr(wh_mod, "_require_optional_dep", fake_require)
-        import time
-
-        monkeypatch.setattr(time, "sleep", lambda _: None)
+        monkeypatch.setattr("time.sleep", lambda _: None)
 
         cfg = SnowflakeSinkConfig(
             study_key="STUDY1",

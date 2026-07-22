@@ -5,19 +5,18 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Protocol
 
+from imednet.utils.validators import is_boolean_token, parse_bool
+
 try:
     import pyarrow as pa
 except ImportError:  # pragma: no cover - exercised when optional dependency is absent
-    pa = None
+    pa: Any = None  # type: ignore[no-redef]
 
 
 class _ModelDumpable(Protocol):
     """Protocol for objects that can be dumped to a dictionary (e.g., Pydantic models)."""
 
     def model_dump(self) -> dict[str, Any]: ...
-
-
-from imednet.utils.validators import _FALSE_LOWER, _TRUE_LOWER
 
 
 def _normalize_datetime(value: datetime) -> datetime:
@@ -80,12 +79,7 @@ def _coerce_value(value: Any, target_type: pa.DataType) -> Any:
         return value if isinstance(value, datetime) else None
     if pa.types.is_boolean(target_type):
         if isinstance(value, str):
-            lowered = value.strip().lower()
-            if lowered in _TRUE_LOWER:
-                return True
-            if lowered in _FALSE_LOWER:
-                return False
-            return None
+            return parse_bool(value) if is_boolean_token(value) else None
         return bool(value)
     if pa.types.is_floating(target_type):
         try:
@@ -136,9 +130,37 @@ def to_arrow_table(
     for name in column_names:
         values = [_normalize_value(record.get(name)) for record in records]
         target_type = schema.field(name).type if schema is not None else _infer_type(values)
-        arrays.append(
-            pa.array([_coerce_value(value, target_type) for value in values], type=target_type)
-        )
+
+        # Optimize by avoiding pa.types.* checks in a tight loop
+        coerced_values: list[Any]
+        if pa.types.is_null(target_type):
+            coerced_values = [None] * len(values)
+        elif pa.types.is_timestamp(target_type):
+            coerced_values = [v if isinstance(v, datetime) else None for v in values]
+        elif pa.types.is_boolean(target_type):
+            # Fast path for boolean coercion leveraging core validator
+            coerced_values = []
+            for value in values:
+                if value is None:
+                    coerced_values.append(None)
+                elif isinstance(value, str):
+                    coerced_values.append(parse_bool(value) if is_boolean_token(value) else None)
+                else:
+                    coerced_values.append(bool(value))
+        elif pa.types.is_floating(target_type):
+            coerced_values = []
+            for value in values:
+                if value is None:
+                    coerced_values.append(None)
+                else:
+                    try:
+                        coerced_values.append(float(value))
+                    except (TypeError, ValueError):
+                        coerced_values.append(None)
+        else:
+            coerced_values = [None if v is None else v for v in values]
+
+        arrays.append(pa.array(coerced_values, type=target_type))
 
     if schema is not None:
         return pa.Table.from_arrays(arrays, schema=schema)

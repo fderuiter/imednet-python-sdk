@@ -22,6 +22,13 @@ imednet.utils.dates module
    :members:
    :show-inheritance:
 
+imednet.utils.db module
+-----------------------
+
+.. automodule:: imednet.utils.db
+   :members:
+   :show-inheritance:
+
 imednet.utils.filters module
 ----------------------------
 
@@ -47,6 +54,13 @@ imednet.utils.pandas module
 ---------------------------
 
 .. automodule:: imednet.utils.pandas
+   :members:
+   :show-inheritance:
+
+imednet.utils.secrets module
+----------------------------
+
+.. automodule:: imednet.utils.secrets
    :members:
    :show-inheritance:
 

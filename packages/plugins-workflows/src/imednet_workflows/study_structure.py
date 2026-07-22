@@ -1,3 +1,7 @@
+"""Study structure module."""
+
+from typing import Any
+
 """Workflow for retrieving and aggregating study structural metadata."""
 
 import asyncio

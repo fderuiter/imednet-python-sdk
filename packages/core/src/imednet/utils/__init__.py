@@ -1,3 +1,7 @@
+"""Utils init module."""
+
+from typing import Any
+
 """Re-exports utility functions for easier access."""
 
 from importlib import import_module
@@ -23,9 +27,6 @@ _LAZY_ATTRS: dict[str, tuple[str, str]] = {
     "sanitize_csv_formula": ("imednet.utils.security", "sanitize_csv_formula"),
     "validate_partition_key": ("imednet.utils.security", "validate_partition_key"),
 }
-
-
-from typing import Any
 
 
 def __getattr__(name: str) -> Any:
