@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from importlib import import_module
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal, cast
 
 from imednet.core.operations.executor import UniversalExecutor
 from imednet.errors import ExportBatchError
@@ -73,7 +73,7 @@ def _to_sql_with_chunking(
     table: str,
     engine: Any,
     *,
-    if_exists: str,
+    if_exists: Literal["fail", "replace", "append", "delete_rows"],
     **kwargs: Any,
 ) -> None:
     """Write ``df`` to ``table`` splitting columns when using SQLite.
@@ -88,12 +88,12 @@ def _to_sql_with_chunking(
             chunk.to_sql(
                 f"{table}_part{i}",
                 engine,
-                if_exists=if_exists,  # type: ignore[arg-type]
+                if_exists=if_exists,
                 index=False,
                 **kwargs,
             )
     else:
-        df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)  # type: ignore[arg-type]
+        df.to_sql(table, engine, if_exists=if_exists, index=False, **kwargs)
 
 
 def _records_df(
@@ -300,7 +300,11 @@ class TabularSQLSink(ExportSink):
             checksum = hashlib.sha256(df_str.encode('utf-8')).hexdigest()
 
             _to_sql_with_chunking(
-                df, self.table, self.engine, if_exists=if_exists, **self._cfg.pandas_kwargs
+                df,
+                self.table,
+                self.engine,
+                if_exists=cast(Literal["fail", "replace", "append", "delete_rows"], if_exists),
+                **self._cfg.pandas_kwargs,
             )
 
             rows_loaded = len(df)
@@ -774,7 +778,7 @@ def export_to_sql_by_form(
             df,
             form.form_key or "",
             engine,
-            if_exists=if_exists,
+            if_exists=cast(Literal["fail", "replace", "append", "delete_rows"], if_exists),
             **kwargs,
         )
 
