@@ -12,34 +12,35 @@ from imednet_streamlit.components import (
     line_chart,
     paginated_slice,
     pie_chart,
-    render_triage_drawer,
 )
+from imednet_streamlit.components.triage_drawer import render_triage_drawer
 from imednet_workflows.triage_store import TriageStore
 
+st.set_page_config(page_title="Component Gallery", layout="wide")
 st.title("Component Gallery")
+
 st.markdown(
-    "Live preview gallery showcasing functional grids, charts, and drawers using mock datasets."
+    "A showcase of the reusable UI components provided by the Streamlit plugin. "
+    "Use this gallery to preview styles and interactions before integrating them into workflows."
 )
 
 st.header("Charts")
 
 # Mock data for charts
-np.random.seed(42)
-months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
-data = {
-    "Month": months,
-    "Enrollment": np.random.randint(10, 50, size=len(months)),
-    "Dropout": np.random.randint(0, 10, size=len(months)),
-    "Category": ["A", "B", "C", "A", "B", "C"],
-}
-df_charts = pd.DataFrame(data)
+df_charts = pd.DataFrame(
+    {
+        "Month": ["Jan", "Feb", "Mar", "Apr"] * 2,
+        "Category": ["A", "A", "A", "A", "B", "B", "B", "B"],
+        "Enrollment": [10, 25, 45, 60, 5, 15, 30, 40],
+    }
+)
 
 col1, col2 = st.columns(2)
 with col1:
     st.subheader("Bar Chart")
     st.altair_chart(
         bar_chart(
-            df_charts, x="Month", y="Enrollment", color="Category", title="Monthly Enrollment"
+            df_charts, x="Month", y="Enrollment", color="Category", title="Enrollment by Month"
         ),
         use_container_width=True,
     )
@@ -79,10 +80,14 @@ st.dataframe(
 )
 
 
+import tempfile
+
 st.header("Triage Drawer")
-# Initialize a mock in-memory triage store and item
-mock_db_path = f"file:mock_triage_{uuid.uuid4().hex}?mode=memory&cache=shared"
+# Initialize a mock temporary triage store and item
+_temp_dir = tempfile.mkdtemp()
+mock_db_path = f"{_temp_dir}/mock_triage_{uuid.uuid4().hex}.sqlite"
 store = TriageStore(db_path=mock_db_path)
+store._initialize_schema()  # noqa: SLF001
 item = TriageItem(
     item_id=str(uuid.uuid4()),
     study_key="MOCK_STUDY",
