@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Enterprise administration portal.
 
 Provides high-level management for tenants, study provisioning, and

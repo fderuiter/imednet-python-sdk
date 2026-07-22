@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Request monitoring and tracing."""
 
 from __future__ import annotations

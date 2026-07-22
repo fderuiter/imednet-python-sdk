@@ -31,11 +31,10 @@ def get_imports_from_file(file_path: Path) -> set[str]:
         if isinstance(node, ast.Import):
             for name in node.names:
                 imports.add(name.name)
-        elif isinstance(node, ast.ImportFrom):
-            if node.module:
-                imports.add(node.module)
-                for name in node.names:
-                    imports.add(f"{node.module}.{name.name}")
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            imports.add(node.module)
+            for name in node.names:
+                imports.add(f"{node.module}.{name.name}")
     return imports
 
 

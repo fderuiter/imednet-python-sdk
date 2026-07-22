@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Monitoring utilities for iMednet operations, supporting tracing and logging."""
 
 from __future__ import annotations

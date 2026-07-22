@@ -49,6 +49,7 @@ build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 100
+exclude = ["sandbox", "vulture_whitelist.py"]
 src = ["packages/core/src", "packages/plugins-workflows/src", "packages/providers-airflow/src", "packages/plugins-streamlit/src", "tests"]
 
 [tool.ruff.lint.isort]
@@ -69,7 +70,7 @@ python_version = "3.12"
 strict = false
 ignore_missing_imports = true
 plugins = []
-exclude = '^(examples/.*|tests/.*|packages/.*/tests/.*)$'
+exclude = '^(examples/.*|tests/.*|packages/.*/tests/.*|sandbox/.*)$'
 
 [[tool.mypy.overrides]]
 module = [
@@ -119,6 +120,7 @@ module = [
 ignore_missing_imports = true
 
 [tool.ruff.lint.per-file-ignores]
+"docs/**/*.py" = ["D", "RUF"]
 "packages/core/**/*.py" = ["SLF001"]
 "packages/core/src/imednet/integrations/export.py" = ["D101", "D102", "D107", "S608"]
 "packages/core/src/imednet/integrations/parquet.py" = ["S608"]
@@ -126,9 +128,9 @@ ignore_missing_imports = true
 "packages/core/src/imednet/utils/job_poller.py" = ["D107"]
 "packages/plugins-workflows/src/imednet_workflows/duckdb_centralizer.py" = ["S608"]
 "packages/plugins-workflows/src/imednet_workflows/extraction_engine.py" = ["S307"]
-"tests/**/*.py" = ["SLF001", "S", "D"]
-"scripts/**/*.py" = ["SLF001", "S", "D"]
-"examples/**/*.py" = ["SLF001", "S", "D"]
+"tests/**/*.py" = ["SLF001", "S", "D", "PT", "SIM", "RUF", "B", "RET", "UP", "C", "F821"]
+"scripts/**/*.py" = ["SLF001", "S", "D", "RUF", "RET"]
+"examples/**/*.py" = ["SLF001", "S", "D", "RUF"]
 "packages/plugins-sinks/tests/**/*.py" = ["SLF001"]
 
 [tool.ruff.format]

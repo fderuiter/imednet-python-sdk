@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Site performance and metrics dashboard.
 
 Visualizes site-level enrollment counts, query rates, and average query

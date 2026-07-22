@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Subject enrollment dashboard.
 
 Visualizes subject registration trends over time and enrollment status

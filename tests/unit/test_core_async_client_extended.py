@@ -36,7 +36,7 @@ async def test_async_request_retries():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "status,exc",
+    ("status", "exc"),
     [
         (400, errors.ValidationError),
         (401, errors.AuthenticationError),

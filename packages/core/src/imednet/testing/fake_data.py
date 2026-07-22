@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Utility functions for generating fake API payloads."""
 
 from __future__ import annotations

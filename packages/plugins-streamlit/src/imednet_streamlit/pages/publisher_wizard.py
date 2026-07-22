@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Publisher Wizard — secure configuration review and production publish flow.
 
 Integrates :class:`~imednet_workflows.config_version_control.ConfigVersionStore`

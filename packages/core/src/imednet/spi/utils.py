@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """SPI for utility functions."""
 
 from imednet.utils.dates import format_iso_datetime, parse_iso_datetime

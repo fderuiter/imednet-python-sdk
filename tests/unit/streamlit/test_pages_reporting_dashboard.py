@@ -332,7 +332,8 @@ def _run_page(*, multiselect_values: dict[str, list[Any]] | None = None) -> _Fak
         sys.modules["imednet_workflows.query_management"] = fake_query_workflow_module
         module_name = "imednet_streamlit.pages.reporting_dashboard"
         module_spec = importlib.util.spec_from_file_location(module_name, PAGE_PATH)
-        assert module_spec is not None and module_spec.loader is not None
+        assert module_spec is not None
+        assert module_spec.loader is not None
         module = importlib.util.module_from_spec(module_spec)
         sys.modules[module_name] = module
         module_spec.loader.exec_module(module)
@@ -613,7 +614,8 @@ def _run_page_extended(
         sys.modules["imednet_workflows.query_management"] = fake_query_workflow_module
         module_name = "imednet_streamlit.pages.reporting_dashboard"
         module_spec = importlib.util.spec_from_file_location(module_name, PAGE_PATH)
-        assert module_spec is not None and module_spec.loader is not None
+        assert module_spec is not None
+        assert module_spec.loader is not None
         module = importlib.util.module_from_spec(module_spec)
         sys.modules[module_name] = module
         module_spec.loader.exec_module(module)

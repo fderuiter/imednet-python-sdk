@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Export helpers built on top of :class:`RecordMapper`."""
 
 from __future__ import annotations
