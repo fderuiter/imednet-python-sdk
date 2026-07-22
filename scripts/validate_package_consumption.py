@@ -93,7 +93,7 @@ def validate_scenario(name, install_items, smoke_checks, dist_dir: Path):
                     res = run([str(python_bin), "-c", cmd])
                 elif cmd.startswith("imednet "):
                     print(f"Checking command: {cmd} (expect_fail={expect_fail})")
-                    full_cmd = [str(imednet_bin)] + cmd.split(" ")[1:]
+                    full_cmd = [str(imednet_bin), *cmd.split(" ")[1:]]
                     res = run(full_cmd)
                 else:
                     print(f"Running custom command: {cmd} (expect_fail={expect_fail})")

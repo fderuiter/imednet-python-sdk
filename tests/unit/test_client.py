@@ -25,7 +25,7 @@ def test_get_success(http_client, respx_mock_client, sample_data):
 
 
 @pytest.mark.parametrize(
-    "status,exc",
+    ("status", "exc"),
     [
         (400, BadRequestError),
         (401, UnauthorizedError),

@@ -11,20 +11,11 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from threading import RLock
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from imednet.spi.models import TriageAnnotation, TriageHistoryEntry, TriageItem, TriageStatus
-from imednet.spi.utils import sqlite_connection
+from imednet.spi.utils import redact_sensitive_payload, redact_sensitive_text, sqlite_connection
 
 _SAFE_SQL_IDENTIFIER = re.compile(r"^[A-Za-z0-9._:-]+$")
-_SENSITIVE_QUERY_KEYS = {"api_key", "password", "secret", "security_key", "token"}
-_SENSITIVE_PATTERN_KEYS = ("api[_-]?key", "password", "secret", "security[_-]?key", "token")
-_SENSITIVE_QUOTED_PATTERN = re.compile(
-    rf"(?i)\b({'|'.join(_SENSITIVE_PATTERN_KEYS)})\b(\s*[:=]\s*)([\"'])(.*?)\3"
-)
-_SENSITIVE_UNQUOTED_PATTERN = re.compile(
-    rf"(?i)\b({'|'.join(_SENSITIVE_PATTERN_KEYS)})\b(\s*[:=]\s*)([^\s,;]+)"
-)
 _LATEST_SCHEMA_VERSION = 1
 _SQLITE_BUSY_TIMEOUT_MS = 30_000
 _RETRY_BASE_DELAY_SECONDS = 0.05
@@ -538,30 +529,8 @@ class TriageStore:
         """Redact sensitive information from a SQLite connection string."""
         if "://" not in target and not target.startswith("file:"):
             return target
-
-        split = urlsplit(target)
-        netloc = split.netloc
-        if "@" in netloc:
-            _, host = netloc.rsplit("@", 1)
-            netloc = f"***@{host}"
-
-        query_parts = parse_qsl(split.query, keep_blank_values=True)
-        redacted_query = urlencode(
-            [
-                (key, "***" if key.lower() in _SENSITIVE_QUERY_KEYS else value)
-                for key, value in query_parts
-            ],
-            doseq=True,
-        )
-        return urlunsplit((split.scheme, netloc, split.path, redacted_query, split.fragment))
+        return redact_sensitive_text(target)
 
     def _redact_error_text(self, message: str) -> str:
         """Redact sensitive information from an error message."""
-        redacted = _SENSITIVE_QUOTED_PATTERN.sub(
-            lambda match: f"{match.group(1)}{match.group(2)}***",
-            message,
-        )
-        return _SENSITIVE_UNQUOTED_PATTERN.sub(
-            lambda match: f"{match.group(1)}{match.group(2)}***",
-            redacted,
-        )
+        return redact_sensitive_payload(message)

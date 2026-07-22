@@ -90,8 +90,7 @@ def test_plugin_load_error_is_imednet_error() -> None:
 
 def _make_sdk() -> _BaseSDK:
     """Return a _BaseSDK instance without triggering full ImednetSDK init."""
-    sdk = object.__new__(_BaseSDK)
-    return sdk
+    return object.__new__(_BaseSDK)
 
 
 # ---------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Test utilities for the iMedNet SDK.
 
 .. warning::

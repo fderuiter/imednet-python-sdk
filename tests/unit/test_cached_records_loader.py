@@ -9,8 +9,8 @@ from unittest.mock import MagicMock
 import pytest
 
 from imednet.models.records import Record
-from imednet_workflows.cached_loader import CachedRecordsLoader
 from imednet.spi.utils import get_sqlite_connection
+from imednet_workflows.cached_loader import CachedRecordsLoader
 
 
 def _record(record_id: int, modified_at: str) -> Record:

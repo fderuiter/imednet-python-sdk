@@ -14,11 +14,11 @@ from typing import TYPE_CHECKING, Any, Optional
 try:
     import pandas as pd
 except ImportError:
-    pd = None  # type: ignore
+    pd = None
 from pydantic import BaseModel, Field, ValidationError, create_model
 
-from imednet.spi.endpoints import Record as RecordModel  # type: ignore[attr-defined]
-from imednet.spi.endpoints import Variable as VariableModel  # type: ignore[attr-defined]
+from imednet.spi.endpoints import Record as RecordModel
+from imednet.spi.endpoints import Variable as VariableModel
 
 from .cached_loader import CachedRecordsLoader
 from .chunked_pipeline import DEFAULT_CHUNK_SIZE, ChunkedRecordPipeline, iter_chunks
@@ -97,7 +97,7 @@ class RecordMapper:
             return [], {}
 
         variable_keys = [v.variable_name for v in variables]
-        label_map = {v.variable_name: v.label for v in variables}  # type: ignore
+        label_map = {v.variable_name: v.label for v in variables}
         return variable_keys, label_map  # type: ignore
 
     def _build_record_model(
@@ -411,7 +411,7 @@ class RecordMapper:
                     for v in form.variables
                     if not variable_whitelist or v.variable_name in variable_whitelist
                 ]
-                label_map = {v.variable_name: v.label for v in form.variables}  # type: ignore
+                label_map = {v.variable_name: v.label for v in form.variables}
                 form_models[form.form_id] = self._build_record_model(var_keys, label_map)  # type: ignore
                 form_label_maps[form.form_id] = label_map  # type: ignore
 

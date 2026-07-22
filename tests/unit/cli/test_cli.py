@@ -124,7 +124,8 @@ def test_multiple_invocations_close_sdk(runner: CliRunner, sdk: MagicMock) -> No
     sdk.studies.list.return_value = []
     first = runner.invoke(cli.app, ["studies", "list"])
     second = runner.invoke(cli.app, ["studies", "list"])
-    assert first.exit_code == 0 and second.exit_code == 0
+    assert first.exit_code == 0
+    assert second.exit_code == 0
     assert sdk.close.call_count == 2
 
 
@@ -491,18 +492,7 @@ def test_export_sql_sqlite_single_table(
     monkeypatch.setitem(sys.modules, "sqlalchemy", sa_module)
     result = runner.invoke(
         cli.app,
-        [
-            "export",
-            "sql",
-            "STUDY",
-            "table",
-            "sqlite://",
-            "--vars",
-            "V1",
-            "--forms",
-            "5",
-        ]
-        + single,
+        ["export", "sql", "STUDY", "table", "sqlite://", "--vars", "V1", "--forms", "5", *single],
     )
     assert result.exit_code == 0
     sql_func.assert_called_once_with(
@@ -806,7 +796,7 @@ def test_workflows_stub_uninstalled_mocked(monkeypatch, capsys):
     with pytest.raises(SystemExit) as e:
         args.func(args)
     assert e.value.code == 1
-    out, err = capsys.readouterr()
+    _out, err = capsys.readouterr()
     assert "The workflows plugin is not installed" in err
 
 
@@ -823,7 +813,7 @@ def test_dashboard_stub_uninstalled_mocked(monkeypatch, capsys):
     with pytest.raises(SystemExit) as e:
         args.func(args)
     assert e.value.code == 1
-    out, err = capsys.readouterr()
+    _out, err = capsys.readouterr()
     assert "The dashboard plugin is not installed" in err
 
 
@@ -839,5 +829,5 @@ def test_plugin_load_exception(monkeypatch, capsys):
 
     get_parser()
 
-    out, err = capsys.readouterr()
+    _out, err = capsys.readouterr()
     assert "Warning: Failed to load CLI plugin 'broken': Test error loading plugin" in err

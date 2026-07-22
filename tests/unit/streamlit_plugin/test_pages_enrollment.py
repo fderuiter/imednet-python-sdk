@@ -276,9 +276,7 @@ def test_enrollment_page_empty_and_filters_and_refresh() -> None:
     # Stub the button to return True for refresh, and multiselect to return filters
     def _button(label: str, **kwargs: Any) -> bool:
         """Helper function to  button."""
-        if label == "🔄 Refresh Data":
-            return True
-        return False
+        return label == "🔄 Refresh Data"
 
     def _multiselect(label: str, options: Any, **kwargs: Any) -> list[Any]:
         """Helper function to  multiselect."""

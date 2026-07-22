@@ -74,14 +74,14 @@ class execute_operation(Generic[P, T]):  # noqa: N801
             @functools.wraps(func)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
                 op = func(instance, *args, **kwargs)
-                return await op.execute_async(instance._require_async_client())  # type: ignore
+                return await op.execute_async(instance._require_async_client())
 
             return async_wrapper
 
         @functools.wraps(func)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
             op = func(instance, *args, **kwargs)
-            return op.execute_sync(instance._require_sync_client())  # type: ignore
+            return op.execute_sync(instance._require_sync_client())
 
         return sync_wrapper
 
@@ -119,14 +119,14 @@ class execute_list(Generic[P, T]):  # noqa: N801
                 op = func(instance, *args, **kwargs)
                 return op.execute_async(
                     instance._require_async_client(), instance.ASYNC_PAGINATOR_CLS
-                )  # type: ignore
+                )
 
             return async_wrapper
 
         @functools.wraps(func)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> Iterator[T]:
             op = func(instance, *args, **kwargs)
-            return op.execute_sync(instance._require_sync_client(), instance.PAGINATOR_CLS)  # type: ignore
+            return op.execute_sync(instance._require_sync_client(), instance.PAGINATOR_CLS)
 
         return sync_wrapper
 
@@ -164,13 +164,13 @@ class execute_get(Generic[P, T]):  # noqa: N801
                 op = func(instance, *args, **kwargs)
                 return await op.execute_async(
                     instance._require_async_client(), instance.ASYNC_PAGINATOR_CLS
-                )  # type: ignore
+                )
 
             return async_wrapper
 
         @functools.wraps(func)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
             op = func(instance, *args, **kwargs)
-            return op.execute_sync(instance._require_sync_client(), instance.PAGINATOR_CLS)  # type: ignore
+            return op.execute_sync(instance._require_sync_client(), instance.PAGINATOR_CLS)
 
         return sync_wrapper

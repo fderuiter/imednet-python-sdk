@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import argparse
+from typing import Any
+
 from ..utils import register_list_command
 
 
-def setup_parser(subparsers):
+def setup_parser(subparsers: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
     """Setup the parser for this module."""
     parser = subparsers.add_parser("studies", help="Manage studies.")
     register_list_command(

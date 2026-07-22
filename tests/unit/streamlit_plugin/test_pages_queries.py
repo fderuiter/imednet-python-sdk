@@ -258,9 +258,7 @@ def test_queries_page_populated_and_filters_and_refresh() -> None:
     # Stub button and multiselect
     def _button(label: str, **kwargs: Any) -> bool:
         """Helper function to  button."""
-        if label == "🔄 Refresh Data":
-            return True
-        return False
+        return label == "🔄 Refresh Data"
 
     def _multiselect(label: str, options: Any, **kwargs: Any) -> list[Any]:
         """Helper function to  multiselect."""

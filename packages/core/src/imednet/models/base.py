@@ -151,7 +151,7 @@ class ImednetBaseModel(BaseModel):
                 data = {}
 
         try:
-            return cls.model_validate(data)  # type: ignore[no-any-return]
+            return cls.model_validate(data)
         except Exception as e:
             import logging
 
@@ -161,7 +161,7 @@ class ImednetBaseModel(BaseModel):
                 logging.getLogger("imednet.drift").warning(msg)
             raise
 
-    @model_validator(mode="before")  # type: ignore[untyped-decorator]
+    @model_validator(mode="before")
     @classmethod
     def _detect_drift(cls, data: Any) -> Any:
         """Compare incoming JSON data against the model definition to detect API drift."""
@@ -208,7 +208,7 @@ class ImednetBaseModel(BaseModel):
 
         return data
 
-    @field_validator("*", check_fields=False, mode="before")  # type: ignore[untyped-decorator]
+    @field_validator("*", check_fields=False, mode="before")
     def _normalise(cls, v: Any, info: Any) -> Any:
         """Normalize common primitive types before validation."""
         if not info.field_name:

@@ -8,6 +8,21 @@ from __future__ import annotations
 
 import streamlit as st
 
+from typing import TypedDict
+try:
+    from typing import NotRequired
+except ImportError:
+    from typing_extensions import NotRequired
+
+
+
+
+
+class MetricConfig(TypedDict):
+    label: str
+    value: int | float | str
+    delta: NotRequired[str | None]
+    help: NotRequired[str | None]
 
 def kpi_card(
     label: str,
@@ -26,7 +41,7 @@ def kpi_card(
     st.metric(label=label, value=value, delta=delta, help=help)
 
 
-def kpi_row(metrics: list[dict]) -> None:
+def kpi_row(metrics: list[MetricConfig]) -> None:
     """Render a horizontal row of KPI metric cards.
 
     Args:
