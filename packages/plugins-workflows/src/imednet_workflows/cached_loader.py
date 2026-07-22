@@ -158,25 +158,26 @@ class CachedRecordsLoader:
     def _initialise_cache(self) -> None:
         """Ensure the cache database and tables are created."""
         resolved = Path(self.db_path).expanduser().resolve()
-        conn = get_sqlite_connection(self.db_path)
-        try:
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS record_cache (
-                    study_key TEXT NOT NULL,
-                    record_id INTEGER NOT NULL,
-                    form_key TEXT NOT NULL,
-                    date_modified TEXT NOT NULL,
-                    payload TEXT NOT NULL,
-                    PRIMARY KEY (study_key, record_id)
-                )
-                """)
-            conn.execute("""
-                CREATE INDEX IF NOT EXISTS idx_record_cache_study_modified
-                ON record_cache (study_key, date_modified)
-                """)
-            conn.commit()
-        finally:
-            conn.close()
+        with _get_db_init_lock(resolved):
+            conn = get_sqlite_connection(self.db_path)
+            try:
+                conn.execute("""
+                    CREATE TABLE IF NOT EXISTS record_cache (
+                        study_key TEXT NOT NULL,
+                        record_id INTEGER NOT NULL,
+                        form_key TEXT NOT NULL,
+                        date_modified TEXT NOT NULL,
+                        payload TEXT NOT NULL,
+                        PRIMARY KEY (study_key, record_id)
+                    )
+                    """)
+                conn.execute("""
+                    CREATE INDEX IF NOT EXISTS idx_record_cache_study_modified
+                    ON record_cache (study_key, date_modified)
+                    """)
+                conn.commit()
+            finally:
+                conn.close()
 
     def _get_high_water_mark(self, conn: sqlite3.Connection, study_key: str) -> str | None:
         """Get the latest modification timestamp from the local cache for a study."""
