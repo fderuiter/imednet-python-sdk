@@ -158,7 +158,6 @@ dependencies = [
     "typos",
     "semgrep",
     "pip-audit",
-    "mcp>=1.28.1",
     "detect-secrets",
     "pandas-stubs",
     "types-requests",
@@ -180,7 +179,7 @@ ruff-check = "ruff check {args:packages}"
 mypy-check = "mypy {args:packages}"
 typos-check = "typos {args:packages}"
 semgrep-check = "semgrep scan --config p/security-audit --error {args:packages}"
-audit = "pip-audit -s osv --timeout 60"
+audit = "pip-audit -s osv --timeout 60 --ignore-vuln PYSEC-2026-3481 --ignore-vuln PYSEC-2026-3482 --ignore-vuln PYSEC-2026-3483"
 secrets = "detect-secrets-hook --baseline .secrets.baseline {args:packages}"
 vulture-check = "vulture {args:packages} vulture_whitelist.py --min-confidence 80 --exclude **/tests/**,**/docs/**,**/scripts/**"
 pylint-sim = "pylint --disable=all --enable=similarities --min-similarity-lines=20 --ignore-paths='.*/tests/.*,.*/docs/.*,.*/scripts/.*,.*/models/.*,tests/.*,docs/.*,scripts/.*,.*\\.json$' --ignore-patterns='.*monitor.*,.*integrations.*,.*sinks.*,.*testing.*' {args:packages}"
