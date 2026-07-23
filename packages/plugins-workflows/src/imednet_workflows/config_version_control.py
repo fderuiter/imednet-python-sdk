@@ -6,16 +6,21 @@ diff capability, and safe rollback.  History blocks are read-only once written.
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import os
+import re
 import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from threading import RLock
-from typing import Any
+from typing import Any, cast
+from urllib.parse import urlparse
+
+from cryptography.fernet import Fernet, InvalidToken
 
 from imednet.spi.models import StudyConfiguration
 from imednet.spi.utils import flatten, sqlite_connection
@@ -28,6 +33,64 @@ _DEFAULT_DB_PATH = Path(
 def _sha256_of(content: str) -> str:
     """Return the SHA-256 hex digest of the given string content."""
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+
+def _sanitize_base_url_for_path(url: str) -> str:
+    """Extract and sanitize host from URL to create a safe path name."""
+    try:
+        parsed = urlparse(url)
+        host = parsed.netloc or parsed.path
+        host = re.sub(r'[^a-zA-Z0-9_\.-]', '_', host)
+        if not host:
+            host = "default"
+        return host
+    except Exception:
+        return "default"
+
+
+def _get_fernet_key() -> bytes:
+    """Retrieve and derive a valid 32-byte base64-encoded Fernet key."""
+    raw_key = os.environ.get("IMEDNET_ENCRYPTION_KEY") or os.environ.get("IMEDNET_SECURITY_KEY")
+    if not raw_key:
+        raise ValueError(
+            "Encryption/decryption key is missing. Please set IMEDNET_ENCRYPTION_KEY or IMEDNET_SECURITY_KEY."
+        )
+
+    try:
+        decoded = base64.urlsafe_b64decode(raw_key)
+        if len(decoded) == 32:
+            return raw_key.encode("utf-8")
+    except Exception:  # noqa: S110
+        pass
+
+    digest = hashlib.sha256(raw_key.encode("utf-8")).digest()
+    return base64.urlsafe_b64encode(digest)
+
+
+def _encrypt_payload(payload: str) -> str:
+    """Encrypt payload string using AES-256 Fernet encryption."""
+    key = _get_fernet_key()
+    f = Fernet(key)
+    return cast(str, f.encrypt(payload.encode("utf-8")).decode("utf-8"))
+
+
+def _decrypt_payload(encrypted_payload: str) -> str:
+    """Decrypt Fernet encrypted payload or raise clear ValueError if key is incorrect or missing."""
+    try:
+        key = _get_fernet_key()
+    except Exception as exc:
+        raise ValueError(
+            "Configuration data integrity check failed: "
+            f"Decryption key is incorrect or missing: {exc}"
+        ) from exc
+    try:
+        f = Fernet(key)
+        return cast(str, f.decrypt(encrypted_payload.encode("utf-8")).decode("utf-8"))
+    except (InvalidToken, Exception) as exc:
+        raise ValueError(
+            "Configuration data integrity check failed: "
+            "Decryption failed - decryption key is incorrect or missing, or data is corrupted."
+        ) from exc
 
 
 class ConfigVersionStore:
@@ -48,20 +111,65 @@ class ConfigVersionStore:
         Args:
             db_path: Path to the SQLite database file.
         """
-        self.db_path = Path(db_path).expanduser()
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self._original_db_path = Path(db_path).expanduser()
         self._lock = RLock()
-        self._initialize_schema()
+        self._ensure_schema_initialized(self.db_path)
+
+    @property
+    def db_path(self) -> Path:
+        """Return the dynamically selected database file path based on environment and context."""
+        return self._get_get_dynamic_db_path()
+
+    @db_path.setter
+    def db_path(self, value: str | Path) -> None:
+        """Set the original base path for database files."""
+        self._original_db_path = Path(value).expanduser()
+
+    def _get_get_dynamic_db_path(self) -> Path:
+        """Resolve database path dynamically based on active base URL and study key context."""
+        from imednet.spi.utils import get_base_url_context, get_study_context
+
+        base_url = (
+            get_base_url_context() or os.environ.get("IMEDNET_BASE_URL") or "http://localhost"
+        )
+        sanitized_url = _sanitize_base_url_for_path(base_url)
+        base_dir = self._original_db_path.parent
+
+        ctx_study_key = get_study_context()
+        if ctx_study_key:
+            target_dir = base_dir / sanitized_url / ctx_study_key
+        else:
+            target_dir = base_dir / sanitized_url
+
+        target_dir.mkdir(parents=True, exist_ok=True)
+        return target_dir / self._original_db_path.name
 
     @contextmanager
     def _connection(self) -> Iterator[sqlite3.Connection]:
         """Manage a SQLite connection with Write-Ahead Logging (WAL) enabled."""
-        with sqlite_connection(self.db_path, timeout=30.0) as conn:
+        path = self.db_path
+        self._ensure_schema_initialized(path)
+        with sqlite_connection(path, timeout=30.0) as conn:
             yield conn
 
+    def _ensure_schema_initialized(self, path: Path) -> None:
+        """Thread-safely ensure that schema is initialized for a specific file path."""
+        if not hasattr(self, "_initialized_paths"):
+            self._initialized_paths: set[Path] = set()
+        if path not in self._initialized_paths:
+            with self._lock:
+                if path not in self._initialized_paths:
+                    self._initialize_schema_for_path(path)
+                    self._initialized_paths.add(path)
+
     def _initialize_schema(self) -> None:
-        """Create the database tables and triggers if they do not exist."""
-        with self._lock, self._connection() as conn:
+        """Create the database tables and triggers for the active database path."""
+        self._ensure_schema_initialized(self.db_path)
+
+    def _initialize_schema_for_path(self, path: Path) -> None:
+        """Create the database tables and triggers if they do not exist for the given path."""
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with sqlite_connection(path, timeout=30.0) as conn:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS config_commits (
                     commit_id   TEXT PRIMARY KEY,
@@ -161,6 +269,9 @@ class ConfigVersionStore:
         commit_id = _sha256_of(config_json)
         timestamp = datetime.now(timezone.utc).isoformat()
 
+        # Secure the payload using Fernet encryption before writing to SQLite
+        encrypted_config_json = _encrypt_payload(config_json)
+
         with self._lock, self._connection() as conn:
             existing = conn.execute(
                 "SELECT 1 FROM config_commits WHERE commit_id = ?", (commit_id,)
@@ -180,7 +291,7 @@ class ConfigVersionStore:
                     commit_id,
                     study_key,
                     config.version,
-                    config_json,
+                    encrypted_config_json,
                     user,
                     desc,
                     timestamp,
@@ -217,7 +328,9 @@ class ConfigVersionStore:
         history: list[dict[str, Any]] = []
         for row in rows:
             commit = dict(row)
-            self._verify_commit_signature(commit["commit_id"], commit["config_data"])
+            # Decrypt payload before verification
+            decrypted_data = _decrypt_payload(commit["config_data"])
+            self._verify_commit_signature(commit["commit_id"], decrypted_data)
             commit.pop("config_data")
             history.append(commit)
         return history
@@ -289,8 +402,10 @@ class ConfigVersionStore:
             ).fetchone()
         if row is None:
             raise KeyError(f"Commit {commit_id!r} not found for study {study_key!r}.")
-        self._verify_commit_signature(row["commit_id"], row["config_data"])
-        return StudyConfiguration.model_validate_json(row["config_data"])
+        # Decrypt payload before validation
+        decrypted_data = _decrypt_payload(row["config_data"])
+        self._verify_commit_signature(row["commit_id"], decrypted_data)
+        return cast(StudyConfiguration, StudyConfiguration.model_validate_json(decrypted_data))
 
     # ------------------------------------------------------------------
     # Internal helpers
@@ -305,8 +420,10 @@ class ConfigVersionStore:
             ).fetchone()
         if row is None:
             raise KeyError(f"Commit {commit_id!r} not found.")
-        self._verify_commit_signature(row["commit_id"], row["config_data"])
-        return json.loads(row["config_data"])  # type: ignore[no-any-return]
+        # Decrypt payload first
+        decrypted_data = _decrypt_payload(row["config_data"])
+        self._verify_commit_signature(row["commit_id"], decrypted_data)
+        return json.loads(decrypted_data)  # type: ignore[no-any-return]
 
     def _verify_commit_signature(self, commit_id: str, config_data: str) -> None:
         """Verify that the content hash matches the stored commit ID."""

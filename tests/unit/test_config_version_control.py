@@ -464,3 +464,86 @@ def test_history_rows_cannot_be_deleted(store: ConfigVersionStore) -> None:
         pytest.raises(sqlite3.IntegrityError, match="immutable"),
     ):
         conn.execute("DELETE FROM config_commits WHERE commit_id = ?", (commit_id,))
+
+
+def test_encryption_zero_plaintext_on_disk(tmp_path: Path) -> None:
+    """Ensure that raw database inspection reveals no plaintext configuration JSON."""
+    import os
+    import sqlite3
+    os.environ["IMEDNET_SECURITY_KEY"] = "my_secure_encryption_key"
+    store = ConfigVersionStore(db_path=tmp_path / "versions.sqlite3")
+    config = _make_config()
+    store.commit_config("STUDY-01", config, user="bob", desc="secure commit")
+    
+    with sqlite3.connect(store.db_path) as conn:
+        conn.row_factory = sqlite3.Row
+        row = conn.execute("SELECT config_data FROM config_commits").fetchone()
+        assert row is not None
+        encrypted_payload = row["config_data"]
+        assert not encrypted_payload.startswith("{")
+        assert "mappings" not in encrypted_payload
+        assert "widgets" not in encrypted_payload
+        assert encrypted_payload.startswith("gAAAA")
+
+
+def test_dynamic_sqlite_selection_per_base_url(tmp_path: Path) -> None:
+    """Verify separate SQLite files are instantiated for different base URLs."""
+    import os
+    from imednet.core.context import set_base_url_context, reset_base_url_context
+    store = ConfigVersionStore(db_path=tmp_path / "versions.sqlite3")
+    config = _make_config()
+    
+    t1 = set_base_url_context("https://env1.imednet.com")
+    try:
+        os.environ["IMEDNET_SECURITY_KEY"] = "key1"
+        path1 = store.db_path
+        store.commit_config("STUDY-01", config, user="alice", desc="env1 commit")
+    finally:
+        reset_base_url_context(t1)
+        
+    t2 = set_base_url_context("https://env2.imednet.com")
+    try:
+        os.environ["IMEDNET_SECURITY_KEY"] = "key2"
+        path2 = store.db_path
+        assert path1 != path2
+        assert store.get_history("STUDY-01") == []
+    finally:
+        reset_base_url_context(t2)
+
+
+def test_dynamic_sqlite_selection_per_study_context(tmp_path: Path) -> None:
+    """Verify separate SQLite subdirectories are structured based on active study context."""
+    from imednet.core.context import set_study_context, reset_study_context
+    store = ConfigVersionStore(db_path=tmp_path / "versions.sqlite3")
+    
+    t1 = set_study_context("STUDY-XYZ")
+    try:
+        path1 = store.db_path
+        assert "STUDY-XYZ" in str(path1)
+    finally:
+        reset_study_context(t1)
+
+
+def test_decryption_incorrect_or_missing_key_raises(tmp_path: Path) -> None:
+    """Verify that configuration reads fail if the decryption key is incorrect or missing."""
+    import os
+    import pytest
+    os.environ["IMEDNET_SECURITY_KEY"] = "secret1"
+    store = ConfigVersionStore(db_path=tmp_path / "versions.sqlite3")
+    config = _make_config()
+    commit_id = store.commit_config("STUDY-01", config, user="alice", desc="env1 commit")
+    
+    os.environ["IMEDNET_SECURITY_KEY"] = "wrong_secret"
+    with pytest.raises(ValueError, match="Decryption failed|integrity check failed"):
+        store.get_history("STUDY-01")
+        
+    if "IMEDNET_SECURITY_KEY" in os.environ:
+        del os.environ["IMEDNET_SECURITY_KEY"]
+    if "IMEDNET_ENCRYPTION_KEY" in os.environ:
+        del os.environ["IMEDNET_ENCRYPTION_KEY"]
+        
+    with pytest.raises(ValueError, match="key is missing|incorrect or missing|integrity check failed"):
+        store.rollback_config("STUDY-01", commit_id)
+        
+    os.environ["IMEDNET_SECURITY_KEY"] = "test_sec_key"
+
