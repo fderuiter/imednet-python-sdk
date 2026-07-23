@@ -55,7 +55,8 @@ Usage example
    import threading
 
    sdk = ImednetSDK(api_key="...", security_key="...")
-   loader = CachedRecordsLoader(sdk)
+   from typing import Any, cast
+   loader = CachedRecordsLoader(cast(Any, sdk))
    worker = SyncWorker(
        loader,
        config=SyncWorkerConfig(study_key="PROT-01", interval_seconds=900),
