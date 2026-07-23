@@ -17,7 +17,7 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from threading import RLock
-from typing import Any, cast
+from typing import Any
 from urllib.parse import urlparse
 
 from cryptography.fernet import Fernet, InvalidToken
@@ -71,7 +71,7 @@ def _encrypt_payload(payload: str) -> str:
     """Encrypt payload string using AES-256 Fernet encryption."""
     key = _get_fernet_key()
     f = Fernet(key)
-    return cast(str, f.encrypt(payload.encode("utf-8")).decode("utf-8"))
+    return f.encrypt(payload.encode("utf-8")).decode("utf-8")
 
 
 def _decrypt_payload(encrypted_payload: str) -> str:
@@ -85,7 +85,7 @@ def _decrypt_payload(encrypted_payload: str) -> str:
         ) from exc
     try:
         f = Fernet(key)
-        return cast(str, f.decrypt(encrypted_payload.encode("utf-8")).decode("utf-8"))
+        return f.decrypt(encrypted_payload.encode("utf-8")).decode("utf-8")
     except (InvalidToken, Exception) as exc:
         raise ValueError(
             "Configuration data integrity check failed: "
@@ -405,7 +405,7 @@ class ConfigVersionStore:
         # Decrypt payload before validation
         decrypted_data = _decrypt_payload(row["config_data"])
         self._verify_commit_signature(row["commit_id"], decrypted_data)
-        return cast(StudyConfiguration, StudyConfiguration.model_validate_json(decrypted_data))
+        return StudyConfiguration.model_validate_json(decrypted_data)
 
     # ------------------------------------------------------------------
     # Internal helpers
