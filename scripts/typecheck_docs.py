@@ -1,6 +1,5 @@
 """Script to extract and type-check Sphinx testcode blocks from documentation."""
 
-import re
 import subprocess
 import sys
 from pathlib import Path
@@ -20,26 +19,45 @@ def main():
         if "_build" in rst_file.parts:
             continue
         content = rst_file.read_text()
-        pattern = re.compile(r"\.\.\s+testcode::\s*\n((?:\s*\n)*(?:[ ]+.*\n?)*)")
-
         file_snippets = []
-        for match in pattern.finditer(content):
-            block = match.group(1)
-            lines = block.splitlines()
-            if not lines:
-                continue
+        lines = content.splitlines()
+        i = 0
+        n = len(lines)
+        while i < n:
+            line = lines[i]
+            if line.strip().startswith(".. testcode::"):
+                i += 1
+                # Skip initial empty/whitespace lines
+                block_lines = []
+                indent = None
+                while i < n:
+                    curr_line = lines[i]
+                    if curr_line.strip() == "":
+                        i += 1
+                        continue
+                    else:
+                        indent = len(curr_line) - len(curr_line.lstrip())
+                        break
 
-            indent = None
-            for line in lines:
-                if line.strip():
-                    indent = len(line) - len(line.lstrip())
-                    break
-            if indent is None:
-                continue
+                if indent is not None:
+                    while i < n:
+                        curr_line = lines[i]
+                        if curr_line.strip() == "":
+                            block_lines.append("")
+                            i += 1
+                        elif len(curr_line) - len(curr_line.lstrip()) >= indent:
+                            block_lines.append(curr_line[indent:])
+                            i += 1
+                        else:
+                            break
 
-            stripped = [line[indent:] if len(line) >= indent else line for line in lines]
-            file_snippets.append("\n".join(stripped))
-            count += 1
+                    while block_lines and block_lines[-1] == "":
+                        block_lines.pop()
+                    if block_lines:
+                        file_snippets.append("\n".join(block_lines))
+                        count += 1
+                continue
+            i += 1
 
         if file_snippets:
             out_file = snippets_dir / f"{rst_file.stem}.py"

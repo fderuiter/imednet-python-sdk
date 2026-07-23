@@ -56,7 +56,7 @@ MongoDB (document export):
    from imednet_sinks import MongoDbSinkConfig, export_to_mongodb
 
    sdk = ImednetSDK(api_key="mock", security_key="mock")
-   cfg = MongoDbSinkConfig(
+   mongodb_cfg = MongoDbSinkConfig(
        study_key="MY_STUDY",
        uri="mongodb://localhost:27017",
        database="imednet",
@@ -64,7 +64,7 @@ MongoDB (document export):
        batch_size=500,
        idempotent=True,
    )
-   rows = export_to_mongodb(sdk, "MY_STUDY", config=cfg)
+   rows = export_to_mongodb(sdk, "MY_STUDY", config=mongodb_cfg)
    print(rows)
 
 Neo4j (graph export):
@@ -75,7 +75,7 @@ Neo4j (graph export):
    from imednet_sinks import Neo4jSinkConfig, export_to_neo4j
 
    sdk = ImednetSDK(api_key="mock", security_key="mock")
-   cfg = Neo4jSinkConfig(
+   neo4j_cfg = Neo4jSinkConfig(
        study_key="MY_STUDY",
        uri="bolt://localhost:7687",
        auth=("neo4j", "..."),
@@ -83,7 +83,7 @@ Neo4j (graph export):
        batch_size=500,
        idempotent=True,
    )
-   rows = export_to_neo4j(sdk, "MY_STUDY", config=cfg)
+   rows = export_to_neo4j(sdk, "MY_STUDY", config=neo4j_cfg)
    print(rows)
 
 Snowflake (warehouse-native export):
@@ -94,18 +94,18 @@ Snowflake (warehouse-native export):
    from imednet_sinks import SnowflakeSinkConfig, export_to_snowflake
 
    sdk = ImednetSDK(api_key="mock", security_key="mock")
-   cfg = SnowflakeSinkConfig(
+   snowflake_cfg = SnowflakeSinkConfig(
        study_key="MY_STUDY",
        account="myorg-myaccount",
        user="loader",
-       **{"password": "..."},
+       password="...",
        database="IMEDNET_DB",
        schema="PUBLIC",
        warehouse="COMPUTE_WH",
        stage="MY_STAGE",
        table="RECORDS",
    )
-   rows = export_to_snowflake(sdk, "MY_STUDY", config=cfg)
+   rows = export_to_snowflake(sdk, "MY_STUDY", config=snowflake_cfg)
    print(rows)
 
 Runnable examples

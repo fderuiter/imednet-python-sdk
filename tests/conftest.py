@@ -4,12 +4,16 @@ This module provides common fixtures for mocking network requests, managing stud
 and simulating API responses across unit and integration tests.
 """
 
+import os
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
 import pytest_asyncio
+
+# Ensure a default security key is set for testing encryption/decryption
+os.environ.setdefault("IMEDNET_SECURITY_KEY", "test_sec_key")
 
 ROOT = Path(__file__).resolve().parents[1]
 LIVE_TESTS_DIR = (ROOT / "tests" / "live").resolve()

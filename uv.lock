@@ -1523,6 +1523,7 @@ name = "imednet-workflows"
 version = "0.6.0"
 source = { editable = "packages/plugins-workflows" }
 dependencies = [
+    { name = "cryptography" },
     { name = "filelock" },
     { name = "imednet" },
     { name = "pandas" },
@@ -1530,6 +1531,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "cryptography" },
     { name = "filelock", specifier = ">=3.20.3,<4.0.0" },
     { name = "imednet", editable = "packages/core" },
     { name = "pandas", specifier = ">=2.2.3,<3.0.0" },

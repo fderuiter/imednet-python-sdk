@@ -44,11 +44,11 @@ Use ``get_model_parser`` to get a parsing function for a specific model:
    from imednet.models.studies import Study
 
    # Get the parser function
-   parser = get_model_parser(Study)
+   study_parser = get_model_parser(Study)
 
    # Parse API response data
    study_data = {"study_name": "Clinical Trial", "study_key": "CT-001"}
-   study = parser(study_data)
+   study = study_parser(study_data)
 
 Class-based Parsing
 ^^^^^^^^^^^^^^^^^^^
@@ -61,13 +61,15 @@ Use ``ModelParser`` for repeated parsing operations with the same model:
    from imednet.models.subjects import Subject
 
    # Create a parser instance
-   parser = ModelParser(Subject)
+   subject_parser = ModelParser(Subject)
 
    # Parse a single item
-   subject = parser.parse(subject_data)
+   subject_data = {"subject_key": "SUB-001"}
+   subject = subject_parser.parse(subject_data)
 
    # Parse multiple items
-   subjects = parser.parse_many(api_response)
+   api_response = [{"subject_key": "SUB-001"}]
+   subjects = subject_parser.parse_many(api_response)
 
 Custom Parsing Methods
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -94,7 +96,7 @@ Models can implement custom parsing logic by providing a ``from_json`` classmeth
 
    # The parser will automatically use the custom from_json method
    from imednet.core.parsing import get_model_parser
-   parser = get_model_parser(CustomModel)
+   custom_parser = get_model_parser(CustomModel)
 
 Integration with Endpoints
 ---------------------------

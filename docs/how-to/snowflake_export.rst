@@ -56,11 +56,11 @@ batching, staging, and cleanup automatically:
 
    sdk = ImednetSDK(api_key=os.environ["IMEDNET_API_KEY"])
 
-   cfg = SnowflakeSinkConfig(
+   snowflake_cfg = SnowflakeSinkConfig(
        study_key="MY_STUDY",
        account="myorg-myaccount",
        user="loader",
-       **{"password": os.environ["SNOWFLAKE_PASSWORD"]},  # never hardcode
+       password=os.environ["SNOWFLAKE_PASSWORD"],  # never hardcode
        database="IMEDNET_DB",
        schema="PUBLIC",
        warehouse="COMPUTE_WH",
@@ -68,7 +68,7 @@ batching, staging, and cleanup automatically:
        table="RECORDS",
    )
 
-   rows_loaded = export_to_snowflake(sdk, "MY_STUDY", config=cfg)
+   rows_loaded = export_to_snowflake(sdk, "MY_STUDY", config=snowflake_cfg)
    print(f"Loaded {rows_loaded} rows")
 
 Advanced usage — ``SnowflakeExportSink`` directly
@@ -85,13 +85,13 @@ per-batch control, custom ``batch_id`` keys, or integration with a workflow engi
    from imednet_sinks.warehouse import SnowflakeExportSink, SnowflakeSinkConfig
 
    sdk = ImednetSDK(api_key=os.environ["IMEDNET_API_KEY"])
-   records = sdk.records.list(study_key="MY_STUDY")
+   records = list(sdk.records.list(study_key="MY_STUDY"))
 
-   cfg = SnowflakeSinkConfig(
+   snowflake_cfg_advanced = SnowflakeSinkConfig(
        study_key="MY_STUDY",
        account="myorg-myaccount",
        user="loader",
-       **{"password": os.environ["SNOWFLAKE_PASSWORD"]},
+       password=os.environ["SNOWFLAKE_PASSWORD"],
        database="IMEDNET_DB",
        schema="PUBLIC",
        warehouse="COMPUTE_WH",
@@ -103,8 +103,8 @@ per-batch control, custom ``batch_id`` keys, or integration with a workflow engi
        idempotent=True,
    )
 
-   with SnowflakeExportSink(config=cfg) as sink:
-       for i, batch in enumerate(iter_batches(records, cfg.batch_size)):
+   with SnowflakeExportSink(config=snowflake_cfg_advanced) as sink:
+       for i, batch in enumerate(iter_batches(records, snowflake_cfg_advanced.batch_size)):
            rows = sink.write_batch(batch, batch_id=f"MY_STUDY/records/{i}")
            print(f"  batch {i}: {rows} rows")
 
@@ -116,7 +116,7 @@ purposes or replay:
 
 .. testcode::
 
-   cfg = SnowflakeSinkConfig(
+   snowflake_cfg_manifest = SnowflakeSinkConfig(
        study_key="MY_STUDY",
        account="myorg",
        user="user",

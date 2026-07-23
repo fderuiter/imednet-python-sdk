@@ -20,7 +20,7 @@ from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality
 try:
     import pandas as pd
 except ImportError:
-    pd = None  # type: ignore[assignment]
+    pd = None  # type: ignore[assignment, unused-ignore]
 from imednet.constants import MAX_SQLITE_COLUMNS
 from imednet.utils import sanitize_csv_formula
 from imednet.utils.security import global_sensitivity_registry, mask_clinical_phi
