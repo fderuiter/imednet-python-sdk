@@ -67,7 +67,10 @@ def check_packages_registered() -> bool:
         # Check docs/conf.py
         expected_path_format_1 = src_path
         expected_path_format_2 = f'"{pkg_name}" / "src"'
-        if expected_path_format_1 not in conf_py_content and expected_path_format_2 not in conf_py_content:
+        if (
+            expected_path_format_1 not in conf_py_content
+            and expected_path_format_2 not in conf_py_content
+        ):
             print(f"Error: Package {pkg_name} is missing from docs/conf.py sys.path.")
             has_errors = True
 

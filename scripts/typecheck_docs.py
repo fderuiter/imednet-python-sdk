@@ -1,6 +1,5 @@
 """Script to extract and type-check Sphinx testcode blocks from documentation."""
 
-import re
 import subprocess
 import sys
 from pathlib import Path
@@ -39,7 +38,7 @@ def main():
                     else:
                         indent = len(curr_line) - len(curr_line.lstrip())
                         break
-                
+
                 if indent is not None:
                     while i < n:
                         curr_line = lines[i]
@@ -51,7 +50,7 @@ def main():
                             i += 1
                         else:
                             break
-                    
+
                     while block_lines and block_lines[-1] == "":
                         block_lines.pop()
                     if block_lines:
