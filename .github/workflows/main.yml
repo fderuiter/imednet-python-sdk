@@ -305,7 +305,7 @@ jobs:
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
           
           if ls dist/*.whl 1> /dev/null 2>&1; then
-            .venv/bin/python -m pip install --force-reinstall --no-deps dist/*.whl
+            uv pip install --force-reinstall --no-deps dist/*.whl
           fi
           
       - name: Run Tests
