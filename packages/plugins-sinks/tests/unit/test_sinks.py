@@ -161,6 +161,8 @@ class TestNeo4jExportSink:
                 "visit_id": 42,
                 "parent_record_id": None,
                 "record_data": '{"labs": {"hemoglobin": 13.2}, "status": "Complete"}',
+                "last_updated": None,
+                "keywords": None,
             }
         ]
 
