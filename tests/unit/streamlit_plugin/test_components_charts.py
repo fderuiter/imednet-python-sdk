@@ -84,3 +84,29 @@ def test_pie_chart_returns_altair_chart() -> None:
     theta_dict = encoding.theta.to_dict()
     assert theta_dict["field"] == "count"
     assert theta_dict["type"] == "quantitative"
+
+
+def test_high_contrast_palette_and_accessible_chart() -> None:
+    """Test high contrast palette and render_accessible_chart."""
+    import streamlit as st
+
+    from imednet_streamlit.components.charts import _get_palette, render_accessible_chart
+
+    # Test high_contrast = True in session state
+    st.session_state["high_contrast"] = True
+    palette = _get_palette()
+    assert palette[0] == "#000000"
+
+    # Test high_contrast = False
+    st.session_state["high_contrast"] = False
+    palette = _get_palette()
+    assert palette[0] == "#1f77b4"
+
+    # Test render_accessible_chart
+    df = pd.DataFrame({"category": ["A", "B"], "value": [1, 2]})
+    chart = bar_chart(df, x="value", y="category", title="Example Chart Title")
+    render_accessible_chart(chart, use_container_width=True)
+
+    # Test render_accessible_chart with dict title
+    chart_dict_title = bar_chart(df, x="value", y="category", title={"text": "Dict Title"})
+    render_accessible_chart(chart_dict_title, use_container_width=False)

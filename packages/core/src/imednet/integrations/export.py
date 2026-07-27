@@ -20,7 +20,7 @@ from imednet.integrations.sink_base import ExportSink, SinkConfig, apply_quality
 try:
     import pandas as pd
 except ImportError:
-    pd = None  # type: ignore[assignment]
+    pd = None  # type: ignore[assignment, unused-ignore]
 from imednet.constants import MAX_SQLITE_COLUMNS
 from imednet.utils import sanitize_csv_formula
 from imednet.utils.security import global_sensitivity_registry, mask_clinical_phi
@@ -508,7 +508,7 @@ def export_to_json(
         import pandas as pd
 
         # Explicitly handle missing values when converting to dict
-        data = df.where(pd.notnull(df), None).to_dict(orient="records")
+        data = df.where(pd.notnull(df), None).to_dict(orient="records")  # type: ignore[call-overload]
 
     try:
         from importlib.metadata import entry_points

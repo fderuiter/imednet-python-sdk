@@ -293,6 +293,7 @@ import sys
 from unittest.mock import MagicMock
 sys.modules['airflow'] = MagicMock()
 sys.modules['airflow.decorators'] = MagicMock()
+sys.modules['airflow.sdk'] = MagicMock()
 sys.modules['apache_airflow_providers_imednet'] = MagicMock()
 
 

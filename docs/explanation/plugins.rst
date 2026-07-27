@@ -211,7 +211,7 @@ satisfy :class:`~imednet.plugins.PluginProtocol`:
 .. testcode::
 
     from typing import Any, Protocol
-    from imednet.plugins import PluginProtocol, WorkflowsNamespaceProtocol
+    from imednet.plugins import WorkflowsNamespaceProtocol
 
     class PluginProtocol(Protocol):
         def __call__(self, sdk_instance: Any) -> WorkflowsNamespaceProtocol: ...
@@ -245,7 +245,7 @@ Minimal working example
             self._sdk = sdk
 
         def run(self, study_key: str) -> list[Any]:
-            return self._sdk.records.list(study_key=study_key)
+            return list(self._sdk.records.list(study_key=study_key))
 
 
     class MyWorkflows:

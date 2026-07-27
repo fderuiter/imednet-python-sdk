@@ -11,6 +11,9 @@ from imednet.errors.validation import ConfigurationError
 _active_study: contextvars.ContextVar[str | None] = contextvars.ContextVar(
     "active_study", default=None
 )
+_active_base_url: contextvars.ContextVar[str | None] = contextvars.ContextVar(
+    "active_base_url", default=None
+)
 
 
 def set_study_context(study_key: str) -> contextvars.Token[str | None]:
@@ -21,6 +24,21 @@ def set_study_context(study_key: str) -> contextvars.Token[str | None]:
 def reset_study_context(token: contextvars.Token[str | None]) -> None:
     """Reset the active study key using a token from :func:`set_study_context`."""
     _active_study.reset(token)
+
+
+def set_base_url_context(base_url: str) -> contextvars.Token[str | None]:
+    """Set the active base URL for the current thread/task context."""
+    return _active_base_url.set(base_url)
+
+
+def reset_base_url_context(token: contextvars.Token[str | None]) -> None:
+    """Reset the active base URL using a token from :func:`set_base_url_context`."""
+    _active_base_url.reset(token)
+
+
+def get_base_url_context() -> str | None:
+    """Get the current base URL for the active thread/task context."""
+    return _active_base_url.get()
 
 
 def clear_study_context() -> None:

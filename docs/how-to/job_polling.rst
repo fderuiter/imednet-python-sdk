@@ -23,6 +23,6 @@ behavior in asynchronous code.
    status = sdk.poll_job("STUDY", "BATCH", interval=2, timeout=60)
 
    # asynchronous
-   async def wait_async():
+   async def wait_async() -> None:
        async with AsyncImednetSDK() as sdk:
            status = await sdk.async_poll_job("STUDY", "BATCH", interval=2, timeout=60)

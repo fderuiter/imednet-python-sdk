@@ -10,11 +10,12 @@ Example
 .. testcode::
 
     from imednet import ImednetSDK
-    from imednet.models.records import RegisterSubjectRequest
+    from imednet.models.records import RegisterSubjectRequest, RecordData
     from imednet_workflows.register_subjects import RegisterSubjectsWorkflow
+    from typing import Any, cast
 
     sdk = ImednetSDK(api_key="API_KEY", security_key="SECURITY_KEY")
-    workflow = RegisterSubjectsWorkflow(sdk)
-    subjects = [RegisterSubjectRequest(form_key="REG", site_name="SITE", data={})]
+    workflow = RegisterSubjectsWorkflow(cast(Any, sdk))
+    subjects = [RegisterSubjectRequest(formKey="REG", siteName="SITE", data=RecordData({}))]
     job = workflow.register_subjects(study_key="STUDY", subjects=subjects)
     print(job)

@@ -395,11 +395,7 @@ def test_data_lineage_redact_sensitive_keys() -> None:
         "token": "secret_token",
         "nested": {
             "password": "secret_password",
-            "details": [
-                {"security_key": "secret_key"},
-                {"phone": "555-1234"},
-                {"label": "ok"}
-            ],
+            "details": [{"security_key": "secret_key"}, {"phone": "555-1234"}, {"label": "ok"}],
         },
         "severity": "MILD",
     }

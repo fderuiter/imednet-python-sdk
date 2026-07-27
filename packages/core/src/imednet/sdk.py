@@ -177,8 +177,17 @@ class _BaseSDK:
     @contextmanager
     def study_context(self, study_key: str) -> Iterator[Any]:
         """Set a temporary default study key for the current thread/task context."""
+        from .core.context import reset_base_url_context, set_base_url_context
+
+        token_base = None
+        if hasattr(self, "_base_url") and self._base_url:
+            token_base = set_base_url_context(self._base_url)
         with study_context(study_key):
-            yield self
+            try:
+                yield self
+            finally:
+                if token_base is not None:
+                    reset_base_url_context(token_base)
 
 
 class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
@@ -230,6 +239,10 @@ class ImednetSDK(_BaseSDK, SyncSDKConvenienceMixin):
         self._api_key = config.api_key
         self._security_key = config.security_key
         self._base_url = config.base_url
+        if config.base_url:
+            from .core.context import set_base_url_context
+
+            set_base_url_context(config.base_url)
 
         if client:
             self._client = client
@@ -374,6 +387,10 @@ class AsyncImednetSDK(_BaseSDK, AsyncSDKConvenienceMixin):
         self._api_key = config.api_key
         self._security_key = config.security_key
         self._base_url = config.base_url
+        if config.base_url:
+            from .core.context import set_base_url_context
+
+            set_base_url_context(config.base_url)
 
         if async_client:
             self._async_client = async_client
