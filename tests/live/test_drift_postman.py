@@ -57,9 +57,14 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
         model_name = contract.paths[endpoint]
         model_cls = ModelEngine.get_model(model_name)
 
+        # Convert camelCase to snake_case for SDK attribute lookup
+        from imednet.models.contract import to_snake
+
+        sdk_endpoint = to_snake(endpoint)
+
         # Build URL using the SDK's internal path builder
-        endpoint_obj = getattr(sdk, endpoint)
-        path = endpoint_obj._get_endpoint_path(study_key if endpoint != "studies" else None)
+        endpoint_obj = getattr(sdk, sdk_endpoint)
+        path = endpoint_obj._get_endpoint_path(study_key if sdk_endpoint != "studies" else None)
 
         try:
             response = sdk._client.get(path)
@@ -70,8 +75,11 @@ def test_postman_collection_drift(sdk: ImednetSDK, study_key: str):
                 model_cls.from_json(item)
         except Exception as e:
             from imednet.errors import NotFoundError
+
             if isinstance(e, NotFoundError):
-                logger.info(f"Skipping drift check for {endpoint} as list path is not supported (404 NotFound)")
+                logger.info(
+                    f"Skipping drift check for {endpoint} as list path is not supported (404 NotFound)"
+                )
                 continue
             logger.warning(f"Drift detected in {endpoint}: {e}")
             raise

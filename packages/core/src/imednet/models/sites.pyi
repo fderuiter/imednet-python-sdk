@@ -3,18 +3,14 @@
 from __future__ import annotations
 
 from imednet.models.base import ImednetBaseModel
-from imednet.models.engine import ModelEngine
-
-from typing import Any, Optional
-
 
 class Site(ImednetBaseModel):
     """A site participating in a study."""
 
-    study_key: Optional[str]
-    site_id: Optional[int]
-    site_name: Optional[str]
-    site_enrollment_status: Optional[str]
-    date_created: Optional[str]
-    date_modified: Optional[str]
-    last_updated: Optional[str]
+    study_key: str | None
+    site_id: int | None
+    site_name: str | None
+    site_enrollment_status: str | None
+    date_created: str | None
+    date_modified: str | None
+    last_updated: str | None
