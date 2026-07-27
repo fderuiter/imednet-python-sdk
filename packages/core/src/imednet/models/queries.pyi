@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from pydantic import Field
 
 from imednet.models.base import ImednetBaseModel
+from imednet.models.engine import ModelEngine
+
+from typing import Any, Optional
+
 
 class QueryComment(ImednetBaseModel):
     """A comment or response within a data query thread."""
@@ -18,20 +20,24 @@ class QueryComment(ImednetBaseModel):
     comment: str | None = Field(default=None, alias="comment")
     date: str | None = Field(default=None, alias="date")
 
+
+
+
 class Query(ImednetBaseModel):
     """Represents a data query (discrepancy) raised on a record."""
 
     query_comments: list[QueryComment] = Field(default_factory=list, alias="queryComments")
 
-    study_key: str | None
-    subject_id: int | None
-    annotation_id: int | None
-    description: str | None
-    record_id: int | None
-    variable: str | None
-    subject_key: str | None
-    date_created: str | None
-    date_modified: str | None
+    study_key: Optional[str]
+    subject_id: Optional[int]
+    annotation_id: Optional[int]
+    description: Optional[str]
+    record_id: Optional[int]
+    variable: Optional[str]
+    subject_key: Optional[str]
+    date_created: Optional[str]
+    date_modified: Optional[str]
     annotation_type: Any
     subject_oid: Any
     type: Any
+    last_updated: Optional[str]
