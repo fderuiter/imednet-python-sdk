@@ -1,12 +1,15 @@
+# pylint: disable=duplicate-code
 """Job and background operation models for iMedNet."""
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Optional, Any
 
 from pydantic import Field, field_validator
 
 from imednet.models.base import ImednetBaseModel
+from imednet.models.engine import ModelEngine
+
 
 class Job(ImednetBaseModel):
     """Represents an asynchronous background job."""
@@ -30,12 +33,13 @@ class Job(ImednetBaseModel):
         """Checks if the job failed or was cancelled."""
         return self.state.upper() in {"FAILED", "CANCELLED"} if self.state else False
 
-    job_id: str | None
-    batch_id: str | None
-    state: str | None
+    job_id: Optional[str]
+    batch_id: Optional[str]
+    state: Optional[str]
     date_created: Any
     date_finished: Any
     date_started: Any
+
 
 class JobStatus(Job):
     """Extended job information returned when polling."""
@@ -101,11 +105,11 @@ class JobStatus(Job):
         # If it's plain text and state is failed, we count it as 1 failure.
         return 0
 
-    job_id: str | None
-    batch_id: str | None
-    state: str | None
-    date_created: str | None
-    date_started: str | None
-    date_finished: str | None
-    progress: int | None
-    result_url: str | None
+    job_id: Optional[str]
+    batch_id: Optional[str]
+    state: Optional[str]
+    date_created: Optional[str]
+    date_started: Optional[str]
+    date_finished: Optional[str]
+    progress: Optional[int]
+    result_url: Optional[str]

@@ -2,28 +2,31 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from imednet.models.base import ImednetBaseModel
+from imednet.models.engine import ModelEngine
+
+from typing import Any, Optional
+
 
 class RecordRevision(ImednetBaseModel):
     """Historical version of a record including change reason and user."""
 
-    study_key: str | None
-    record_revision_id: int | None
-    record_id: int | None
-    record_revision: int | None
-    data_revision: int | None
-    record_status: str | None
-    subject_id: int | None
-    subject_key: str | None
-    site_id: int | None
-    form_key: str | None
-    interval_id: int | None
-    deleted: bool | None
-    date_created: str | None
+    study_key: Optional[str]
+    record_revision_id: Optional[int]
+    record_id: Optional[int]
+    record_revision: Optional[int]
+    data_revision: Optional[int]
+    record_status: Optional[str]
+    subject_id: Optional[int]
+    subject_key: Optional[str]
+    site_id: Optional[int]
+    form_key: Optional[str]
+    interval_id: Optional[int]
+    deleted: Optional[bool]
+    date_created: Optional[str]
     reason_for_change: Any
     record_oid: Any
     role: Any
     subject_oid: Any
     user: Any
+    last_updated: Optional[str]

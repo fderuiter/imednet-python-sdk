@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from pydantic import Field
 
 from imednet.models.base import ImednetBaseModel
+from imednet.models.engine import ModelEngine
+
+from typing import Any, Optional
+
 
 class FormSummary(ImednetBaseModel):
     """Minimal form details embedded within an interval definition."""
@@ -15,21 +17,22 @@ class FormSummary(ImednetBaseModel):
     form_key: str = Field("", alias="formKey")
     form_name: str = Field("", alias="formName")
 
+
 class Interval(ImednetBaseModel):
     """Represents a visit interval or event within the study timeline."""
 
     forms: list[FormSummary] | None = Field(default=None, alias="forms")
 
-    study_key: str | None
-    interval_id: int | None
-    interval_name: str | None
-    interval_description: str | None
-    interval_sequence: int | None
-    interval_group_id: int | None
-    interval_group_name: str | None
-    disabled: bool | None
-    date_created: str | None
-    date_modified: str | None
+    study_key: Optional[str]
+    interval_id: Optional[int]
+    interval_name: Optional[str]
+    interval_description: Optional[str]
+    interval_sequence: Optional[int]
+    interval_group_id: Optional[int]
+    interval_group_name: Optional[str]
+    disabled: Optional[bool]
+    date_created: Optional[str]
+    date_modified: Optional[str]
     actual_date: Any
     actual_date_form: Any
     defined_using_interval: Any
@@ -40,3 +43,4 @@ class Interval(ImednetBaseModel):
     timeline: Any
     window_calculation_date: Any
     window_calculation_form: Any
+    last_updated: Optional[str]

@@ -48,7 +48,7 @@ class ContractBuilder:
         """Map Postman placeholder strings to internal type names and defaults."""
         if isinstance(val, str):
             if val == "<string>":
-                return "string", ""
+                return "string", None
             if val == "<integer>":
                 return "integer", 0
             if val == "<boolean>":
@@ -132,21 +132,23 @@ class ContractBuilder:
 
                                         # Map path to model dynamically
                                         req = resp.get('originalRequest', {})
-                                        url = req.get('url', {})
-                                        path_segments = url.get('path', [])
-                                        if path_segments:
-                                            # Typically paths are like ['studies'] or ['api', 'v1', 'studies']
-                                            # We want to map the base resource name to the model.
-                                            for p in reversed(path_segments):
-                                                if (  # noqa: SIM102
-                                                    isinstance(p, str)
-                                                    and not p.startswith(':')
-                                                    and not p.startswith('{{')
-                                                ):
-                                                    # Keep only alphabetic base resource names to avoid mapping UUIDs or weird paths
-                                                    if p.isalpha() or p.replace('_', '').isalpha():
-                                                        self.contract.paths[p] = model_name
-                                                        break
+                                        method = req.get('method', 'GET')
+                                        if method.upper() == 'GET':
+                                            url = req.get('url', {})
+                                            path_segments = url.get('path', [])
+                                            if path_segments:
+                                                # Typically paths are like ['studies'] or ['api', 'v1', 'studies']
+                                                # We want to map the base resource name to the model.
+                                                for p in reversed(path_segments):
+                                                    if (  # noqa: SIM102
+                                                        isinstance(p, str)
+                                                        and not p.startswith(':')
+                                                        and not p.startswith('{{')
+                                                    ):
+                                                        # Keep only alphabetic base resource names to avoid mapping UUIDs or weird paths
+                                                        if p.isalpha() or p.replace('_', '').isalpha():
+                                                            self.contract.paths[p] = model_name
+                                                            break
 
                                 except Exception:  # noqa: S110
                                     pass
@@ -199,7 +201,7 @@ class ContractBuilder:
         openapi_paths = data.get("paths", {})
         for path, path_obj in openapi_paths.items():
             for method, method_obj in path_obj.items():
-                if method.lower() not in ["get", "post", "put", "patch", "delete"]:
+                if method.lower() != "get":
                     continue
                 responses = method_obj.get("responses", {})
                 for status, response_obj in responses.items():
