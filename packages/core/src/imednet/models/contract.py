@@ -146,7 +146,10 @@ class ContractBuilder:
                                                         and not p.startswith('{{')
                                                     ):
                                                         # Keep only alphabetic base resource names to avoid mapping UUIDs or weird paths
-                                                        if p.isalpha() or p.replace('_', '').isalpha():
+                                                        if (
+                                                            p.isalpha()
+                                                            or p.replace('_', '').isalpha()
+                                                        ):
                                                             self.contract.paths[p] = model_name
                                                             break
 

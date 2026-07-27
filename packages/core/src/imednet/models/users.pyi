@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import Field, computed_field
 
 from imednet.models.base import ImednetBaseModel
-from imednet.models.engine import ModelEngine
-
-from typing import Any, Optional
-
 
 class Role(ImednetBaseModel):
     """A role assigned to a user within a study or community."""
@@ -23,9 +21,6 @@ class Role(ImednetBaseModel):
     date_created: str | None = Field(default=None, alias="dateCreated")
     date_modified: str | None = Field(default=None, alias="dateModified")
 
-
-
-
 class User(ImednetBaseModel):
     """A user account in the system."""
 
@@ -38,10 +33,10 @@ class User(ImednetBaseModel):
         # will strip extra spaces if either is empty
         return " ".join(filter(None, (self.first_name, self.last_name)))
 
-    user_id: Optional[str]
-    login: Optional[str]
-    first_name: Optional[str]
-    last_name: Optional[str]
-    email: Optional[str]
-    user_active_in_study: Optional[bool]
+    user_id: str | None
+    login: str | None
+    first_name: str | None
+    last_name: str | None
+    email: str | None
+    user_active_in_study: bool | None
     roles: Any
