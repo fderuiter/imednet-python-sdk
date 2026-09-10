@@ -108,17 +108,17 @@ class FileStateProvider(BaseStateProvider):
     def _lock(self) -> Generator[None, None, None]:
         """Cross-process file lock using flock on UNIX."""
         self._lock_path.parent.mkdir(parents=True, exist_ok=True)
-        if fcntl is None:
+        if fcntl is None or not hasattr(fcntl, "flock"):
             # Fallback for systems without fcntl (e.g. Windows)
             yield
             return
 
         with open(self._lock_path, "w") as lock_file:
             try:
-                fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)  # type: ignore[attr-defined]
                 yield
             finally:
-                fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)  # type: ignore[attr-defined]
 
     def read_state(self) -> LedgerState:
         """Reads and validates the current ledger state."""
@@ -310,7 +310,7 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
             from airflow.models.xcom import XCom
             from airflow.utils.session import provide_session
 
-            @provide_session
+            @provide_session  # type: ignore[misc]
             def _get_xcom(session: Any = None) -> Any:
                 # Query the latest XCom for this key
                 return (
@@ -434,7 +434,7 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
             from airflow.models.xcom import XCom
             from airflow.utils.session import provide_session
 
-            @provide_session
+            @provide_session  # type: ignore[misc]
             def _delete_xcom(session: Any = None) -> bool:
                 query = session.query(XCom)
                 if stream_name:
@@ -456,7 +456,7 @@ class AirflowStateProvider(BaseStateProvider):  # pragma: no cover
             from airflow.models.xcom import XCom
             from airflow.utils.session import provide_session
 
-            @provide_session
+            @provide_session  # type: ignore[misc]
             def _get_all_xcoms(session: Any = None) -> Any:
                 return (
                     session.query(XCom)

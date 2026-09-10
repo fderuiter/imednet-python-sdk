@@ -15,7 +15,7 @@ def check_todos_in_init() -> bool:
 
     has_todos = False
     for py_file in base_path.rglob("*.py"):
-        content = py_file.read_text()
+        content = py_file.read_text(encoding="utf-8")
         try:
             tree = ast.parse(content, filename=str(py_file))
         except SyntaxError:
@@ -52,8 +52,8 @@ def check_packages_registered() -> bool:
         print("Warning: docs/conf.py or docs/index.rst not found.")
         return False
 
-    conf_py_content = conf_py_path.read_text()
-    index_rst_content = index_rst_path.read_text()
+    conf_py_content = conf_py_path.read_text(encoding="utf-8")
+    index_rst_content = index_rst_path.read_text(encoding="utf-8")
 
     has_errors = False
 
@@ -102,7 +102,7 @@ def check_package_docs() -> bool:
         print("Error: Root CHANGELOG.md not found.")
         return True
 
-    root_changelog_content = root_changelog.read_text()
+    root_changelog_content = root_changelog.read_text(encoding="utf-8")
 
     has_errors = False
 

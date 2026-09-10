@@ -52,10 +52,11 @@ To retrieve a configured SDK client to use in your custom operators or tasks, us
 ```python
 from apache_airflow_providers_imednet.hooks import ImednetHook
 
+
 def my_task_logic():
     hook = ImednetHook(imednet_conn_id="imednet_default")
     sdk_client = hook.get_sdk_client()
-    
+
     # Use the sdk_client to interact with iMednet
     studies = sdk_client.studies.list()
 ```

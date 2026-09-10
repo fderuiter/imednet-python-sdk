@@ -69,7 +69,7 @@ def validate_scenario(name, install_items, smoke_checks, dist_dir: Path):
             matching_wheels = [w for w in all_wheels if w.name.startswith(normalized_base + "-")]
 
             if matching_wheels:
-                wheel_path = sorted(matching_wheels)[-1]
+                wheel_path = max(matching_wheels)
                 install_args.append(f"{wheel_path.name}{extra}")
             else:
                 install_args.append(item)

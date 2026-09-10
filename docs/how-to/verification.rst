@@ -26,3 +26,17 @@ Before proposing any solution, execute and pass all CI quality gates locally.
    .. code-block:: bash
 
       hatch run docs
+
+Alternatively, if running via ``uv`` directly:
+
+.. code-block:: bash
+
+   uv sync --extra dev --extra docs
+   uv run ruff format --check .
+   uv run ruff check .
+   uv run mypy packages/core/src/imednet
+   uv run mypy packages/plugins-workflows/src/imednet_workflows
+   uv run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
+   uv run pytest -q --cov=imednet --cov=imednet_workflows --cov=apache_airflow_providers_imednet --cov-fail-under=90
+   uv run python scripts/build_docs.py
+

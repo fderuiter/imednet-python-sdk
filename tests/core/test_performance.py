@@ -1,4 +1,7 @@
-import fcntl
+try:
+    import fcntl
+except ImportError:
+    fcntl = None
 import json
 import logging
 import time
@@ -97,7 +100,8 @@ def test_performance_suite():
     degradations = []
 
     with open(historical_file, "r+") as f:
-        fcntl.flock(f, fcntl.LOCK_EX)
+        if fcntl and hasattr(fcntl, "flock"):
+            fcntl.flock(f, getattr(fcntl, "LOCK_EX"))
 
         try:
             f.seek(0)
@@ -126,6 +130,7 @@ def test_performance_suite():
         f.truncate()
         json.dump(history, f, indent=2)
 
-        fcntl.flock(f, fcntl.LOCK_UN)
+        if fcntl and hasattr(fcntl, "flock"):
+            fcntl.flock(f, getattr(fcntl, "LOCK_UN"))
 
     assert not degradations, "Performance Regressions Detected:\n" + "\n".join(degradations)

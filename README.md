@@ -36,7 +36,7 @@ Our documentation is organized according to the **Diátaxis framework**, which c
 - [UAT Workflow](docs/how-to/workflows/uat_workflow.rst)
 - [Bulk Submission](docs/how-to/workflows/bulk_submission.rst)
 - [Export Destinations](docs/how-to/export_destinations.rst)
-- [Streamlit Dashboard](docs/how-to/streamlit_dashboard.md)
+- [Streamlit Dashboard](docs/how-to/streamlit_dashboard.rst)
 
 ### 💡 [Explanation](docs/explanation/)
 *Understanding-oriented concepts and architectural overviews.*
@@ -48,7 +48,7 @@ Our documentation is organized according to the **Diátaxis framework**, which c
 *Information-oriented material like API documentation and contributor rules.*
 - [REST API Reference](docs/reference/rest_api_reference.rst)
 - [Configuration](docs/reference/configuration.rst)
-- [Contributor Rules](docs/reference/agent_rules.md)
+- [Contributor Rules](docs/reference/agent_rules.rst)
 - [Automated API Reference](docs/reference/api/)
 
 ## Installation
@@ -68,7 +68,7 @@ pip install imednet-streamlit
 
 ## Contributing
 
-Contributions are welcome! Please see our [Contributor Guide](AGENTS.md) and [Verification Loop](docs/how-to/verification.md) to get started.
+Contributions are welcome! Please see our [Contributor Guide](AGENTS.md) and [Verification Loop](docs/how-to/verification.rst) to get started.
 
 ## License
 

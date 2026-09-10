@@ -27,6 +27,8 @@ nosetests.xml
 coverage.xml
 *,cover
 .pytest_cache/
+reports/
+.scratch/
 
 # Translations
 *.mo

@@ -18,7 +18,7 @@ def main():
     for rst_file in docs_dir.rglob("*.rst"):
         if "_build" in rst_file.parts:
             continue
-        content = rst_file.read_text()
+        content = rst_file.read_text(encoding="utf-8")
         file_snippets = []
         lines = content.splitlines()
         i = 0
@@ -38,30 +38,28 @@ def main():
                     else:
                         indent = len(curr_line) - len(curr_line.lstrip())
                         break
-
-                if indent is not None:
-                    while i < n:
-                        curr_line = lines[i]
-                        if curr_line.strip() == "":
-                            block_lines.append("")
-                            i += 1
-                        elif len(curr_line) - len(curr_line.lstrip()) >= indent:
-                            block_lines.append(curr_line[indent:])
-                            i += 1
-                        else:
-                            break
-
-                    while block_lines and block_lines[-1] == "":
-                        block_lines.pop()
-                    if block_lines:
-                        file_snippets.append("\n".join(block_lines))
-                        count += 1
+                while i < n:
+                    curr_line = lines[i]
+                    if curr_line.strip() == "":
+                        block_lines.append("")
+                        i += 1
+                        continue
+                    curr_indent = len(curr_line) - len(curr_line.lstrip())
+                    if indent is not None and curr_indent >= indent:
+                        block_lines.append(curr_line[indent:])
+                        i += 1
+                    else:
+                        break
+                code_snippet = "\n".join(block_lines)
+                if code_snippet.strip():
+                    file_snippets.append(code_snippet)
+                    count += 1
                 continue
             i += 1
 
         if file_snippets:
             out_file = snippets_dir / f"{rst_file.stem}.py"
-            out_file.write_text("\n\n".join(file_snippets))
+            out_file.write_text("\n\n".join(file_snippets), encoding="utf-8")
 
     print(f"Extracted {count} testcode snippets.")
 
@@ -71,6 +69,7 @@ def main():
         "mypy",
         "--ignore-missing-imports",
         "--no-strict-optional",
+        "--allow-untyped-decorators",
         str(snippets_dir),
     ]
     print("Running typecheck:", " ".join(cmd))

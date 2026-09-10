@@ -123,7 +123,7 @@ def test_pyarrow_dataset_partitioned_storage_engine_defaults(
         "schema": [("study_key", "string"), ("form_key", "string")],
     }
     assert fake_ds.write_call is not None
-    assert "/.imednet_staging/" in fake_ds.write_call["base_dir"]
+    assert ".imednet_staging" in fake_ds.write_call["base_dir"]
     assert fake_ds.write_call["existing_data_behavior"] == "overwrite_or_ignore"
     assert table.columns == [
         ("study_key", ["STUDY_A", "STUDY_A"]),

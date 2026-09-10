@@ -1550,7 +1550,7 @@ dependencies = [
 
 [package.optional-dependencies]
 dev = [
-    { name = "atheris", marker = "python_full_version >= '3.12'" },
+    { name = "atheris", marker = "python_full_version >= '3.12' and sys_platform != 'win32'" },
     { name = "axe-playwright-python" },
     { name = "click" },
     { name = "duckdb" },
@@ -1580,17 +1580,17 @@ docs = [
 
 [package.metadata]
 requires-dist = [
-    { name = "atheris", marker = "python_full_version >= '3.12' and extra == 'dev'", specifier = ">=3.0.0,<4.0.0" },
+    { name = "atheris", marker = "python_full_version >= '3.12' and sys_platform != 'win32' and extra == 'dev'", specifier = ">=3.0.0,<4.0.0" },
     { name = "axe-playwright-python", marker = "extra == 'dev'" },
     { name = "click", marker = "extra == 'dev'", specifier = ">=8.3.3" },
     { name = "duckdb", marker = "extra == 'dev'", specifier = ">=1.1.0" },
-    { name = "faker", marker = "extra == 'dev'", specifier = ">=24.9.0,<25.0.0" },
+    { name = "faker", marker = "extra == 'dev'", specifier = ">=24.9.0,<41.0.0" },
     { name = "furo", marker = "extra == 'docs'", specifier = "<2026.0.0" },
     { name = "imednet", editable = "packages/core" },
     { name = "imednet-plugins-sinks", editable = "packages/plugins-sinks" },
     { name = "imednet-streamlit", editable = "packages/plugins-streamlit" },
     { name = "imednet-workflows", editable = "packages/plugins-workflows" },
-    { name = "mypy", marker = "extra == 'docs'", specifier = ">=1.15.0,<1.16.0" },
+    { name = "mypy", marker = "extra == 'docs'", specifier = ">=1.15.0,<2.4.0" },
     { name = "myst-parser", marker = "extra == 'docs'", specifier = ">=1.0.0" },
     { name = "neo4j", marker = "extra == 'dev'", specifier = ">=6.2.0,<7.0.0" },
     { name = "openpyxl", marker = "extra == 'dev'", specifier = ">=3.1,<4.0.0" },
