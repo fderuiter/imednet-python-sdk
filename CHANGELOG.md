@@ -134,5 +134,3 @@ The following changes affect code that imports from internal implementation pack
 * add explicit release workflow guidance ([6fe54ff](https://github.com/fderuiter/imednet-python-sdk/commit/6fe54ffedea2f6027d8ad1cd71b4a3075af16bc6))
 * **ci:** finalize release-please and conventional commit guidance ([c8a8cf9](https://github.com/fderuiter/imednet-python-sdk/commit/c8a8cf92f4ac1c0afa09bb662ea5a940b7039450))
 * document IMEDNET_BASE_URL in Quick Start ([ca3c0bd](https://github.com/fderuiter/imednet-python-sdk/commit/ca3c0bdda05a415ac51159086dcbb1aa0034dfcb))
-
-

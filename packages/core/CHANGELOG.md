@@ -21,7 +21,7 @@
 * implement compliance-aware PHI masking for data exports ([dc19d50](https://github.com/fderuiter/imednet-toolkit/commit/dc19d503b797a3b375afd7ff6d6f35b22463b2a3))
 * implement Enterprise Managed Portal with SSO and multi-tenancy ([72bd4d3](https://github.com/fderuiter/imednet-toolkit/commit/72bd4d32d7f095920551ec561821fa03229a61d3))
 * implement hybrid config-driven compliance file mapping ([#1420](https://github.com/fderuiter/imednet-toolkit/issues/1420)) ([6b0e01b](https://github.com/fderuiter/imednet-toolkit/commit/6b0e01be21b32d54e5ffb6c89c4e13fe50b9a9ac))
-* implement platform shared db connection, unified sink template, and UI component gallery ([ff99caf](https://github.com/fderuiter/imednet-toolkit/commit/ff99caf7ffeda68aa8bd8f8bc494b1e3cb9eb7b5))
+* implement platform shared db connection, unified sink template, and UI component gallery ([ff99calf](https://github.com/fderuiter/imednet-toolkit/commit/ff99caf7ffeda68aa8bd8f8bc494b1e3cb9eb7b5))
 * Implement unified API contract model for model generation ([a50e1b2](https://github.com/fderuiter/imednet-toolkit/commit/a50e1b23976489b73d251b72402e3913d9b32858))
 * implement unified execution middleware and centralize pagination loop ([cb6a16e](https://github.com/fderuiter/imednet-toolkit/commit/cb6a16e05092ba59cc0768793da0608f5789cc64))
 * **integrations:** implement unified functional facade for data export ([14435a6](https://github.com/fderuiter/imednet-toolkit/commit/14435a62c628972e915dfaa9b61f071b070b27b5))

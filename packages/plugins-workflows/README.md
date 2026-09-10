@@ -26,7 +26,7 @@ pip install imednet-workflows[uat]
 
 ## Launch via CLI
 
-The package provides CLI commands mapped to registered `imednet.cli_plugins` subcommands. 
+The package provides CLI commands mapped to registered `imednet.cli_plugins` subcommands.
 
 ```bash
 # Extract clinical records

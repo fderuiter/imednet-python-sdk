@@ -86,7 +86,7 @@ class TestNeo4jExportSink:
         """TODO: Add docstring."""
         import imednet_sinks.graph as graph_mod
 
-        neo4j, driver = _fake_neo4j_module(fail_connect=True)  # noqa: RUF059
+        neo4j, driver = _fake_neo4j_module(fail_connect=True)
         monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
 
         from imednet_sinks.graph import Neo4jExportSink
@@ -102,7 +102,7 @@ class TestNeo4jExportSink:
         """TODO: Add docstring."""
         import imednet_sinks.graph as graph_mod
 
-        neo4j, driver = _fake_neo4j_module()  # noqa: RUF059
+        neo4j, driver = _fake_neo4j_module()
         monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
 
         from imednet_sinks.graph import Neo4jExportSink
@@ -170,7 +170,7 @@ class TestNeo4jExportSink:
         """TODO: Add docstring."""
         import imednet_sinks.graph as graph_mod
 
-        neo4j, driver = _fake_neo4j_module()  # noqa: RUF059
+        neo4j, driver = _fake_neo4j_module()
         monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
 
         from imednet_sinks.graph import Neo4jExportSink
@@ -212,7 +212,7 @@ class TestNeo4jExportSink:
         """TODO: Add docstring."""
         import imednet_sinks.graph as graph_mod
 
-        neo4j, driver = _fake_neo4j_module()  # noqa: RUF059
+        neo4j, driver = _fake_neo4j_module()
         monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
 
         from imednet_sinks.graph import Neo4jExportSink
@@ -257,7 +257,7 @@ class TestMongoDbExportSink:
         """TODO: Add docstring."""
         import imednet_sinks.document as doc_mod
 
-        pymongo, client, collection = _fake_pymongo_module(fail_connect=True)  # noqa: RUF059
+        pymongo, client, collection = _fake_pymongo_module(fail_connect=True)
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
 
         from imednet_sinks.document import MongoDbExportSink, MongoDbSinkConfig
@@ -276,7 +276,7 @@ class TestMongoDbExportSink:
         """TODO: Add docstring."""
         import imednet_sinks.document as doc_mod
 
-        pymongo, client, collection = _fake_pymongo_module(fail_connect=True)  # noqa: RUF059
+        pymongo, client, collection = _fake_pymongo_module(fail_connect=True)
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
 
         from imednet_sinks.document import MongoDbExportSink, MongoDbSinkConfig
@@ -295,7 +295,7 @@ class TestMongoDbExportSink:
         """TODO: Add docstring."""
         import imednet_sinks.document as doc_mod
 
-        pymongo, client, collection = _fake_pymongo_module()  # noqa: RUF059
+        pymongo, client, collection = _fake_pymongo_module()
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
 
         from imednet_sinks.document import MongoDbExportSink, MongoDbSinkConfig
@@ -317,7 +317,7 @@ class TestMongoDbExportSink:
         """TODO: Add docstring."""
         import imednet_sinks.document as doc_mod
 
-        pymongo, client, collection = _fake_pymongo_module()  # noqa: RUF059
+        pymongo, client, collection = _fake_pymongo_module()
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
 
         from imednet_sinks.document import MongoDbExportSink, MongoDbSinkConfig
@@ -367,7 +367,7 @@ class TestMongoDbExportSink:
         """TODO: Add docstring."""
         import imednet_sinks.document as doc_mod
 
-        pymongo, client, collection = _fake_pymongo_module()  # noqa: RUF059
+        pymongo, client, collection = _fake_pymongo_module()
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
 
         from imednet_sinks.document import MongoDbExportSink, MongoDbSinkConfig
@@ -384,7 +384,7 @@ class TestMongoDbExportSink:
         """TODO: Add docstring."""
         import imednet_sinks.document as doc_mod
 
-        pymongo, client, collection = _fake_pymongo_module()  # noqa: RUF059
+        pymongo, client, collection = _fake_pymongo_module()
         collection.bulk_write.side_effect = RuntimeError("mongo down")
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
         monkeypatch.setattr("time.sleep", lambda _: None)
@@ -416,7 +416,7 @@ class TestMongoDbExportSink:
         """TODO: Add docstring."""
         import imednet_sinks.document as doc_mod
 
-        pymongo, client, collection = _fake_pymongo_module()  # noqa: RUF059
+        pymongo, client, collection = _fake_pymongo_module()
         monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
 
         from imednet_sinks.document import MongoDbExportSink, MongoDbSinkConfig
@@ -467,7 +467,7 @@ class TestSnowflakeExportSink:
         sf, conn, cursor = _fake_snowflake_module()
         if fail_connect:
             sf.connect.side_effect = Exception("auth error")
-        pa, pq, table = _fake_pyarrow_modules()  # noqa: RUF059
+        pa, pq, table = _fake_pyarrow_modules()
 
         def fake_require(pkg, extras):
             """TODO: Add docstring."""
@@ -500,9 +500,9 @@ class TestSnowflakeExportSink:
         import imednet_sinks.warehouse as wh_mod
         from imednet_sinks.warehouse import SnowflakeExportSink, SnowflakeSinkConfig
 
-        sf, conn, cursor = _fake_snowflake_module()  # noqa: RUF059
+        sf, conn, cursor = _fake_snowflake_module()
         sf.connect.side_effect = Exception("auth failed")
-        pa, pq, table = _fake_pyarrow_modules()  # noqa: RUF059
+        pa, pq, table = _fake_pyarrow_modules()
 
         def fake_require(pkg, extras):
             """TODO: Add docstring."""
@@ -532,7 +532,7 @@ class TestSnowflakeExportSink:
         import imednet_sinks.warehouse as wh_mod
         from imednet_sinks.warehouse import SnowflakeExportSink, SnowflakeSinkConfig
 
-        sf, conn, cursor = _fake_snowflake_module()  # noqa: RUF059
+        sf, conn, cursor = _fake_snowflake_module()
         monkeypatch.setattr(wh_mod, "_require_optional_dep", lambda *_: sf)
 
         # account is empty → should raise
@@ -565,7 +565,7 @@ class TestSnowflakeExportSink:
         """TODO: Add docstring."""
         from imednet_sinks.warehouse import SnowflakeExportSink
 
-        cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)  # noqa: RUF059
+        cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)
         sink = SnowflakeExportSink(config=cfg)
         records = [
             MagicMock(record_id=i, form_id=1, visit_id=1, subject_key="S", record_data={})
@@ -584,7 +584,7 @@ class TestSnowflakeExportSink:
         import imednet_sinks.warehouse as wh_mod
         from imednet_sinks.warehouse import SnowflakeExportSink
 
-        cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)  # noqa: RUF059
+        cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)
         seen: list[tuple[str, str]] = []
 
         def fake_require(pkg, extras):
@@ -614,7 +614,7 @@ class TestSnowflakeExportSink:
         """TODO: Add docstring."""
         from imednet_sinks.warehouse import SnowflakeExportSink
 
-        cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)  # noqa: RUF059
+        cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)
         sink = SnowflakeExportSink(config=cfg)
         assert sink.write_batch([], batch_id="b0") == 0
         sink.close()
@@ -624,9 +624,9 @@ class TestSnowflakeExportSink:
         import imednet_sinks.warehouse as wh_mod
         from imednet_sinks.warehouse import SnowflakeExportSink, SnowflakeSinkConfig
 
-        sf, conn, cursor = _fake_snowflake_module()  # noqa: RUF059
+        sf, conn, cursor = _fake_snowflake_module()
         cursor.execute.side_effect = RuntimeError("network error")
-        pa, pq, table = _fake_pyarrow_modules()  # noqa: RUF059
+        pa, pq, table = _fake_pyarrow_modules()
 
         def fake_require(pkg, extras):
             """TODO: Add docstring."""
@@ -667,7 +667,7 @@ class TestSnowflakeExportSink:
 
         from imednet_sinks.warehouse import SnowflakeExportSink, SnowflakeSinkConfig
 
-        cfg_dict, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)  # noqa: RUF059
+        cfg_dict, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)
         manifest = tmp_path / "manifest.jsonl"
 
         cfg = SnowflakeSinkConfig(
@@ -687,8 +687,8 @@ class TestSnowflakeExportSink:
         # re-apply monkeypatch with correct cfg
         import imednet_sinks.warehouse as wh_mod2
 
-        sf2, conn2, cursor2 = _fake_snowflake_module()  # noqa: RUF059
-        pa2, pq2, table2 = _fake_pyarrow_modules()  # noqa: RUF059
+        sf2, conn2, cursor2 = _fake_snowflake_module()
+        pa2, pq2, table2 = _fake_pyarrow_modules()
 
         def fake_require2(pkg, extras):
             """TODO: Add docstring."""
@@ -716,7 +716,7 @@ class TestSnowflakeExportSink:
         """TODO: Add docstring."""
         from imednet_sinks.warehouse import SnowflakeExportSink
 
-        cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)  # noqa: RUF059
+        cfg, sf, conn, cursor, pq = self._make_sink(monkeypatch, tmp_path=tmp_path)
         sink = SnowflakeExportSink(config=cfg)
         sink.close()
         sink.close()  # must not raise
@@ -743,7 +743,7 @@ def test_export_to_neo4j(monkeypatch):
     """TODO: Add docstring."""
     import imednet_sinks.graph as graph_mod
 
-    neo4j, driver = _fake_neo4j_module()  # noqa: RUF059
+    neo4j, driver = _fake_neo4j_module()
     monkeypatch.setattr(graph_mod, "_require_optional_dep", lambda *_: neo4j)
 
     sdk_mock = MagicMock()
@@ -757,7 +757,7 @@ def test_export_to_mongodb(monkeypatch):
     """TODO: Add docstring."""
     import imednet_sinks.document as doc_mod
 
-    pymongo, client, collection = _fake_pymongo_module()  # noqa: RUF059
+    pymongo, client, collection = _fake_pymongo_module()
     monkeypatch.setattr(doc_mod, "_require_optional_dep", lambda *_: pymongo)
 
     sdk_mock = MagicMock()
@@ -772,8 +772,8 @@ def test_export_to_snowflake(monkeypatch, tmp_path):
     import imednet_sinks.warehouse as wh_mod
     from imednet_sinks.warehouse import SnowflakeSinkConfig
 
-    sf, conn, cursor = _fake_snowflake_module()  # noqa: RUF059
-    pa, pq, table = _fake_pyarrow_modules()  # noqa: RUF059
+    sf, conn, cursor = _fake_snowflake_module()
+    pa, pq, table = _fake_pyarrow_modules()
 
     def fake_require(pkg, extras):
         """TODO: Add docstring."""

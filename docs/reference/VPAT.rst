@@ -11,7 +11,7 @@ Accessibility Conformance Report
 
 Summary
 ^^^^^^^
-The platform achieves WCAG 2.1 Level AA compliance across all primary user workflows. 
+The platform achieves WCAG 2.1 Level AA compliance across all primary user workflows.
 No "Critically Non-Compliant" findings.
 
 WCAG 2.1 Report

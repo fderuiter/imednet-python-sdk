@@ -47,14 +47,14 @@ jobs:
             fi
           done
           packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install "${packages[@]}"
 
       - name: Run Performance Suite
         env:
           IMEDNET_POSTMAN_PATH: ${{ github.workspace }}/imednet.postman_collection.json
         run: |
           pytest tests/core/test_performance.py -m performance -v
-          
+
       - name: Save Verification Artifact
         uses: actions/upload-artifact@v4
         with:

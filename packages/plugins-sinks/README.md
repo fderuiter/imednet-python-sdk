@@ -46,7 +46,7 @@ Alternatively, commands can be launched via standard CLI structures mapped to th
 
 - **Multi-backend Support**: Tailored exporters mapping data to Document Store (MongoDB), Property Graph (Neo4j), or Data Warehouse (Snowflake) systems.
 - **Dynamic Lazy Imports**: Keeps package initialization light by lazy-loading heavy drivers (e.g. PyMongo, Neo4j, PyArrow) at execution time.
-- **Idempotency & Resiliency**: 
+- **Idempotency & Resiliency**:
   - **MongoDB**: Uses bulk upserts mapping unique compound keys (`<study_key>/<record_id>`) using PyMongo `bulk_write` update/upsert actions.
   - **Neo4j**: Merges hierarchies (`Study -> Subject -> Visit -> Record`) idempotently using query templates.
   - **Snowflake**: Two-phase loading converting records to Apache Arrow tables, writing Parquet stages, and running atomic transactional `COPY INTO` with `FORCE = FALSE`.

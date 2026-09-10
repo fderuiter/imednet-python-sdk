@@ -31,7 +31,7 @@ When an undocumented field is received or a field changes type, the SDK logs a w
 via the ``imednet.drift`` logger.
 
 These logs allow developers to identify breaking API changes or additive field additions
-before they cause systemic regressions. 
+before they cause systemic regressions.
 
 **Additive Drift:** New undocumented fields are logged as additive drift. The SDK drops
 these fields during model creation but warns the user.

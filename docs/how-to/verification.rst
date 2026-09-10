@@ -39,4 +39,3 @@ Alternatively, if running via ``uv`` directly:
    uv run mypy packages/providers-airflow/src/apache_airflow_providers_imednet
    uv run pytest -q --cov=imednet --cov=imednet_workflows --cov=apache_airflow_providers_imednet --cov-fail-under=90
    uv run python scripts/build_docs.py
-

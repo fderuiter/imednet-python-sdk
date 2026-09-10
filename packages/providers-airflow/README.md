@@ -17,7 +17,7 @@ pip install ./packages/providers-airflow
 ```
 
 **Required Dependencies:**
-This package requires `imednet` and a standard `apache-airflow` core environment as parent dependencies. 
+This package requires `imednet` and a standard `apache-airflow` core environment as parent dependencies.
 Optionally, install the `amazon` extra for AWS integrations:
 ```bash
 pip install apache-airflow-providers-imednet[amazon]

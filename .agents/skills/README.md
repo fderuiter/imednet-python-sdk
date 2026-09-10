@@ -73,4 +73,3 @@ When unsure which skill to reach for, use:
 - **`migrate-to-shoehorn`**: Migration tool to shoehorn architecture.
 - **`scaffold-exercises`**: Scaffolding coding exercises.
 - **`setup-pre-commit`**: Configure pre-commit hooks.
-

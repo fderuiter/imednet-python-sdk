@@ -40,7 +40,7 @@ repos:
     hooks:
       - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
-        exclude: ^(vulture_whitelist\.py|uv\.lock|imednet\.postman_collection\.json|\.secrets\.baseline)$
+        files: ^packages/.*/src/
 
   # Local repository hygiene scripts
   - repo: local

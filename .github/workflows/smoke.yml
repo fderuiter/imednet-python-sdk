@@ -31,7 +31,7 @@ jobs:
             fi
           done
           packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install "${packages[@]}"
       - name: Install Newman
         run: npm install -g newman
       - name: Run Postman tests

@@ -20,7 +20,7 @@ Phase 2: Foundation (2-3 weeks)
 - [ ] Extract sync/async duplication
 - [ ] Add error registry
 
-Phase 3: Architecture (3-4 weeks)  
+Phase 3: Architecture (3-4 weeks)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 - [ ] Split ListGetEndpointMixin (SRP)
 - [ ] Implement dependency injection container

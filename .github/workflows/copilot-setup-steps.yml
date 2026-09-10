@@ -55,4 +55,4 @@ jobs:
             fi
           done
           packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install "${packages[@]}"

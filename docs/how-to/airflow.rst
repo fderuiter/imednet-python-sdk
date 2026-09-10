@@ -60,12 +60,12 @@ Operators and Sensors
 The Airflow integration organizes hooks, operators, and sensors in dedicated
 subpackages for clarity.
 
-``ImednetExportOperator`` is a unified execution engine that seamlessly writes 
-records to any supported destination (CSV, Parquet, Snowflake, Neo4j, etc.) 
-using the core SDK's universal sink interface. Common operational parameters 
-(such as ``batch_size`` and ``max_retries``) work identically across all 
-destinations. ``ImednetJobSensor`` waits for an export job to complete. 
-All operators use ``ImednetHook`` to obtain an :class:`~imednet.ImednetSDK` instance 
+``ImednetExportOperator`` is a unified execution engine that seamlessly writes
+records to any supported destination (CSV, Parquet, Snowflake, Neo4j, etc.)
+using the core SDK's universal sink interface. Common operational parameters
+(such as ``batch_size`` and ``max_retries``) work identically across all
+destinations. ``ImednetJobSensor`` waits for an export job to complete.
+All operators use ``ImednetHook`` to obtain an :class:`~imednet.ImednetSDK` instance
 from an Airflow connection. The production reference DAG above shows the recommended
 dynamic-mapping pattern: keep static settings (for example ``destination`` and
 ``imednet_conn_id``) in ``.partial(...)`` and map only runtime fields

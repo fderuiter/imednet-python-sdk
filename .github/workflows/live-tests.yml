@@ -48,7 +48,7 @@ jobs:
             fi
           done
           packages+=("-e" ".[dev,docs]")
-          python -m pip install "${packages[@]}" 
+          python -m pip install "${packages[@]}"
 
       - name: Run Smoke Tests
         env:
@@ -75,9 +75,9 @@ jobs:
           pytest tests/live/ -v --log-cli-level=WARNING > pytest_output.txt 2>&1
           EXIT_CODE=$?
           set -e
-          
+
           echo "pytest_exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
-          
+
           python scripts/aggregate_verification.py
 
       - name: Post Drift Report

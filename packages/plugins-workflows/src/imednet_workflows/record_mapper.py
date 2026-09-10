@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Iterable, Iterator
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 try:
     import pandas as pd
@@ -107,7 +107,7 @@ class RecordMapper:
         fields: dict[str, tuple[Any | None, Any]] = {}
         for key in variable_keys:
             fields[key] = (
-                Optional[Any],  # noqa: UP045
+                Any | None,
                 Field(None, alias=key, description=label_map.get(key, key)),
             )
         return create_model("RecordData", __base__=BaseModel, **fields)  # type: ignore

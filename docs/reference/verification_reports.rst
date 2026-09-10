@@ -19,7 +19,7 @@ The central model requires:
 Extending the Report Schema
 ---------------------------
 
-If you need to add a new verification type, extend the ``Literal`` for the ``track`` field in ``VerificationReport`` inside ``packages/core/src/imednet/models/verification.py``. 
+If you need to add a new verification type, extend the ``Literal`` for the ``track`` field in ``VerificationReport`` inside ``packages/core/src/imednet/models/verification.py``.
 
 To add new fields or structures specific to your testing, use the standard Pydantic inheritance patterns or add optional fields to the existing models.
 

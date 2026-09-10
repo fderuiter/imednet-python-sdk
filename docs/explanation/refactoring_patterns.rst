@@ -23,8 +23,8 @@ by ``GenericListGetEndpoint``.
 
     from imednet.core.endpoint.edc_mixin import EdcGenericListGetEndpoint
     from imednet.models.records import Record
-    
-    
+
+
     class RecordsEndpoint(EdcGenericListGetEndpoint[Record]):
         PATH = "records"
         MODEL = Record

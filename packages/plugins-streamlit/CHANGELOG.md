@@ -11,7 +11,7 @@
 * Enhanced JobPoller with progress callbacks and concurrent polling ([ef6fcea](https://github.com/fderuiter/imednet-toolkit/commit/ef6fceabd5acfa823321c54852a0dea64e61778d))
 * implement Enterprise Managed Portal with SSO and multi-tenancy ([72bd4d3](https://github.com/fderuiter/imednet-toolkit/commit/72bd4d32d7f095920551ec561821fa03229a61d3))
 * implement hybrid config-driven compliance file mapping ([#1420](https://github.com/fderuiter/imednet-toolkit/issues/1420)) ([6b0e01b](https://github.com/fderuiter/imednet-toolkit/commit/6b0e01be21b32d54e5ffb6c89c4e13fe50b9a9ac))
-* implement platform shared db connection, unified sink template, and UI component gallery ([ff99caf](https://github.com/fderuiter/imednet-toolkit/commit/ff99caf7ffeda68aa8bd8f8bc494b1e3cb9eb7b5))
+* implement platform shared db connection, unified sink template, and UI component gallery ([ff99calf](https://github.com/fderuiter/imednet-toolkit/commit/ff99caf7ffeda68aa8bd8f8bc494b1e3cb9eb7b5))
 * **streamlit:** add browser-level end-to-end dashboard coverage ([5ec4015](https://github.com/fderuiter/imednet-toolkit/commit/5ec4015772af072fa7478c3da5b6c3e6acdc6934))
 * **streamlit:** add browser-level end-to-end dashboard coverage ([53ebc33](https://github.com/fderuiter/imednet-toolkit/commit/53ebc3377de8e6ab46f8f5f296d425ba39b5457d))
 * **streamlit:** add browser-level end-to-end dashboard coverage ([5ece725](https://github.com/fderuiter/imednet-toolkit/commit/5ece7259e5cc2e95ee44f2d2ec19167192b0cf42))

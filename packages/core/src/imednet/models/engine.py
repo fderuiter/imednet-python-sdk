@@ -4,7 +4,7 @@
 
 import os
 import re
-from typing import Any, ClassVar, Optional
+from typing import Any, ClassVar
 
 from pydantic import Field, create_model
 
@@ -119,11 +119,11 @@ class ModelEngine:
 
             # Map internal type name to Python type
             if field_def.type_name == "string":
-                py_type = Optional[str]  # noqa: UP045
+                py_type = str | None
             elif field_def.type_name == "integer":
-                py_type = Optional[int]  # type: ignore  # noqa: UP045
+                py_type = int | None  # type: ignore
             elif field_def.type_name == "boolean":
-                py_type = Optional[bool]  # type: ignore  # noqa: UP045
+                py_type = bool | None  # type: ignore
             else:
                 py_type = Any  # type: ignore
 
