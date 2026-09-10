@@ -1,5 +1,86 @@
 # Changelog
 
+## [0.9.0](https://github.com/fderuiter/imednet-toolkit/compare/imednet-v0.8.0...imednet-v0.9.0) (2026-09-10)
+
+
+### Features
+
+* Add automated dead-code prevention with Vulture ([3bbcb8c](https://github.com/fderuiter/imednet-toolkit/commit/3bbcb8c7739b27d7b890e83fd6123cb040f7ac7c))
+* add live test charter with pass/skip/fail contract and update discovery/conftest/smoke semantics ([641f542](https://github.com/fderuiter/imednet-toolkit/commit/641f542c6f1d327d103a88e1a7fdbbfcef9b5132))
+* cli end-to-end failure-path and output UX coverage ([811e190](https://github.com/fderuiter/imednet-toolkit/commit/811e1901453e894461d25f7688cfb0f037a57d4e))
+* cli end-to-end failure-path and output UX coverage ([ce8888a](https://github.com/fderuiter/imednet-toolkit/commit/ce8888ad264946a0a7a16c1bb4a60d2675be73dc))
+* **core:** implement granular entrypoint registry architecture for workflows ([da4b60d](https://github.com/fderuiter/imednet-toolkit/commit/da4b60d8568254b316284d9c89c89cf860a64f41))
+* **core:** support IMEDNET_TIMEOUT and IMEDNET_STRICT_MODE settings ([49fd8bd](https://github.com/fderuiter/imednet-toolkit/commit/49fd8bd805172eef61a4e650ee1f7afe520151fb))
+* decouple database sinks into unified plugins package ([47850f2](https://github.com/fderuiter/imednet-toolkit/commit/47850f20d696ea3840dcc3aaa00585a9ceef98e4))
+* define live test suite contract and implement charter semantics ([642ac79](https://github.com/fderuiter/imednet-toolkit/commit/642ac79e37185a6de21472bf674f2f356d4f1531))
+* enforce boundary isolation and align downstream utility logic ([dd39824](https://github.com/fderuiter/imednet-toolkit/commit/dd398240a87fa9f2e4a79e7f42febd170eed9d9d))
+* Enhanced JobPoller with progress callbacks and concurrent polling ([ef8d1eb](https://github.com/fderuiter/imednet-toolkit/commit/ef8d1ebf948865d456ccd46b71b0439d5bd88b90))
+* Enhanced JobPoller with progress callbacks and concurrent polling ([ef6fcea](https://github.com/fderuiter/imednet-toolkit/commit/ef6fceabd5acfa823321c54852a0dea64e61778d))
+* enrich JobStatus object with auto-parsed results and metadata ([84d6083](https://github.com/fderuiter/imednet-toolkit/commit/84d6083b6f645b43bf5760da4711ea2981af93b0))
+* Fully Dynamic OpenAPI Contract Resolution for automated drift validation ([#1419](https://github.com/fderuiter/imednet-toolkit/issues/1419)) ([9e1f6a7](https://github.com/fderuiter/imednet-toolkit/commit/9e1f6a7cc4f89e278628a5f46c859ddfbe10e13d))
+* implement compliance-aware PHI masking for data exports ([dc19d50](https://github.com/fderuiter/imednet-toolkit/commit/dc19d503b797a3b375afd7ff6d6f35b22463b2a3))
+* implement Enterprise Managed Portal with SSO and multi-tenancy ([72bd4d3](https://github.com/fderuiter/imednet-toolkit/commit/72bd4d32d7f095920551ec561821fa03229a61d3))
+* implement hybrid config-driven compliance file mapping ([#1420](https://github.com/fderuiter/imednet-toolkit/issues/1420)) ([6b0e01b](https://github.com/fderuiter/imednet-toolkit/commit/6b0e01be21b32d54e5ffb6c89c4e13fe50b9a9ac))
+* implement platform shared db connection, unified sink template, and UI component gallery ([ff99caf](https://github.com/fderuiter/imednet-toolkit/commit/ff99caf7ffeda68aa8bd8f8bc494b1e3cb9eb7b5))
+* Implement unified API contract model for model generation ([a50e1b2](https://github.com/fderuiter/imednet-toolkit/commit/a50e1b23976489b73d251b72402e3913d9b32858))
+* implement unified execution middleware and centralize pagination loop ([cb6a16e](https://github.com/fderuiter/imednet-toolkit/commit/cb6a16e05092ba59cc0768793da0608f5789cc64))
+* **integrations:** implement unified functional facade for data export ([14435a6](https://github.com/fderuiter/imednet-toolkit/commit/14435a62c628972e915dfaa9b61f071b070b27b5))
+* migrate legacy CSV and SQL exports to Unified Tabular Sink Engine ([786e0f2](https://github.com/fderuiter/imednet-toolkit/commit/786e0f2d552ae2f016cc4560031211240064969b))
+* migrate sinks to centralized mapper with enrichment engine ([bdaeadb](https://github.com/fderuiter/imednet-toolkit/commit/bdaeadb6dce7ce48fda3dc41e775bd51c2c2416e))
+* schedule daily smoke tests and standardize pipeline secrets ([#1470](https://github.com/fderuiter/imednet-toolkit/issues/1470)) ([e47dc1c](https://github.com/fderuiter/imednet-toolkit/commit/e47dc1c67631a4301a3973c77948a14f7f03b89f))
+* **sdk:** dynamically synthesize unified sync/async endpoint definitions ([6ab3631](https://github.com/fderuiter/imednet-toolkit/commit/6ab3631fcef1326a3cbcbc6a013441a52bcbf2bb))
+* unified verification model to eliminate log parsing in CI ([#1412](https://github.com/fderuiter/imednet-toolkit/issues/1412)) ([390423a](https://github.com/fderuiter/imednet-toolkit/commit/390423ae37d7e81df838f4c5a43ee6aeec77b259))
+* unify execution protocol for list operations using UniversalExecutor ([56e6ea3](https://github.com/fderuiter/imednet-toolkit/commit/56e6ea3bb97faa877c6a4f8f42be4de41e035ca6))
+
+
+### Bug Fixes
+
+* 🔒 address upstream API drift for clinical studies and dynamic models ([1dbb29d](https://github.com/fderuiter/imednet-toolkit/commit/1dbb29d5de4ab8c420d8bb56cfa349d4ad5d75f4))
+* address upstream API drift for clinical studies and dynamic models ([713c59c](https://github.com/fderuiter/imednet-toolkit/commit/713c59ca9dcd099304cc1922ed1904ca633e83de))
+* **airflow:** add missing type annotation for job in sensors.py ([0650818](https://github.com/fderuiter/imednet-toolkit/commit/06508181cfebcdd3b6b610fb3de68badb41370f9))
+* avoid importing streamlit app during CLI setup ([f7a51bd](https://github.com/fderuiter/imednet-toolkit/commit/f7a51bd0a2bfccf85d39a3c155df77461db1b50b))
+* Avoid importing the Streamlit dashboard during CLI initialization ([a521e7b](https://github.com/fderuiter/imednet-toolkit/commit/a521e7b27995669c9f6364f5a7b4fb63197c35fd))
+* broaden site/subject eligibility in discovery and add diagnostics ([af17fae](https://github.com/fderuiter/imednet-toolkit/commit/af17fae43251f69ad81812b6705177f72195ecb3))
+* broaden site/subject eligibility in discovery and add diagnostics ([1a4e590](https://github.com/fderuiter/imednet-toolkit/commit/1a4e5902ff5e4eabb512b63829c0e4884ebe0ab3))
+* bypass respx_mock guard in live test suite via path-based detection ([73d85de](https://github.com/fderuiter/imednet-toolkit/commit/73d85de20125d15e948151a15b4d2900bf1b00db))
+* **cli:** add fallback commands for uninstalled plugins ([55b3e73](https://github.com/fderuiter/imednet-toolkit/commit/55b3e73f1a45af17ddfec52fd95c207cc224fdda))
+* **core:** resolve linting, formatting, and typing CI failures ([2a8bd0f](https://github.com/fderuiter/imednet-toolkit/commit/2a8bd0f79d38650796981a1fb7d8a6b14f844b7a))
+* **core:** resolve ruff formatting error in users model ([d2355ff](https://github.com/fderuiter/imednet-toolkit/commit/d2355ffa621739ed3b8f038b652601f32ac6fd83))
+* **core:** resolve ruff formatting issues in paginator.py ([0646aa8](https://github.com/fderuiter/imednet-toolkit/commit/0646aa8ba44362aba3d9fe32a6affe6b6435a219))
+* **core:** resolve ruff formatting issues in sdk_convenience.py ([0affad9](https://github.com/fderuiter/imednet-toolkit/commit/0affad92da8fa9a75324753b285db5f7c55318fe))
+* **docs:** remove DataFrame from __all__ to fix Sphinx autodoc error ([dc3622b](https://github.com/fderuiter/imednet-toolkit/commit/dc3622bfeaf516e006bdb622a6e0c5a07541aae4))
+* **docs:** resolve sphinx autodoc errors with pandas.DataFrame and fix RET503 ([4b4bb0c](https://github.com/fderuiter/imednet-toolkit/commit/4b4bb0cff42e8996af44879e6ad4ca316d43a620))
+* **export:** synchronize registry operations with re-entrant lock ([400f28a](https://github.com/fderuiter/imednet-toolkit/commit/400f28ad2e47e1348d6ee90b6f0bce304775fac4))
+* handle empty strings in parse_bool to resolve API drift ([159e550](https://github.com/fderuiter/imednet-toolkit/commit/159e55073f0f6c94e3311f30164e30712ffc8784))
+* monorepo F401 and F841 automated cleanup ([049ce38](https://github.com/fderuiter/imednet-toolkit/commit/049ce38e492c29dc6f4d4dfd64fdc7476cb89914))
+* reconcile cross-platform dependencies, linter rules, and verification gates ([91ccda7](https://github.com/fderuiter/imednet-toolkit/commit/91ccda7f6b87ce9ed555c19d9099a5de044b7ab9))
+* remove stale strict mypy ignores ([3a1bd21](https://github.com/fderuiter/imednet-toolkit/commit/3a1bd21ca07f5dcf47ec6e39ecaef9e6f1446e8c))
+* remove subjectKey from RegisterSubjectRequest to fix subject registration ([a5d8b34](https://github.com/fderuiter/imednet-toolkit/commit/a5d8b34cf58ba784687071dea07c7012e6ed5003))
+* remove unreachable RuntimeError statement in HTTP executor ([63debf4](https://github.com/fderuiter/imednet-toolkit/commit/63debf4bffc0de6667b91603e522de489b27b115))
+* resolve core mypy and formatting issues and fix obsolete test failures ([1e792f3](https://github.com/fderuiter/imednet-toolkit/commit/1e792f3b784c1f270a71799eb60e2a62c6e02d97))
+* resolve iterator regressions in CLI and workflows ([be6c52c](https://github.com/fderuiter/imednet-toolkit/commit/be6c52c49fed2663f20c45df03e79994bb30bd60))
+* resolve mypy type-checking errors in core package ([2172480](https://github.com/fderuiter/imednet-toolkit/commit/2172480facbe4781b9d5469da3c2486152959c0e))
+* resolve NoneType AttributeErrors in live integration tests ([db27fbd](https://github.com/fderuiter/imednet-toolkit/commit/db27fbddfd05406ac61d8737694e2a17fcd37b2b))
+* resolve Postman schema path dynamically for ModelEngine ([a4f188f](https://github.com/fderuiter/imednet-toolkit/commit/a4f188f65518574846cf64a734009fa223cc8f01))
+* resolve ruff formatting issues in `packages/core` ([5273e46](https://github.com/fderuiter/imednet-toolkit/commit/5273e46b567c8f3ca66d3ae1597f82dcd2aee890))
+* resolve ruff formatting, missing docstrings, and pin numpy to fix mypy failures in CI ([9166e51](https://github.com/fderuiter/imednet-toolkit/commit/9166e51751898090949849c2dae56a6e78b623f9))
+* satisfy dashboard mypy narrowing ([e1cebc6](https://github.com/fderuiter/imednet-toolkit/commit/e1cebc6a7dc84dac2e0b02b0c75b82e159d8281c))
+* suppress semgrep warning for whitelisted dynamic import ([3b34a3e](https://github.com/fderuiter/imednet-toolkit/commit/3b34a3e4e09845e9d6df83ed334ae930c2b2fe65))
+* update discovery logic to handle API drift in smoke tests ([48d3c1f](https://github.com/fderuiter/imednet-toolkit/commit/48d3c1fea7a4bad79c983ea72e9cd38394fd0f74))
+* use case-insensitive equality for status checks in discovery (not substring) ([d3b352d](https://github.com/fderuiter/imednet-toolkit/commit/d3b352d416724656e3f2b44bd30b0f253bd7bad8))
+
+
+### Documentation
+
+* 🖊️ Scribe: Comprehensive update of docstring placeholders ([4e13f4b](https://github.com/fderuiter/imednet-toolkit/commit/4e13f4b28b6343e1eb402c255081f24e2212d491))
+* 🖊️ Scribe: Comprehensive update of docstring placeholders and fix CI ([ef5e6dd](https://github.com/fderuiter/imednet-toolkit/commit/ef5e6dd59e073e1a4996f38a4382ff1482ab9e13))
+* 🖊️ Scribe: fix placeholder docstrings in core endpoints and models ([f7465da](https://github.com/fderuiter/imednet-toolkit/commit/f7465da64dcf6e0a1cebf4659e1947353603b2d8))
+* 🖊️ Scribe: fix todo docstrings in core package ([4af4f68](https://github.com/fderuiter/imednet-toolkit/commit/4af4f68384e403ab1723152be7f26e396a6dea5e))
+* 🖊️ Scribe: replace placeholder docstrings with comprehensive documentation ([f89cae5](https://github.com/fderuiter/imednet-toolkit/commit/f89cae5458da75bf23382afa06024bf37305bd4f))
+* enforce strict docstring governance and fix sphinx warnings ([34ae046](https://github.com/fderuiter/imednet-toolkit/commit/34ae046911e03b978eb5c237508d5241bd4ab3d8))
+* fix documentation build errors and native callouts ([#1432](https://github.com/fderuiter/imednet-toolkit/issues/1432)) ([77238da](https://github.com/fderuiter/imednet-toolkit/commit/77238da2a888f7419dc6d468c5e0cdc5988c2429))
+* Update CLI documentation to use sphinx-argparse instead of sphinx-click ([9b400c9](https://github.com/fderuiter/imednet-toolkit/commit/9b400c98f2253c09d814d045393e4a89a7326094))
+
 ## [0.8.0](https://github.com/fderuiter/imednet-python-sdk/compare/imednet-v0.7.0...imednet-v0.8.0) (2026-05-27)
 
 
