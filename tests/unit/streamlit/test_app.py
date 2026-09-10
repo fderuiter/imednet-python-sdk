@@ -20,8 +20,13 @@ def test_dashboard_login_requires_all_fields() -> None:
             "imednet_streamlit.auth.get_tenant_credentials",
             return_value=(None, None, None),
         ),
+        patch(
+            "imednet_streamlit.auth.getattr",
+            side_effect=lambda obj, name, default=None: True if name == "is_logged_in" else default,
+        ),
     ):
         at = AppTest.from_file(str(APP_PATH))
+        at.session_state["_imednet_user_mock"] = True
         at.run()
 
         # Click connect

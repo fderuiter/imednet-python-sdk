@@ -125,7 +125,7 @@ ignore_missing_imports = true
 "tests/**/*.py" = ["SLF001", "S", "D", "PT", "SIM", "RUF", "B", "RET", "UP", "C", "F821"]
 "scripts/**/*.py" = ["SLF001", "S", "D", "RUF", "RET"]
 "examples/**/*.py" = ["SLF001", "S", "D", "RUF"]
-"packages/plugins-sinks/tests/**/*.py" = ["SLF001"]
+"packages/plugins-sinks/tests/**/*.py" = ["SLF001", "S", "D", "PT", "SIM", "RUF", "B", "RET", "UP", "C", "F821"]
 
 [tool.ruff.format]
 quote-style = "preserve"

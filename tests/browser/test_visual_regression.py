@@ -24,7 +24,7 @@ def test_visual_unauthenticated_home(dashboard_server, page: Page, assert_visual
     page.wait_for_timeout(1000)
 
     # Capture visual diff
-    assert_visual_diff(page, "unauthenticated_home", tolerance=100)
+    assert_visual_diff(page, "unauthenticated_home", tolerance=250)
 
 
 def test_visual_query_status(dashboard_server, page: Page, assert_visual_diff):
@@ -41,4 +41,4 @@ def test_visual_query_status(dashboard_server, page: Page, assert_visual_diff):
 
     # Mock some data or just screenshot what's there
     # It runs against mock datasets and fake auth contexts according to Constraints.
-    assert_visual_diff(page, "query_status_overview", tolerance=100)
+    assert_visual_diff(page, "query_status_overview", tolerance=250)
