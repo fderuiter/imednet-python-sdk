@@ -1,5 +1,39 @@
 # Changelog
 
+## [0.3.0](https://github.com/fderuiter/imednet-toolkit/compare/imednet-streamlit-v0.2.0...imednet-streamlit-v0.3.0) (2026-09-10)
+
+
+### Features
+
+* **a11y:** automate CI accessibility checks and fix contrast violations ([790ae0a](https://github.com/fderuiter/imednet-toolkit/commit/790ae0a5aecf04fb94886a68e0eea4cee5a05db7))
+* enforce boundary isolation and align downstream utility logic ([dd39824](https://github.com/fderuiter/imednet-toolkit/commit/dd398240a87fa9f2e4a79e7f42febd170eed9d9d))
+* Enhanced JobPoller with progress callbacks and concurrent polling ([ef8d1eb](https://github.com/fderuiter/imednet-toolkit/commit/ef8d1ebf948865d456ccd46b71b0439d5bd88b90))
+* Enhanced JobPoller with progress callbacks and concurrent polling ([ef6fcea](https://github.com/fderuiter/imednet-toolkit/commit/ef6fceabd5acfa823321c54852a0dea64e61778d))
+* implement Enterprise Managed Portal with SSO and multi-tenancy ([72bd4d3](https://github.com/fderuiter/imednet-toolkit/commit/72bd4d32d7f095920551ec561821fa03229a61d3))
+* implement hybrid config-driven compliance file mapping ([#1420](https://github.com/fderuiter/imednet-toolkit/issues/1420)) ([6b0e01b](https://github.com/fderuiter/imednet-toolkit/commit/6b0e01be21b32d54e5ffb6c89c4e13fe50b9a9ac))
+* implement platform shared db connection, unified sink template, and UI component gallery ([ff99caf](https://github.com/fderuiter/imednet-toolkit/commit/ff99caf7ffeda68aa8bd8f8bc494b1e3cb9eb7b5))
+* **streamlit:** add browser-level end-to-end dashboard coverage ([5ec4015](https://github.com/fderuiter/imednet-toolkit/commit/5ec4015772af072fa7478c3da5b6c3e6acdc6934))
+* **streamlit:** add browser-level end-to-end dashboard coverage ([53ebc33](https://github.com/fderuiter/imednet-toolkit/commit/53ebc3377de8e6ab46f8f5f296d425ba39b5457d))
+* **streamlit:** add browser-level end-to-end dashboard coverage ([5ece725](https://github.com/fderuiter/imednet-toolkit/commit/5ece7259e5cc2e95ee44f2d2ec19167192b0cf42))
+* **streamlit:** add multi-user session-isolation and cache-expiry tests ([ff71fd1](https://github.com/fderuiter/imednet-toolkit/commit/ff71fd17537ea5d4a37abd7702a96da865df4f19))
+* **streamlit:** implement dynamic environment url for admin portal ([2793c8d](https://github.com/fderuiter/imednet-toolkit/commit/2793c8d500ef42a5aad9a6871cdee9ad4f1913cb))
+* support dynamic environment-specific routing and schema migration ([#1427](https://github.com/fderuiter/imednet-toolkit/issues/1427)) ([72180a3](https://github.com/fderuiter/imednet-toolkit/commit/72180a3d58d188b44f96e9e231eaa1ee9c06643a))
+
+
+### Bug Fixes
+
+* bypass respx_mock guard in live test suite via path-based detection ([73d85de](https://github.com/fderuiter/imednet-toolkit/commit/73d85de20125d15e948151a15b4d2900bf1b00db))
+* resolve ruff formatting, missing docstrings, and pin numpy to fix mypy failures in CI ([9166e51](https://github.com/fderuiter/imednet-toolkit/commit/9166e51751898090949849c2dae56a6e78b623f9))
+* **streamlit:** avoid reassigning widget-owned setup wizard form keys ([89207d4](https://github.com/fderuiter/imednet-toolkit/commit/89207d4eaac9de82c3268c355c2be6aca977a6da))
+* **streamlit:** fix mypy type hint errors in render_accessible_chart ([21e785f](https://github.com/fderuiter/imednet-toolkit/commit/21e785f440ad4c1eba86d0f12fd4e7ffc26881f5))
+* **streamlit:** resolve formatting and unit test regressions in CI ([ec6241d](https://github.com/fderuiter/imednet-toolkit/commit/ec6241d79ee0a098e70def2ca96a51c4dd8acb5e))
+* **streamlit:** use standard version dependencies to resolve mypy CI failure ([15bf22d](https://github.com/fderuiter/imednet-toolkit/commit/15bf22ddad9d4b58f7899d0aa975d29325d27bef))
+
+
+### Documentation
+
+* enforce strict docstring governance and fix sphinx warnings ([34ae046](https://github.com/fderuiter/imednet-toolkit/commit/34ae046911e03b978eb5c237508d5241bd4ab3d8))
+
 ## [0.2.0](https://github.com/fderuiter/imednet-python-sdk/compare/imednet-streamlit-v0.1.0...imednet-streamlit-v0.2.0) (2026-05-27)
 
 
