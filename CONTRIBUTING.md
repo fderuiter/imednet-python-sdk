@@ -32,6 +32,12 @@ To initialize the default development workspace environment and install all pack
 hatch env create
 ```
 
+To interactively configure your `.env` credentials, endpoints, and test flags, run:
+
+```bash
+bash scripts/wizards/setup-imednet-env.sh
+```
+
 To run the unified quality and linter suite (Ruff, MyPy, etc.):
 
 ```bash
@@ -43,6 +49,15 @@ To run the testing suite with strict coverage gates:
 ```bash
 hatch run test
 ```
+
+### Pre-commit hooks
+To install the lightweight pre-commit hooks for automatic formatting, lint fixes, spell checking, and secret leak prevention:
+
+```bash
+pre-commit install
+```
+
+Our pre-commit configuration is optimized for developer velocity: hooks execute in <1.5s on staged files only (`ruff format`, `ruff --fix`, `typos`, `detect-secrets`, root sanitization). Slower, whole-codebase checks (`mypy`, `pytest`, `pylint-sim`, `vulture`, `pip-audit`) are reserved for pre-PR verification and CI.
 
 ## Issue reporting and triage
 The repository uses a documented issue operating model for intake, prioritization,
@@ -195,7 +210,14 @@ Changelogs and release notes per package are available on
 
 Configuration requirements:
 - Publishing requires PyPI Trusted Publishers (OIDC) configured for each package on PyPI, **or**
-  a `PYPI_API_TOKEN` repository secret as a fallback.
+  a `PYPI_API_TOKEN` repository secret as a fallback. An interactive wizard is available to guide this multi-package setup:
+  ```bash
+  bash scripts/wizards/setup-pypi-oidc.sh
+  ```
+- Live CI testing and smoke test workflows require the `live-testing` GitHub environment and credentials:
+  ```bash
+  bash scripts/wizards/setup-ci-live-testing.sh
+  ```
 - Configure branch protection on `main` to require pull request reviews and required status checks,
   including `Semantic PR Title`.
 
@@ -261,7 +283,7 @@ Before opening a pull request that adds or modifies public APIs:
 4. Please follow the [Code of Conduct](https://github.com/fderuiter/imednet-python-sdk/blob/main/CODE_OF_CONDUCT.md).
 
 ## Dependency-Aware CI Pipeline
-Our CI pipeline is optimized to run quality gates and test suites only for packages affected by your changes. 
+Our CI pipeline is optimized to run quality gates and test suites only for packages affected by your changes.
 - A change to a "leaf" package (e.g., the Airflow provider) will trigger tests exclusively for that package.
 - A change to the core `imednet` package will trigger the full validation matrix for all dependent packages in the monorepo.
 - Ensure your tests and linters pass locally before submitting a PR.

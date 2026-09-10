@@ -57,6 +57,13 @@ Edit the file to add your keys::
 The CLI loads this file automatically. Other scripts can call
 ``dotenv.load_dotenv()`` to mimic this behaviour.
 
+Alternatively, run the interactive setup wizard to configure your ``.env`` file:
+
+.. code-block:: bash
+
+    bash scripts/wizards/setup-imednet-env.sh
+
+
 Parsing Values
 --------------
 
