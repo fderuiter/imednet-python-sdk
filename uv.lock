@@ -268,7 +268,7 @@ wheels = [
 
 [[package]]
 name = "apache-airflow-providers-imednet"
-version = "0.6.0"
+version = "0.7.0"
 source = { editable = "packages/providers-airflow" }
 dependencies = [
     { name = "apache-airflow" },
@@ -1397,7 +1397,7 @@ wheels = [
 
 [[package]]
 name = "imednet"
-version = "0.8.0"
+version = "0.9.0"
 source = { editable = "packages/core" }
 dependencies = [
     { name = "httpx" },
@@ -1461,7 +1461,7 @@ provides-extras = ["cli", "duckdb", "export", "mongodb", "neo4j", "snowflake"]
 
 [[package]]
 name = "imednet-plugins-sinks"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/plugins-sinks" }
 dependencies = [
     { name = "imednet" },
@@ -1497,7 +1497,7 @@ provides-extras = ["neo4j", "mongodb", "snowflake", "all"]
 
 [[package]]
 name = "imednet-streamlit"
-version = "0.2.0"
+version = "0.3.0"
 source = { editable = "packages/plugins-streamlit" }
 dependencies = [
     { name = "altair" },
@@ -1520,7 +1520,7 @@ requires-dist = [
 
 [[package]]
 name = "imednet-workflows"
-version = "0.6.0"
+version = "0.7.0"
 source = { editable = "packages/plugins-workflows" }
 dependencies = [
     { name = "cryptography" },
